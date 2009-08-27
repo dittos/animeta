@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% load status %}
+
+{% block head-extra %}
+<style type="text/css">#nav { display: none; }</style>
+{% endblock %}
+
+{% block content %}
+<div id="charts">
+<h2><a href="/charts/works/weekly/">주간 인기 작품</a></h2>
+<ol>
+{% for work in weekly_works %}
+	<li><a href="{{ work.get_absolute_url }}">{{ work }}</a> ({{ work.factor }})</li>
+{% endfor %}
+</ol>
+
+<h2><a href="/charts/users/weekly/">주간 열혈 사용자</a></h2>
+<ol>
+{% for user in weekly_users %}
+	<li><a href="{{ user.get_absolute_url }}">{{ user.username }}</a></li>
+{% endfor %}
+</ol>
+
+<h2>신규 가입 사용자</h2>
+<ul id="newbies">
+{% for user in newbies %}
+	<li><a href="{{ user.get_absolute_url }}">{{ user }}</a> ({{ user.date_joined|timesince }} 전)</li>
+{% endfor %}
+</ul>
+</div>
+
+<div id="timeline">
+<h2>최근 기록</h2>
+{% for history in timeline %}
+<div class="history">
+<p>
+	<a href="{% url work.views.detail history.work.title %}" class="work">{{ history.work.title }}</a>
+	
+	{% status_text of history %}
+
+	{% if history.updated_at %}
+	<span class="updated">{{ history.updated_at|timesince }} 전</span> /
+	{% endif %}
+	<a href="{% url user.views.library history.user %}">{{ history.user.username }}</a>
+	<a href="{% url record.views.history_detail history.user history.id %}" class="detail">#</a>
+</p>
+{% if history.comment %}
+<p class="comment">{{ history.comment }}</p>
+{% endif %}
+</div>
+{% endfor %}
+</div>
+
+<script type="text/javascript">$(function() { $('#login_username').focus() })</script>
+{% endblock %}

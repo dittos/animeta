@@ -1,0 +1,45 @@
+{% extends "connect/base.html" %}
+
+{% block title %}미투데이 연동{% endblock %}
+
+{% block content %}
+{% ifequal status "auth_ok" %}
+<p>인증에 성공하였습니다.</p>
+{% endifequal %}
+
+{% if setting %}
+<p>미투데이 아이디 <strong>{{ setting.userid }}</strong>(으)로 인증되었습니다.</p>
+
+<h2>사용 방법</h2>
+<p><img src="/static/me2animeta-usage.png" alt="me2animeta 사용 방법" /></p>
+{% else %}
+<h2>미투데이 인증</h2>
+
+{% ifequal status None %}
+<p>인증 절차는 한번만 거치면 됩니다.</p>
+{% endifequal %}
+{% ifequal status "auth_fail" %}
+<p>인증에 실패하였습니다. 아이디와 사용자 키를 확인하십시오.</p>
+{% endifequal %}
+
+<form method="post" action="">
+<table>
+<tr>
+	<th>미투 아이디</th>
+	<td><input type="text" name="me2_userid" /></td>
+</tr>
+<tr>
+	<th>사용자 키</th>
+	<td>
+		<input type="text" name="me2_userkey" />
+		<span class="description">me2day의 환경설정 메뉴에서 <em>me2API 사용자 키</em>를 찾아 입력하세요.</span>
+	</td>
+</tr>
+<tr>
+	<th></th>
+	<td><input type="submit" value="계속" /></td>
+</tr>
+</table>
+</form>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}로그인 - {{ block.super }}{% endblock %}
+
+{% block nav %}
+<h1>로그인</h1>
+<p>처음 오셨나요? <a href="/signup/">회원 가입</a></p>
+{% endblock %}
+
+{% block content %}
+{% if form.errors %}
+<p class="message">없는 아이디거나 암호가 틀렸습니다. 다시 시도해보세요.</p>
+{% endif %}
+
+{% with request.META.HTTP_REFERER as next %}
+{% include "registration/login_form.html" %}
+{% endwith %}
+</form>
+{% endblock %}

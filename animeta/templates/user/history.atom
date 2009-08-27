@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+	<title>{{ owner.username }} 사용자의 감상 기록</title>
+	<link href="http://animeta.net{{ owner.get_absolute_url }}" />
+	<updated>{{ object_list.0.updated_at|date:"Y-m-d\TH:i:sO" }}</updated>
+	<id>animeta-{{ owner.username }}</id>
+{% load status %}
+{% for history in object_list %}
+	<entry>
+		<id>tag:animeta.net,{{ history.updated_at|date:"Y-m-d" }}:{{ history.id }}</id>
+		<link href="http://animeta.net{% url record.views.history_detail owner history.id %}" />
+		<title>{{ history.work.title }} {{ history.status|status_text }}</title>
+		<updated>{{ history.updated_at|date:"Y-m-d\TH:i:sO" }}</updated>
+{% if history.comment %}
+		<summary>{{ history.comment }}</summary>
+{% endif %}
+	</entry>
+{% endfor %}
+</feed>

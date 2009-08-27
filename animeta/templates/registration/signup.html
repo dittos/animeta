@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}회원 가입 - {{ block.super }}{% endblock %}
+{% block nav %}
+<h1>회원 가입</h1>
+<p>처음 오셨나요? 그럼 계정을 만들어보세요. 아주 간단합니다.</p>
+{% endblock %}
+
+{% block content %}
+{% if form.errors %}
+<div class="message">{{ form.errors }}</div>
+{% endif %}
+
+<form method="post" action="/signup/">
+<table>
+<tr>
+	<th><label for="info_username">아이디:</label></th>
+	<td>
+		<input id="info_username" type="text" name="username" maxlength="30" value="" />
+		<span class="description">알파벳, 숫자, '_' 만 가능. 최대 30글자.</span>
+	</td>
+</tr>
+<tr>
+	<th><label for="info_password1">암호:</label></th>
+	<td><input type="password" name="password1" id="info_password1" value="" /></td>
+</tr>
+<tr>
+	<th><label for="info_password2">암호 확인:</label></th>
+	<td><input type="password" name="password2" id="info_password2" value="" /></td>
+</tr>
+<tr>
+	<th></th>
+	<td><input type="submit" value="가입" class="button" /></td>
+</tr>
+</table>
+</form>
+{% endblock %}

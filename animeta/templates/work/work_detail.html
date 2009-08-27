@@ -1,0 +1,52 @@
+{% extends "work/base.html" %}
+
+{% load status %}
+
+{% block content %}
+<div id="comments">
+<h2>기록</h2>
+{% for history in comments %}
+<div class="history">
+<p>
+	<a href="{% url user.views.library history.user %}">{{ history.user.username }}</a>
+	
+	{% status_text of history %}
+
+	{% if history.updated_at %}
+	<span class="updated">{{ history.updated_at|timesince }} 전</span>
+	{% endif %}
+	<a href="{% url record.views.history_detail history.user history.id %}" class="detail">#</a>
+</p>
+{% if history.comment %}
+<p class="comment">{{ history.comment }}</p>
+{% endif %}
+</div>
+{% endfor %}
+</div>
+
+<div id="videos">
+<h2>동영상</h2>
+<p>동영상 검색 제공: <a href="http://tvpot.daum.net/">다음 TV팟</a></p>
+
+<div id="search-result">
+<p>
+	<noscript>자바스크립트를 지원하는 브라우저에서만 보입니다.</noscript>
+	<a href="http://tvpot.daum.net/search/Tvpot.do?q={{ work.title|urlencode }}">직접 검색</a>
+</p>
+</div>
+</div>
+
+{% if daum_api_key %}
+<script type="text/javascript" src="/static/tvpot.js"></script>
+<script type="text/javascript">
+var tvpot = new TVPot('{{ daum_api_key }}')
+$(function() {
+	var m = /tvpot-page([0-9]+)/.exec(location.hash)
+	if (m) tvpot.page = parseInt(m[1])
+	tvpot.$element = $('#search-result')
+	tvpot.q = '{{ work.title }}'
+	tvpot.search()
+})
+</script>
+{% endif %}
+{% endblock %}

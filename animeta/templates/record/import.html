@@ -1,0 +1,27 @@
+{% extends "user/base.html" %}
+
+{% block head-extra %}
+	<link rel="stylesheet" href="/static/autocomplete/jquery.autocomplete.css" type="text/css" />
+{% endblock %}
+
+{% block content %}
+<h2>기록 불러오기</h2>
+<form method="post" action="" id="import">
+{{ formset.management_form }}
+{% if addition_log %}
+<p>{{ addition_log|join:", " }}을(를) 추가했습니다.</p>
+{% else %}
+<p>작품 제목을 연달아 입력하시면 됩니다.</p>
+{% endif %}
+<ul>
+{% for form in formset.forms %}
+	<li>{{ form.work_title }}</li>
+{% endfor %}
+</ul>
+<p><input type="submit" value="입력" class="button" /></p>
+
+<script type="text/javascript" src="/static/autocomplete/jquery.autocomplete.pack.js"></script>
+<script type="text/javascript">
+$(function() { $('.autocomplete').autocomplete('/records/suggest/') })
+</script>
+{% endblock %}

@@ -1,0 +1,121 @@
+/* Global Layout */
+body { margin: 0; font-size: 14px; }
+body, input, textarea, select, optgroup, option
+	{ font-family: Malgun Gothic, sans-serif; }
+a { color: #4bb000; }
+a img { border: none; }
+#header { background: #fff url(bg.gif) bottom left repeat-x; padding: 1em; border-top: 5px solid #4bb000; overflow: hidden; }
+#header p { margin: 0; float: left; }
+#menu { float: left; margin: 0; padding: 0; list-style: none; margin-left: 2em; }
+#menu li { margin-right: 1em; display: inline; }
+#menu li a { font-size: 1.1em; text-decoration: none; line-height: 1.6; }
+#account { float: right; color: #999; }
+#account a { text-decoration: none; }
+#account a:hover { text-decoration: underline; }
+#container { background: #fff url(navbg.gif) repeat-x; }
+#nav { padding: 0.5em 1em; overflow: hidden; }
+#nav p { font-size: 0.9em; margin: 0.6em 0 0.6em 1.5em; float: left; }
+#nav h1 { margin: 0; font-size: 1.4em; float: left; }
+#nav a { text-decoration: none; margin-right: 1em; color: #4b4b4b; }
+#nav a:hover { position: relative; left: 1px; top: 1px; }
+#nav h1 a { margin: 0; }
+#messages, .message { background-color: #ffa; border: 1px solid #deb200; list-style: none; margin: 0 1em; padding: 0; }
+.message { margin: 0 0 1em 0; padding: 0.5em; }
+#messages li { border-bottom: 1px dotted #deb200; padding: 0.5em; }
+#close-messages { font-size: 0.8em; border-bottom: 0 !important; }
+#close-messages a { display: block; text-decoration: none; font-weight: bold; color: #deb200; }
+#content { padding: 1em; clear: both; }
+#content p { margin: 0 0 1em; }
+#content li { line-height: 1.6; }
+form table, form table input { font-size: 1.1em; }
+form td, form th { padding: 0.5em; }
+form th { text-align: right; width: 6em; font-weight: normal; }
+form .description { font-size: 0.8em; margin-left: 0.8em; color: #999; vertical-align: 0.2em; }
+#content h1 { margin-top: 0; font-size: 1.4em; }
+#content h2 { font-size: 1.2em; margin: 0 0 1em; }
+#footer { padding: 2em; font-size: 0.9em; clear: both; margin: 0; color: #666; }
+#footer a { text-decoration: none; color: #666; border-bottom: 1px solid #ccc; }
+
+/* Welcome Page */
+#intro { line-height: 1.6; padding: 0 1em; }
+.aside { padding-top: 0.5em; margin: 0 1em 0 650px; width: 20em; }
+#join-now { font-size: 1.1em; background-color: #ffa; border: 1px solid #deb200; padding: 0.5em; }
+#join-now a { font-weight: bold; text-decoration: none; color: #deb200; }
+#screenshot { margin-left: -0.5em; float: left; }
+
+/* Main Page */
+#charts { float: right; width: 15em; }
+#timeline { margin-right: 17em; }
+#charts ol { margin-left: 2em; padding: 0; }
+#newbies { list-style: none; margin-left: 1em; padding: 0; }
+
+/* Login Form (Standalone) */
+.remember th { padding-right: 0 !important; }
+#login_username, #login_password { width: 10em; }
+
+/* Record Form */
+.comment th { vertical-align: top; padding-top: 0.8em; }
+.comment .description { margin-left: 0; padding-top: 0.5em; display: block; }
+#id_status { text-align: right; }
+#plus-one { margin-left: 0.25em; text-decoration: none; vertical-align: middle; }
+#plus-one:active { position: relative; top: 1px; left: 1px; }
+
+/* Record Delete */
+#delete-record table { margin-bottom: 0.5em; }
+#delete-record th, #delete-record td { width: auto; padding: 0 0.5em 0.25em 0; }
+
+/* User Section */
+#nav a.add-record { color: #06c; font-weight: bolder; }
+#nav .feed { vertical-align: -25%; }
+.column { width: 33%; float: left; }
+.column h2 { font-size: 1.2em; margin-top: 0; }
+.column ul { margin-left: 1.5em; padding-left: 0; list-style: square; }
+.column li { line-height: 2 !important; }
+.work { color: #000; text-decoration: none; }
+.work:hover { color: #666; border-bottom: 1px dashed #aaa; }
+.status { color: #fff; background-color: #4bb000; padding: 0.25em; margin-left: 0.5em; }
+.status a { text-decoration: none; color: #fff !important; }
+.status a:hover { padding-right: 16px; background: transparent url(edit.gif) right center no-repeat; margin-right: 2px; }
+.status.finished { background-color: #aaa; }
+.status.no-record { background-color: #06c; }
+.history { padding-left: 0.5em; padding-bottom: 0.5em; }
+.history p { margin: 1em 0 0.5em !important; }
+.history .comment { font-size: 0.85em; text-indent: 1em; }
+.history .updated { font-size: 0.9em; margin-left: 0.5em; color: #888; }
+#pagination { padding-left: 1em; padding-top: 1em; }
+#pagination .prev-page { margin-right: 1em; }
+#pagination .next-page { margin-left: 1em; }
+
+/* Record Import */
+#import ul { list-style: none; padding: 0; margin: 0 0 1em; width: 50em; overflow: hidden; }
+#import li { float: left; padding: 0.5em; }
+#import p { clear: both; }
+
+/* Chart Page */
+#nav .chart-nav a { margin: 0; color: #4bb000; }
+#nav .chart-nav a:hover { position: static; }
+
+/* Work Page */
+#nav .status a { margin-right: 0; }
+#nav .status a:hover { position: static; }
+#comments { padding-right: 1em; }
+#comments, #videos { width: 48%; float: left; overflow: hidden; }
+#videos { margin-bottom: 1em; }
+#videos td { width: 120px; vertical-align: top; padding: 0.5em; }
+#videos td a { color: #666; }
+#videos .date, #videos .title { display: block; }
+#videos .thumbnail { width: 120px; height: 90px; }
+#videos .thumbnail img { width: 120px; height: 90px; }
+#videos .title { font-size: 0.9em; }
+#videos .date { font-size: 0.8em; padding-top: 0.5em; }
+#video { float: left; }
+#record-form-side { margin-left: 500px; }
+#record-form-side table, #record-form-side table input { font-size: 1em !important; }
+
+/* History Detail */
+.history.detail { font-size: 1.2em; }
+#context { margin-left: 2em; margin-top: 1em; }
+
+/* Widget Settings */
+#widget-preview { float: left; margin-right: 1em; }
+#widget-code { font-size: 0.9em; font-family: Consolas, Courier New, monospace; }

@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="initApp()" backgroundColor="#f8f8f8"
+	paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import flash.events.Event;
+			import mx.collections.XMLListCollection;
+			import mx.controls.LinkButton;
+			import mx.events.ResizeEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			public var username:String;
+			
+			private namespace atom = "http://www.w3.org/2005/Atom";
+			use namespace atom;
+			
+			private function initApp():void {
+				username = this.parameters.username;
+				if (!username) username = "ditto";
+				resizeHandler(null);
+				this.addEventListener(Event.RESIZE, resizeHandler);
+				service.send();
+			}
+			
+			private function resizeHandler(event:ResizeEvent):void {
+				grid.height = this.height - title.height - footer.height;
+			}
+			
+			private function onXMLLoaded(event:ResultEvent):void {
+				var xmlData:XML = new XML(event.result);
+				var dp:XMLListCollection = new XMLListCollection(xmlData.entry);
+				grid.dataProvider = dp;
+			}
+			
+			public function go(url:String):void {
+				navigateToURL(new URLRequest(url), '_blank');
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Style>
+		<![CDATA[
+			global {
+				font-size: 12px;
+				font-family: "나눔고딕", "맑은 고딕", Gulim, sans-serif;
+			}
+			
+			.title {
+				font-size: 11px;
+				font-weight: bold;
+				color: #666;
+				padding-left: 0;
+				text-align: left;
+			}
+			
+			.date {
+				color: #999;
+				font-size: 11px;
+			}
+			
+			.summary {
+				padding-left: 12px;
+				color: #000;
+			}
+			
+			VBox {
+				vertical-gap: 0;
+			}
+			
+			LinkButton {
+				font-size: 11px;
+				font-weight: normal;
+				color: #666666;
+				skin: ClassReference(null);
+				padding-left: 3px;
+			}
+		]]>
+	</mx:Style>
+	
+	<mx:HTTPService id="service" resultFormat="text"
+		url="http://animeta.net/users/{username}/feed/" result="onXMLLoaded(event)" />
+	
+	<mx:VBox width="100%">
+		<mx:LinkButton label="{username}님의 작품 감상 기록" fontWeight="bold" height="25" paddingTop="5" click="go('http://animeta.net/users/'+username+'/')" id="title" />
+		
+		<mx:List id="grid" width="100%" alternatingItemColors="['#FFFFFF','#F8F8F8']" variableRowHeight="true" wordWrap="true" paddingBottom="1" paddingLeft="2" paddingTop="1">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:VBox width="100%" dataChange="validateNow()" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+						<mx:Script>
+							<![CDATA[
+								private namespace atom = "http://www.w3.org/2005/Atom";
+								public function go(url:String):void {
+									navigateToURL(new URLRequest(url), '_blank');
+								}
+							]]>
+						</mx:Script>
+						<mx:Text text="{data.atom::title}" styleName="title" click="go(data.atom::link.@href)" buttonMode="true" useHandCursor="true" mouseChildren="false" />
+						<mx:Text text="{data.atom::summary}" styleName="summary" width="100%" includeInLayout="{data.atom::summary.length()>0}" />
+					</mx:VBox>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:List>
+		
+		<mx:LinkButton label="애니메타 - 애니메이션 감상 기록장" paddingTop="3" click="go('http://animeta.net/')" id="footer" />
+	</mx:VBox>
+</mx:Application>

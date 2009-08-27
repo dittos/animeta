@@ -1,0 +1,25 @@
+{% extends "connect/base.html" %}
+
+{% block title %}블로그 위젯{% endblock %}
+
+{% block content %}
+<h2>블로그에 위젯 달기</h2>
+
+<object width="220" height="250" id="widget-preview"><param name="movie" value="/static/widget.swf?username={{ request.user.username }}"></param><embed src="/static/widget.swf?username={{ request.user.username }}" type="application/x-shockwave-flash" width="220" height="250"></embed></object>
+
+<p>다음 코드를 원하는 위치에 붙여넣으시면 됩니다.</p>
+<p>가로 <input type="text" size="3" id="width" value="220" />px &times; 세로 <input type="text" size="3" id="height" value="250" />px <input type="button" id="apply" value="적용" /></p>
+<p><textarea cols="50" rows="5" id="widget-code" readonly="readonly">{% filter force_escape %}
+<object width="220" height="250"><param name="movie" value="http://animeta.net/static/widget.swf?username={{ request.user.username }}"></param><embed src="http://animeta.net/static/widget.swf?username={{ request.user.username }}" type="application/x-shockwave-flash" width="220" height="250"></embed></object>
+{% endfilter %}</textarea></p>
+
+<script type="text/javascript">
+$(function() {
+	$('#widget-code').focus(function(event) { this.select() }).select()
+	$('#apply').click(function() {
+		$('object, embed').attr('width', $('#width').val()).attr('height', $('#height').val())
+		$('#widget-code').val($('#widget-code').val().replace(/width="[0-9]+" height="[0-9]+"/g, 'width="'+$('#width').val()+'" height="'+$('#height').val()+'"'))
+	})
+})
+</script>
+{% endblock %}

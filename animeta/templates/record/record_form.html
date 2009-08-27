@@ -1,0 +1,64 @@
+{% extends "user/base.html" %}
+
+{% block title %}기록 추가 - 애니메타{% endblock %}
+
+{% block head-extra %}
+	<link rel="stylesheet" href="/static/autocomplete/jquery.autocomplete.css" type="text/css" />
+{% endblock %}
+
+{% block content %}
+{{ form.errors }}
+
+<form action="{% url record.views.save %}" method="post">
+<input type="hidden" name="next" value="{{ request.META.HTTP_REFERER }}" />
+<table>
+<tr>
+	<th>{{ form.work_title.label_tag }}</th>
+	<td>{{ form.work_title }}</td>
+</tr>
+<tr id="status">
+	<th>{{ form.status.label_tag }}</th>
+	<td>
+		{{ form.status }}화까지
+		<script type="text/javascript">
+		$('#status td').append('<a href="#" id="plus-one"><img src="/static/plus.gif" alt="+1" /></a>')
+		$('#plus-one').click(function(event) {
+			event.preventDefault()
+			var $field = $('#id_status')
+			var val = $field.val()
+			var matches = val.match(/(\d+)[^\d]*$/)
+			if (matches)
+				$field.val(val.replace(/(\d+)([^\d]*)$/, (parseInt(matches[1]) + 1) + '$2'))
+		})
+		</script>
+		<span class="description">비워두면 '완료' 상태로 처리합니다.</span>
+	</td>
+</tr>
+<tr class="comment">
+	<th>{{ form.comment.label_tag }}</th>
+	<td>
+		{{ form.comment }}<br />
+		<span class="description">선택사항입니다.</span>
+	</td>
+</tr>
+{% if me2day %}
+<tr>
+	<th>{{ form.me2day_send }}</th>
+	<td>{{ form.me2day_send.label_tag }}</td>
+</tr>
+{% endif %}
+<tr>
+	<th></th>
+	<td>
+		<input type="submit" value="기록" />
+		{% if record %}또는 <a href="{% url record.views.delete record.id %}">삭제</a>{% endif %}
+	</td>
+</tr>
+</table>
+</form>
+
+<script type="text/javascript" src="/static/autocomplete/jquery.autocomplete.pack.js"></script>
+<script type="text/javascript">
+$(function() { $('#id_work_title').autocomplete('/records/suggest/') })
+</script>
+{% endblock %}

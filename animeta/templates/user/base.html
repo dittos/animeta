@@ -1,0 +1,16 @@
+{% extends base %}
+
+{% block title %}{{ owner.username }} 사용자 - 애니메타{% endblock %} 
+
+{% block nav %}
+<h1><a href="{% url user.views.library owner %}">{{ owner.username }} 사용자</a></h1>
+<p>
+	<a href="{% url user.views.history_feed owner %}" class="feed"><img src="/static/feed.gif" alt="Atom 피드" /></a>
+
+	<a href="{% url user.views.library owner %}">작품 목록</a>
+	<a href="{% url user.views.history owner %}">기록 내역</a>
+{% ifequal owner user %}
+	<a href="{% url record.views.add %}" class="add-record">기록 추가</a>
+{% endifequal %}
+</p>
+{% endblock %}

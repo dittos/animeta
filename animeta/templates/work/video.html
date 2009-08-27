@@ -1,0 +1,31 @@
+{% extends "work/base.html" %}
+
+{% block content %}
+<h2>동영상 보기</h2>
+<object type="application/x-shockwave-flash" width="502" height="399" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" id="video">
+	<param name="movie" value="http://flvs.daum.net/flvPlayer.swf?vid={{ video_id }}" />
+	<param name="allowFullScreen" value="true" />
+	<param name="bgcolor" value="#000000" />
+	<!--[if !IE]> <-->
+	<object type="application/x-shockwave-flash" data="http://flvs.daum.net/flvPlayer.swf?vid={{ video_id }}" width="502" height="399"></object>
+	<!--> <![endif]-->
+</object>
+
+<script type="text/javascript">
+$(function() {
+	$('#content').append('<div id="record-form-side"></div>')
+	$('.status a').click(function(event) {
+		event.preventDefault()
+		$('#record-form-side').load($(this).attr('href'), null, function() {
+			$('#record-form-side form').submit(function(event) {
+				event.preventDefault()
+				$.post($(this).attr('action'), $(this).serialize(), function() {
+					$('#record-form-side').text('기록 완료!')
+					setTimeout(function() { $('#record-form-side').hide('normal') }, 5000)
+				})
+			})
+		})
+	})
+})
+</script>
+{% endblock %}

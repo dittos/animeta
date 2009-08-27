@@ -1,0 +1,51 @@
+{% extends "user/base.html" %}
+
+{% load status %}
+
+{% block content %}
+<div class="history detail">
+<p>
+	<a href="{% url work.views.detail history.work.title %}" class="work">{{ history.work.title }}</a>
+	
+	{% status_text of history %}
+
+	{% if history.updated_at %}
+	<span class="updated" title="{{ history.updated_at }}">{{ history.updated_at|timesince }} 전</span>
+	{% endif %}
+
+	<a href="{% url record.views.history_detail owner history.id %}" class="detail">#</a>
+</p>
+{% if history.comment %}
+<p class="comment">{{ history.comment }}</p>
+{% endif %}
+</div>
+
+{% if object_list %}
+<div id="context">
+<h2>다른 사람들은?</h2>
+{% for history in object_list %}
+<div class="history">
+	<a href="{{ history.user.get_absolute_url }}">{{ history.user.username }}</a>
+	
+	{% if history.updated_at %}
+	<span class="updated" title="{{ history.updated_at }}">{{ history.updated_at|timesince }} 전</span>
+	{% endif %}
+
+	<a href="{% url record.views.history_detail history.user history.id %}" class="detail">#</a>
+</p>
+{% if history.comment %}
+<p class="comment">{{ history.comment }}</p>
+{% endif %}
+</div>
+{% endfor %}
+</div>
+
+{% if page_obj %}
+<p id="pagination">
+{% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}" class="prev-page">&larr; 이전</a>{% endif %}
+<strong>{{ page_obj.number }}</strong>/{{ paginator.num_pages }} 페이지
+{% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}" class="next-page">다음 &rarr;</a>{% endif %}
+</p>
+{% endif %}
+{% endif %}
+{% endblock %}
