@@ -17,8 +17,7 @@ TVPot.prototype.search = function() {
 }
 
 function format_date(t) {
-	var d = new Date(t.substr(0,4), t.substr(4,2), t.substr(6,2),
-			t.substr(8,2), t.substr(10,2), t.substr(12,2))
+	var d = new Date(parseInt(t.substr(0,4), 10), parseInt(t.substr(4,2), 10) - 1, parseInt(t.substr(6,2), 10))
 	return d.toLocaleDateString()
 }
 
