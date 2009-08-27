@@ -8,14 +8,14 @@ urlpatterns = patterns('',
 	(r'^signup/', 'animeta.user.views.signup'),
 	(r'^accounts/profile/', 'animeta.user.views.library', {'username': None}),
 
-    (r'^users/(?P<username>[A-Za-z0-9_]+)/', include('animeta.user.urls')),
-    (r'^records/', include('animeta.record.urls')),
-    (r'^works/', include('animeta.work.urls')),
-    (r'^charts/', include('animeta.chart.urls')),
-    (r'^connect/', include('animeta.connect.urls')),
+	(r'^users/(?P<username>[A-Za-z0-9_]+)/', include('animeta.user.urls')),
+	(r'^records/', include('animeta.record.urls')),
+	(r'^works/', include('animeta.work.urls')),
+	(r'^charts/', include('animeta.chart.urls')),
+	(r'^connect/', include('animeta.connect.urls')),
 
 	# compatability
-    (r'^titles/(?P<remainder>.*)$', 'django.views.generic.simple.redirect_to', {'url': '/works/%(remainder)s'}),
+	(r'^titles/(?P<remainder>.*)$', 'django.views.generic.simple.redirect_to', {'url': '/works/%(remainder)s'}),
 	(r'^(?P<username>[A-Za-z0-9]+)$', 'animeta.user.views.shortcut'),
 )
 

@@ -6,7 +6,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+	# ('Your Name', 'your_email@domain.com'),
 )
 
 MANAGERS = ADMINS
@@ -44,15 +44,15 @@ ADMIN_MEDIA_PREFIX = '/media/'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.load_template_source',
-    'django.template.loaders.app_directories.load_template_source',
-#     'django.template.loaders.eggs.load_template_source',
+	'django.template.loaders.filesystem.load_template_source',
+	'django.template.loaders.app_directories.load_template_source',
+#	 'django.template.loaders.eggs.load_template_source',
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+	'django.middleware.common.CommonMiddleware',
+	'django.contrib.sessions.middleware.SessionMiddleware',
+	'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -70,15 +70,15 @@ import os.path
 ROOT_PATH = os.path.dirname(__file__)
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
+	# Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+	# Always use forward slashes, even on Windows.
+	# Don't forget to use absolute paths, not relative paths.
 	ROOT_PATH + '/templates'
 )
 
 INSTALLED_APPS = (
-    'django.contrib.auth',
-    'django.contrib.sessions',
+	'django.contrib.auth',
+	'django.contrib.sessions',
 	'django.contrib.contenttypes',
 	'animeta.work',
 	'animeta.record',
