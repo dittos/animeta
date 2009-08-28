@@ -1,8 +1,10 @@
 from django.http import HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
 from connect.models import Me2Setting
+from django.contrib.auth.decorators import login_required
 import me2day as me2
 
+@login_required
 def me2day(request):
 	status = None
 
