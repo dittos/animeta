@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.http import HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
 from connect.models import Me2Setting
@@ -22,3 +23,10 @@ def me2day(request):
 			setting = None
 			
 	return direct_to_template(request, 'connect/me2day.html', {'status': status, 'setting': setting})
+
+def me2day_disconnect(request):
+	if request.method == 'POST':
+		setting = Me2Setting.objects.get(user=request.user)
+		setting.delete()
+		request.user.message_set.create(message='인증 정보를 삭제하였습니다.')
+		return HttpResponseRedirect('/connect/me2day/')

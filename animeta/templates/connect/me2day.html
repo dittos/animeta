@@ -9,6 +9,9 @@
 
 {% if setting %}
 <p>미투데이 아이디 <strong>{{ setting.userid }}</strong>(으)로 인증되었습니다.</p>
+<form method="post" action="disconnect/">
+<p><input type="submit" value="인증 정보 삭제" /></p>
+</form>
 
 <h2>사용 방법</h2>
 <p><img src="/static/me2animeta-usage.png" alt="me2animeta 사용 방법" /></p>
