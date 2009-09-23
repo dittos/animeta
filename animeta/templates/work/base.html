@@ -2,6 +2,10 @@
 
 {% load status %}
 
+{% block title %}
+{{ work.title }} - {{ block.super }}
+{% endblock %}
+
 {% block nav %}
 <h1><a href="{% url work.views.detail work.title %}">{{ work.title }}</a></h1>
 <p><strong>{{ records.count }}명</strong>이 관련 기록을 남겼습니다.</p>

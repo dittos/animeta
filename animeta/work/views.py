@@ -3,6 +3,11 @@ from django.views.generic.simple import direct_to_template
 from work.models import Work
 from record.models import Record, History
 
+def old_url(request, remainder):
+	from django.http import HttpResponseRedirect
+	import urllib
+	return HttpResponseRedirect('/works/' + urllib.quote(remainder.encode('UTF-8')))
+
 def detail(request, title):
 	work = get_object_or_404(Work, title=title)
 	if request.user.is_authenticated():

@@ -15,7 +15,7 @@ urlpatterns = patterns('',
 	(r'^connect/', include('animeta.connect.urls')),
 
 	# compatability
-	(r'^titles/(?P<remainder>.*)$', 'django.views.generic.simple.redirect_to', {'url': '/works/%(remainder)s'}),
+	(r'^titles/(?P<remainder>.*)$', 'animeta.work.views.old_url'),
 	(r'^(?P<username>[A-Za-z0-9]+)$', 'animeta.user.views.shortcut'),
 )
 
