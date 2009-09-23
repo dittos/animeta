@@ -8,7 +8,7 @@ def index(request):
 		'weekly_works': PopularWorksChart(during(weeks=1), 5),
 		'weekly_users': EnthusiastsChart(during(weeks=1), 5),
 		'newbies': User.objects.order_by('-date_joined')[:5],
-		'timeline': History.objects.all()[:10]
+		'timeline': History.objects.exclude(comment='').all()[:10]
 	})
 
 def detail(request, chart_class, range = None, title = ''):
