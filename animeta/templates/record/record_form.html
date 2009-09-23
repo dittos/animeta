@@ -19,9 +19,17 @@
 <tr id="status">
 	<th>{{ form.status.label_tag }}</th>
 	<td>
-		{{ form.status }}화까지
+		{{ form.status }}<span id="suffix">화</span>
 		<script type="text/javascript">
 		$('#status td').append('<a href="#" id="plus-one"><img src="/static/plus.gif" alt="+1" /></a>')
+		function determine_suffix() {
+			if ($('#id_status').val().match(/\d$/))
+				$('#suffix').show()
+			else
+				$('#suffix').hide()
+		}
+		determine_suffix()
+		$('#id_status').change(determine_suffix).keyup(determine_suffix)
 		$('#plus-one').click(function(event) {
 			event.preventDefault()
 			var $field = $('#id_status')
