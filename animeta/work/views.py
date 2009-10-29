@@ -49,3 +49,13 @@ def video(request, title, provider, id):
 		'records': work.normalized_set(Record),
 		'video_id': id
 	})
+
+def search(request):
+	from django.views.generic import list_detail
+	from work.models import normalize_title
+
+	keyword = request.GET['keyword']
+	return list_detail.object_list(request,
+		queryset = Work.objects.filter(normalized_title__contains=normalize_title(keyword)),
+		extra_context = {'keyword': keyword},
+	)

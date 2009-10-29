@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block nav %}
+<h1>작품 찾기</h1>
+<p>"<strong>{{ keyword }}</strong>"로 찾은 결과 ({{ object_list.count }}개)</p>
+{% endblock %}
+
+{% block content %}
+<ul>
+{% for work in object_list %}
+	<li>{{ work.title }}</li>
+{% endfor %}
+</ul>
+{% endblock %}
