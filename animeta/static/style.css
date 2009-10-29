@@ -12,7 +12,6 @@ a img { border: none; }
 #account { float: right; color: #999; }
 #account a { text-decoration: none; }
 #account a:hover { text-decoration: underline; }
-#search { float: right; }
 #container { background: #fff url(navbg.gif) repeat-x; }
 #nav { padding: 0.5em 1em; overflow: hidden; }
 #nav p { font-size: 0.9em; margin: 0.6em 0 0.6em 1.5em; float: left; }
@@ -120,3 +119,12 @@ form .description { font-size: 0.8em; margin-left: 0.8em; color: #999; vertical-
 /* Widget Settings */
 #widget-preview { float: left; margin-right: 1em; }
 #widget-code { font-size: 0.9em; font-family: Consolas, Courier New, monospace; }
+
+/* Search */
+#search { float: right; }
+#search-form { margin-bottom: 1em; }
+#search-result { list-style: none; padding: 0; margin: 0; }
+#search-result li { padding: 1em; clear: both; border-top: 1px solid #ddd; }
+#search-result .title { font-size: 1.2em; font-weight: bold; float: left; width: 20em; }
+#search-result .title a { text-decoration: none; }
+#search-result .my-status { display: block; }

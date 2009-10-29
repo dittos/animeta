@@ -27,7 +27,14 @@ class StatusTextNode(template.Node):
 		self.record_var = record_var
 
 	def render(self, context):
+		from work.models import Work
 		record = context[self.record_var]
+		if type(record) is Work:
+			try:
+				record = context.get('user').record_set.get(work=record)
+			except:
+				record = None
+
 		if not record:
 			work = context.get('work')
 			return '<span class="status no-record"><a href="%s">기록 없음</a></span>' % reverse('record.views.add', args=[] if not work else [work.title])
