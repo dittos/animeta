@@ -4,28 +4,22 @@
 {% load indexing %}
 
 {% block content %}
-<h2>분류</h2>
-<ul id="categories">
-	<li><a href=".">전체</a> ({{ record_count }}/{{ finished_count }})</li>
-{% for category in categories %}
-	<li><a href="?category={{ category.id }}">{{ category.name }}</a> ({{ category.record_set.count }})</li>
-{% endfor %}
-{% ifequal owner request.user %}
-	<li><a href="/records/category/add/">분류 추가...</a></li>
-{% endifequal %}
-</ul>
-
-{% if records %}
 <p>
 	작품이 {{ record_count }}개 등록되어 있습니다.
 	완료 작품 {{ finished_count }}개
-{% if hide_finished %}
-	<a href=".">보이기</a>
-{% else %}
-	<a href="?finished=hide">숨기기</a>
-{% endif %}
 </p>
 
+<ul id="categories">
+	<li{% ifequal category_filter None %} class="current"{% endifequal %}><a href=".">전체</a> ({{ record_count }})</li>
+{% for category in categories %}
+	<li{% ifequal category_filter category.id %} class="current"{% endifequal %}><a href="?category={{ category.id }}">{{ category.name }}</a> ({{ category.record_set.count }})</li>
+{% endfor %}
+{% ifequal owner request.user %}
+	<li class="add"><a href="/records/category/add/">분류 추가...</a></li>
+{% endifequal %}
+</ul>
+
+{% ifnotequal record_count 0 %}
 {% index records as columns %}
 
 <div id="records">
@@ -52,5 +46,11 @@
 <p>위에 있는 <a href="/records/add/" class="add-record">기록 추가</a>를 눌러 감상 기록을 등록할 수 있습니다. 아니면, <a href="/records/import/">한꺼번에 기록을 여러개 추가</a>하세요.</p>
 <p>귀띔: 굳이 처음부터 모든 작품을 등록할 필요는 없습니다. 생각 날 때마다 해보세요.</p>
 {% endifequal %}
-{% endif %}
+{% endifnotequal %}
+
+<script type="text/javascript">
+$('#categories li').click(function() {
+	location.href = $(this).find('a').attr('href')
+})
+</script>
 {% endblock %}
