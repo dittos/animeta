@@ -16,6 +16,10 @@
 	<th>{{ form.work_title.label_tag }}</th>
 	<td>{{ form.work_title }}</td>
 </tr>
+<tr>
+	<th>{{ form.category.label_tag }}</th>
+	<td>{{ form.category }}</td>
+</tr>
 <tr id="status">
 	<th>{{ form.status.label_tag }}</th>
 	<td>
@@ -23,7 +27,7 @@
 		<script type="text/javascript">
 		$('#status td').append('<a href="#" id="plus-one"><img src="/static/plus.gif" alt="+1" /></a>')
 		function determine_suffix() {
-			if ($('#id_status').val().match(/\d$/))
+			if ($('#id_status').val().match(/^(|.*\d)$/))
 				$('#suffix').show()
 			else
 				$('#suffix').hide()

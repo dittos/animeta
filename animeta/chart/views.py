@@ -3,7 +3,7 @@ from chart.models import during, PopularWorksChart, EnthusiastsChart
 from record.models import History
 from django.contrib.auth.models import User
 
-def index(request):
+def recent(request):
 	return direct_to_template(request, 'chart/index.html', {
 		'weekly_works': PopularWorksChart(during(weeks=1), 5),
 		'weekly_users': EnthusiastsChart(during(weeks=1), 5),

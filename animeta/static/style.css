@@ -1,7 +1,7 @@
 /* Global Layout */
 body { margin: 0; font-size: 14px; }
 body, input, textarea, select, optgroup, option
-	{ font-family: Malgun Gothic, sans-serif; }
+	{ font-family: Segoe UI, Malgun Gothic, sans-serif; }
 a { color: #4bb000; }
 a img { border: none; }
 #header { background: #fff url(bg.gif) bottom left repeat-x; padding: 1em; border-top: 5px solid #4bb000; overflow: hidden; }
@@ -27,7 +27,7 @@ a img { border: none; }
 #content { padding: 1em; clear: both; }
 #content p { margin: 0 0 1em; }
 #content li { line-height: 1.6; }
-form table, form table input { font-size: 1.1em; }
+form table, form table input, form table select { font-size: 1.1em; }
 form td, form th { padding: 0.5em; }
 form th { text-align: right; width: 6em; font-weight: normal; }
 form .description { font-size: 0.8em; margin-left: 0.8em; color: #999; vertical-align: 0.2em; }

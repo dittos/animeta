@@ -3,10 +3,32 @@ from django.db import models
 from django.contrib.auth.models import User
 from animeta.work.models import Work
 
+class Uncategorized(object):
+	def __init__(self, user):
+		self.user = user
+
+	def id(self):
+		return 0
+	
+	def name(self):
+		return u'미분류'
+
+	def record_set(self):
+		return self.user.record_set.filter(category=None)
+
+class Category(models.Model):
+	user = models.ForeignKey(User)
+	name = models.CharField(max_length=30)
+
+	def __unicode__(self):
+		return self.name
+
 class Record(models.Model):
 	user = models.ForeignKey(User)
 	work = models.ForeignKey(Work)
+	title = models.CharField(max_length=100)
 	status = models.CharField(max_length=30, blank=True)
+	category = models.ForeignKey(Category, null=True)
 	updated_at = models.DateTimeField(auto_now=True)
 
 	@property

@@ -12,7 +12,7 @@
 	<p><a href="/"><img src="/static/animeta.gif" alt="animeta" /></a></p>
 
 	<ul id="menu">
-		<li><a href="/">홈</a></li>
+		<li><a href="/recent/">최근 감상평</a></li>
 		<li><a href="/charts/works/weekly/">순위</a></li>
 	{% if user.is_authenticated %}
 		<li><a href="{{ user.get_absolute_url }}">내 라이브러리</a></li>
@@ -25,7 +25,7 @@
 	</ul>
 
 	<form action="/works/search/" id="search">
-		<input type="text" name="keyword" size="12" />
+		<input type="text" name="keyword" size="15" />
 		<input type="submit" value="작품 찾기" />
 	</form>
 </div>

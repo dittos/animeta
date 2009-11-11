@@ -20,8 +20,10 @@ def get_me2_setting(user):
 
 @login_required
 def add(request, title=''):
+	form = RecordForm(initial={'work_title': title})
+	form.fields['category'].queryset = request.user.category_set
 	return direct_to_template(request, 'record/record_form.html', {
-		'form': RecordForm(initial={'work_title': title}),
+		'form': form,
 		'owner': request.user,
 		'me2day': get_me2_setting(request.user)
 	})
@@ -35,7 +37,8 @@ def _get_record(request, id):
 @login_required
 def update(request, id):
 	record = _get_record(request, id)
-	form = RecordForm(initial={'work_title': record.work.title, 'status': record.status})
+	form = RecordForm(initial={'work_title': record.work.title, 'status': record.status, 'category': record.category.id if record.category else None})
+	form.fields['category'].queryset = request.user.category_set
 	return direct_to_template(request, 'record/record_form.html',
 		{'form': form, 'owner': request.user, 'record': record,
 		 'me2day': get_me2_setting(request.user)})
@@ -55,16 +58,20 @@ def delete(request, id):
 def save(request):
 	user = request.user
 	form = RecordForm(request.POST)
+	form.fields['category'].queryset = request.user.category_set
 	if form.is_valid():
+		category = form.cleaned_data['category']
 		work, created = Work.objects.get_or_create(title=form.cleaned_data['work_title'])
 		try:
 			record = user.record_set.create(
 				work=work,
-				status=form.cleaned_data['status']
+				status=form.cleaned_data['status'],
+				category=category
 			)
 		except: # already have the record
 			record = user.record_set.get(work=work)
 			record.status = form.cleaned_data['status']
+			record.category = category
 			record.save()
 
 			# delete previous history if just comment is changed
@@ -125,6 +132,17 @@ def add_many(request):
 	return direct_to_template(request, 'record/import.html',
 		{'owner': request.user, 'formset': SimpleRecordFormSet(),
 		 'addition_log': addition_log})
+
+@login_required
+def add_category(request):
+	if request.method == 'POST':
+		name = request.POST['name']
+		if name.strip() != '':
+			from record.models import Category
+			category = Category.objects.create(user=request.user, name=name)
+			return HttpResponseRedirect(request.user.get_absolute_url() + '?category=%d' % category.id)
+
+	return direct_to_template(request, 'record/add_category.html')
 
 def history_detail(request, username, id):
 	from django.views.generic import list_detail

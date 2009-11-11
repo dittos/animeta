@@ -4,6 +4,17 @@
 {% load indexing %}
 
 {% block content %}
+<h2>분류</h2>
+<ul id="categories">
+	<li><a href=".">전체</a> ({{ record_count }}/{{ finished_count }})</li>
+{% for category in categories %}
+	<li><a href="?category={{ category.id }}">{{ category.name }}</a> ({{ category.record_set.count }})</li>
+{% endfor %}
+{% ifequal owner request.user %}
+	<li><a href="/records/category/add/">분류 추가...</a></li>
+{% endifequal %}
+</ul>
+
 {% if records %}
 <p>
 	작품이 {{ record_count }}개 등록되어 있습니다.

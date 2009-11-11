@@ -5,8 +5,7 @@ from django.http import HttpResponseRedirect
 
 def welcome(request):
 	if request.user.is_authenticated():
-		from animeta.chart.views import index
-		return index(request)
+		return HttpResponseRedirect('/recent/')
 	else:
 		from chart.models import during, PopularWorksChart
 		return direct_to_template(request, 'welcome.html', {
@@ -42,6 +41,7 @@ def shortcut(request, username):
 	return HttpResponseRedirect('/users/%s/' % username)
 
 def library(request, username):
+	from record.models import Uncategorized
 	if not username and request.user.is_authenticated():
 		return HttpResponseRedirect(request.user.get_absolute_url())
 
@@ -55,6 +55,7 @@ def library(request, username):
 	return direct_to_template(request, 'user/library.html', {
 		'owner': user,
 		'records': records.select_related('work', 'user').order_by('work__title'),
+		'categories': [Uncategorized(user)] + list(user.category_set.all()),
 		'record_count': record_count,
 		'finished_count': user.record_set.filter(status='').count(),
 		'hide_finished': hide_finished
