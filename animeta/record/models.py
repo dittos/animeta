@@ -26,7 +26,6 @@ class Category(models.Model):
 class Record(models.Model):
 	user = models.ForeignKey(User)
 	work = models.ForeignKey(Work)
-	title = models.CharField(max_length=100)
 	status = models.CharField(max_length=30, blank=True)
 	category = models.ForeignKey(Category, null=True)
 	updated_at = models.DateTimeField(auto_now=True)

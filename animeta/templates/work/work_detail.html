@@ -28,7 +28,7 @@
 <h2>동영상</h2>
 <p>동영상 검색 제공: <a href="http://tvpot.daum.net/">다음 TV팟</a></p>
 
-<div id="search-result">
+<div id="video-search-result">
 <p>
 	<noscript>자바스크립트를 지원하는 브라우저에서만 보입니다.</noscript>
 	<a href="http://tvpot.daum.net/search/Tvpot.do?q={{ work.title|urlencode }}">직접 검색</a>
@@ -43,7 +43,7 @@ var tvpot = new TVPot('{{ daum_api_key }}')
 $(function() {
 	var m = /tvpot-page([0-9]+)/.exec(location.hash)
 	if (m) tvpot.page = parseInt(m[1])
-	tvpot.$element = $('#search-result')
+	tvpot.$element = $('#video-search-result')
 	tvpot.q = '{{ work.title }}'
 	tvpot.search()
 })
