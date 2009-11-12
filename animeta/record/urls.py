@@ -8,5 +8,8 @@ urlpatterns = patterns('record.views',
 	(r'^(\d+)/update/$', 'update'),
 	(r'^(\d+)/delete/$', 'delete'),
 	(r'^save/$', 'save'),
+	(r'^category/$', 'category'),
 	(r'^category/add/$', 'add_category'),
+	(r'^category/(\d+)/delete/$', 'delete_category'),
+	(r'^category/(\d+)/rename/$', 'rename_category'),
 )

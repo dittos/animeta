@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from work.models import Work
-from record.models import Record, History
+from record.models import Record, History, Category
 from record.forms import RecordForm
 from django.shortcuts import get_object_or_404
 
@@ -134,15 +134,42 @@ def add_many(request):
 		 'addition_log': addition_log})
 
 @login_required
+def delete_category(request, id):
+	category = Category.objects.get(user=request.user, id=id)
+	request.user.record_set.filter(category=category).update(category=None)
+	category.delete()
+	return HttpResponseRedirect('/records/category/')
+
+@login_required
+def rename_category(request, id):
+	category = Category.objects.get(user=request.user, id=id)
+	if request.method == 'POST':
+		category.name = request.POST['name']
+		category.save()
+		return HttpResponseRedirect('/records/category/')
+	else:
+		return direct_to_template(request, 'record/rename_category.html',
+			{'category': category})
+
+@login_required
 def add_category(request):
 	if request.method == 'POST':
 		name = request.POST['name']
+		records = request.POST.getlist('record[]')
 		if name.strip() != '':
-			from record.models import Category
 			category = Category.objects.create(user=request.user, name=name)
-			return HttpResponseRedirect(request.user.get_absolute_url() + '?category=%d' % category.id)
+			for record_id in records:
+				record = Record.objects.get(id=record_id, user=request.user)
+				record.category = category
+				record.save()
+			return HttpResponseRedirect('/records/category/')
 
-	return direct_to_template(request, 'record/add_category.html')
+@login_required
+def category(request):
+	from record.models import Uncategorized
+	return direct_to_template(request, 'record/manage_category.html',
+		{'categories': request.user.category_set.all(),
+		 'uncategorized': Uncategorized(request.user)})
 
 def history_detail(request, username, id):
 	from django.views.generic import list_detail

@@ -15,7 +15,7 @@
 	<li{% ifequal category_filter category.id %} class="current"{% endifequal %}><a href="?category={{ category.id }}">{{ category.name }}</a> ({{ category.record_set.count }})</li>
 {% endfor %}
 {% ifequal owner request.user %}
-	<li class="add"><a href="/records/category/add/">분류 추가...</a></li>
+	<li class="add"><a href="/records/category/">분류 관리</a></li>
 {% endifequal %}
 </ul>
 
