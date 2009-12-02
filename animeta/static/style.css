@@ -4,7 +4,7 @@ body, input, textarea, select, optgroup, option
 	{ font-family: Segoe UI, Malgun Gothic, sans-serif; }
 a { color: #4bb000; }
 a img { border: none; }
-#header { background: #fff url(bg.gif) bottom left repeat-x; padding: 1em; border-top: 5px solid #4bb000; overflow: hidden; }
+#header { background: #fff url(bg.gif) bottom left repeat-x; padding: 1em; border-top: 5px solid #4bb000; overflow: hidden; zoom: 1; }
 #header p { margin: 0; float: left; }
 #menu { float: left; margin: 0; padding: 0; list-style: none; margin-left: 2em; }
 #menu li { margin-right: 1em; display: inline; }
@@ -13,7 +13,7 @@ a img { border: none; }
 #account a { text-decoration: none; }
 #account a:hover { text-decoration: underline; }
 #container { background: #fff url(navbg.gif) repeat-x; }
-#nav { padding: 0.5em 1em; overflow: hidden; }
+#nav { padding: 0.5em 1em; overflow: hidden; clear: both; }
 #nav p { font-size: 0.9em; margin: 0.6em 0 0.6em 1.5em; float: left; }
 #nav h1 { margin: 0; font-size: 1.4em; float: left; }
 #nav a { text-decoration: none; margin-right: 1em; color: #4b4b4b; }

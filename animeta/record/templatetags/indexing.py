@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 from django import template
 import re
 import itertools
@@ -52,5 +53,5 @@ class MakeIndexNode(template.Node):
 		self.columns_var = columns_var
 
 	def render(self, context):
-		context[self.columns_var] = make_index(context[self.records_var])
+		context[self.columns_var] = make_index(context[self.records_var], u'계속')
 		return ''
