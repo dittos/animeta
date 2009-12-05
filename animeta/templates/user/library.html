@@ -6,13 +6,13 @@
 {% block content %}
 <p>
 	작품이 {{ record_count }}개 등록되어 있습니다.
-	완료 작품 {{ finished_count }}개
+	완료 작품 {{ finished_count }}개 {% if hide_finished %}<a href=".{% ifnotequal category_filter None %}?category={{ category_filter }}{% endifnotequal %}">보이기</a>{% else %}<a href="?finished=hide{% ifnotequal category_filter None %}&amp;category={{ category_filter }}{% endifnotequal %}">숨기기</a>{% endif %}
 </p>
 
 <ul id="categories">
-	<li{% ifequal category_filter None %} class="current"{% endifequal %}><a href=".">전체</a> ({{ record_count }})</li>
+	<li{% ifequal category_filter None %} class="current"{% endifequal %}><a href=".{% if hide_finished %}?finished=hide{% endif %}">전체</a> ({{ record_count }})</li>
 {% for category in categories %}
-	<li{% ifequal category_filter category.id %} class="current"{% endifequal %}><a href="?category={{ category.id }}">{{ category.name }}</a> ({{ category.record_set.count }})</li>
+	<li{% ifequal category_filter category.id %} class="current"{% endifequal %}><a href="?category={{ category.id }}{% if hide_finished %}&amp;finished=hide{% endif %}">{{ category.name }}</a> ({{ category.record_set.count }})</li>
 {% endfor %}
 {% ifequal owner request.user %}
 	<li class="add"><a href="/records/category/">분류 관리</a></li>
