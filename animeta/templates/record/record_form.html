@@ -14,7 +14,11 @@
 <table>
 <tr>
 	<th>{{ form.work_title.label_tag }}</th>
-	<td>{{ form.work_title }}</td>
+	<td>
+	{% if record %}
+		<strong>{{ record.work.title }}</strong>
+		<a href="#" class="rename">제목 고치기...</a>
+	{% else %}{{ form.work_title }}{% endif %}</td>
 </tr>
 <tr>
 	<th>{{ form.category.label_tag }}</th>
@@ -40,7 +44,14 @@
 			var val = $field.val()
 			var matches = val.match(/(\d+)[^\d]*$/)
 			if (matches)
-				$field.val(val.replace(/(\d+)([^\d]*)$/, (parseInt(matches[1]) + 1) + '$2'))
+			{
+				var digits = matches[1].length
+				var add1 = (parseInt(matches[1], 10) + 1).toString()
+				if (add1.length < digits)
+					for (var i = 0; i < digits - add1.length; i++)
+						add1 = '0' + add1
+				$field.val(val.replace(/(\d+)([^\d]*)$/, add1 + '$2'))
+			}
 		})
 		</script>
 		<span class="description">비워두면 '완료' 상태로 처리합니다.</span>
