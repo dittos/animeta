@@ -28,6 +28,7 @@ class StatusTextNode(template.Node):
 
 	def render(self, context):
 		from work.models import Work
+		from record.models import Record
 		record = context[self.record_var]
 		if type(record) is Work:
 			try:
@@ -45,7 +46,7 @@ class StatusTextNode(template.Node):
 		status = status_text(record.status)
 
 		try:
-			if record.user == context['user']:
+			if record.user == context['user'] and type(record) is Record:
 				status = '<a href="%s">%s</a>' % (reverse('record.views.update', args=[getattr(record, 'record', record).id]), status)
 		except:
 			pass # for a history with deleted record
