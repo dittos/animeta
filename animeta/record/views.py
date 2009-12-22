@@ -37,10 +37,12 @@ def _get_record(request, id):
 @login_required
 def update(request, id):
 	record = _get_record(request, id)
+	user = request.user
 	form = RecordForm(initial={'work_title': record.work.title, 'status': record.status, 'category': record.category.id if record.category else None})
-	form.fields['category'].queryset = request.user.category_set
-	return direct_to_template(request, 'record/record_form.html',
-		{'form': form, 'owner': request.user, 'record': record,
+	form.fields['category'].queryset = user.category_set
+	return direct_to_template(request, 'record/update_record.html',
+		{'form': form, 'owner': user, 'record': record,
+		 'history_list': user.history_set.filter(work=record.work),
 		 'me2day': get_me2_setting(request.user)})
 
 @login_required

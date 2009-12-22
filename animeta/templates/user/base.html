@@ -10,7 +10,7 @@
 	<a href="{% url user.views.library owner %}">작품 목록</a>
 	<a href="{% url user.views.history owner %}">기록 내역</a>
 {% ifequal owner user %}
-	<a href="{% url record.views.add %}" class="add-record">기록 추가</a>
+	<a href="{% url record.views.add %}" class="add-record">작품 추가</a>
 {% endifequal %}
 </p>
 {% endblock %}

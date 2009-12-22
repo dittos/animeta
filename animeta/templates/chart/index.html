@@ -22,7 +22,7 @@
 {% endfor %}
 </ol>
 
-<h2>신규 가입 사용자</h2>
+<h2>오늘 가입한 사용자</h2>
 <ul id="newbies">
 {% for user in newbies %}
 	<li><a href="{{ user.get_absolute_url }}">{{ user }}</a> ({{ user.date_joined|timesince }} 전)</li>

@@ -74,6 +74,6 @@ class EnthusiastsChart(Chart):
 		return qs.annotate(factor=Count('history')).exclude(factor=0).order_by('-factor')
 
 def during(**kwargs):
-	today = datetime.date.today()
-	start = today - datetime.timedelta(**kwargs)
-	return (start, today)
+	now = datetime.datetime.now()
+	start = now - datetime.timedelta(**kwargs)
+	return (start, now)

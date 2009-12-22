@@ -1,20 +1,16 @@
 {% extends "user/base.html" %}
 
-{% block title %}기록 추가 - 애니메타{% endblock %}
-
-{% block head-extra %}
-	<link rel="stylesheet" href="/static/autocomplete/jquery.autocomplete.css" type="text/css" />
-{% endblock %}
+{% load status %}
 
 {% block content %}
-{{ form.errors }}
-
-<form action="{% url record.views.save %}" method="post">
+<form action="{% url record.views.save %}" method="post" id="add-record">
+<h2>기록 추가</h2>
 <input type="hidden" name="next" value="{{ request.META.HTTP_REFERER }}" />
+<input type="hidden" name="work_title" value="{{ record.work.title }}" />
 <table>
 <tr>
 	<th>{{ form.work_title.label_tag }}</th>
-	<td>{{ form.work_title }}</td>
+	<td><strong>{{ record.work.title }}</strong></td>
 </tr>
 <tr>
 	<th>{{ form.category.label_tag }}</th>
@@ -76,8 +72,22 @@
 </table>
 </form>
 
-<script type="text/javascript" src="/static/autocomplete/jquery.autocomplete.pack.js"></script>
-<script type="text/javascript">
-$(function() { $('#id_work_title').autocomplete('/records/suggest/') })
-</script>
+<div id="history">
+<h2>지난 기록</h2>
+{% for history in history_list %}
+<div class="history">
+<p>
+	{% status_text of history %}
+
+	{% if history.updated_at %}
+	<span class="updated">{{ history.updated_at|timesince }} 전</span>
+	{% endif %}
+	<a href="{% url record.views.history_detail history.user history.id %}" class="detail">#</a>
+</p>
+{% if history.comment %}
+<p class="comment">{{ history.comment }}</p>
+{% endif %}
+</div>
+{% endfor %}
+</div>
 {% endblock %}

@@ -7,7 +7,7 @@ def recent(request):
 	return direct_to_template(request, 'chart/index.html', {
 		'weekly_works': PopularWorksChart(during(weeks=1), 5),
 		'weekly_users': EnthusiastsChart(during(weeks=1), 5),
-		'newbies': User.objects.order_by('-date_joined')[:5],
+		'newbies': User.objects.filter(date_joined__range=during(days=1)),
 		'timeline': History.objects.exclude(comment='').all()[:10]
 	})
 
