@@ -1,25 +1,10 @@
 {% extends "user/base.html" %}
 
-{% load status %}
+{% load status history %}
 
 {% block content %}
 {% for history in object_list %}
-<div class="history">
-<p>
-	<a href="{% url work.views.detail history.work.title %}" class="work">{{ history.work.title }}</a>
-	
-	{% status_text of history %}
-
-	{% if history.updated_at %}
-	<span class="updated" title="{{ history.updated_at }}">{{ history.updated_at|timesince }} 전</span>
-	{% endif %}
-
-	<a href="{% url record.views.history_detail owner history.id %}" class="detail">#</a>
-</p>
-{% if history.comment %}
-<p class="comment">{{ history.comment }}</p>
-{% endif %}
-</div>
+	{% show_history history "work" %}
 {% endfor %}
 
 {% if page_obj %}

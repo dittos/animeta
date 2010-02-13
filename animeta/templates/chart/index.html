@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load status %}
+{% load status history %}
 
 {% block head-extra %}
 <style type="text/css">#nav { display: none; }</style>
@@ -33,22 +33,7 @@
 <div id="timeline">
 <h2>최근 감상평</h2>
 {% for history in timeline %}
-<div class="history">
-<p>
-	<a href="{% url work.views.detail history.work.title %}" class="work">{{ history.work.title }}</a>
-	
-	{% status_text of history %}
-
-	{% if history.updated_at %}
-	<span class="updated">{{ history.updated_at|timesince }} 전</span> /
-	{% endif %}
-	<a href="{% url user.views.library history.user %}">{{ history.user.username }}</a>
-	<a href="{% url record.views.history_detail history.user history.id %}" class="detail">#</a>
-</p>
-{% if history.comment %}
-<p class="comment">{{ history.comment }}</p>
-{% endif %}
-</div>
+	{% show_history history "user,work" %}
 {% endfor %}
 </div>
 
