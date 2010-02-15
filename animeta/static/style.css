@@ -59,8 +59,8 @@ form .description { font-size: 0.8em; margin-left: 0.8em; color: #999; vertical-
 #id_status { text-align: right; }
 #plus-one { margin-left: 0.25em; text-decoration: none; vertical-align: middle; }
 #plus-one:active { position: relative; top: 1px; left: 1px; }
-#add-record { width: 32em; float: left; }
-#history { margin-left: 32em; }
+#add-record { width: 40em; float: left; }
+#history { margin-left: 40em; }
 
 /* Record Delete */
 #delete-record table { margin-bottom: 0.5em; }

@@ -16,7 +16,7 @@ $(function() {
 	$('#content').append('<div id="record-form-side"></div>')
 	$('.status a').click(function(event) {
 		event.preventDefault()
-		$('#record-form-side').load($(this).attr('href'), null, function() {
+		$('#record-form-side').load($(this).attr('href') + ' #add-record', null, function() {
 			$('#record-form-side form').submit(function(event) {
 				event.preventDefault()
 				$.post($(this).attr('action'), $(this).serialize(), function() {
