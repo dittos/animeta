@@ -18,3 +18,21 @@ def call(method, uid=None, user_key=None, params={}):
 	if method == 'create_post':
 		method = '%s/%s' % (method, uid)
 	return json.load(urllib2.urlopen('http://me2day.net/api/%s.json' % method, urllib.urlencode(params)))
+
+def post_history(history):
+	from connect.models import Me2Setting
+	from record.templatetags.status import status_text
+	from django.core.urlresolvers import reverse
+	try:
+		setting = Me2Setting.objects.get(user=history.user)
+		body = u'"%s %s":http://animeta.net%s' % (history.work.title, status_text(history.status), reverse(history_detail, args=[history.user.username, history.id]))
+		if history.comment:
+			body += u' : ' + history.comment
+		tags = 'me2animeta %s %s' % (work.title, status_text(history.status))
+		call('create_post', setting.userid, setting.userkey, {
+			'post[body]': body.encode('utf-8'),
+			'post[tags]': tags.encode('utf-8')
+		})
+		return True
+	except:
+		return False

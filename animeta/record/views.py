@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from work.models import Work
 from record.models import Record, History, Category
-from record.forms import RecordForm
+from record.forms import RecordAddForm, RecordUpdateForm
 from django.shortcuts import get_object_or_404
 
 def _return_to_user_page(request):
@@ -20,8 +20,20 @@ def get_me2_setting(user):
 
 @login_required
 def add(request, title=''):
-	form = RecordForm(initial={'work_title': title})
-	form.fields['category'].queryset = request.user.category_set
+	if request.method == 'POST':
+		form = RecordAddForm(request.POST)
+		form.fields['category'].queryset = request.user.category_set
+		if form.is_valid():
+			form.save(request.user)
+			if request.POST.get('next'):
+				# CSRF?
+				return HttpResponseRedirect(request.POST['next'])
+			else:
+				return _return_to_user_page(request)
+	else:
+		form = RecordAddForm(initial={'work_title': title})
+		form.fields['category'].queryset = request.user.category_set
+
 	return direct_to_template(request, 'record/record_form.html', {
 		'form': form,
 		'owner': request.user,
@@ -37,12 +49,23 @@ def _get_record(request, id):
 @login_required
 def update(request, id):
 	record = _get_record(request, id)
-	user = request.user
-	form = RecordForm(initial={'work_title': record.work.title, 'status': record.status, 'category': record.category.id if record.category else None})
-	form.fields['category'].queryset = user.category_set
+	if request.method == 'POST':
+		form = RecordUpdateForm(request.POST)
+		form.fields['category'].queryset = request.user.category_set
+		if form.is_valid():
+			form.save(record)
+			if request.POST.get('next'):
+				# CSRF?
+				return HttpResponseRedirect(request.POST['next'])
+			else:
+				return _return_to_user_page(request)
+	else:
+		form = RecordUpdateForm(initial={'status': record.status, 'category': record.category.id if record.category else None})
+		form.fields['category'].queryset = request.user.category_set
+
 	return direct_to_template(request, 'record/update_record.html',
-		{'form': form, 'owner': user, 'record': record,
-		 'history_list': user.history_set.filter(work=record.work),
+		{'form': form, 'owner': request.user, 'record': record, 'work': record.work,
+		 'history_list': request.user.history_set.filter(work=record.work),
 		 'me2day': get_me2_setting(request.user)})
 
 @login_required
@@ -55,66 +78,6 @@ def delete(request, id):
 		return _return_to_user_page(request)
 	else:
 		return direct_to_template(request, 'record/record_confirm_delete.html', {'record': record, 'owner': request.user})
-
-@login_required
-def save(request):
-	user = request.user
-	form = RecordForm(request.POST)
-	form.fields['category'].queryset = request.user.category_set
-	if form.is_valid():
-		category = form.cleaned_data['category']
-		work, created = Work.objects.get_or_create(title=form.cleaned_data['work_title'])
-		try:
-			record = user.record_set.create(
-				work=work,
-				status=form.cleaned_data['status'],
-				category=category
-			)
-		except: # already have the record
-			record = user.record_set.get(work=work)
-			record.status = form.cleaned_data['status']
-			record.category = category
-			record.save()
-
-			# delete previous history if just comment is changed
-			prev = record.history_set.latest('updated_at')
-			if prev.status == form.cleaned_data['status'] and not prev.comment.strip():
-				prev.delete()
-
-		history = user.history_set.create(
-			work=work,
-			status=record.status,
-			comment=form.cleaned_data['comment'],
-			updated_at=record.updated_at
-		)
-
-		if form.cleaned_data['me2day_send']:
-			from connect.models import Me2Setting
-			from record.templatetags.status import status_text
-			from django.core.urlresolvers import reverse
-			import connect.me2day as me2
-			try:
-				setting = Me2Setting.objects.get(user=request.user)
-				body = u'"%s %s":http://animeta.net%s' % (work.title, status_text(record.status), reverse(history_detail, args=[request.user.username, history.id]))
-				if form.cleaned_data['comment']:
-					body += u' : ' + form.cleaned_data['comment']
-				tags = 'me2animeta %s %s' % (work.title, status_text(record.status))
-				me2.call('create_post', setting.userid, setting.userkey, {
-					'post[body]': body.encode('utf-8'),
-					'post[tags]': tags.encode('utf-8')
-				})
-			except:
-				request.user.message_set.create(message='미투데이에 보내기 실패')
-
-		if request.POST.get('next'):
-			# CSRF?
-			return HttpResponseRedirect(request.POST['next'])
-		else:
-			return _return_to_user_page(request)
-	
-	else:
-		request.user.message_set.create(message='작품 제목을 입력하세요.')
-		return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 @login_required
 def add_many(request):

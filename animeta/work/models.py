@@ -14,6 +14,11 @@ class Work(models.Model):
 	title = models.CharField(max_length=100, unique=True)
 	normalized_title = models.CharField(max_length=100)
 
+	@property
+	def popularity(self):
+		from record.models import Record
+		return self.normalized_set(Record).count()
+
 	def normalized_set(self, model):
 		return model.objects.filter(work__normalized_title=self.normalized_title)
 
