@@ -1,0 +1,68 @@
+<form action="" method="post" id="add-record">
+<input type="hidden" name="next" value="{{ request.META.HTTP_REFERER }}" />
+<table>
+{% if form.work_title %}
+<tr>
+	<th>{{ form.work_title.label_tag }}</th>
+	<td>{{ form.work_title }}</td>
+</tr>
+{% endif %}
+<tr>
+	<th>{{ form.category.label_tag }}</th>
+	<td>{{ form.category }}</td>
+</tr>
+<tr id="status">
+	<th>{{ form.status.label_tag }}</th>
+	<td>
+		{{ form.status }}<span id="suffix">화</span>
+		<script type="text/javascript">
+		$('#status td').append('<a href="#" id="plus-one"><img src="/static/plus.gif" alt="+1" /></a>')
+		function determine_suffix() {
+			if ($('#id_status').val().match(/^(|.*\d)$/))
+				$('#suffix').show()
+			else
+				$('#suffix').hide()
+		}
+		determine_suffix()
+		$('#id_status').change(determine_suffix).keyup(determine_suffix)
+		$('#plus-one').click(function(event) {
+			event.preventDefault()
+			var $field = $('#id_status')
+			var val = $field.val()
+			var matches = val.match(/(\d+)[^\d]*$/)
+			if (matches)
+			{
+				var digits = matches[1].length
+				var add1 = (parseInt(matches[1], 10) + 1).toString()
+				if (add1.length < digits)
+					for (var i = 0; i < digits - add1.length; i++)
+						add1 = '0' + add1
+				$field.val(val.replace(/(\d+)([^\d]*)$/, add1 + '$2'))
+			}
+		})
+		</script>
+		<span class="description">비워두면 '완료' 상태로 처리합니다.</span>
+	</td>
+</tr>
+<tr class="comment">
+	<th>{{ form.comment.label_tag }}</th>
+	<td>
+		{{ form.comment }}<br />
+		<span class="description">선택사항입니다.</span>
+	</td>
+</tr>
+{% if me2day %}
+<tr>
+	<th>{{ form.me2day_send }}</th>
+	<td>{{ form.me2day_send.label_tag }}</td>
+</tr>
+{% endif %}
+<tr>
+	<th></th>
+	<td>
+		<input type="submit" value="기록" />
+		{% if record %}또는 <a href="{% url record.views.delete record.id %}">삭제</a>{% endif %}
+	</td>
+</tr>
+</table>
+</form>
