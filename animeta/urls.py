@@ -15,9 +15,9 @@ urlpatterns = patterns('',
 	(r'^charts/', include('animeta.chart.urls')),
 	(r'^connect/', include('animeta.connect.urls')),
 
-	# compatability
-	(r'^titles/(?P<remainder>.*)$', 'animeta.work.views.old_url'),
+	(r'^titles/(?P<remainder>.*)$', 'animeta.work.views.old_url'), # compat
 	(r'^(?P<username>[A-Za-z0-9]+)$', 'animeta.user.views.shortcut'),
+	(r'^-(?P<id>[0-9]+)$', 'animeta.record.views.shortcut'),
 )
 
 if settings.DEBUG:

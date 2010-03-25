@@ -121,6 +121,10 @@ def category(request):
 		{'categories': request.user.category_set.all(),
 		 'uncategorized': Uncategorized(request.user)})
 
+def shortcut(request, id):
+	history = get_object_or_404(History, id=id)
+	return HttpResponseRedirect('/users/%s/history/%d/' % (history.user.username, history.id))
+
 def history_detail(request, username, id):
 	from django.views.generic import list_detail
 	user = get_object_or_404(User, username=username)

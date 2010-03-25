@@ -3,7 +3,7 @@ def post_history(history):
 	kwargs = {
 		'title': history.work.title,
 		'status': status_text(history.status),
-		'url': 'http://animeta.net/-/%d' % history.id,
+		'url': 'http://animeta.net/-%d' % history.id,
 		'comment': history.comment,
 	}
 
