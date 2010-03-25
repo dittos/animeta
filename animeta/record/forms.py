@@ -11,7 +11,7 @@ class RecordUpdateForm(forms.Form):
 			widget=forms.Textarea(attrs={'rows': 3, 'cols': 40}))
 	category = forms.ModelChoiceField(label=u'분류', empty_label=u'미분류',
 			queryset=Category.objects.none(), required=False)
-	me2day_send = forms.BooleanField(label=u'미투데이에 보내기',
+	publish = forms.BooleanField(label=u'외부 서비스에 보내기',
 			required=False, initial=True)
 
 	def __init__(self, record, data=None, initial={}):
@@ -24,9 +24,9 @@ class RecordUpdateForm(forms.Form):
 		self.record.category = self.cleaned_data['category']
 		history = self.record.save(comment=self.cleaned_data['comment'])
 
-		if self.cleaned_data['me2day_send']:
-			import connect.me2day
-			connect.me2day.post_history(history)
+		if self.cleaned_data['publish']:
+			from connect import post_history
+			post_history(history)
 
 class RecordAddForm(RecordUpdateForm):
 	work_title = forms.CharField(label=u'작품 제목', max_length=100)

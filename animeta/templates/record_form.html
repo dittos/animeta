@@ -51,12 +51,16 @@
 		<span class="description">선택사항입니다.</span>
 	</td>
 </tr>
-{% if me2day %}
 <tr>
-	<th>{{ form.me2day_send }}</th>
-	<td>{{ form.me2day_send.label_tag }}</td>
+	<th>
+	{% if not connected_services %}
+		<input type="checkbox" disabled="disabled" />
+	{% else %}
+		{{ form.publish }}
+	{% endif %}
+	</th>
+	<td>{{ form.publish.label_tag }} (<a href="/connect/">설정</a>)</td>
 </tr>
-{% endif %}
 <tr>
 	<th></th>
 	<td>

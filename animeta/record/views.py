@@ -7,16 +7,10 @@ from work.models import Work
 from record.models import Record, History, Category
 from record.forms import RecordAddForm, RecordUpdateForm
 from django.shortcuts import get_object_or_404
+from connect.models import get_connected_services
 
 def _return_to_user_page(request):
 	return HttpResponseRedirect(request.user.get_absolute_url())
-
-def get_me2_setting(user):
-	from connect.models import Me2Setting
-	try:
-		return Me2Setting.objects.get(user=user)
-	except:
-		return None
 
 def save(request, form_class, object, form_initial, template_name, extra_context = {}):
 	if request.method == 'POST':
@@ -34,7 +28,7 @@ def save(request, form_class, object, form_initial, template_name, extra_context
 	extra_context.update({
 		'form': form,
 		'owner': request.user,
-		'me2day': get_me2_setting(request.user)
+		'connected_services': get_connected_services(request.user)
 	})
 	return direct_to_template(request, template_name, extra_context)
 
