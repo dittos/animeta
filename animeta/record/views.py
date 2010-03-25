@@ -84,8 +84,6 @@ def add_many(request):
 				work, _ = Work.objects.get_or_create(title=row['work_title'])
 				addition_log.append(work.title)
 				record, created = request.user.record_set.get_or_create(work=work)
-				if created:
-					request.user.history_set.create(work=work)
 
 	return direct_to_template(request, 'record/import.html',
 		{'owner': request.user, 'formset': SimpleRecordFormSet(),
