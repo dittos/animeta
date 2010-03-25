@@ -34,6 +34,25 @@ class Record(models.Model):
 	def history_set(self):
 		return self.user.history_set.filter(work=self.work)
 
+	def save(self, comment = ''):
+		super(Record, self).save()
+
+		# delete previous history if just comment is changed
+		try:
+			prev = self.history_set.latest('updated_at')
+			if prev.status == self.status and not prev.comment.strip():
+				prev.delete()
+		except History.DoesNotExist:
+			pass
+
+		return History.objects.create(
+			work = self.work,
+			user = self.user,
+			status = self.status,
+			comment = comment,
+			updated_at = self.updated_at
+		)
+
 	class Meta:
 		unique_together = ('user', 'work')
 

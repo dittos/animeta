@@ -18,27 +18,31 @@ def get_me2_setting(user):
 	except:
 		return None
 
-@login_required
-def add(request, title=''):
+def save(request, form_class, object, form_initial, template_name, extra_context = {}):
 	if request.method == 'POST':
-		form = RecordAddForm(request.POST)
-		form.fields['category'].queryset = request.user.category_set
+		form = form_class(object, data=request.POST)
 		if form.is_valid():
-			form.save(request.user)
+			form.save()
 			if request.POST.get('next'):
 				# CSRF?
 				return HttpResponseRedirect(request.POST['next'])
 			else:
 				return _return_to_user_page(request)
 	else:
-		form = RecordAddForm(initial={'work_title': title})
-		form.fields['category'].queryset = request.user.category_set
+		form = form_class(object, initial=form_initial)
 
-	return direct_to_template(request, 'record/record_form.html', {
+	extra_context.update({
 		'form': form,
 		'owner': request.user,
 		'me2day': get_me2_setting(request.user)
 	})
+	return direct_to_template(request, template_name, extra_context)
+
+@login_required
+def add(request, title=''):
+	return save(request,
+		RecordAddForm, request.user, {'work_title': title},
+		template_name = 'record/record_form.html')
 
 def _get_record(request, id):
 	record = get_object_or_404(Record, id=id)
@@ -49,24 +53,13 @@ def _get_record(request, id):
 @login_required
 def update(request, id):
 	record = _get_record(request, id)
-	if request.method == 'POST':
-		form = RecordUpdateForm(request.POST)
-		form.fields['category'].queryset = request.user.category_set
-		if form.is_valid():
-			form.save(record)
-			if request.POST.get('next'):
-				# CSRF?
-				return HttpResponseRedirect(request.POST['next'])
-			else:
-				return _return_to_user_page(request)
-	else:
-		form = RecordUpdateForm(initial={'status': record.status, 'category': record.category.id if record.category else None})
-		form.fields['category'].queryset = request.user.category_set
-
-	return direct_to_template(request, 'record/update_record.html',
-		{'form': form, 'owner': request.user, 'record': record, 'work': record.work,
-		 'history_list': request.user.history_set.filter(work=record.work),
-		 'me2day': get_me2_setting(request.user)})
+	return save(request,
+		RecordUpdateForm, record, {'status': record.status, 'category': record.category.id if record.category else None},
+		template_name = 'record/update_record.html',
+		extra_context = {
+			'record': record, 'work': record.work,
+			'history_list': request.user.history_set.filter(work=record.work)
+		})
 
 @login_required
 def delete(request, id):

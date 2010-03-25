@@ -14,23 +14,15 @@ class RecordUpdateForm(forms.Form):
 	me2day_send = forms.BooleanField(label=u'미투데이에 보내기',
 			required=False, initial=True)
 
-	def save(self, record):
-		record.status = self.cleaned_data['status']
-		record.category = self.cleaned_data['category']
-		record.save()
+	def __init__(self, record, data=None, initial={}):
+		super(RecordUpdateForm, self).__init__(data, initial=initial)
+		self.record = record
+		self.fields['category'].queryset = record.user.category_set
 
-		# delete previous history if just comment is changed
-		prev = record.history_set.latest('updated_at')
-		if prev.status == self.cleaned_data['status'] and not prev.comment.strip():
-			prev.delete()
-
-		history = record.user.history_set.create(
-			work = record.work,
-			user = record.user,
-			status = record.status,
-			comment = self.cleaned_data['comment'],
-			updated_at = record.updated_at
-		)
+	def save(self):
+		self.record.status = self.cleaned_data['status']
+		self.record.category = self.cleaned_data['category']
+		history = self.record.save(comment=self.cleaned_data['comment'])
 
 		if self.cleaned_data['me2day_send']:
 			import connect.me2day
@@ -39,13 +31,18 @@ class RecordUpdateForm(forms.Form):
 class RecordAddForm(RecordUpdateForm):
 	work_title = forms.CharField(label=u'작품 제목', max_length=100)
 
-	def save(self, user):
+	def __init__(self, user, data=None, initial={}):
+		super(RecordAddForm, self).__init__(Record(user=user),
+				data=data, initial=initial)
+		self.user = user
+
+	def save(self):
 		work, created = Work.objects.get_or_create(title=self.cleaned_data['work_title'])
 		try:
-			record = user.record_set.get(work=work)
+			self.record = self.user.record_set.get(work=work)
 		except:
-			record = Record(user=user, work=work)
-		RecordUpdateForm.save(self, record)
+			self.record = Record(user=self.user, work=work)
+		RecordUpdateForm.save(self)
 
 class SimpleRecordForm(forms.Form):
 	work_title = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'autocomplete', 'size': 30}))
