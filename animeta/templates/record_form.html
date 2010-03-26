@@ -62,10 +62,11 @@
 	<td>
 		{{ form.publish.label_tag }}<br />
 		<span class="description">
+		연동된 서비스: 
 		{% for module, setting in connected_services %}
-			연동된 서비스: {{ module.name }}{% if not forloop.last %}, {% endif %}
+			{{ module.name }}{% if not forloop.last %}, {% endif %}
 		{% empty %}
-			연동된 서비스가 없습니다.
+			없음
 		{% endfor %}
 			<a href="/connect/">설정</a>
 		</span>
