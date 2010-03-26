@@ -51,7 +51,7 @@
 		<span class="description">선택사항입니다.</span>
 	</td>
 </tr>
-<tr>
+<tr id="services">
 	<th>
 	{% if not connected_services %}
 		<input type="checkbox" disabled="disabled" />
@@ -59,7 +59,17 @@
 		{{ form.publish }}
 	{% endif %}
 	</th>
-	<td>{{ form.publish.label_tag }} (<a href="/connect/">설정</a>)</td>
+	<td>
+		{{ form.publish.label_tag }}<br />
+		<span class="description">
+		{% for module, setting in connected_services %}
+			연동된 서비스: {{ module.name }}{% if not forloop.last %}, {% endif %}
+		{% empty %}
+			연동된 서비스가 없습니다.
+		{% endfor %}
+			<a href="/connect/">설정</a>
+		</span>
+	</td>
 </tr>
 <tr>
 	<th></th>
