@@ -7,7 +7,7 @@ from work.models import Work
 from record.models import Record, History, Category
 from record.forms import RecordAddForm, RecordUpdateForm
 from django.shortcuts import get_object_or_404
-from connect.models import get_connected_services
+from connect import get_connected_services
 
 def _return_to_user_page(request):
 	return HttpResponseRedirect(request.user.get_absolute_url())

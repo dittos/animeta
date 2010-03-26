@@ -1,3 +1,13 @@
+def get_connected_services(user):
+	import me2day
+
+	services = []
+	for service in (me2day, ):
+		setting = service.get_setting(user)
+		if setting:
+			services.append((service, setting))
+	return services
+
 def post_history(history):
 	from record.templatetags.status import status_text
 	kwargs = {
@@ -7,5 +17,5 @@ def post_history(history):
 		'comment': history.comment,
 	}
 
-	import me2day
-	me2day.post_history(me2day.get_setting(history.user), **kwargs)
+	for service, setting in get_connected_services(history.user):
+		service.post_history(setting, **kwargs)
