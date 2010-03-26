@@ -1,3 +1,5 @@
+name = 'me2day'
+
 import urllib
 import urllib2
 from django.utils import simplejson as json

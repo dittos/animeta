@@ -38,21 +38,22 @@ def me2day_disconnect(request):
 def twitter(request):
 	try:
 		setting = TwitterSetting.objects.get(user=request.user)
-		return direct_to_template('connect/twitter.html')
+		return direct_to_template(request, 'connect/twitter.html')
 	except TwitterSetting.DoesNotExist:
 		from django.conf import settings
 		auth = tweepy.OAuthHandler(settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET)
 
-		if request.method == 'POST':
+		if 'request_token' in request.session:
 			token = request.session['request_token']
 			del request.session['request_token']
 			auth.set_request_token(*token)
 			auth.get_access_token()
 
-			TwitterSetting(user=request.user, key=auth.access_token.key,
-					secret=auth.access_token.secret).save()
+			TwitterSetting.objects.create(
+				user=request.user, key=auth.access_token.key,
+				secret=auth.access_token.secret)
 			return HttpResponseRedirect('/connect/twitter/')
 		else:
 			redirect_url = auth.get_authorization_url()
-			request.session['request_token'] = (auth.request_token.key, auth.request_token.secret
+			request.session['request_token'] = (auth.request_token.key, auth.request_token.secret)
 			return HttpResponseRedirect(redirect_url)

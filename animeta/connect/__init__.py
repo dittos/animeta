@@ -1,8 +1,8 @@
 def get_connected_services(user):
-	import me2day
+	import me2day, twitter
 
 	services = []
-	for service in (me2day, ):
+	for service in (me2day, twitter):
 		setting = service.get_setting(user)
 		if setting:
 			services.append((service, setting))
