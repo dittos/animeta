@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
-from connect.models import Me2Setting
+from connect.models import Me2Setting, TwitterSetting
 from django.contrib.auth.decorators import login_required
 import me2day as me2
+import tweepy
 
 @login_required
 def me2day(request):
@@ -32,3 +33,26 @@ def me2day_disconnect(request):
 		setting.delete()
 		request.user.message_set.create(message='인증 정보를 삭제하였습니다.')
 		return HttpResponseRedirect('/connect/me2day/')
+
+@login_required
+def twitter(request):
+	try:
+		setting = TwitterSetting.objects.get(user=request.user)
+		return direct_to_template('connect/twitter.html')
+	except TwitterSetting.DoesNotExist:
+		from django.conf import settings
+		auth = tweepy.OAuthHandler(settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET)
+
+		if request.method == 'POST':
+			token = request.session['request_token']
+			del request.session['request_token']
+			auth.set_request_token(*token)
+			auth.get_access_token()
+
+			TwitterSetting(user=request.user, key=auth.access_token.key,
+					secret=auth.access_token.secret).save()
+			return HttpResponseRedirect('/connect/twitter/')
+		else:
+			redirect_url = auth.get_authorization_url()
+			request.session['request_token'] = (auth.request_token.key, auth.request_token.secret
+			return HttpResponseRedirect(redirect_url)
