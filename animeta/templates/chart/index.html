@@ -15,7 +15,7 @@
 {% endfor %}
 </ol>
 
-<h2><a href="/charts/users/weekly/">주간 열혈 사용자</a></h2>
+<h2><a href="/charts/users/weekly/">주간 활발한 사용자</a></h2>
 <ol>
 {% for user in weekly_users %}
 	<li><a href="{{ user.get_absolute_url }}">{{ user.username }}</a></li>

@@ -65,8 +65,8 @@ class PopularWorksChart(Chart):
 		lst.sort(reverse=True, key=lambda w: w.record__count)
 		return lst[0].title
 
-class EnthusiastsChart(Chart):
-	title = u'열혈 사용자'
+class ActiveUsersChart(Chart):
+	title = u'활발한 사용자'
 	def get_query_set(self):
 		qs = User.objects
 		if self.range:

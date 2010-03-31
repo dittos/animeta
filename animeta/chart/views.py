@@ -1,12 +1,12 @@
 from django.views.generic.simple import direct_to_template
-from chart.models import during, PopularWorksChart, EnthusiastsChart
+from chart.models import during, PopularWorksChart, ActiveUsersChart
 from record.models import History
 from django.contrib.auth.models import User
 
 def recent(request):
 	return direct_to_template(request, 'chart/index.html', {
 		'weekly_works': PopularWorksChart(during(weeks=1), 5),
-		'weekly_users': EnthusiastsChart(during(weeks=1), 5),
+		'weekly_users': ActiveUsersChart(during(weeks=1), 5),
 		'newbies': User.objects.filter(date_joined__range=during(days=1)),
 		'timeline': History.objects.exclude(comment='').all()[:10]
 	})
