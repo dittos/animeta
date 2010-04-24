@@ -27,6 +27,7 @@ def me2day(request):
 			
 	return direct_to_template(request, 'connect/me2day.html', {'status': status, 'setting': setting})
 
+@login_required
 def me2day_disconnect(request):
 	if request.method == 'POST':
 		setting = Me2Setting.objects.get(user=request.user)
@@ -57,3 +58,11 @@ def twitter(request):
 			redirect_url = auth.get_authorization_url()
 			request.session['request_token'] = (auth.request_token.key, auth.request_token.secret)
 			return HttpResponseRedirect(redirect_url)
+
+@login_required
+def twitter_disconnect(request):
+	if request.method == 'POST':
+		setting = TwitterSetting.objects.get(user=request.user)
+		setting.delete()
+		request.user.message_set.create(message='인증 정보를 삭제하였습니다.')
+		return HttpResponseRedirect('/connect/')
