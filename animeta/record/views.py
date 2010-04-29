@@ -130,7 +130,7 @@ def history_detail(request, username, id):
 	user = get_object_or_404(User, username=username)
 	history = user.history_set.get(id=id)
 	return list_detail.object_list(request,
-		queryset = History.objects.filter(work__normalized_title=history.work.normalized_title, status=history.status).exclude(user=user),
+		queryset = History.objects.filter(work=history.work, status=history.status).exclude(user=user),
 		paginate_by = 5,
 		template_name = 'record/history_detail.html',
 		extra_context = {'owner': user, 'history': history}

@@ -19,7 +19,7 @@ def detail(request, title):
 		record = None
 
 	N = 6
-	history = work.normalized_set(History).all().select_related('user')
+	history = work.history_set.all().select_related('user')
 	comments = list(history.exclude(comment='')[:N])
 	if len(comments) < N:
 		comments += list(history.filter(comment='')[:N-len(comments)])
@@ -28,7 +28,7 @@ def detail(request, title):
 	return direct_to_template(request, "work/work_detail.html", {
 		'work': work,
 		'record': record,
-		'records': work.normalized_set(Record),
+		'records': work.record_set,
 		'comments': comments,
 		'daum_api_key': settings.DAUM_API_KEY
 	})
@@ -46,16 +46,15 @@ def video(request, title, provider, id):
 	return direct_to_template(request, "work/video.html", {
 		'work': work,
 		'record': record,
-		'records': work.normalized_set(Record),
+		'records': work.record_set,
 		'video_id': id
 	})
 
 def search(request):
 	from django.views.generic import list_detail
-	from work.models import normalize_title
 
 	keyword = request.GET['keyword']
 	return list_detail.object_list(request,
-		queryset = Work.objects.filter(normalized_title__contains=normalize_title(keyword)),
+		queryset = Work.objects.filter(title__contains=keyword),
 		extra_context = {'keyword': keyword},
 	)
