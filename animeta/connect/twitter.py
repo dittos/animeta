@@ -21,6 +21,9 @@ def post_history(setting, title, status, url, comment):
 		body = u'%s %s' % (title, status)
 		if comment:
 			body += u': ' + comment
+		limit = 140 - (len(url) + 1)
+		if len(body) > limit:
+			body = body[:limit-1] + u'\u2026'
 		body += ' ' + url
 		api.update_status(body)
 		return True
