@@ -26,11 +26,16 @@
 {% else %}
 전체
 {% endif %}</p>
-{% cache 7200 chart cache_key %}
-<ol>
-{% for item in chart %}
-	<li><a href="{{ item.get_absolute_url }}">{{ item }}</a> ({{ item.factor }})</li>
+{#{% cache 7200 chart cache_key %}#}
+<table id="chart">
+{% for rank, item in chart %}
+<tr>
+	<td class="rank">{{ rank }}</td>
+	<td class="name"><a href="{{ item.get_absolute_url }}">{{ item }}</a></td>
+	<td class="bar"><div style="width: {{ item.factor_percent }}%"></div></td>
+	<td class="factor">{{ item.factor }}</td>
+</tr>
 {% endfor %}
-</ol>
-{% endcache %}
+</table>
+{#{% endcache %}#}
 {% endblock %}

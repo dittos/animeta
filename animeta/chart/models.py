@@ -5,6 +5,26 @@ from django.contrib.auth.models import User
 from work.models import Work
 from django.db.models import Count
 import datetime
+import itertools
+
+class Ranker(object):
+	def __init__(self, iterable):
+		self.iterable = iterable
+		self.rank = 0
+		self.prev = -1
+		self.ptr = 1
+		self.max = None
+
+	def next(self):
+		item = self.iterable.next()
+		if self.prev != item.factor:
+			self.rank = self.ptr
+		self.prev = item.factor
+		self.ptr += 1
+		if not self.max:
+			self.max = item.factor
+		item.factor_percent = float(item.factor) / self.max * 100.0
+		return (self.rank, item)
 
 class Chart(object):
 	item_class = lambda self, o, c: o
@@ -23,7 +43,7 @@ class Chart(object):
 		return self.range[1]
 
 	def __iter__(self):
-		return self
+		return Ranker(self)
 
 	def next(self):
 		if not self.queryset:
@@ -54,7 +74,7 @@ class PopularWorksChart(Chart):
 		qs = Work.objects
 		if self.range:
 			qs = qs.filter(record__updated_at__range=self.range)
-		return qs.exclude(title='').values('title').annotate(factor=Count('record')).filter(factor__gt=1).order_by('-factor')
+		return qs.exclude(title='').values('title').annotate(factor=Count('record')).filter(factor__gt=1).order_by('-factor', 'title')
 
 class EnthusiastsChart(Chart):
 	title = u'열혈 사용자'
@@ -62,7 +82,7 @@ class EnthusiastsChart(Chart):
 		qs = User.objects
 		if self.range:
 			qs = qs.filter(history__updated_at__range=self.range)
-		return qs.annotate(factor=Count('history')).exclude(factor=0).order_by('-factor')
+		return qs.annotate(factor=Count('history')).exclude(factor=0).order_by('-factor', 'username')
 
 def during(**kwargs):
 	now = datetime.datetime.now()

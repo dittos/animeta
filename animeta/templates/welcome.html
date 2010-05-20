@@ -21,8 +21,8 @@
 
 <h2>주간 인기 작품</h2>
 <ol>
-{% for work in weekly_works %}
-	<li><a href="{{ work.get_absolute_url }}">{{ work }}</a></li>
+{% for rank, work in weekly_works %}
+	<li>{{ rank }}. <a href="{{ work.get_absolute_url }}">{{ work }}</a></li>
 {% endfor %}
 </ol>
 </div>
