@@ -11,14 +11,14 @@
 <h2><a href="/charts/works/weekly/">주간 인기 작품</a></h2>
 <ol>
 {% for rank, work in weekly_works %}
-	<li>{{ rank }}. <a href="{{ work.get_absolute_url }}">{{ work }}</a> ({{ work.factor }})</li>
+	<li><span class="rank">{{ rank }}위</span> <a href="{{ work.get_absolute_url }}">{{ work }}</a></li>
 {% endfor %}
 </ol>
 
 <h2><a href="/charts/users/weekly/">주간 열혈 사용자</a></h2>
 <ol>
 {% for rank, user in weekly_users %}
-	<li>{{ rank }}. <a href="{{ user.get_absolute_url }}">{{ user.username }}</a></li>
+	<li><span class="rank">{{ rank }}위</span> <a href="{{ user.get_absolute_url }}">{{ user.username }}</a></li>
 {% endfor %}
 </ol>
 
