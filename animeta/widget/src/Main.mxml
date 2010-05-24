@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="initApp()" backgroundColor="#f8f8f8"
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="initApp()"
 	paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
 	<mx:Script>
 		<![CDATA[
@@ -8,6 +8,7 @@
 			import mx.controls.LinkButton;
 			import mx.events.ResizeEvent;
 			import mx.rpc.events.ResultEvent;
+			import mx.styles.StyleManager;
 			
 			[Bindable]
 			public var username:String;
@@ -21,6 +22,17 @@
 				resizeHandler(null);
 				this.addEventListener(Event.RESIZE, resizeHandler);
 				service.send();
+				applySkin();
+			}
+			
+			private function applySkin():void {
+				if (!this.parameters.skin) return;
+				StyleManager.getStyleDeclaration("Application").setStyle("backgroundColor", this.parameters.bg);
+				StyleManager.getStyleDeclaration("LinkButton").setStyle("color", this.parameters.buttonText);
+				StyleManager.getStyleDeclaration("LinkButton").setStyle("textRollOverColor", this.parameters.buttonText);
+				StyleManager.getStyleDeclaration(".list").setStyle("alternatingItemColors", [this.parameters.listBgOdd, this.parameters.listBgEven]);
+				StyleManager.getStyleDeclaration(".title").setStyle("color", this.parameters.title);
+				StyleManager.getStyleDeclaration(".summary").setStyle("color", this.parameters.title);
 			}
 			
 			private function resizeHandler(event:ResizeEvent):void {
@@ -46,6 +58,10 @@
 				font-family: "나눔고딕", "맑은 고딕", Gulim, sans-serif;
 			}
 			
+			Application {
+				background-color: #f8f8f8;
+			}
+			
 			.title {
 				font-size: 11px;
 				font-weight: bold;
@@ -54,9 +70,9 @@
 				text-align: left;
 			}
 			
-			.date {
-				color: #999;
-				font-size: 11px;
+			.list {
+				alternatingItemColors: #ffffff, #f8f8f8;
+				useRollOver: false;
 			}
 			
 			.summary {
@@ -72,6 +88,7 @@
 				font-size: 11px;
 				font-weight: normal;
 				color: #666666;
+				textRollOverColor: #666666;
 				skin: ClassReference(null);
 				padding-left: 3px;
 			}
@@ -84,7 +101,7 @@
 	<mx:VBox width="100%">
 		<mx:LinkButton label="{username}님의 작품 감상 기록" fontWeight="bold" height="25" paddingTop="5" click="go('http://animeta.net/users/'+username+'/')" id="title" />
 		
-		<mx:List id="grid" width="100%" alternatingItemColors="['#FFFFFF','#F8F8F8']" variableRowHeight="true" wordWrap="true" paddingBottom="1" paddingLeft="2" paddingTop="1">
+		<mx:List id="grid" styleName="list" width="100%" variableRowHeight="true" wordWrap="true" paddingBottom="1" paddingLeft="2" paddingTop="1" selectable="false">
 			<mx:itemRenderer>
 				<mx:Component>
 					<mx:VBox width="100%" dataChange="validateNow()" horizontalScrollPolicy="off" verticalScrollPolicy="off">
