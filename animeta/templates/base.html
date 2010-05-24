@@ -3,8 +3,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<title>{% block title %}애니메타{% endblock %}</title>
-	<link rel="stylesheet" href="/static/style.css" type="text/css" />
+	<link rel="stylesheet" href="/static/style.css?20100520.2" type="text/css" />
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+	<script type="text/javascript">
+	var _gaq = [['_setAccount', 'UA-7500828-2'], ['_trackPageview']];
+	(function() {
+	 var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	})();
+	</script>
 	{% block head-extra %}{% endblock %}
 </head>
 <body>
@@ -64,15 +72,5 @@ $('#close-messages a').click(function(event) {
 	<a href="http://animeta.tistory.com/">공식 블로그</a> /
 	<a href="http://animeta.tistory.com/guestbook">버그 신고 및 기능 건의</a>
 </p>
-
-<script type="text/javascript"> 
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script> 
-<script type="text/javascript"> 
-try {
-	var pageTracker = _gat._getTracker("UA-7500828-2");
-	pageTracker._trackPageview();
-} catch(err) {}</script> 
 </body>
 </html>

@@ -47,13 +47,20 @@ def _get_record(request, id):
 @login_required
 def update(request, id):
 	record = _get_record(request, id)
-	return save(request,
-		RecordUpdateForm, record, {'status': record.status, 'category': record.category.id if record.category else None},
-		template_name = 'record/update_record.html',
-		extra_context = {
-			'record': record, 'work': record.work,
-			'history_list': request.user.history_set.filter(work=record.work)
-		})
+	if 'work_title' in request.POST:
+		work, _ = Work.objects.get_or_create(title=request.POST['work_title'])
+		record.history_set.update(work=work)
+		record.work = work
+		record.save()
+		return _return_to_user_page(request)
+	else:
+		return save(request,
+			RecordUpdateForm, record, {'status': record.status, 'category': record.category.id if record.category else None},
+			template_name = 'record/update_record.html',
+			extra_context = {
+				'record': record, 'work': record.work,
+				'history_list': request.user.history_set.filter(work=record.work)
+			})
 
 @login_required
 def delete(request, id):
@@ -130,7 +137,7 @@ def history_detail(request, username, id):
 	user = get_object_or_404(User, username=username)
 	history = user.history_set.get(id=id)
 	return list_detail.object_list(request,
-		queryset = History.objects.filter(work__normalized_title=history.work.normalized_title, status=history.status).exclude(user=user),
+		queryset = History.objects.filter(work=history.work, status=history.status).exclude(user=user),
 		paginate_by = 5,
 		template_name = 'record/history_detail.html',
 		extra_context = {'owner': user, 'history': history}
