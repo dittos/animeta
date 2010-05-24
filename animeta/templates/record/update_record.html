@@ -3,6 +3,11 @@
 {% load status %}
 
 {% block content %}
+<h2>제목 표기 바꾸기</h2>
+<form method="post" action="">
+<p>&rarr; <input type="text" name="work_title" value="{{ work.title }}" /> <input type="submit" value="바꾸기" /></p>
+</form>
+
 <h2>기록 추가</h2>
 {% include "record_form.html" %}
 
