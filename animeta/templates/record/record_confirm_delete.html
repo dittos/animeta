@@ -3,17 +3,7 @@
 {% block content %}
 <form method="post" action="" id="delete-record">
 <h2>기록 삭제</h2>
-<p>'{{ record.work.title }}'에 대한 기록을 삭제합니다. </p>
-<table>
-	<tr>
-		<th><input type="radio" name="delete_history" value="1" id="delete_history" checked="checked" /></th>
-		<td><label for="delete_history">기록 내역까지 삭제</label></td>
-	</tr>
-	<tr>
-		<th><input type="radio" name="delete_history" value="0" id="keep_history" /></th>
-		<td><label for="keep_history">기록 내역은 그대로 두고 작품 목록에서만 삭제</label></td>
-	</tr>
-</table>
+<p>'{{ record.work.title }}'에 대한 기록을 모두 삭제합니다. </p>
 <p>주의: <strong>일단 삭제하면 되돌릴 수 없으니</strong> 신중하게 생각하세요.</p>
 <p><input type="submit" value="확인" /></p>
 </form>

@@ -66,8 +66,7 @@ def update(request, id):
 def delete(request, id):
 	record = _get_record(request, id)
 	if request.method == 'POST':
-		if request.POST['delete_history'] == '1':
-			request.user.history_set.filter(work=record.work).delete()
+		record.history_set.delete()
 		record.delete()
 		return _return_to_user_page(request)
 	else:
