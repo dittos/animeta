@@ -22,6 +22,8 @@ TIME_ZONE = 'Asia/Seoul'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'ko-kr'
 
+DATE_FORMAT = 'Y-m-d'
+
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not

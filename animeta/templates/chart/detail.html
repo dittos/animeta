@@ -11,7 +11,7 @@
 	<a href="/charts/works/monthly/">월간</a>,
 	<a href="/charts/works/weekly/">주간</a>
 </p>
-<p class="chart-nav">열혈 사용자:
+<p class="chart-nav">활발한 사용자:
 	<a href="/charts/users/overall/">전체</a>,
 	<a href="/charts/users/monthly/">월간</a>,
 	<a href="/charts/users/weekly/">주간</a>
@@ -22,7 +22,7 @@
 <h2>{{ title }}</h2>
 <p>기간:
 {% if chart.range %}
-{{ chart.start }} &ndash; {{ chart.end }}
+{{ chart.start|date }} &ndash; {{ chart.end|date }}
 {% else %}
 전체
 {% endif %}</p>
