@@ -1,4 +1,5 @@
 <form method="post" action="/login/" id="login-form">
+{% csrf_token %}
 {% if next %}
 <input type="hidden" name="next" value="{{ next }}" />
 {% endif %}

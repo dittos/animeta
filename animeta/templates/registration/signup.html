@@ -12,6 +12,7 @@
 {% endif %}
 
 <form method="post" action="/signup/">
+{% csrf_token %}
 <table>
 <tr>
 	<th><label for="info_username">아이디:</label></th>

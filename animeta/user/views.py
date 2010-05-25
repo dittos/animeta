@@ -2,7 +2,9 @@ from django.shortcuts import get_object_or_404
 from django.views.generic.simple import direct_to_template
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
+from django.views.decorators.csrf import csrf_protect
 
+@csrf_protect
 def welcome(request):
 	if request.user.is_authenticated():
 		return HttpResponseRedirect('/recent/')
@@ -12,6 +14,7 @@ def welcome(request):
 			'weekly_works': PopularWorksChart(during(weeks=1), 5)
 		})
 
+@csrf_protect
 def login(request):
 	import django.contrib.auth.views
 	if request.POST.has_key('remember'):
@@ -20,6 +23,7 @@ def login(request):
 		request.session.set_expiry(0)
 	return django.contrib.auth.views.login(request)
 
+@csrf_protect
 def signup(request):
 	from django.contrib.auth.forms import UserCreationForm
 	if request.method == 'POST':
