@@ -27,8 +27,6 @@ class Ranker(object):
 		return (self.rank, item)
 
 class Chart(object):
-	item_class = lambda self, o, c: o
-
 	def __init__(self, range = None, limit=None):
 		self.range = range
 		self.limit = limit
@@ -50,31 +48,18 @@ class Chart(object):
 			self.queryset = self.get_query_set()[:self.limit]
 			self.iter = iter(self.queryset)
 
-		return self.item_class(self.iter.next(), self)
+		return self.iter.next()
 
 	def get_query_set(self):
 		raise NotImplementedError
 
-class WorkItem(object):
-	def __init__(self, row, chart):
-		self.title = row['title']
-		self.factor = row['factor']
-		self.chart = chart
-
-	def __unicode__(self):
-		return self.title
-
-	@models.permalink
-	def get_absolute_url(self):
-		return ('work.views.detail', (), {'title': unicode(self)})
-
 class PopularWorksChart(Chart):
-	item_class = WorkItem
+	title = u'인기 작품'
 	def get_query_set(self):
 		qs = Work.objects
 		if self.range:
 			qs = qs.filter(record__updated_at__range=self.range)
-		return qs.exclude(title='').values('title').annotate(factor=Count('record')).filter(factor__gt=1).order_by('-factor', 'title')
+		return qs.exclude(title='').annotate(factor=Count('record')).exclude(factor=0).order_by('-factor', 'title')
 
 class ActiveUsersChart(Chart):
 	title = u'활발한 사용자'
