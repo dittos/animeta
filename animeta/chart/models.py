@@ -6,10 +6,30 @@ from work.models import Work
 from django.db.models import Count
 import datetime
 import itertools
+import collections
 
-class Ranker(object):
+class Ranker(collections.Iterator):
+	"""
+	Tests for Ranker object.
+
+	A temporary class for the test.
+
+	>>> class f(object):
+	...		def __init__(self, factor):
+	...			self.factor = factor
+	...		def __repr__(self):
+	...			return '%d (%d%%)' % (self.factor, self.factor_percent)
+
+	>>> from models import Ranker
+	>>> items = f(100), f(100), f(50), f(25), f(25)
+	>>> ranker = Ranker(items)
+	>>> tuple(ranker)
+	((1, 100 (100%)), (1, 100 (100%)), (3, 50 (50%)),
+	 (4, 25 (25%)), (4, 25 (25%)))
+	"""
+
 	def __init__(self, iterable):
-		self.iterable = iterable
+		self.iterable = iter(iterable)
 		self.rank = 0
 		self.prev = -1
 		self.ptr = 1
@@ -26,7 +46,7 @@ class Ranker(object):
 		item.factor_percent = float(item.factor) / self.max * 100.0
 		return (self.rank, item)
 
-class Chart(object):
+class Chart(collections.Iterable):
 	def __init__(self, range = None, limit=None):
 		self.range = range
 		self.limit = limit
@@ -41,14 +61,10 @@ class Chart(object):
 		return self.range[1]
 
 	def __iter__(self):
-		return Ranker(self)
-
-	def next(self):
 		if not self.queryset:
 			self.queryset = self.get_query_set()[:self.limit]
-			self.iter = iter(self.queryset)
 
-		return self.iter.next()
+		return Ranker(self.queryset)
 
 	def get_query_set(self):
 		raise NotImplementedError
