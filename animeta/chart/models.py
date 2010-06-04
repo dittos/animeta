@@ -10,9 +10,8 @@ import collections
 
 class Ranker(collections.Iterator):
 	"""
-	Tests for Ranker object.
-
-	A temporary class for the test.
+	Ranker 객체는 iterable을 받아서, 각 항목의 factor 속성을 가지고 순위를 매겨서 (순위, 항목) 순서쌍을 돌려줍니다. 또한, 항목에 factor_percent 속성 (최대값과 factor 비의 백분율)을 덧붙입니다.
+	이때 iterable은 factor 속성에 대해 내림차순으로 정렬된 순서로 값을 돌려줘야 합니다.
 
 	>>> class f(object):
 	...		def __init__(self, factor):
