@@ -12,7 +12,7 @@ class RecordUpdateForm(forms.Form):
 	category = forms.ModelChoiceField(label=u'분류', empty_label=u'미분류',
 			queryset=Category.objects.none(), required=False)
 	publish = forms.BooleanField(label=u'외부 서비스에 보내기',
-			required=False, initial=True)
+			required=False, initial=False)
 
 	def __init__(self, record, data=None, initial={}):
 		super(RecordUpdateForm, self).__init__(data, initial=initial)
