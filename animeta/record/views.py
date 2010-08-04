@@ -134,7 +134,7 @@ def shortcut(request, id):
 def history_detail(request, username, id):
 	from django.views.generic import list_detail
 	user = get_object_or_404(User, username=username)
-	history = user.history_set.get(id=id)
+	history = get_object_or_404(user.history_set, id=id)
 	return list_detail.object_list(request,
 		queryset = History.objects.filter(work=history.work, status=history.status).exclude(user=user),
 		paginate_by = 5,

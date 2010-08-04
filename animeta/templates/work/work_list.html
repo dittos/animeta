@@ -12,6 +12,7 @@
 	<input type="submit" value="작품 찾기" />
 </form>
 
+{% if keyword %}
 <ul id="search-result">
 {% for work in object_list %}
 	<li>
@@ -25,4 +26,5 @@
 	</li>
 {% endfor %}
 </ul>
+{% endif %}
 {% endblock %}

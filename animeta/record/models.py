@@ -34,8 +34,8 @@ class Record(models.Model):
 	def history_set(self):
 		return self.user.history_set.filter(work=self.work)
 
-	def save(self, comment = '', force_insert=False, force_update=False):
-		super(Record, self).save(force_insert=force_insert, force_update=force_update)
+	def save(self, comment = '', *args, **kwargs):
+		super(Record, self).save(*args, **kwargs)
 
 		# delete previous history if just comment is changed
 		try:
