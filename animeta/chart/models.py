@@ -61,7 +61,7 @@ class Chart(object):
 
 	def __iter__(self):
 		if not self.queryset:
-			self.queryset = self.get_query_set()[:self.limit].filter(factor__gt=1)
+			self.queryset = self.get_query_set().filter(factor__gt=1)[:self.limit]
 
 		return Ranker(self.queryset)
 
