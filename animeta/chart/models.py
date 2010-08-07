@@ -8,42 +8,24 @@ import datetime
 import itertools
 import collections
 
-class Ranker(object):
-	"""
-	Ranker 객체는 iterable을 받아서, 각 항목의 factor 속성을 가지고 순위를 매겨서 (순위, 항목) 순서쌍을 돌려줍니다. 또한, 항목에 factor_percent 속성 (최대값과 factor 비의 백분율)을 덧붙입니다.
-	이때 iterable은 factor 속성에 대해 내림차순으로 정렬된 순서로 값을 돌려줘야 합니다.
+def rank(iterable):
+	rank = 0
+	prev = -1
+	ptr = 1
+	max = None
 
-	>>> class f(object):
-	...		def __init__(self, factor):
-	...			self.factor = factor
-	...		def __repr__(self):
-	...			return '%d (%d%%)' % (self.factor, self.factor_percent)
-
-	>>> from models import Ranker
-	>>> items = f(100), f(100), f(50), f(25), f(25)
-	>>> ranker = Ranker(items)
-	>>> tuple(ranker)
-	((1, 100 (100%)), (1, 100 (100%)), (3, 50 (50%)),
-	 (4, 25 (25%)), (4, 25 (25%)))
-	"""
-
-	def __init__(self, iterable):
-		self.iterable = iter(iterable)
-		self.rank = 0
-		self.prev = -1
-		self.ptr = 1
-		self.max = None
-
-	def next(self):
-		item = self.iterable.next()
-		if self.prev != item.factor:
-			self.rank = self.ptr
-		self.prev = item.factor
-		self.ptr += 1
-		if not self.max:
-			self.max = item.factor
-		item.factor_percent = float(item.factor) / self.max * 100.0
-		return (self.rank, item)
+	for object in iter(iterable):
+		if prev != object.factor:
+			rank = ptr
+		prev = object.factor
+		ptr += 1
+		max = max or object.factor
+		yield {
+			'rank': rank,
+			'object': object,
+			'factor': object.factor,
+			'factor_percent': float(object.factor) / max * 100.0
+		}
 
 class Chart(object):
 	def __init__(self, range = None, limit=None):
@@ -63,10 +45,33 @@ class Chart(object):
 		if not self.queryset:
 			self.queryset = self.get_query_set().filter(factor__gt=1)[:self.limit]
 
-		return Ranker(self.queryset)
+		return rank(self.queryset)
 
 	def get_query_set(self):
 		raise NotImplementedError
+
+def compare_charts(a, b):
+	return DifferenceChart(a, b)
+
+class DifferenceChart(Chart):
+	def __init__(self, chart, past_chart):
+		self.chart = chart
+		self.past_chart = past_chart
+		super(DifferenceChart, self).__init__(chart.range, chart.limit)
+
+	def __iter__(self):
+		past_chart_dict = {}
+		for item in self.past_chart:
+			past_chart_dict[item['object'].id] = item['rank']
+		
+		for item in self.chart:
+			if item['object'].id not in past_chart_dict:
+				item['diff'] = None
+			else:
+				diff = past_chart_dict[item['object'].id] - item['rank']
+				item['diff'] = abs(diff)
+				item['sign'] = cmp(diff, 0)
+			yield item
 
 class PopularWorksChart(Chart):
 	title = u'인기 작품'
@@ -99,7 +104,15 @@ def weekly():
 	start = end - datetime.timedelta(days=6)
 	return (start, end)
 
-def monthly():
+def past_week():
+	start, end = weekly()
+	week_delta = datetime.timedelta(weeks=1)
+	return (start - week_delta, end - week_delta)
+
+def monthly(past=1):
 	today = datetime.date.today()
-	return (datetime.date(today.year, today.month - 1, 1),
-			datetime.date(today.year, today.month, 1) - datetime.timedelta(days=1))
+	return (datetime.date(today.year, today.month - past, 1),
+			datetime.date(today.year, today.month - past+1, 1) - datetime.timedelta(days=1))
+
+def past_month():
+	return monthly(past=2)

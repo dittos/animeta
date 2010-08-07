@@ -50,13 +50,16 @@ ol.chart, #charts ol { margin-left: 0.5em; padding: 0; list-style: none; }
 #newbies { list-style: none; margin-left: 1em; padding: 0; }
 #chart { border-collapse: collapse; background-color: #f8f8f8; }
 #chart td { border-bottom: 1px solid #ccc; padding: 0.5em; }
-.rank { font-weight: bold; color: #666; font-size: 0.9em; padding-right: 0.5em; }
+.rank { font-weight: bold; color: #666; padding-right: 0.5em; }
 #chart .rank { text-align: right; }
+#chart .diff { font-size: 0.8em; color: #777; }
 #chart .name { width: 15em; }
 #chart .name a { text-decoration: none; }
 #chart .bar { width: 300px; }
 #chart .bar div { background-color: #999; height: 0.5em; }
 #chart .factor { font-size: 0.8em; color: #999; width: 3em; }
+.diff .up { color: red; }
+.diff .down { color: blue; }
 
 /* Login Form (Standalone) */
 .remember th { padding-right: 0 !important; }

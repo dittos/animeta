@@ -1,7 +1,7 @@
 import datetime
 
 from django.views.generic.simple import direct_to_template
-from chart.models import weekly, PopularWorksChart, ActiveUsersChart
+from chart.models import weekly, compare_charts, PopularWorksChart, ActiveUsersChart
 from record.models import History
 from django.contrib.auth.models import User
 
@@ -13,11 +13,14 @@ def recent(request):
 		'timeline': History.objects.exclude(comment='').all()[:10]
 	})
 
-def detail(request, chart_class, range = None, title = ''):
+def detail(request, chart_class, range=None, past_range=None, title=''):
 	chart = chart_class(range)
+	if past_range:
+		chart = compare_charts(chart, chart_class(past_range))
 	return direct_to_template(request, 'chart/detail.html', {
 		'title': title,
 		'chart': chart,
 		'cache_key': str(chart_class) + '_' + repr(range),
-		'range': range
+		'range': range,
+		'past_range': past_range,
 	})

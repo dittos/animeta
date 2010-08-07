@@ -28,10 +28,18 @@
 {% endif %}</p>
 {% cache 7200 chart cache_key %}
 <table id="chart">
-{% for rank, item in chart %}
+{% for item in chart %}
 <tr>
-	<td class="rank">{{ rank }}</td>
-	<td class="name"><a href="{{ item.get_absolute_url }}">{{ item }}</a></td>
+	<td class="rank">{{ item.rank }}</td>
+{% if past_range %}
+	<td class="diff">
+	{% if item.diff %}
+	{% if item.sign == 0 %}-
+	{% else %}{{ item.diff }}{% if item.sign == -1 %}<span class="down">&darr;</span>{% else %}<span class="up">&uarr;</span>{% endif %}
+	{% endif %}{% endif %}
+	</td>
+{% endif %}
+	<td class="name"><a href="{{ item.object.get_absolute_url }}">{{ item.object }}</a></td>
 	<td class="bar"><div style="width: {{ item.factor_percent }}%"></div></td>
 	<td class="factor">{{ item.factor }}</td>
 </tr>

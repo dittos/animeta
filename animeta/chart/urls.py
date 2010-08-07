@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.conf.urls.defaults import *
-from chart.models import weekly, monthly, PopularWorksChart, ActiveUsersChart
+from chart.models import *
 
 chart_types = (
 	('works', PopularWorksChart),
@@ -9,9 +9,9 @@ chart_types = (
 )
 
 ranges = (
-	('overall', '', None),
-	('weekly', u'주간', weekly()),
-	('monthly', u'월간', monthly()),
+	('overall', '', None, None),
+	('weekly', u'주간', weekly(), past_week()),
+	('monthly', u'월간', monthly(), past_month()),
 )
 
 urlpatterns = patterns('chart.views', *(
@@ -19,7 +19,8 @@ urlpatterns = patterns('chart.views', *(
 		'title': (range_name + u' ' + chart_class.title).strip(),
 		'chart_class': chart_class,
 		'range': range,
+		'past_range': past_range,
 	})
 	for (chart_url, chart_class) in chart_types
-	for (range_url, range_name, range) in ranges
+	for (range_url, range_name, range, past_range) in ranges
 ))
