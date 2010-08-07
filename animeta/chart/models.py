@@ -61,7 +61,7 @@ class Chart(object):
 
 	def __iter__(self):
 		if not self.queryset:
-			self.queryset = self.get_query_set()[:self.limit]
+			self.queryset = self.get_query_set()[:self.limit].filter(factor__gt=1)
 
 		return Ranker(self.queryset)
 
@@ -73,8 +73,11 @@ class PopularWorksChart(Chart):
 	def get_query_set(self):
 		qs = Work.objects
 		if self.range:
-			qs = qs.filter(record__updated_at__range=self.range)
-		return qs.exclude(title='').annotate(factor=Count('record')).exclude(factor=0).order_by('-factor', 'title')
+			qs = qs.filter(history__updated_at__range=self.range)
+			group_by = 'history__user'
+		else:
+			group_by = 'record'
+		return qs.exclude(title='').annotate(factor=Count(group_by, distinct=True)).order_by('-factor', 'title')
 
 class ActiveUsersChart(Chart):
 	title = u'활발한 사용자'
@@ -82,9 +85,21 @@ class ActiveUsersChart(Chart):
 		qs = User.objects
 		if self.range:
 			qs = qs.filter(history__updated_at__range=self.range)
-		return qs.annotate(factor=Count('history')).exclude(factor=0).order_by('-factor', 'username')
+		return qs.annotate(factor=Count('history')).order_by('-factor', 'username')
 
 def during(**kwargs):
 	now = datetime.datetime.now()
 	start = now - datetime.timedelta(**kwargs)
 	return (start, now)
+
+def weekly():
+	today = datetime.date.today()
+	# 오늘이 금요일(weekday=4)이라면, weekday+2일 전은 토요일.
+	end = today - datetime.timedelta(days=today.weekday() + 2)
+	start = end - datetime.timedelta(days=6)
+	return (start, end)
+
+def monthly():
+	today = datetime.date.today()
+	return (datetime.date(today.year, today.month - 1, 1),
+			datetime.date(today.year, today.month, 1) - datetime.timedelta(days=1))
