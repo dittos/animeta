@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.conf.urls.defaults import *
-from chart.models import during, PopularWorksChart, ActiveUsersChart
+from chart.models import weekly, monthly, PopularWorksChart, ActiveUsersChart
 
 chart_types = (
 	('works', PopularWorksChart),
@@ -10,8 +10,8 @@ chart_types = (
 
 ranges = (
 	('overall', '', None),
-	('weekly', u'주간', during(weeks=1)),
-	('monthly', u'월간', during(days=30)),
+	('weekly', u'주간', weekly()),
+	('monthly', u'월간', monthly()),
 )
 
 urlpatterns = patterns('chart.views', *(
