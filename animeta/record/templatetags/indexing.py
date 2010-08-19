@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
-from django import template
 import re
 import itertools
+from django import template
 
 register = template.Library()
 

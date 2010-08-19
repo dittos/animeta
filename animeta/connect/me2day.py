@@ -1,11 +1,13 @@
 name = 'me2day'
+available = bool(settings.ME2DAY_APP_KEY)
 
 import urllib
 import urllib2
-from django.utils import simplejson as json
 from hashlib import md5
 from random import randrange
 from django.conf import settings
+from django.utils import simplejson as json
+from connect.models import Me2Setting
 
 def generate_auth_key(user_key):
 	nonce = '%x' % randrange(0x10000000, 0xFFFFFFFF)
@@ -22,7 +24,6 @@ def call(method, uid=None, user_key=None, params={}):
 	return json.load(urllib2.urlopen('http://me2day.net/api/%s.json' % method, urllib.urlencode(params)))
 
 def get_setting(user):
-	from connect.models import Me2Setting
 	try:
 		return Me2Setting.objects.get(user=user)
 	except Me2Setting.DoesNotExist:

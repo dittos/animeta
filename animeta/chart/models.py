@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import datetime
+import itertools
 from django.db import models
 from django.contrib.auth.models import User
 from work.models import Work
-from django.db.models import Count
-import datetime
-import itertools
-import collections
 
 def rank(iterable):
 	rank = 0
@@ -82,7 +80,7 @@ class PopularWorksChart(Chart):
 			group_by = 'history__user'
 		else:
 			group_by = 'record'
-		return qs.exclude(title='').annotate(factor=Count(group_by, distinct=True)).order_by('-factor', 'title')
+		return qs.exclude(title='').annotate(factor=models.Count(group_by, distinct=True)).order_by('-factor', 'title')
 
 class ActiveUsersChart(Chart):
 	title = u'활발한 사용자'
@@ -90,7 +88,7 @@ class ActiveUsersChart(Chart):
 		qs = User.objects
 		if self.range:
 			qs = qs.filter(history__updated_at__range=self.range)
-		return qs.annotate(factor=Count('history')).order_by('-factor', 'username')
+		return qs.annotate(factor=models.Count('history')).order_by('-factor', 'username')
 
 def during(**kwargs):
 	now = datetime.datetime.now()
