@@ -3,9 +3,10 @@ def get_connected_services(user):
 
 	services = []
 	for service in (me2day, twitter):
-		setting = service.get_setting(user)
-		if setting:
-			services.append((service, setting))
+		if getattr(service, 'available', True):
+			setting = service.get_setting(user)
+			if setting:
+				services.append((service, setting))
 	return services
 
 def post_history(history):
