@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
-from connect.models import Me2Setting, TwitterSetting
 from django.contrib.auth.decorators import login_required
+from connect.models import Me2Setting, TwitterSetting
+
 import me2day as me2
-import tweepy
+try:
+	import tweepy
+except:
+	pass
 
 @login_required
 def me2day(request):
