@@ -1,11 +1,12 @@
 name = 'me2day'
+
+from django.conf import settings
 available = bool(settings.ME2DAY_APP_KEY)
 
 import urllib
 import urllib2
 from hashlib import md5
 from random import randrange
-from django.conf import settings
 from django.utils import simplejson as json
 from connect.models import Me2Setting
 
