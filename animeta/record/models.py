@@ -19,6 +19,10 @@ class Uncategorized(object):
 class Category(models.Model):
 	user = models.ForeignKey(User)
 	name = models.CharField(max_length=30)
+	position = models.PositiveIntegerField()
+
+	class Meta:
+		ordering = ('position', 'id')
 
 	def __unicode__(self):
 		return self.name

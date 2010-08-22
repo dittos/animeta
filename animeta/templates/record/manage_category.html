@@ -8,7 +8,7 @@
 <p>분류를 삭제해도 그 분류에 들어있던 기록은 사라지지 않고 미분류 상태로 바뀝니다.</p>
 <ul id="categories" class="editing">
 {% for category in categories %}
-	<li>
+	<li id="category-{{ category.id }}">
 		<span class="name">{{ category.name }}</span>
 		<a href="/records/category/{{ category.id }}/rename/" class="rename">이름 바꾸기</a>
 		<a href="/records/category/{{ category.id }}/delete/">삭제</a>
@@ -34,5 +34,15 @@ $('.rename').click(function(event) {
 	event.preventDefault()
 	$(this).parent().load($(this).attr('href'))
 })
+
+$('#categories').sortable({
+	update: function(event, ui) {
+		var order = []
+		$(this).find('li').each(function() {
+			order.push($(this).attr('id').split('-')[1])
+		})
+		$.post('reorder/', {order: order})
+	}
+}).disableSelection()
 </script>
 {% endblock %}
