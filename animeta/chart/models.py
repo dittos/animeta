@@ -100,7 +100,9 @@ def during(**kwargs):
 def weekly():
 	today = datetime.date.today()
 	# 오늘이 금요일(weekday=4)이라면, weekday+2일 전은 토요일.
-	end = today - datetime.timedelta(days=today.weekday() + 2)
+	weekday = today.weekday()
+	if weekday == 6: weekday = -1
+	end = today - datetime.timedelta(days=weekday + 2)
 	start = end - datetime.timedelta(days=6)
 	return (start, end)
 
