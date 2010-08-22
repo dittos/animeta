@@ -5,6 +5,7 @@ import itertools
 from django.db import models
 from django.contrib.auth.models import User
 from work.models import Work
+from chart.utils import *
 
 def rank(iterable):
 	rank = 0
@@ -102,17 +103,20 @@ def weekly():
 	if weekday == 6: weekday = -1
 	end = today - datetime.timedelta(days=weekday + 2)
 	start = end - datetime.timedelta(days=6)
-	return (start, end)
+	return (datetime.datetime(start.year, start.month, start.day),
+			datetime.datetime(end.year, end.month, end.day, 23, 59, 59))
 
 def past_week():
 	start, end = weekly()
 	week_delta = datetime.timedelta(weeks=1)
 	return (start - week_delta, end - week_delta)
 
-def monthly(past=1):
+def monthly():
 	today = datetime.date.today()
-	return (datetime.date(today.year, today.month - past, 1),
-			datetime.date(today.year, today.month - past+1, 1) - datetime.timedelta(days=1))
+	prev = prev_month(today.year, today.month)
+	return month_range(*prev)
 
 def past_month():
-	return monthly(past=2)
+	today = datetime.date.today()
+	prev = prev_month(today.year, today.month)
+	return month_range(*prev_month(*prev))
