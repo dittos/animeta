@@ -1,38 +1,40 @@
-from django.shortcuts import get_object_or_404
-from django.views.generic.simple import direct_to_template
-from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_protect
+from django.views.generic import list_detail
+from django.views.generic.simple import direct_to_template
+from django.contrib.auth import login as _login
+from django.contrib.auth.models import User
+from django.contrib.auth.views import login as login_view
+from django.contrib.auth.forms import UserCreationForm
+from chart.models import during, PopularWorksChart
+from record.models import Uncategorized
 
 @csrf_protect
 def welcome(request):
 	if request.user.is_authenticated():
 		return HttpResponseRedirect('/recent/')
 	else:
-		from chart.models import during, PopularWorksChart
 		return direct_to_template(request, 'welcome.html', {
 			'weekly_works': PopularWorksChart(during(weeks=1), 5)
 		})
 
 @csrf_protect
 def login(request):
-	import django.contrib.auth.views
 	if request.POST.has_key('remember'):
 		request.session.set_expiry(3600 * 24 * 14)
 	else:
 		request.session.set_expiry(0)
-	return django.contrib.auth.views.login(request)
+	return login_view(request)
 
 @csrf_protect
 def signup(request):
-	from django.contrib.auth.forms import UserCreationForm
 	if request.method == 'POST':
 		form = UserCreationForm(request.POST)
 		if form.is_valid():
 			user = form.save()
-			from django.contrib.auth import login
 			user.backend = 'django.contrib.auth.backends.ModelBackend'
-			login(request, user)
+			_login(request, user)
 			request.session.set_expiry(0)
 			return HttpResponseRedirect('/accounts/profile/')
 	else:
@@ -45,7 +47,6 @@ def shortcut(request, username):
 	return HttpResponseRedirect('/users/%s/' % username)
 
 def library(request, username):
-	from record.models import Uncategorized
 	if not username and request.user.is_authenticated():
 		return HttpResponseRedirect(request.user.get_absolute_url())
 
@@ -71,7 +72,6 @@ def library(request, username):
 	})
 
 def history(request, username):
-	from django.views.generic import list_detail
 	user = get_object_or_404(User, username=username)
 	return list_detail.object_list(request,
 		template_name = 'user/history.html',
@@ -81,7 +81,6 @@ def history(request, username):
 	)
 
 def history_feed(request, username):
-	from django.views.generic import list_detail
 	user = get_object_or_404(User, username=username)
 	return list_detail.object_list(request,
 		template_name = 'user/history.atom',

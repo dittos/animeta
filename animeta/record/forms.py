@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
+from django.forms.formsets import formset_factory
 from record.models import Record, Category
 from work.models import Work
 
@@ -47,5 +48,4 @@ class RecordAddForm(RecordUpdateForm):
 class SimpleRecordForm(forms.Form):
 	work_title = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'autocomplete', 'size': 30}))
 
-from django.forms.formsets import formset_factory
 SimpleRecordFormSet = formset_factory(SimpleRecordForm, extra=12)

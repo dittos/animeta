@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.views.generic import list_detail
 from django.views.generic.simple import direct_to_template
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
 from work.models import Work
-from record.models import Record, History, Category
-from record.forms import RecordAddForm, RecordUpdateForm
-from django.shortcuts import get_object_or_404
+from record.models import Record, History, Category, Uncategorized
+from record.forms import RecordAddForm, RecordUpdateForm, SimpleRecordFormSet
 from connect import get_connected_services
 
 def _return_to_user_page(request):
@@ -74,7 +75,6 @@ def delete(request, id):
 
 @login_required
 def add_many(request):
-	from record.forms import SimpleRecordFormSet
 	addition_log = []
 	if request.method == 'POST':
 		formset = SimpleRecordFormSet(request.POST)
@@ -122,7 +122,6 @@ def add_category(request):
 
 @login_required
 def category(request):
-	from record.models import Uncategorized
 	return direct_to_template(request, 'record/manage_category.html',
 		{'categories': request.user.category_set.all(),
 		 'uncategorized': Uncategorized(request.user)})
@@ -132,7 +131,6 @@ def shortcut(request, id):
 	return HttpResponseRedirect('/users/%s/history/%d/' % (history.user.username, history.id))
 
 def history_detail(request, username, id):
-	from django.views.generic import list_detail
 	user = get_object_or_404(User, username=username)
 	history = get_object_or_404(user.history_set, id=id)
 	return list_detail.object_list(request,
@@ -143,6 +141,5 @@ def history_detail(request, username, id):
 	)
 
 def suggest(request):
-	from django.http import HttpResponse
 	result = Work.objects.filter(title__startswith=request.GET['q'])[:10].values_list('title', flat=True)
 	return HttpResponse('\n'.join(result))

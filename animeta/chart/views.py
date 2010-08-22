@@ -1,9 +1,8 @@
 import datetime
-
 from django.views.generic.simple import direct_to_template
+from django.contrib.auth.models import User
 from chart.models import weekly, compare_charts, PopularWorksChart, ActiveUsersChart
 from record.models import History
-from django.contrib.auth.models import User
 
 def recent(request):
 	return direct_to_template(request, 'chart/index.html', {

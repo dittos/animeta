@@ -1,15 +1,17 @@
-def get_connected_services(user):
-	import me2day, twitter
+import me2day
+import twitter
+from record.templatetags.status import status_text
 
+def get_connected_services(user):
 	services = []
 	for service in (me2day, twitter):
-		setting = service.get_setting(user)
-		if setting:
-			services.append((service, setting))
+		if getattr(service, 'available', True):
+			setting = service.get_setting(user)
+			if setting:
+				services.append((service, setting))
 	return services
 
 def post_history(history):
-	from record.templatetags.status import status_text
 	kwargs = {
 		'title': history.work.title,
 		'status': status_text(history.status),

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.contrib.auth.models import User
-from animeta.work.models import Work
+from work.models import Work
 
 class Uncategorized(object):
 	def __init__(self, user):

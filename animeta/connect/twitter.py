@@ -1,6 +1,11 @@
 name = 'Twitter'
 
-import tweepy
+try:
+	import tweepy
+	available = True
+except:
+	available = False
+
 from models import TwitterSetting
 
 def get_setting(user):

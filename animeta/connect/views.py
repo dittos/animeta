@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
-from connect.models import Me2Setting, TwitterSetting
 from django.contrib.auth.decorators import login_required
+from connect.models import Me2Setting, TwitterSetting
+
 import me2day as me2
-import tweepy
+try:
+	import tweepy
+except:
+	pass
 
 @login_required
 def me2day(request):
@@ -41,7 +46,6 @@ def twitter(request):
 		setting = TwitterSetting.objects.get(user=request.user)
 		return direct_to_template(request, 'connect/twitter.html')
 	except TwitterSetting.DoesNotExist:
-		from django.conf import settings
 		auth = tweepy.OAuthHandler(settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET)
 
 		if 'request_token' in request.session:

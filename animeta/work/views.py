@@ -1,11 +1,13 @@
+import urllib
+from django.conf import settings
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.views.generic import list_detail
 from django.views.generic.simple import direct_to_template
 from work.models import Work
 from record.models import Record, History
 
 def old_url(request, remainder):
-	from django.http import HttpResponseRedirect
-	import urllib
 	return HttpResponseRedirect('/works/' + urllib.quote(remainder.encode('UTF-8')))
 
 def detail(request, title):
@@ -23,8 +25,6 @@ def detail(request, title):
 	comments = list(history.exclude(comment='')[:N])
 	if len(comments) < N:
 		comments += list(history.filter(comment='')[:N-len(comments)])
-
-	from django.conf import settings
 	return direct_to_template(request, "work/work_detail.html", {
 		'work': work,
 		'record': record,
@@ -51,8 +51,6 @@ def video(request, title, provider, id):
 	})
 
 def search(request):
-	from django.views.generic import list_detail
-
 	keyword = request.GET.get('keyword', '')
 	return list_detail.object_list(request,
 		queryset = Work.objects.filter(title__contains=keyword),
