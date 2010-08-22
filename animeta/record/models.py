@@ -27,6 +27,15 @@ class Category(models.Model):
 	def __unicode__(self):
 		return self.name
 
+from django.db.models.signals import pre_save
+from record.models import Category
+
+def allocate_next_position(sender, instance, **kwargs):
+	max = instance.user.category_set.aggregate(models.Max('position'))['position__max']
+	instance.position = max + 1
+
+pre_save.connect(allocate_next_position, sender=Category)
+
 class Record(models.Model):
 	user = models.ForeignKey(User)
 	work = models.ForeignKey(Work)

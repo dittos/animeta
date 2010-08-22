@@ -113,7 +113,7 @@ def add_category(request):
 		name = request.POST['name']
 		records = request.POST.getlist('record[]')
 		if name.strip() != '':
-			category = Category.objects.create(user=request.user, name=name, position=request.user.category_set.count())
+			category = Category.objects.create(user=request.user, name=name)
 			for record_id in records:
 				record = Record.objects.get(id=record_id, user=request.user)
 				record.category = category
