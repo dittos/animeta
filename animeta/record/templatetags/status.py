@@ -1,19 +1,26 @@
 # -*- coding: utf-8 -*-
 
+import string
 from django import template
 from django.template.defaultfilters import stringfilter
 from django.core.urlresolvers import reverse
+from record.models import StatusTypes, STATUS_TYPE_NAMES
 
 register = template.Library()
 
-def status_text(status):
-	status = status.strip()
-	if not status:
-		return u'완료'
-	elif status[-1:] in '0123456789':
-		return status + u'화'
-	else:
-		return status
+def status_text(record):
+	status = record.status.strip()
+	if status and status[-1] in string.digits:
+		status += u'화'
+
+	if record.status_type != StatusTypes.Watching:
+		status_type_name = STATUS_TYPE_NAMES[record.status_type]
+		if status != '':
+			status += ' (' + status_type_name + ')'
+		else:
+			status = status_type_name
+
+	return status
 
 register.filter('status_text', stringfilter(status_text))
 
@@ -41,9 +48,9 @@ class StatusTextNode(template.Node):
 			return '<span class="status no-record"><a href="%s">기록 없음</a></span>' % reverse('record.views.add', args=[] if not work else [work.title])
 
 		cls = 'status'
-		if not record.status.strip():
-			cls += ' finished'
-		status = status_text(record.status)
+		if record.status_type == StatusTypes.Watching:
+			cls += ' watching'
+		status = status_text(record)
 
 		try:
 			if record.user == context['user'] and type(record) is Record:

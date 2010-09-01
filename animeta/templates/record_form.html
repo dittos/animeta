@@ -25,8 +25,7 @@
 		}
 		determine_suffix()
 		$('#id_status').change(determine_suffix).keyup(determine_suffix)
-		$('#plus-one').click(function(event) {
-			event.preventDefault()
+		$('#plus-one').live('click', function(event) {
 			var $field = $('#id_status')
 			var val = $field.val()
 			var matches = val.match(/(\d+)[^\d]*$/)
@@ -39,9 +38,11 @@
 						add1 = '0' + add1
 				$field.val(val.replace(/(\d+)([^\d]*)$/, add1 + '$2'))
 			}
+			return false
 		})
 		</script>
-		<span class="description">비워두면 '완료' 상태로 처리합니다.</span>
+		
+		{{ form.status_type }}
 	</td>
 </tr>
 <tr class="comment">

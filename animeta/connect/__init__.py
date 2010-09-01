@@ -14,7 +14,7 @@ def get_connected_services(user):
 def post_history(history):
 	kwargs = {
 		'title': history.work.title,
-		'status': status_text(history.status),
+		'status': status_text(history),
 		'url': 'http://animeta.net/-%d' % history.id,
 		'comment': history.comment,
 	}

@@ -2,14 +2,10 @@
 
 from django import forms
 from django.forms.formsets import formset_factory
-from record.models import Record, Category
+from record.models import Record, Category, History
 from work.models import Work
 
-class RecordUpdateForm(forms.Form):
-	status = forms.CharField(label=u'감상 상태', max_length=30, required=False,
-			widget=forms.TextInput(attrs={'size': 5}))
-	comment = forms.CharField(label=u'감상평', required=False,
-			widget=forms.Textarea(attrs={'rows': 3, 'cols': 40}))
+class RecordUpdateForm(forms.ModelForm):
 	category = forms.ModelChoiceField(label=u'분류', empty_label=u'미분류',
 			queryset=Category.objects.none(), required=False)
 	publish = forms.BooleanField(label=u'외부 서비스에 보내기',
@@ -22,12 +18,20 @@ class RecordUpdateForm(forms.Form):
 
 	def save(self):
 		self.record.status = self.cleaned_data['status']
+		self.record.status_type = self.cleaned_data['status_type']
 		self.record.category = self.cleaned_data['category']
 		history = self.record.save(comment=self.cleaned_data['comment'])
 
 		if self.cleaned_data['publish']:
 			from connect import post_history
 			post_history(history)
+
+	class Meta:
+		model = History
+		widgets = {
+			'status': forms.TextInput(attrs={'size': 5}),
+			'comment': forms.Textarea(attrs={'rows': 3, 'cols': 40}),
+		}
 
 class RecordAddForm(RecordUpdateForm):
 	work_title = forms.CharField(label=u'작품 제목', max_length=100)
