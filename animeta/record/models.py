@@ -31,7 +31,7 @@ from django.db.models.signals import pre_save
 from record.models import Category
 
 def allocate_next_position(sender, instance, **kwargs):
-	max = instance.user.category_set.aggregate(models.Max('position'))['position__max']
+	max = instance.user.category_set.aggregate(models.Max('position'))['position__max'] or 0
 	instance.position = max + 1
 
 pre_save.connect(allocate_next_position, sender=Category)
