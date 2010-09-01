@@ -10,10 +10,10 @@ class StatusTypes:
 	Interested = 3
 
 STATUS_TYPE_CHOICES = (
-	(StatusTypes.Finished, u'완료'),
-	(StatusTypes.Watching, u'보는 중'),
+	(StatusTypes.Finished, u'?�료'),
+	(StatusTypes.Watching, u'보는 �?),
 	(StatusTypes.Suspended, u'중단'),
-	(StatusTypes.Interested, u'볼 예정'),
+	(StatusTypes.Interested, u'�??�정'),
 )
 STATUS_TYPE_NAMES = dict(STATUS_TYPE_CHOICES)
 
@@ -25,7 +25,7 @@ class Uncategorized(object):
 		return 0
 	
 	def name(self):
-		return u'미분류'
+		return u'미분�?
 
 	def record_set(self):
 		return self.user.record_set.filter(category=None)
@@ -45,7 +45,7 @@ from django.db.models.signals import pre_save
 from record.models import Category
 
 def allocate_next_position(sender, instance, **kwargs):
-	max = instance.user.category_set.aggregate(models.Max('position'))['position__max']
+	max = instance.user.category_set.aggregate(models.Max('position'))['position__max'] or 0
 	instance.position = max + 1
 
 pre_save.connect(allocate_next_position, sender=Category)
@@ -88,9 +88,9 @@ class Record(models.Model):
 class History(models.Model):
 	user = models.ForeignKey(User, editable=False)
 	work = models.ForeignKey(Work, editable=False)
-	status = models.CharField(max_length=30, blank=True, verbose_name=u'감상 상태')
+	status = models.CharField(max_length=30, blank=True, verbose_name=u'감상 ?�태')
 	status_type = models.SmallIntegerField(choices=STATUS_TYPE_CHOICES, default=StatusTypes.Watching)
-	comment = models.TextField(blank=True, verbose_name=u'감상평')
+	comment = models.TextField(blank=True, verbose_name=u'감상??)
 	updated_at = models.DateTimeField(auto_now=True)
 
 	@property
