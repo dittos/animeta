@@ -9,15 +9,28 @@
 	완료 작품 {{ finished_count }}개 {% if hide_finished %}<a href=".{% ifnotequal category_filter None %}?category={{ category_filter }}{% endifnotequal %}">보이기</a>{% else %}<a href="?finished=hide{% ifnotequal category_filter None %}&amp;category={{ category_filter }}{% endifnotequal %}">숨기기</a>{% endif %}
 </p>
 
-<ul id="categories">
-	<li{% ifequal category_filter None %} class="current"{% endifequal %}><a href=".{% if hide_finished %}?finished=hide{% endif %}">전체</a> ({{ record_count }})</li>
+<form method="get" action="" id="filter-form">
+<p>
+<label for="category">분류</label>
+<select name="category" id="category">
+	<option value="">전체 ({{ record_count }})</option>
 {% for category in categories %}
-	<li{% ifequal category_filter category.id %} class="current"{% endifequal %}><a href="?category={{ category.id }}{% if hide_finished %}&amp;finished=hide{% endif %}">{{ category.name }}</a> ({{ category.record_set.count }})</li>
+	<option value="{{ category.id }}"{% ifequal category_filter category.id %} selected="selected"{% endifequal %}>{{ category.name }} ({{ category.record_set.count }})</option>
 {% endfor %}
+</select>
+<input type="submit" value="이동" />
+
 {% ifequal owner request.user %}
-	<li class="add"><a href="/records/category/">분류 관리</a></li>
+<a href="/records/category/">관리</a>
 {% endifequal %}
-</ul>
+</p>
+
+<script type="text/javascript">
+$('#category').live('change', function() {
+	$('#filter-form').submit()
+}).next('input:submit').hide()
+</script>
+</form>
 
 {% ifnotequal record_count 0 %}
 {% index records as columns %}

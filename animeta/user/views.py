@@ -53,11 +53,8 @@ def library(request, username):
 	user = get_object_or_404(User, username=username)
 	records = user.record_set
 	record_count = records.count()
-	hide_finished = request.GET.get('finished') == 'hide'
-	if hide_finished:
-		records = records.exclude(status='')
 	category_filter = None
-	if 'category' in request.GET:
+	if request.GET.get('category'):
 		category_filter = int(request.GET['category'])
 		records = records.filter(category=category_filter or None)
 
@@ -67,8 +64,7 @@ def library(request, username):
 		'categories': [Uncategorized(user)] + list(user.category_set.all()),
 		'record_count': record_count,
 		'finished_count': user.record_set.filter(status='').count(),
-		'hide_finished': hide_finished,
-		'category_filter': category_filter
+		'category_filter': category_filter,
 	})
 
 def history(request, username):
