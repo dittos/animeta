@@ -98,6 +98,8 @@ ol.chart, #charts ol { margin-left: 0.5em; padding: 0; list-style: none; }
 .history .comment { font-size: 0.85em; text-indent: 1em; }
 .history .updated { font-size: 0.9em; margin-left: 0.5em; color: #888; }
 #records { clear: both; margin-left: 0.5em; }
+#library-header { margin: 0 0 1.5em 0.5em; }
+#library-header p { display: inline; margin-right: 2em; }
 #categories { list-style: none; margin: 0 0 1em; padding: 0; border-bottom: 1px solid #ddd; overflow: hidden; }
 #categories.editing { border: 0; }
 #categories li { float: left; border: 1px solid #ddd; border-bottom: none; background-color: #f4f4f4; margin-left: 0.5em; padding: 0.25em 0.5em; cursor: pointer; color: #666; font-size: 0.9em; }

@@ -4,14 +4,17 @@
 {% load indexing %}
 
 {% block content %}
+<div id="library-header">
+<form method="get" action="" id="filter-form">
+<p>작품이 {{ record_count }}개 등록되어 있습니다.</p>
+
 <p>
-	작품이 {{ record_count }}개 등록되어 있습니다.
-	완료 작품 {{ finished_count }}개 {% if hide_finished %}<a href=".{% ifnotequal category_filter None %}?category={{ category_filter }}{% endifnotequal %}">보이기</a>{% else %}<a href="?finished=hide{% ifnotequal category_filter None %}&amp;category={{ category_filter }}{% endifnotequal %}">숨기기</a>{% endif %}
+<input type="checkbox" name="finished" value="hide"{% if hide_finished %} checked="checked"{% endif %} id="hide-finished" />
+<label for="hide-finished">보는 중인 작품만 표시</label>
 </p>
 
-<form method="get" action="" id="filter-form">
 <p>
-<label for="category">분류</label>
+<label for="category">분류:</label>
 <select name="category" id="category">
 	<option value="">전체 ({{ record_count }})</option>
 {% for category in categories %}
@@ -26,11 +29,17 @@
 </p>
 
 <script type="text/javascript">
-$('#category').live('change', function() {
-	$('#filter-form').submit()
-}).next('input:submit').hide()
+function submit_when_changed(selector) {
+	return $(selector).live('change', function() {
+		$('#filter-form').submit()
+	})
+}
+
+submit_when_changed('#category').next('input:submit').hide()
+submit_when_changed('#hide-finished')
 </script>
 </form>
+</div>
 
 {% ifnotequal record_count 0 %}
 {% index records as columns %}
