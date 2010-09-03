@@ -10,7 +10,7 @@ class RecordUpdateForm(forms.ModelForm):
 			required=False, initial=False)
 
 	def __init__(self, record, data=None, initial={}):
-		super(RecordUpdateForm, self).__init__(data, initial=initial)
+		super(RecordUpdateForm, self).__init__(data, instance=record, initial=initial)
 		self.record = record
 
 	def save(self):
