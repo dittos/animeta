@@ -91,7 +91,7 @@ class History(models.Model):
 	status = models.CharField(max_length=30, blank=True, verbose_name=u'감상 상태')
 	status_type = models.SmallIntegerField(choices=STATUS_TYPE_CHOICES, default=StatusTypes.Watching)
 	comment = models.TextField(blank=True, verbose_name=u'감상평')
-	updated_at = models.DateTimeField(auto_now=True)
+	updated_at = models.DateTimeField()
 
 	@property
 	def record(self):
