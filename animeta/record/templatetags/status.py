@@ -13,7 +13,7 @@ def status_text(record):
 	if status and status[-1] in string.digits:
 		status += u'화'
 
-	if record.status_type != StatusTypes.Watching:
+	if record.status_type != StatusTypes.Watching or status == '':
 		status_type_name = STATUS_TYPE_NAMES[record.status_type]
 		if status != '':
 			status += ' (' + status_type_name + ')'
@@ -22,7 +22,7 @@ def status_text(record):
 
 	return status
 
-register.filter('status_text', stringfilter(status_text))
+register.filter('status_text', status_text)
 
 @register.tag(name='status_text')
 def status_text_tag(parser, token):
