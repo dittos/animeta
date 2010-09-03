@@ -3,13 +3,14 @@
 {% load status %}
 
 {% block content %}
+<div id="forms">
+<form method="post" action="" class="inline">
 <h2>제목 표기 바꾸기</h2>
-<form method="post" action="">
 <p><input type="text" name="work_title" value="{{ work.title }}" /> <input type="submit" value="바꾸기" /></p>
 </form>
 
+<form method="post" action="" class="inline">
 <h2>분류 바꾸기</h2>
-<form method="post" action="">
 <p>
 <select name="category" id="category">
 	<option value="">지정 안함</option>
@@ -23,6 +24,7 @@
 
 <h2>기록 추가</h2>
 {% include "record_form.html" %}
+</div>
 
 <div id="history">
 <h2>지난 기록</h2>

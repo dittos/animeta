@@ -74,6 +74,12 @@ ol.chart, #charts ol { margin-left: 0.5em; padding: 0; list-style: none; }
 #add-record { width: 40em; float: left; }
 #history { margin-left: 40em; }
 #add-record #services th { vertical-align: top; }
+#forms { margin-top: 0.5em; float: left; }
+#forms form { clear: both; }
+#forms h2 { font-size: 1.1em; }
+form.inline { margin-bottom: 0.5em; overflow: hidden; }
+form.inline h2 { width: 8em; float: left; }
+form.inline p { padding-left: 1em; display: inline; }
 
 /* Record Delete */
 #delete-record table { margin-bottom: 0.5em; }
