@@ -2,6 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from work.models import Work
+from django.db.models.signals import pre_save
 
 class StatusTypes:
 	Finished = 0
@@ -40,9 +41,6 @@ class Category(models.Model):
 
 	def __unicode__(self):
 		return self.name
-
-from django.db.models.signals import pre_save
-from record.models import Category
 
 def allocate_next_position(sender, instance, **kwargs):
 	max = instance.user.category_set.aggregate(models.Max('position'))['position__max'] or 0

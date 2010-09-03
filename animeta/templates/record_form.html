@@ -7,10 +7,12 @@
 	<td>{{ form.work_title }}</td>
 </tr>
 {% endif %}
+{% if form.category %}
 <tr>
 	<th>{{ form.category.label_tag }}</th>
 	<td>{{ form.category }}</td>
 </tr>
+{% endif %}
 <tr id="status">
 	<th>{{ form.status.label_tag }}</th>
 	<td>

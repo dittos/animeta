@@ -54,12 +54,22 @@ def update(request, id):
 		record.work = work
 		record.save()
 		return _return_to_user_page(request)
+	elif 'category' in request.POST:
+		id = request.POST['category']
+		if not id:
+			record.category = None
+		else:
+			record.category = request.user.category_set.get(id=id)
+		record.save()
+		return _return_to_user_page(request)
 	else:
 		return save(request,
 			RecordUpdateForm, record, {'status': record.status, 'category': record.category.id if record.category else None},
 			template_name = 'record/update_record.html',
 			extra_context = {
-				'record': record, 'work': record.work,
+				'record': record,
+				'work': record.work,
+				'category_list': request.user.category_set.all(),
 				'history_list': request.user.history_set.filter(work=record.work)
 			})
 
