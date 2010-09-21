@@ -5,7 +5,7 @@ from django.views.generic import list_detail
 from django.views.generic.simple import direct_to_template
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from work.models import Work
+from work.models import Work, suggest_works
 from record.models import Record, History, Category, Uncategorized
 from record.forms import RecordAddForm, RecordUpdateForm, SimpleRecordFormSet
 from connect import get_connected_services
@@ -157,5 +157,5 @@ def history_detail(request, username, id):
 	)
 
 def suggest(request):
-	result = Work.objects.filter(title__startswith=request.GET['q'])[:10].values_list('title', flat=True)
-	return HttpResponse('\n'.join(result))
+	result = suggest_works(request.user, request.GET['q'])
+	return HttpResponse('\n'.join(result[:10].values_list('title', flat=True)))
