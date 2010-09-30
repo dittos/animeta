@@ -7,7 +7,7 @@ from django.contrib.auth import login as _login
 from django.contrib.auth.models import User
 from django.contrib.auth.views import login as login_view
 from django.contrib.auth.forms import UserCreationForm
-from chart.models import during, PopularWorksChart
+from chart.models import weekly, PopularWorksChart
 from record.models import Uncategorized, StatusTypes
 
 @csrf_protect
@@ -16,7 +16,7 @@ def welcome(request):
 		return HttpResponseRedirect('/recent/')
 	else:
 		return direct_to_template(request, 'welcome.html', {
-			'weekly_works': PopularWorksChart(during(weeks=1), 5)
+			'weekly_works': PopularWorksChart(weekly(), 5)
 		})
 
 @csrf_protect
