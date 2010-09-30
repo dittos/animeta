@@ -5,22 +5,13 @@
 {% if show_user %}
 	<a href="{% url user.views.library history.user %}" class="user">{{ history.user.username }}</a>
 {% endif %}
-
-{% if show_user and show_work %}
-	 &mdash;
-{% endif %}
-
 {% if show_work %}
 	<a href="{% url work.views.detail history.work.title %}" class="work">{{ history.work.title }}</a>
 {% endif %}
-	
-	{% status_text of history %}
-
-	{% if history.updated_at %}
-	<span class="updated">{{ history.updated_at|timesince }} 전</span>
-	{% endif %}
-	
-	<a href="{% url record.views.history_detail history.user history.id %}" class="detail">#</a>
+{% status_text of history %}
+{% if history.updated_at %}
+	<a href="{% url record.views.history_detail history.user.username history.id %}" class="updated" title="{{ history.updated_at }}">{{ history.updated_at|timesince }} 전</a>
+{% endif %}
 </p>
 {% if history.comment %}
 <p class="comment">{{ history.comment }}</p>

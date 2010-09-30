@@ -9,7 +9,7 @@ def recent(request):
 		'weekly_works': PopularWorksChart(weekly(), 5),
 		'weekly_users': ActiveUsersChart(weekly(), 5),
 		'newbies': User.objects.filter(date_joined__gte=datetime.date.today()),
-		'timeline': History.objects.exclude(comment='').all()[:10]
+		'timeline': History.objects.exclude(comment='')[:10]
 	})
 
 def detail(request, chart_class, range=None, past_range=None, title=''):

@@ -101,8 +101,11 @@ form.inline p { padding-left: 1em; display: inline; }
 .status.no-record { background-color: #06c; }
 .history { padding-left: 0.5em; padding-bottom: 0.5em; }
 .history p { margin: 1em 0 0.5em !important; }
-.history .comment { font-size: 0.85em; text-indent: 1em; }
-.history .updated { font-size: 0.9em; margin-left: 0.5em; color: #888; }
+.history .user { margin-right: 0.5em; text-decoration: none; font-weight: bold; }
+.history .comment { font-size: 0.9em; text-indent: 1em; }
+.history .updated { font-size: 0.85em; margin-left: 0.5em; color: #888; }
+.history a.updated { text-decoration: none; }
+.history a.updated:hover { text-decoration: underline; }
 #records { clear: both; margin-left: 0.5em; }
 #library-header { margin: 0 0 1.5em 0.5em; }
 #library-header p { display: inline; margin-right: 2em; }

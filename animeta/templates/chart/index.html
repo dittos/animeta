@@ -32,8 +32,12 @@
 
 <div id="timeline">
 <h2>최근 감상평</h2>
-{% for history in timeline %}
+{% regroup timeline by updated_at|date as days %}
+{% for day in days %}
+<h3>{{ day.grouper }}</h3>
+{% for history in day.list %}
 	{% show_history history "user,work" %}
+{% endfor %}
 {% endfor %}
 </div>
 
