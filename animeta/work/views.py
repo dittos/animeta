@@ -10,8 +10,7 @@ from record.models import Record, History
 def old_url(request, remainder):
 	return HttpResponseRedirect('/works/' + urllib.quote(remainder.encode('UTF-8')))
 
-def detail(request, title):
-	work = get_object_or_404(Work, title=title)
+def _get_record(request, work):
 	if request.user.is_authenticated():
 		try:
 			record = request.user.record_set.get(work=work)
@@ -19,6 +18,10 @@ def detail(request, title):
 			record = None
 	else:
 		record = None
+	return record
+
+def detail(request, title):
+	work = get_object_or_404(Work, title=title)
 
 	N = 6
 	history = work.history_set.all().select_related('user')
@@ -27,7 +30,7 @@ def detail(request, title):
 		comments += list(history.filter(comment='')[:N-len(comments)])
 	return direct_to_template(request, "work/work_detail.html", {
 		'work': work,
-		'record': record,
+		'record': _get_record(request, work),
 		'records': work.record_set,
 		'comments': comments,
 		'daum_api_key': settings.DAUM_API_KEY
@@ -37,22 +40,16 @@ def list_users(request, title):
 	work = get_object_or_404(Work, title=title)
 	return direct_to_template(request, "work/users.html", {
 		'work': work,
+		'record': _get_record(request, work),
 		'records': work.record_set.order_by('status_type', 'user__username')
 	})
 
 def video(request, title, provider, id):
 	work = get_object_or_404(Work, title=title)
-	if request.user.is_authenticated():
-		try:
-			record = request.user.record_set.get(work=work)
-		except:
-			record = None
-	else:
-		record = None
 
 	return direct_to_template(request, "work/video.html", {
 		'work': work,
-		'record': record,
+		'record': _get_record(request, work),
 		'records': work.record_set,
 		'video_id': id
 	})

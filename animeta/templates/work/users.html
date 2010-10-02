@@ -1,7 +1,5 @@
 {% extends "work/base.html" %}
 
-{% load status %}
-
 {% block content %}
 {% regroup records by status_type as groups %}
 
