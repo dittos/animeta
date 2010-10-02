@@ -1,0 +1,18 @@
+{% extends "work/base.html" %}
+
+{% load status %}
+
+{% block content %}
+{% regroup records by status_type as groups %}
+
+{% for group in groups %}
+<div class="status-group">
+<h2>{{ group.list.0.get_status_type_display }} ({{ group.list|length }}명)</h2>
+<ul>
+{% for record in group.list %}
+	<li><a href="{% url user.views.library record.user %}">{{ record.user }}</a></li>
+{% endfor %}
+</ul>
+{% endfor %}
+</div>
+{% endblock %}

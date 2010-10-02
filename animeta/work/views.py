@@ -33,6 +33,13 @@ def detail(request, title):
 		'daum_api_key': settings.DAUM_API_KEY
 	})
 
+def list_users(request, title):
+	work = get_object_or_404(Work, title=title)
+	return direct_to_template(request, "work/users.html", {
+		'work': work,
+		'records': work.record_set.order_by('status_type', 'user__username')
+	})
+
 def video(request, title, provider, id):
 	work = get_object_or_404(Work, title=title)
 	if request.user.is_authenticated():

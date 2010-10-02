@@ -147,6 +147,9 @@ form.inline p { padding-left: 1em; display: inline; }
 #video { float: left; }
 #record-form-side { margin-left: 500px; }
 #record-form-side table, #record-form-side table input { font-size: 1em !important; }
+.status-group h2 { border-bottom: 1px solid #ddd; padding: 0.5em; clear: both; }
+.status-group ul { list-style: none; margin: 0 1em; padding: 0; }
+.status-group li { float: left; margin-right: 1.5em; margin-bottom: 0.5em; }
 
 /* History Detail */
 .history.detail { font-size: 1.2em; }
