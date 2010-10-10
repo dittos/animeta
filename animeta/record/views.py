@@ -157,5 +157,5 @@ def history_detail(request, username, id):
 	)
 
 def suggest(request):
-	result = suggest_works(request.user, request.GET['q'])
+	result = suggest_works(request.GET['q'], user=request.user )
 	return HttpResponse('\n'.join(result[:10].values_list('title', flat=True)))

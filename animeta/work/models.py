@@ -14,5 +14,10 @@ class Work(models.Model):
 	def get_absolute_url(self):
 		return ('work.views.detail', (), {'title': self.title})
 
-def suggest_works(user, query):
-	return Work.objects.exclude(id__in=user.record_set.values('work')).filter(title__startswith=query)
+def suggest_works(query, user=None):
+	queryset = Work.objects
+
+	if user and user.is_authenticated():
+		queryset = queryset.exclude(id__in=user.record_set.values('work'))
+
+	return queryset.filter(title__startswith=query)

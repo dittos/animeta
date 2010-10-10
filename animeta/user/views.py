@@ -60,8 +60,11 @@ def library(request, username):
 
 	category_filter = None
 	if request.GET.get('category'):
-		category_filter = int(request.GET['category'])
-		records = records.filter(category=category_filter or None)
+		try:
+			category_filter = int(request.GET['category'])
+			records = records.filter(category=category_filter or None)
+		except:
+			pass
 
 	return direct_to_template(request, 'user/library.html', {
 		'owner': user,
