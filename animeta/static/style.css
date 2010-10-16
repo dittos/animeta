@@ -41,6 +41,8 @@ form .description { font-size: 0.8em; margin-left: 0.8em; color: #999; vertical-
 .aside { padding-top: 0.5em; margin: 0 1em 0 650px; width: 20em; }
 #join-now { font-size: 1.1em; background-color: #ffa; border: 1px solid #deb200; padding: 0.5em; }
 #join-now a { font-weight: bold; text-decoration: none; color: #deb200; }
+#join-now.popup { padding: 0 0.5em; border-width: 0 0 1px 0; }
+#join-now p { margin: 0; padding: 1em; line-height: 1.8; }
 #screenshot { margin-left: -0.5em; float: left; }
 
 /* Main Page */
