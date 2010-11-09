@@ -13,16 +13,14 @@ class RecordUpdateForm(forms.ModelForm):
 		super(RecordUpdateForm, self).__init__(*args, **kwargs)
 		self.record = record
 
-	def save(self, commit=True):
+	def save(self):
 		history = super(RecordUpdateForm, self).save(commit=False)
 		history.user = self.record.user
 		history.work = self.record.work
-		if commit:
-			history.save()
-#			if self.cleaned_data['publish']:
-#				from connect import post_history
-#				post_history(history)
-
+		history.save()
+		if self.cleaned_data['publish']:
+			from connect import post_history
+			post_history(history)
 		return history
 
 	class Meta:
