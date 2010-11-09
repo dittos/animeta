@@ -1,6 +1,6 @@
 {% extends "work/base.html" %}
 
-{% load status %}
+{% load status history %}
 
 {% block content %}
 <div id="forms">
@@ -29,19 +29,7 @@
 <div id="history">
 <h2>지난 기록</h2>
 {% for history in history_list %}
-<div class="history">
-<p>
-	{% status_text of history %}
-
-	{% if history.updated_at %}
-	<span class="updated">{{ history.updated_at|timesince }} 전</span>
-	{% endif %}
-	<a href="{% url record.views.history_detail history.user history.id %}" class="detail">#</a>
-</p>
-{% if history.comment %}
-<p class="comment">{{ history.comment }}</p>
-{% endif %}
-</div>
+	{% show_history history "delete" %}
 {% endfor %}
 </div>
 {% endblock %}

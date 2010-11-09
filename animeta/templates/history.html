@@ -12,6 +12,9 @@
 {% if history.updated_at %}
 	<a href="{% url record.views.history_detail history.user.username history.id %}" class="updated" title="{{ history.updated_at }}">{{ history.updated_at|timesince }} 전</a>
 {% endif %}
+{% if can_delete %}
+	<a href="{% url record.views.delete_history history.user.username history.id %}" class="delete">삭제</a>
+{% endif %}
 </p>
 {% if history.comment %}
 <p class="comment">{{ history.comment }}</p>

@@ -4,7 +4,7 @@
 
 {% block content %}
 {% for history in object_list %}
-	{% show_history history "work" %}
+	{% show_history history "work,delete" %}
 {% endfor %}
 
 {% if page_obj %}

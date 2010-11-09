@@ -77,7 +77,6 @@ def update(request, id):
 def delete(request, id):
 	record = _get_record(request, id)
 	if request.method == 'POST':
-		record.history_set.delete()
 		record.delete()
 		return _return_to_user_page(request)
 	else:
@@ -155,6 +154,22 @@ def history_detail(request, username, id):
 		template_name = 'record/history_detail.html',
 		extra_context = {'owner': user, 'history': history}
 	)
+
+@login_required
+def delete_history(request, username, id):
+	user = get_object_or_404(User, username=username)
+	history = get_object_or_404(user.history_set, id=id)
+	if request.user != history.user:
+		raise Exception('Access denied')
+	
+	if history.record.history_set.count() == 1:
+		raise Exception() # XXX
+
+	if request.method == 'POST':
+		history.delete()
+		return _return_to_user_page(request)
+	else:
+		return direct_to_template(request, 'record/history_confirm_delete.html', {'history': history, 'owner': request.user})
 
 def suggest(request):
 	result = suggest_works(request.GET['q'], user=request.user )

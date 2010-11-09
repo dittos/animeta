@@ -7,5 +7,6 @@ urlpatterns = patterns('user.views',
 )
 
 urlpatterns += patterns('',
-	(r'^history/(?P<id>\d+)/$', 'record.views.history_detail')
+	(r'^history/(?P<id>\d+)/$', 'record.views.history_detail'),
+	(r'^history/(?P<id>\d+)/delete/$', 'record.views.delete_history'),
 )

@@ -108,6 +108,8 @@ form.inline p { padding-left: 1em; display: inline; }
 .history .updated { font-size: 0.85em; margin-left: 0.5em; color: #888; }
 .history a.updated { text-decoration: none; }
 .history a.updated:hover { text-decoration: underline; }
+.history .delete { text-decoration: none; margin-left: 0.5em; color: #f00; font-size: 0.85em; }
+.history .delete:hover { text-decoration: underline; }
 #records { clear: both; margin-left: 0.5em; }
 #library-header { margin: 0 0 1.5em 0.5em; }
 #library-header p { display: inline; margin-right: 2em; }

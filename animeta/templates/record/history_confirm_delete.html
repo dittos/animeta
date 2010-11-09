@@ -1,0 +1,16 @@
+{% extends "user/base.html" %}
+
+{% load status history %}
+
+{% block content %}
+{% show_history history "work" %}
+
+<div id="context">
+<form method="post" action="" id="delete-record">
+<h2>기록 삭제</h2>
+<p>위 기록을 삭제합니다. </p>
+<p>주의: <strong>일단 삭제하면 되돌릴 수 없으니</strong> 신중하게 생각하세요.</p>
+<p><input type="submit" value="확인" /></p>
+</form>
+</div>
+{% endblock %}

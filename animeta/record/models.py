@@ -2,7 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from work.models import Work
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_save, post_save, post_delete
 
 class StatusTypes:
 	Finished = 0
@@ -59,6 +59,10 @@ class Record(models.Model):
 	@property
 	def history_set(self):
 		return self.user.history_set.filter(work=self.work)
+	
+	def delete(self, *args, **kwargs):
+		self.history_set.delete()
+		super(Record, self).delete(*args, **kwargs)
 
 	class Meta:
 		unique_together = ('user', 'work')
@@ -77,12 +81,21 @@ class History(models.Model):
 
 	class Meta:
 		ordering = ['-id']
+		get_latest_by = 'updated_at'
 
 def sync_record(sender, instance, **kwargs):
 	record, created = Record.objects.get_or_create(user=instance.user, work=instance.work)
-	record.status = instance.status
-	record.status_type = instance.status_type
-	record.updated_at = instance.updated_at
+	if not created:
+		try:
+			history = record.history_set.latest()
+		except History.DoesNotExist:
+			return
+	else:
+		history = instance
+	record.status = history.status
+	record.status_type = history.status_type
+	record.updated_at = history.updated_at
 	record.save()
 
 post_save.connect(sync_record, sender=History)
+post_delete.connect(sync_record, sender=History)
