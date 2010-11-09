@@ -15,7 +15,7 @@ def _return_to_user_page(request):
 
 def save(request, form_class, object, form_initial, template_name, extra_context = {}):
 	if request.method == 'POST':
-		form = form_class(object, data=request.POST)
+		form = form_class(object, request.POST)
 		if form.is_valid():
 			form.save()
 			if request.POST.get('next'):
