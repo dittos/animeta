@@ -79,7 +79,7 @@ class History(models.Model):
 		ordering = ['-id']
 
 def sync_record(sender, instance, **kwargs):
-	record = Record.objects.get(user=instance.user, work=instance.work)
+	record, created = Record.objects.get_or_create(user=instance.user, work=instance.work)
 	record.status = instance.status
 	record.status_type = instance.status_type
 	record.updated_at = instance.updated_at

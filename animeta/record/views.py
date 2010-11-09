@@ -6,7 +6,7 @@ from django.views.generic.simple import direct_to_template
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from work.models import Work, suggest_works
-from record.models import Record, History, Category, Uncategorized
+from record.models import Record, History, Category, Uncategorized, StatusTypes
 from record.forms import RecordAddForm, RecordUpdateForm, SimpleRecordFormSet
 from connect import get_connected_services
 
@@ -93,7 +93,7 @@ def add_many(request):
 				if not row: continue
 				work, _ = Work.objects.get_or_create(title=row['work_title'])
 				addition_log.append(work.title)
-				record, created = request.user.record_set.get_or_create(work=work)
+				History.objects.create(user=request.user, work=work, status_type=StatusTypes.Finished)
 
 	return direct_to_template(request, 'record/import.html',
 		{'owner': request.user, 'formset': SimpleRecordFormSet(),
