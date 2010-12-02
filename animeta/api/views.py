@@ -1,8 +1,10 @@
 import json
 import functools
+import pytz
 from cStringIO import StringIO
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 from record.models import History
 from record.templatetags.status import status_text
 
@@ -14,6 +16,9 @@ def json_response(view):
 		return response
 	return wrapper
 
+def _serialize_datetime(dt):
+	return pytz.timezone(settings.TIME_ZONE).localize(dt).isoformat()
+
 def _history_as_dict(history):
 	return {
 		'id': history.id,
@@ -21,7 +26,7 @@ def _history_as_dict(history):
 		'work': {'title': history.work.title, 'id': history.work.id},
 		'status': {'type': history.status_type_name, 'text': status_text(history), 'raw_text': history.status},
 		'comment': history.comment,
-		'updated_at': history.updated_at.strftime('%Y-%m-%d %H:%M:%S')
+		'updated_at': _serialize_datetime(history.updated_at)
 	}
 
 @json_response
