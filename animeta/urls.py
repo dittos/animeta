@@ -8,6 +8,7 @@ urlpatterns = patterns('',
 	(r'^logout/', 'django.contrib.auth.views.logout', {'next_page': '/'}),
 	(r'^signup/', 'animeta.user.views.signup'),
 	(r'^accounts/profile/', 'animeta.user.views.library', {'username': None}),
+	(r'^api/v1/', include('animeta.api.urls')),
 
 	(r'^users/(?P<username>[A-Za-z0-9_]+)/', include('animeta.user.urls')),
 	(r'^records/', include('animeta.record.urls')),

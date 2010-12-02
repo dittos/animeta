@@ -17,6 +17,7 @@ STATUS_TYPE_CHOICES = (
 	(StatusTypes.Interested, u'볼 예정'),
 )
 STATUS_TYPE_NAMES = dict(STATUS_TYPE_CHOICES)
+STATUS_TYPE_DICT = dict(((v, k.lower()) for (k, v) in StatusTypes.__dict__.iteritems() if not k.startswith('_')))
 
 class Uncategorized(object):
 	def __init__(self, user):
@@ -78,6 +79,10 @@ class History(models.Model):
 	@property
 	def record(self):
 		return self.user.record_set.get(work=self.work)
+
+	@property
+	def status_type_name(self):
+		return STATUS_TYPE_DICT[self.status_type]
 
 	class Meta:
 		ordering = ['-id']
