@@ -31,7 +31,8 @@ def _history_as_dict(history):
 		'work': {'title': history.work.title, 'id': history.work.id},
 		'status': _serialize_status(history),
 		'comment': history.comment,
-		'updated_at': _serialize_datetime(history.updated_at)
+		'updated_at': _serialize_datetime(history.updated_at),
+		'url': 'http://animeta.net/-%d' % history.id
 	}
 
 @json_response
@@ -60,21 +61,28 @@ def get_record(request, id):
 @json_response
 def get_user(request, name):
 	user = get_object_or_404(User, username=name)
+
 	stats = {'total': user.record_set.count()}
 	for name in StatusTypes.names:
 		stats[name] = 0
 	for d in user.record_set.values('status_type').annotate(count=Count('status_type')).order_by():
 		stats[StatusTypes.to_name(d['status_type'])] = d['count']
 
+	categories = []
+	for d in user.record_set.values('category__name').annotate(count=Count('category')).order_by():
+		categories.append({'name': d['category__name'], 'count': d['count']})
+
 	result = {
 		'name': user.username,
 		'joined_at': _serialize_datetime(user.date_joined),
 		'stats': stats,
+		'categories': categories,
 	}
 	if request.GET.get('include_library_items', 'true') == 'true':
 		result['library_items'] = [{
 			'id': record.work.id,
 			'title': record.work.title,
 			'status': _serialize_status(record),
+			'category': getattr(record.category, 'name', ""),
 		} for record in user.record_set.all()]
 	return result
