@@ -5,10 +5,14 @@ from work.models import Work
 from django.db.models.signals import pre_save, post_save, post_delete
 
 class StatusTypes:
-	Finished = 0
-	Watching = 1
-	Suspended = 2
-	Interested = 3
+	names = 'finished', 'watching', 'suspended', 'interested'
+
+	@staticmethod
+	def to_name(id):
+		return StatusTypes.names[id]
+
+for id, name in enumerate(StatusTypes.names):
+	setattr(StatusTypes, name.capitalize(), id)
 
 STATUS_TYPE_CHOICES = (
 	(StatusTypes.Finished, u'완료'),
@@ -17,7 +21,6 @@ STATUS_TYPE_CHOICES = (
 	(StatusTypes.Interested, u'볼 예정'),
 )
 STATUS_TYPE_NAMES = dict(STATUS_TYPE_CHOICES)
-STATUS_TYPE_DICT = dict(((v, k.lower()) for (k, v) in StatusTypes.__dict__.iteritems() if not k.startswith('_')))
 
 class Uncategorized(object):
 	def __init__(self, user):
@@ -60,6 +63,10 @@ class Record(models.Model):
 	@property
 	def history_set(self):
 		return self.user.history_set.filter(work=self.work)
+
+	@property
+	def status_type_name(self):
+		return StatusTypes.to_name(self.status_type)
 	
 	def delete(self, *args, **kwargs):
 		self.history_set.delete()
@@ -82,7 +89,7 @@ class History(models.Model):
 
 	@property
 	def status_type_name(self):
-		return STATUS_TYPE_DICT[self.status_type]
+		return StatusTypes.to_name(self.status_type)
 
 	class Meta:
 		ordering = ['-id']
