@@ -53,7 +53,8 @@ def get_records(request):
 def get_record(request, id):
 	history = get_object_or_404(History, id=id)
 	result = _history_as_dict(history)
-	result['related'] = [_history_as_dict(h) for h in History.objects.filter(work=history.work, status=history.status).exclude(user=history.user)]
+	if request.GET.get('include_related', 'true') == 'true':
+		result['related'] = [_history_as_dict(h) for h in History.objects.filter(work=history.work, status=history.status).exclude(user=history.user)]
 	return result
 
 @json_response
