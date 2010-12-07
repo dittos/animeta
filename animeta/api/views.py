@@ -1,4 +1,5 @@
 import json
+import itertools
 import functools
 import pytz
 from cStringIO import StringIO
@@ -7,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import Count
+from work.models import Work
 from record.models import History, StatusTypes
 from record.templatetags.status import status_text
 
@@ -86,3 +88,18 @@ def get_user(request, name):
 			'category': getattr(record.category, 'name', ""),
 		} for record in user.record_set.all()]
 	return result
+
+@json_response
+def get_work(request, id):
+	work = get_object_or_404(Work, id=id)
+
+	watchers = {'total': work.popularity}
+	for name in StatusTypes.names:
+		watchers[name] = []
+	for record in work.record_set.order_by('status_type', 'user__username'):
+		watchers[StatusTypes.to_name(record.status_type)].append(record.user.username)
+
+	return {
+		'title': work.title,
+		'watchers': watchers,
+	}
