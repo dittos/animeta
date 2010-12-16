@@ -2,4 +2,4 @@
 \.swp$
 \.orig$
 ^settings_local.py$
-^animeta-backup-[0-9]+\.sql$
+backup
