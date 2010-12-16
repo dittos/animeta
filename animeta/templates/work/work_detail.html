@@ -2,6 +2,22 @@
 
 {% load status history %}
 
+{% block head-extra %}
+	<meta property="og:title" content="{{ work.title }}" />
+	<meta property="og:type" content="tv_show" />
+	<meta property="og:url" content="http://animeta.net{% url work.views.detail work.title %}" />
+	<meta property="og:image" content="http://animeta.net/static/animeta.gif" />
+	<meta property="og:site_name" content="animeta" />
+	<meta property="og:description" content="" />
+	<meta property="fb:app_id" content="153413084690553" />
+	<script src="http://connect.facebook.net/ko_KR/all.js#xfbml=1"></script>
+{% endblock %}
+
+{% block nav %}
+{{ block.super }}
+<div id="facebook-like"><fb:like show_faces="false" width="300" height="35" font="segoe ui"></fb:like></div>
+{% endblock %}
+
 {% block content %}
 <div id="comments">
 <h2>기록</h2>
