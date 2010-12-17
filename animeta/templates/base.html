@@ -26,8 +26,8 @@
 		<li><a href="/recent/">최근 감상평</a></li>
 		<li><a href="/charts/works/weekly/">순위</a></li>
 	{% if user.is_authenticated %}
-		<li><a href="{{ user.get_absolute_url }}">내 라이브러리</a></li>
-		<li><a href="/connect/">외부 서비스 연동</a></li>
+		<li><a href="{{ user.get_absolute_url }}">내 기록</a></li>
+		<li id="menu-connect"><a href="/connect/">외부 서비스 연동</a></li>
 		<li><a href="/logout/">로그아웃</a></li>
 	{% else %}
 		<li><a href="/login/">로그인</a></li>

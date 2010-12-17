@@ -18,7 +18,7 @@ a img { border: none; }
 #nav h1 { margin: 0; font-size: 1.4em; float: left; }
 #nav a { text-decoration: none; margin-right: 1em; color: #4b4b4b; }
 #nav a:hover { position: relative; left: 1px; top: 1px; }
-#facebook-like { margin-left: 3em; margin-top: 0.3em; float: left; }
+#facebook-like { margin-left: 1.5em; margin-top: 0.3em; float: left; }
 #nav h1 a { margin: 0; }
 #messages, .message { background-color: #ffa; border: 1px solid #deb200; list-style: none; margin: 0 1em; padding: 0; }
 .message { margin: 0 0 1em 0; padding: 0.5em; }
@@ -137,6 +137,7 @@ form.inline p { padding-left: 1em; display: inline; }
 #nav .chart-nav a:hover { position: static; }
 
 /* Work Page */
+#nav .status { margin-right: 1em; }
 #nav .status a { margin-right: 0; }
 #nav .status a:hover { position: static; }
 #comments { padding-right: 1em; }
