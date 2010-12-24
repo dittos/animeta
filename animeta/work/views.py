@@ -57,6 +57,6 @@ def video(request, title, provider, id):
 def search(request):
 	keyword = request.GET.get('keyword', '')
 	return list_detail.object_list(request,
-		queryset = Work.objects.filter(title__contains=keyword),
+		queryset = Work.objects.filter(title__icontains=keyword),
 		extra_context = {'keyword': keyword},
 	)
