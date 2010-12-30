@@ -52,7 +52,7 @@ def twitter(request):
 			token = request.session['request_token']
 			del request.session['request_token']
 			auth.set_request_token(*token)
-			auth.get_access_token()
+			auth.get_access_token(request.GET.get('oauth_verifier'))
 
 			TwitterSetting.objects.create(
 				user=request.user, key=auth.access_token.key,

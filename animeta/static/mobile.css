@@ -1,0 +1,20 @@
+#header { text-align: center; }
+#header p { float: none; }
+#content { padding: 0.5em; }
+#menu { float: none; clear: both; margin-left: 0; margin-top: 0.5em; }
+#menu li#menu-connect { display: none; }
+#menu li { letter-spacing: -1px; margin: 0 0.5em; }
+#search, #join-now.popup { display: none; }
+#charts { float: none; width: auto; }
+#timeline { margin-right: 0; border-top: 1px solid #ccc; padding-top: 0.5em; }
+.column { width: auto; float: none; }
+#library-header p { display: block; margin-right: 0; }
+#forms, #history { float: none; width: auto; }
+#history { margin-left: 0; }
+form table, form table input, form table select { font-size: 1em; }
+form th { width: auto; }
+form.inline h2 { float: none; width: auto; }
+#id_comment { width: 15em; }
+#add-record { width: auto; }
+#comments { padding-right: 0; width: auto; float: none; }
+#videos { display: none; }

@@ -20,4 +20,4 @@ def suggest_works(query, user=None):
 	if user and user.is_authenticated():
 		queryset = queryset.exclude(id__in=user.record_set.values('work'))
 
-	return queryset.filter(title__startswith=query)
+	return queryset.filter(title__istartswith=query)
