@@ -31,7 +31,7 @@
 {% for item in chart %}
 <tr>
 	<td class="rank">{{ item.rank }}</td>
-{% if past_range %}
+{% if has_diff %}
 	<td class="diff">
 	{% if item.diff %}
 	{% if item.sign == 0 %}-

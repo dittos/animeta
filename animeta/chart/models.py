@@ -27,24 +27,32 @@ def rank(iterable):
 		}
 
 class Chart(object):
-	def __init__(self, range = None, limit=None):
+	def __init__(self, range=None, limit=None):
 		self.range = range
 		self.limit = limit
 		self.queryset = None
 
 	@property
 	def start(self):
-		return self.range[0]
+		return self.range.start
 
 	@property
 	def end(self):
-		return self.range[1]
+		return self.range.end
 
 	def __iter__(self):
 		if not self.queryset:
-			self.queryset = self.get_query_set().filter(factor__gt=1)[:self.limit]
+			self.queryset = self.get_query_set()
+			self.queryset = self.queryset.filter(factor__gt=1)[:self.limit]
 
 		return rank(self.queryset)
+
+	def _filter_by_range(self, queryset):
+		if self.range:
+			range = (self.range.start, datetime.datetime.combine(self.range.end, datetime.time(23, 59, 59)))
+			return queryset.filter(history__updated_at__range=range)
+		else:
+			return queryset
 
 	def get_query_set(self):
 		raise NotImplementedError
@@ -75,48 +83,19 @@ class DifferenceChart(Chart):
 class PopularWorksChart(Chart):
 	title = u'인기 작품'
 	def get_query_set(self):
-		qs = Work.objects
 		if self.range:
-			qs = qs.filter(history__updated_at__range=self.range)
 			group_by = 'history__user'
 		else:
 			group_by = 'record'
-		return qs.exclude(title='').annotate(factor=models.Count(group_by, distinct=True)).order_by('-factor', 'title')
+		return self._filter_by_range(Work.objects.exclude(title='')).annotate(factor=models.Count(group_by, distinct=True)).order_by('-factor', 'title')
 
 class ActiveUsersChart(Chart):
 	title = u'활발한 사용자'
 	def get_query_set(self):
-		qs = User.objects
-		if self.range:
-			qs = qs.filter(history__updated_at__range=self.range)
-		return qs.annotate(factor=models.Count('history')).order_by('-factor', 'username')
-
-def during(**kwargs):
-	now = datetime.datetime.now()
-	start = now - datetime.timedelta(**kwargs)
-	return (start, now)
+		return self._filter_by_range(User.objects.annotate(factor=models.Count('history'))).order_by('-factor', 'username')
 
 def weekly():
-	today = datetime.date.today()
-	# 오늘이 금요일(weekday=4)이라면, weekday+2일 전은 토요일.
-	weekday = today.weekday()
-	if weekday == 6: weekday = -1
-	end = today - datetime.timedelta(days=weekday + 2)
-	start = end - datetime.timedelta(days=6)
-	return (datetime.datetime(start.year, start.month, start.day),
-			datetime.datetime(end.year, end.month, end.day, 23, 59, 59))
-
-def past_week():
-	start, end = weekly()
-	week_delta = datetime.timedelta(weeks=1)
-	return (start - week_delta, end - week_delta)
+	return Week.last()
 
 def monthly():
-	today = datetime.date.today()
-	prev = prev_month(today.year, today.month)
-	return month_range(*prev)
-
-def past_month():
-	today = datetime.date.today()
-	prev = prev_month(today.year, today.month)
-	return month_range(*prev_month(*prev))
+	return Month.last()

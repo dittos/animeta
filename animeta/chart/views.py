@@ -12,14 +12,17 @@ def recent(request):
 		'timeline': History.objects.exclude(comment='')[:10]
 	})
 
-def detail(request, chart_class, range=None, past_range=None, title=''):
-	chart = chart_class(range)
-	if past_range:
-		chart = compare_charts(chart, chart_class(past_range))
+def detail(request, chart_class, range_class=None, title=''):
+	if range_class:
+		range = range_class.last()
+		chart = compare_charts(chart_class(range), chart_class(range.prev()))
+	else:
+		range = None
+		chart = chart_class()
+
 	return direct_to_template(request, 'chart/detail.html', {
 		'title': title,
 		'chart': chart,
 		'cache_key': str(chart_class) + '_' + repr(range),
-		'range': range,
-		'past_range': past_range,
+		'has_diff': range != None,
 	})
