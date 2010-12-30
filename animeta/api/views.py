@@ -94,12 +94,19 @@ def get_work(request, id):
 	work = get_object_or_404(Work, id=id)
 
 	watchers = {'total': work.popularity}
-	for name in StatusTypes.names:
-		watchers[name] = []
-	for record in work.record_set.order_by('status_type', 'user__username'):
-		watchers[StatusTypes.to_name(record.status_type)].append(record.user.username)
+	if request.GET.get('include_watchers', 'false') == 'true':
+		for name in StatusTypes.names:
+			watchers[name] = []
+		for record in work.record_set.order_by('status_type', 'user__username'):
+			watchers[StatusTypes.to_name(record.status_type)].append(record.user.username)
+	else:
+		for name in StatusTypes.names:
+			watchers[name] = 0
+		for d in work.record_set.values('status_type').annotate(count=Count('status_type')).order_by():
+			watchers[StatusTypes.to_name(d['status_type'])] = d['count']
 
 	return {
 		'title': work.title,
+		'rank': work.rank,
 		'watchers': watchers,
 	}
