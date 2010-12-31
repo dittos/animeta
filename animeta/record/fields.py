@@ -18,5 +18,5 @@ class StatusTypeField(models.SmallIntegerField):
 		elif isinstance(value, str) or isinstance(value, unicode):
 			return StatusTypes.from_name(value)
 
-	def get_db_prep_value(self, value):
+	def get_prep_value(self, value):
 		return value.id

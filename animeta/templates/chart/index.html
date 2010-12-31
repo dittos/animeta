@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load status history %}
+{% load status history cache %}
 
 {% block head-extra %}
 <style type="text/css">#nav { display: none; }</style>
@@ -8,6 +8,7 @@
 
 {% block content %}
 <div id="charts">
+{% cache 86400 sidebar %}
 <h2><a href="/charts/works/weekly/">주간 인기 작품</a></h2>
 <ol>
 {% for item in weekly_works %}
@@ -21,6 +22,7 @@
 	<li><span class="rank">{{ item.rank }}위</span> <a href="{{ item.object.get_absolute_url }}">{{ item.object }}</a></li>
 {% endfor %}
 </ol>
+{% endcache %}
 
 <h2>오늘 가입한 사용자</h2>
 <ul id="newbies">
