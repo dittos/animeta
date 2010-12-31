@@ -5,7 +5,7 @@
 
 {% for group in groups %}
 <div class="status-group">
-<h2>{{ group.list.0.get_status_type_display }} ({{ group.list|length }}명)</h2>
+<h2>{{ group.list.0.status_type.text }} ({{ group.list|length }}명)</h2>
 <ul>
 {% for record in group.list %}
 	<li><a href="{% url user.views.library record.user %}">{{ record.user }}</a></li>

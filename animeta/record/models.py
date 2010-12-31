@@ -1,26 +1,53 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.contrib.auth.models import User
-from work.models import Work
 from django.db.models.signals import pre_save, post_save, post_delete
+from work.models import Work
+
+class StatusType(object):
+	def __init__(self, id, text):
+		self.id = id
+		self.text = text
+
+	def __unicode__(self):
+		return self.name
+	
+def organize_types(name, bases, dict):
+	types = []
+	for k, v in dict.iteritems():
+		if isinstance(v, StatusType):
+			v.name = k.lower()
+			types.append(v)
+	types.sort(key=lambda t: t.id)
+	dict['types'] = types
+
+	return type(name, bases, dict)
 
 class StatusTypes:
-	names = 'finished', 'watching', 'suspended', 'interested'
+	Finished = StatusType(0, u'완료')
+	Watching = StatusType(1, u'보는 중')
+	Suspended = StatusType(2, u'중단')
+	Interested = StatusType(3, u'볼 예정')
+
+	__metaclass__ = organize_types
 
 	@staticmethod
-	def to_name(id):
-		return StatusTypes.names[id]
+	def to_name(t):
+		return t.name
 
-for id, name in enumerate(StatusTypes.names):
-	setattr(StatusTypes, name.capitalize(), id)
+	@staticmethod
+	def from_id(id):
+		return StatusTypes.types[id]
 
-STATUS_TYPE_CHOICES = (
-	(StatusTypes.Finished, u'완료'),
-	(StatusTypes.Watching, u'보는 중'),
-	(StatusTypes.Suspended, u'중단'),
-	(StatusTypes.Interested, u'볼 예정'),
-)
-STATUS_TYPE_NAMES = dict(STATUS_TYPE_CHOICES)
+	@staticmethod
+	def from_name(name):
+		t = getattr(StatusTypes, name.capitalize())
+		if t.name != name:
+			return None
+		else:
+			return t
+
+from record.fields import StatusTypeField # circular dependency
 
 class Uncategorized(object):
 	def __init__(self, user):
@@ -56,7 +83,7 @@ class Record(models.Model):
 	user = models.ForeignKey(User)
 	work = models.ForeignKey(Work)
 	status = models.CharField(max_length=30, blank=True)
-	status_type = models.SmallIntegerField(choices=STATUS_TYPE_CHOICES, default=StatusTypes.Watching)
+	status_type = StatusTypeField()
 	category = models.ForeignKey(Category, null=True)
 	updated_at = models.DateTimeField()
 
@@ -79,7 +106,7 @@ class History(models.Model):
 	user = models.ForeignKey(User, editable=False)
 	work = models.ForeignKey(Work, editable=False)
 	status = models.CharField(max_length=30, blank=True, verbose_name=u'감상 상태')
-	status_type = models.SmallIntegerField(choices=STATUS_TYPE_CHOICES, default=StatusTypes.Watching)
+	status_type = StatusTypeField()
 	comment = models.TextField(blank=True, verbose_name=u'감상평')
 	updated_at = models.DateTimeField(auto_now=True)
 

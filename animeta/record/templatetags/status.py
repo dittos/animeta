@@ -4,7 +4,7 @@ import string
 from django import template
 from django.template.defaultfilters import stringfilter
 from django.core.urlresolvers import reverse
-from record.models import StatusTypes, STATUS_TYPE_NAMES
+from record.models import StatusTypes
 
 register = template.Library()
 
@@ -14,7 +14,7 @@ def status_text(record):
 		status += u'화'
 
 	if record.status_type != StatusTypes.Watching or status == '':
-		status_type_name = STATUS_TYPE_NAMES[record.status_type]
+		status_type_name = record.status_type.text
 		if status != '':
 			status += ' (' + status_type_name + ')'
 		else:
