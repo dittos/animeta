@@ -123,14 +123,14 @@ def get_works(request):
 			queryset = queryset.filter(title__iexact=keyword)
 		elif match == 'prefix':
 			queryset = queryset.filter(title__istartswith=keyword)
-		elif match == 'simillar':
-			queryset = queryset.extra(select={'dist': 'title_distance(%s, title)'}, select_params=[keyword], where=['dist<=0.5'])
+		elif match == 'similar':
+			queryset = queryset.extra(select={'dist': 'title_distance(%s, title)'}, select_params=[keyword])
 		else: #match == 'contains'
 			queryset = queryset.filter(title__icontains=keyword)
 
 	if sort == 'title':
 		queryset = queryset.order_by('title')
-	elif sort == 'relevance' and match == 'simillar':
+	elif sort == 'relevance' and match == 'similar':
 		queryset = queryset.extra(order_by=['dist'])
 	else: #sort == 'popular'
 		queryset = queryset.annotate(factor=Count('record', distinct=True)).exclude(factor=0).order_by('-factor', 'title')
