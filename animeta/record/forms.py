@@ -2,7 +2,7 @@
 
 from django import forms
 from django.forms.formsets import formset_factory
-from record.models import Record, Category, History
+from record.models import Record, Category, History, StatusTypes
 from work.models import Work
 
 class RecordUpdateForm(forms.ModelForm):
@@ -56,3 +56,10 @@ class SimpleRecordForm(forms.Form):
 	work_title = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'autocomplete', 'size': 30}))
 
 SimpleRecordFormSet = formset_factory(SimpleRecordForm, extra=12)
+
+class RecordFilterForm(forms.Form):
+	type = forms.TypedChoiceField(
+		choices = [('', u'전체')] + [(t, t.text) for t in StatusTypes.types],
+		coerce = StatusTypes.from_name,
+		required = False,
+	)

@@ -9,8 +9,7 @@
 <p>작품이 {{ record_count }}개 등록되어 있습니다.</p>
 
 <p>
-<input type="checkbox" name="finished" value="hide"{% if hide_finished %} checked="checked"{% endif %} id="hide-finished" />
-<label for="hide-finished">보는 중인 작품만 표시</label>
+상태: {{ filter_form.type }}
 </p>
 
 <p>
@@ -36,7 +35,7 @@ function submit_when_changed(selector) {
 }
 
 submit_when_changed('#category').next('input:submit').hide()
-submit_when_changed('#hide-finished')
+submit_when_changed('#id_type')
 </script>
 </form>
 </div>

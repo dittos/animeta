@@ -9,6 +9,7 @@ from django.contrib.auth.views import login as login_view
 from django.contrib.auth.forms import UserCreationForm
 from chart.models import weekly, PopularWorksChart
 from record.models import Uncategorized, StatusTypes
+from record.forms import RecordFilterForm
 
 @csrf_protect
 def welcome(request):
@@ -54,9 +55,9 @@ def library(request, username):
 	records = user.record_set
 	record_count = records.count()
 
-	hide_finished = request.GET.get('finished') == 'hide'
-	if hide_finished:
-		records = records.filter(status_type=StatusTypes.Watching)
+	filter_form = RecordFilterForm(request.GET)
+	if filter_form.is_valid() and filter_form.cleaned_data['type']:
+		records = records.filter(status_type=filter_form.cleaned_data['type'])
 
 	category_filter = None
 	if request.GET.get('category'):
@@ -72,8 +73,8 @@ def library(request, username):
 		'categories': [Uncategorized(user)] + list(user.category_set.all()),
 		'record_count': record_count,
 		'finished_count': user.record_set.filter(status='').count(),
-		'hide_finished': hide_finished,
 		'category_filter': category_filter,
+		'filter_form': filter_form,
 	})
 
 def history(request, username):

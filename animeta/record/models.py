@@ -41,8 +41,8 @@ class StatusTypes:
 
 	@staticmethod
 	def from_name(name):
-		t = getattr(StatusTypes, name.capitalize())
-		if t.name != name:
+		t = getattr(StatusTypes, name.capitalize(), None)
+		if t is None or t.name != name:
 			return None
 		else:
 			return t
