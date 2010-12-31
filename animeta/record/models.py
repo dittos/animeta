@@ -33,7 +33,10 @@ class StatusTypes:
 
 	@staticmethod
 	def to_name(t):
-		return t.name
+		if isinstance(t, StatusType):
+			return t.name
+		elif isinstance(t, int):
+			return StatusTypes.from_id(t).name
 
 	@staticmethod
 	def from_id(id):

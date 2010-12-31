@@ -65,8 +65,8 @@ def get_user(request, name):
 	user = get_object_or_404(User, username=name)
 
 	stats = {'total': user.record_set.count()}
-	for name in StatusTypes.names:
-		stats[name] = 0
+	for t in StatusTypes.types:
+		stats[t.name] = 0
 	for d in user.record_set.values('status_type').annotate(count=Count('status_type')).order_by():
 		stats[StatusTypes.to_name(d['status_type'])] = d['count']
 
@@ -89,24 +89,55 @@ def get_user(request, name):
 		} for record in user.record_set.all()]
 	return result
 
-@json_response
-def get_work(request, id):
-	work = get_object_or_404(Work, id=id)
-
+def _work_as_dict(work, include_watchers=False):
 	watchers = {'total': work.popularity}
-	if request.GET.get('include_watchers', 'false') == 'true':
-		for name in StatusTypes.names:
-			watchers[name] = []
+	if include_watchers:
+		for t in StatusTypes.types:
+			watchers[t.name] = []
 		for record in work.record_set.order_by('status_type', 'user__username'):
 			watchers[StatusTypes.to_name(record.status_type)].append(record.user.username)
 	else:
-		for name in StatusTypes.names:
-			watchers[name] = 0
+		for t in StatusTypes.types:
+			watchers[t.name] = 0
 		for d in work.record_set.values('status_type').annotate(count=Count('status_type')).order_by():
 			watchers[StatusTypes.to_name(d['status_type'])] = d['count']
 
 	return {
+		'id': work.id,
 		'title': work.title,
 		'rank': work.rank,
 		'watchers': watchers,
 	}
+
+@json_response
+def get_works(request):
+	count = min(int(request.GET.get('count', 20)), 100)
+	keyword = request.GET.get('keyword', '')
+	match = request.GET.get('match', 'contains')
+	sort = request.GET.get('sort', 'popular')
+
+	queryset = Work.objects.all()
+
+	if keyword.strip():
+		if match == 'exact':
+			queryset = queryset.filter(title__iexact=keyword)
+		elif match == 'prefix':
+			queryset = queryset.filter(title__istartswith=keyword)
+		elif match == 'simillar':
+			queryset = queryset.extra(select={'dist': 'title_distance(%s, title)'}, select_params=[keyword], where=['dist<=0.5'])
+		else: #match == 'contains'
+			queryset = queryset.filter(title__icontains=keyword)
+
+	if sort == 'title':
+		queryset = queryset.order_by('title')
+	elif sort == 'relevance' and match == 'simillar':
+		queryset = queryset.extra(order_by=['dist'])
+	else: #sort == 'popular'
+		queryset = queryset.annotate(factor=Count('record', distinct=True)).exclude(factor=0).order_by('-factor', 'title')
+
+	return [_work_as_dict(work) for work in queryset[:count]]
+
+@json_response
+def get_work(request, id):
+	work = get_object_or_404(Work, id=id)
+	return _work_as_dict(work, request.GET.get('include_watchers', 'false') == 'true')
