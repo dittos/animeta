@@ -1,25 +1,13 @@
-import json
-import itertools
-import functools
 import pytz
 from cStringIO import StringIO
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import Count
-from oauth_provider.decorators import oauth_required
+from api.decorators import json_response, oauth_required
 from work.models import Work
 from record.models import History, StatusTypes
 from record.templatetags.status import status_text
-
-def json_response(view):
-	@functools.wraps(view)
-	def wrapper(*args, **kwargs):
-		response = HttpResponse(mimetype='application/json')
-		json.dump(view(*args, **kwargs), response)
-		return response
-	return wrapper
 
 def _serialize_datetime(dt):
 	return pytz.timezone(settings.TIME_ZONE).localize(dt).isoformat()
@@ -146,7 +134,7 @@ def get_work(request, id):
 @oauth_required
 @json_response
 def nop(request):
-	return True
+	return request.user.username == request.GET.get('username', '')
 
 def oauth_authorize(request, request_token, callback_url, params):
 	return render_to_response('connect/authorize.html', {'token': request_token.key})
