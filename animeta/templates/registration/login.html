@@ -13,8 +13,7 @@
 <p class="message">없는 아이디거나 암호가 틀렸습니다. 다시 시도해보세요.</p>
 {% endif %}
 
-{% with request.META.HTTP_REFERER as next %}
+<form method="post" action="" id="login-form">
 {% include "registration/login_form.html" %}
-{% endwith %}
 </form>
 {% endblock %}

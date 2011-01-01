@@ -1,8 +1,4 @@
-<form method="post" action="/login/" id="login-form">
 {% csrf_token %}
-{% if next %}
-<input type="hidden" name="next" value="{{ next }}" />
-{% endif %}
 <table>
 <tr>
 	<th><label for="login_username">아이디:</label></th>
@@ -21,3 +17,5 @@
 	<td><input type="submit" value="로그인" class="button" /></td>
 </tr>
 </table>
+
+<script type="text/javascript">$(function() { $('#login_username').focus() })</script>

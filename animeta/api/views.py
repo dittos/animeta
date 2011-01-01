@@ -4,10 +4,11 @@ import functools
 import pytz
 from cStringIO import StringIO
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render_to_response
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import Count
+from oauth_provider.decorators import oauth_required
 from work.models import Work
 from record.models import History, StatusTypes
 from record.templatetags.status import status_text
@@ -141,3 +142,11 @@ def get_works(request):
 def get_work(request, id):
 	work = get_object_or_404(Work, id=id)
 	return _work_as_dict(work, request.GET.get('include_watchers', 'false') == 'true')
+
+@oauth_required
+@json_response
+def nop(request):
+	return True
+
+def oauth_authorize(request, request_token, callback_url, params):
+	return render_to_response('connect/authorize.html', {'token': request_token.key})

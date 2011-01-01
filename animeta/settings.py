@@ -85,6 +85,7 @@ INSTALLED_APPS = (
 	'django.contrib.sessions',
 	'django.contrib.contenttypes',
 	'south',
+	'oauth_provider',
 	'animeta.work',
 	'animeta.record',
 	'animeta.user',
@@ -94,6 +95,7 @@ INSTALLED_APPS = (
 )
 
 LOGIN_URL = '/login/'
+OAUTH_AUTHORIZE_VIEW = 'animeta.api.views.oauth_authorize'
 
 try:
 	from settings_local import *

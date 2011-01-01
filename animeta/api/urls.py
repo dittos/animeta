@@ -6,4 +6,6 @@ urlpatterns = patterns('api.views',
 	(r'^v1/users/(?P<name>[A-Za-z0-9_-]+)$', 'get_user'),
 	(r'^v1/works$', 'get_works'),
 	(r'^v1/works/(?P<id>[0-9]+)$', 'get_work'),
+	(r'^v1/nop$', 'nop'),
+	(r'^oauth/', include('oauth_provider.urls')),
 )
