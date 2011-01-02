@@ -94,7 +94,6 @@ INSTALLED_APPS = (
 )
 
 LOGIN_URL = '/login/'
-OAUTH_AUTHORIZE_VIEW = 'animeta.api.views.oauth_authorize'
 
 try:
 	from settings_local import *

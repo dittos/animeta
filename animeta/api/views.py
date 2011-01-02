@@ -4,7 +4,8 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import Count
-from api.decorators import json_response, oauth_required
+from oauth_provider.decorators import oauth_required
+from api.decorators import json_response
 from work.models import Work
 from record.models import History, StatusTypes
 from record.templatetags.status import status_text
@@ -135,6 +136,3 @@ def get_work(request, id):
 @json_response
 def nop(request):
 	return request.user.username == request.GET.get('username', '')
-
-def oauth_authorize(request, request_token, callback_url, params):
-	return render_to_response('connect/authorize.html', {'token': request_token.key})
