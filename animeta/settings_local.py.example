@@ -19,4 +19,3 @@ TWITTER_CONSUMER_SECRET = ''
 
 SESSION_COOKIE_DOMAIN = None
 #SESSION_COOKIE_DOMAIN = '.animeta.net'
-#LOGIN_URL = 'http://animeta.net/login/'
