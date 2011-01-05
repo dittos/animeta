@@ -76,6 +76,7 @@ def get_user(request, name):
 			'title': record.work.title,
 			'status': _serialize_status(record),
 			'category': getattr(record.category, 'name', ""),
+			'updated_at': _serialize_datetime(record.updated_at),
 		} for record in user.record_set.all()]
 	return result
 
