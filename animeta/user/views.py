@@ -44,8 +44,11 @@ def signup(request):
 	return direct_to_template(request, 'registration/signup.html', {'form': form})
 
 def shortcut(request, username):
-	user = get_object_or_404(User, username=username)
-	return HttpResponseRedirect('/users/%s/' % username)
+	try:
+		user = User.objects.get(username=username)
+		return HttpResponseRedirect('/users/%s/' % username)
+	except User.DoesNotExist:
+		return HttpResponseRedirect('/%s/' % username)
 
 def library(request, username):
 	if not username and request.user.is_authenticated():
