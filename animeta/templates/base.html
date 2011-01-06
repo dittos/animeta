@@ -19,43 +19,39 @@
 	{% block head-extra %}{% endblock %}
 </head>
 <body>
-<div id="header">
-	<p><a href="/"><img src="/static/animeta.gif" alt="animeta" /></a></p>
-
-	<ul id="menu">
-		<li><a href="/recent/">최근 감상평</a></li>
-		<li><a href="/charts/works/weekly/">순위</a></li>
-	{% if user.is_authenticated %}
-		<li><a href="{{ user.get_absolute_url }}">내 기록</a></li>
-		<li id="menu-connect"><a href="/connect/">외부 서비스 연동</a></li>
-		<li><a href="/logout/">로그아웃</a></li>
-	{% else %}
-		<li><a href="/login/">로그인</a></li>
-		<li><a href="/signup/">회원가입</a></li>
-	{% endif %}
-	</ul>
-
-	<form action="/works/search/" id="search">
-		<input type="text" name="keyword" size="15" />
-		<input type="submit" value="작품 찾기" />
-	</form>
-</div>
-
-<div id="container">
 {% block join-now %}
 {% if not user.is_authenticated %}
-<div id="join-now" class="popup">
+<div id="join-now">
 <p><strong>애니메타</strong>는 애니메이션, 만화, 드라마 등의 감상 기록을 관리할 수 있는 서비스입니다.<br />내가 본 작품에 대해 간편하게 기록하고 다른 사람들과 느낌을 나눠보세요.
 <strong>아직 회원이 아니신가요? <a href="/signup/">가입하기 &raquo;</a></strong></p>
 </div>
 {% endif %}
 {% endblock %}
 
-<div id="nav">
-{% block nav %}
-{% endblock %}
+<div id="header">
+<div class="inner">
+	<p><a href="/"><img src="/static/animeta.gif" alt="animeta" /></a></p>
+
+	<ul class="menu" id="global-menu">
+		<li><a href="/recent/">최근 감상평</a></li>
+		<li><a href="/works/search/">작품 찾기</a></li>
+		<li><a href="/charts/works/weekly/">순위</a></li>
+	</ul>
+
+	<ul class="menu" id="account-menu">
+	{% if user.is_authenticated %}
+		<li><a href="{{ user.get_absolute_url }}">내 기록</a></li>
+		<li id="menu-connect"><a href="/settings/">설정</a></li>
+		<li><a href="/logout/">로그아웃</a></li>
+	{% else %}
+		<li><a href="/login/">로그인</a></li>
+		<li><a href="/signup/">회원가입</a></li>
+	{% endif %}
+	</ul>
+</div>
 </div>
 
+<div id="container">
 {% if messages %}
 <ul id="messages">
 {% for message in messages %}
@@ -72,6 +68,11 @@ $('#close-messages a').click(function(event) {
 })
 </script>
 {% endif %}
+
+<div id="nav">
+{% block nav %}
+{% endblock %}
+</div>
 
 <div id="content">
 {% block content %}

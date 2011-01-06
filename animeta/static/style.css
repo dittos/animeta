@@ -4,21 +4,22 @@ body, input, textarea, select, optgroup, option
 	{ font-family: Segoe UI, Malgun Gothic, sans-serif; }
 a { color: #4bb000; }
 a img { border: none; }
+.inner, #nav, #content, #footer { width: 960px; margin: 0 auto; }
 #header { background: #fff url(bg.gif) bottom left repeat-x; padding: 1em; border-top: 5px solid #4bb000; overflow: hidden; zoom: 1; }
 #header p { margin: 0; float: left; }
-#menu { float: left; margin: 0; padding: 0; list-style: none; margin-left: 2em; }
-#menu li { margin-right: 1em; display: inline; }
-#menu li a { font-size: 1.1em; text-decoration: none; line-height: 1.6; }
+.menu { float: right; margin: 0; padding: 0; list-style: none; margin-left: 2em; }
+.menu li { margin-right: 1em; display: inline; }
+.menu li a { font-size: 1.1em; text-decoration: none; line-height: 1.6; }
 #account { float: right; color: #999; }
 #account a { text-decoration: none; }
 #account a:hover { text-decoration: underline; }
 #container { background: #fff url(navbg.gif) repeat-x; }
-#nav { padding: 0.5em 1em; float: left; clear: both; }
+#nav { padding: 0.5em 0; }
 #nav p { font-size: 0.9em; margin: 0.6em 0 0.6em 1.5em; float: left; }
 #nav h1 { margin: 0; font-size: 1.4em; float: left; }
 #nav a { text-decoration: none; margin-right: 1em; color: #4b4b4b; }
 #nav a:hover { position: relative; left: 1px; top: 1px; }
-#facebook-like { margin-left: 1.5em; margin-top: 0.3em; float: left; }
+#facebook-like { margin-left: 1.5em; margin-top: 0.5em; float: left; }
 #nav h1 a { margin: 0; }
 #messages, .message { background-color: #ffa; border: 1px solid #deb200; list-style: none; margin: 0 1em; padding: 0; }
 .message { margin: 0 0 1em 0; padding: 0.5em; }
@@ -34,21 +35,21 @@ form th { text-align: right; width: 6em; font-weight: normal; }
 form .description { font-size: 0.8em; margin-left: 0.8em; color: #999; vertical-align: 0.2em; }
 #content h1 { margin-top: 0; font-size: 1.4em; }
 #content h2 { font-size: 1.2em; margin: 0 0 1em; }
-#footer { padding: 2em; font-size: 0.9em; clear: both; margin: 0; color: #666; }
+#footer { padding: 2em; font-size: 0.9em; clear: both; margin-top: 0; color: #666; }
 #footer a { text-decoration: none; color: #666; border-bottom: 1px solid #ccc; }
 
 /* Welcome Page */
-#intro { line-height: 1.6; padding: 0 1em; }
-.aside { padding-top: 0.5em; margin: 0 1em 0 650px; width: 20em; }
-#join-now { font-size: 1.1em; background-color: #ffa; border: 1px solid #deb200; padding: 0.5em; }
-#join-now a { font-weight: bold; text-decoration: none; color: #deb200; }
-#join-now.popup { padding: 0 0.5em; border-width: 0 0 1px 0; }
-#join-now p { margin: 0; padding: 1em; line-height: 1.8; }
+#intro { line-height: 1.6; }
+.aside { padding-top: 0.5em; margin: 0 0 0 650px; width: 20em; }
+#join-now { background-color: #666; color: #eee; text-align: center; }
+#join-now a { font-weight: bold; text-decoration: none; }
+#join-now p { margin: 0; line-height: 1.8; padding: 0.5em; text-shadow: 1px 0 #333; }
+#join-now strong { color: #fff; }
 #screenshot { margin-left: -0.5em; float: left; }
 
 /* Main Page */
-#charts { float: right; width: 15em; }
-#timeline { margin-right: 17em; }
+#charts { float: right; width: 17em; }
+#timeline { margin-right: 18em; }
 ol.chart, #charts ol { margin-left: 0.5em; padding: 0; list-style: none; }
 #newbies { list-style: none; margin-left: 1em; padding: 0; }
 #chart { border-collapse: collapse; background-color: #f8f8f8; }
@@ -140,9 +141,8 @@ form.inline p { padding-left: 1em; display: inline; }
 #nav .status { margin-right: 1em; }
 #nav .status a { margin-right: 0; }
 #nav .status a:hover { position: static; }
-#comments { padding-right: 1em; }
-#comments, #videos { width: 48%; float: left; overflow: hidden; }
-#videos { margin-bottom: 1em; }
+#comments { padding-right: 1em; margin-right: 410px; }
+#videos { margin-bottom: 1em; width: 410px; float: right; }
 #videos td { width: 120px; vertical-align: top; padding: 0.5em; }
 #videos td a { color: #666; }
 #videos .date, #videos .title { display: block; }

@@ -15,27 +15,23 @@
 
 {% block nav %}
 {{ block.super }}
-<div id="facebook-like"><fb:like show_faces="false" width="300" height="35" font="segoe ui"></fb:like></div>
+<div id="facebook-like"><fb:like show_faces="false" layout="button_count" width="100" height="35" font="segoe ui"></fb:like></div>
 {% endblock %}
 
 {% block content %}
+<div id="videos">
+<h2>동영상</h2>
+<div id="video-search-result">
+</div>
+
+<p><a href="http://tvpot.daum.net/search/#service=clip&amp;q={{ work.title|urlencode }}">전체 보기...</a> / 동영상 검색 제공: <a href="http://tvpot.daum.net/">다음 TV팟</a></p>
+</div>
+
 <div id="comments">
 <h2>기록</h2>
 {% for history in comments %}
 	{% show_history history "user" %}
 {% endfor %}
-</div>
-
-<div id="videos">
-<h2>동영상</h2>
-<p>동영상 검색 제공: <a href="http://tvpot.daum.net/">다음 TV팟</a></p>
-
-<div id="video-search-result">
-<p>
-	<noscript>자바스크립트를 지원하는 브라우저에서만 보입니다.</noscript>
-	<a href="http://tvpot.daum.net/search/Tvpot.do?q={{ work.title|urlencode }}">직접 검색</a>
-</p>
-</div>
 </div>
 
 {% if daum_api_key %}
