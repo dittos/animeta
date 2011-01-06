@@ -11,12 +11,18 @@
 <tr>
 	<td class="name">미투데이</td>
 	<td class="description">기록을 남기면 미투데이에 함께 글이 올라갑니다.</td>
-	<td class="connection"><a href="/connect/me2day/">설정</a></td>
+	<td class="connection">
+		{% if "me2day" in services %}연동됨{% else %}연동 안됨{% endif %} |
+		<a href="/connect/me2day/">설정</a>
+	</td>
 </tr>
 <tr>
 	<td class="name">트위터</td>
 	<td class="description">기록을 남기면 트윗이 함께 올라갑니다.</td>
-	<td class="connection"><a href="/connect/twitter/">설정</a></td>
+	<td class="connection">
+		{% if "twitter" in services %}연동됨{% else %}연동 안됨{% endif %} |
+		<a href="/connect/twitter/">설정</a>
+	</td>
 </tr>
 <tr>
 	<td class="name">블로그 위젯</td>

@@ -3,6 +3,7 @@ from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
 from django.contrib.auth.decorators import login_required
+from connect import get_connected_services
 from connect.models import Me2Setting, TwitterSetting
 
 import me2day as me2
@@ -10,6 +11,12 @@ try:
 	import tweepy
 except:
 	pass
+
+@login_required
+def services(request):
+	return direct_to_template(request, 'connect/services.html', {
+		'services': [service.name.lower() for (service, _) in get_connected_services(request.user)]
+	})
 
 @login_required
 def me2day(request):
