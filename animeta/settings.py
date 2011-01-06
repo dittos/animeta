@@ -94,6 +94,7 @@ INSTALLED_APPS = (
 )
 
 LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/library/'
 
 try:
 	from settings_local import *

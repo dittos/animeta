@@ -7,6 +7,7 @@ from django.contrib.auth import login as _login
 from django.contrib.auth.models import User
 from django.contrib.auth.views import login as login_view
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
 from chart.models import weekly, PopularWorksChart
 from record.models import Uncategorized, StatusTypes
 from record.forms import RecordFilterForm
@@ -37,11 +38,15 @@ def signup(request):
 			user.backend = 'django.contrib.auth.backends.ModelBackend'
 			_login(request, user)
 			request.session.set_expiry(0)
-			return HttpResponseRedirect('/accounts/profile/')
+			return HttpResponseRedirect('/users/%s/' % user.username)
 	else:
 		form = UserCreationForm()
 
 	return direct_to_template(request, 'registration/signup.html', {'form': form})
+
+@login_required
+def settings(request):
+	return direct_to_template(request, 'user/settings.html')
 
 def shortcut(request, username):
 	try:
@@ -50,11 +55,12 @@ def shortcut(request, username):
 	except User.DoesNotExist:
 		return HttpResponseRedirect('/%s/' % username)
 
-def library(request, username):
-	if not username and request.user.is_authenticated():
-		return HttpResponseRedirect(request.user.get_absolute_url())
+def library(request, username=None):
+	if username:
+		user = get_object_or_404(User, username=username)
+	else:
+		user = request.user
 
-	user = get_object_or_404(User, username=username)
 	records = user.record_set
 	record_count = records.count()
 

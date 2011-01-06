@@ -1,23 +1,27 @@
-{% extends "connect/base.html" %}
+{% extends "user/settings.html" %}
 
 {% block content %}
-<ul>
-	<li>
-		<h2>미투데이</h2>
-		<p>기록을 남기면 미투데이에 함께 글이 올라갑니다.</p>
-		<p><a href="/connect/me2day/">설정</a></p>
-	</li>
-
-	<li>
-		<h2>트위터</h2>
-		<p>기록을 남기면 트윗이 함께 올라갑니다.</p>
-		<p><a href="/connect/twitter/">설정</a></p>
-	</li>
-
-	<li>
-		<h2>블로그 위젯</h2>
-		<p>블로그에 애니메타 기록을 중계해보세요!</p>
-		<p><a href="/connect/widget/">설치 방법</a></p>
-	</li>
-</ul>
+<h2>외부 서비스 연동</h2>
+<table id="services">
+<tr>
+	<th>서비스 이름</th>
+	<th>설명</th>
+	<th>연동 상태</th>
+</tr>
+<tr>
+	<td class="name">미투데이</td>
+	<td class="description">기록을 남기면 미투데이에 함께 글이 올라갑니다.</td>
+	<td class="connection"><a href="/connect/me2day/">설정</a></td>
+</tr>
+<tr>
+	<td class="name">트위터</td>
+	<td class="description">기록을 남기면 트윗이 함께 올라갑니다.</td>
+	<td class="connection"><a href="/connect/twitter/">설정</a></td>
+</tr>
+<tr>
+	<td class="name">블로그 위젯</td>
+	<td class="description">블로그에 애니메타 기록을 중계해보세요!</td>
+	<td class="connection"><a href="/connect/widget/">설치 방법</a></td>
+</tr>
+</table>
 {% endblock %}
