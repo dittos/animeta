@@ -1,9 +1,9 @@
 #header { text-align: center; }
 #header p { float: none; }
 #content { padding: 0.5em; }
-#menu { float: none; clear: both; margin-left: 0; margin-top: 0.5em; }
-#menu li#menu-connect { display: none; }
-#menu li { letter-spacing: -1px; margin: 0 0.5em; }
+.menu { float: none; clear: both; margin-left: 0; margin-top: 0.5em; }
+.menu li.menu-connect { display: none; }
+.menu li { letter-spacing: -1px; margin: 0 0.5em; }
 #search, #join-now.popup { display: none; }
 #charts { float: none; width: auto; }
 #timeline { margin-right: 0; border-top: 1px solid #ccc; padding-top: 0.5em; }

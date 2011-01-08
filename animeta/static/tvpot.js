@@ -1,6 +1,6 @@
 function TVPot(api_key) {
 	this.API_KEY = api_key
-	this.results_per_page = 3
+	this.results_per_page = 6
 	this.page = 1
 }
 
@@ -39,11 +39,9 @@ TVPot.prototype.search_complete = function(data) {
 			'<span class="date">' + format_date(item.pubDate) + '</span></td>'
 	}
 	markup += '</tr></table>'
-	/*
 	if (this.page > 1)
 		markup += '<a href="#tvpot-page' + (this.page - 1) + '" onclick="tvpot.prev_page()" id="tvpot-page' + (this.page - 1) + '">이전</a> | '
 	markup += '<a href="#tvpot-page' + (this.page + 1) + '" onclick="tvpot.next_page()" id="tvpot-page' + (this.page + 1) + '">다음</a>'
-	*/
 	this.$element.html(markup)
 }
 
