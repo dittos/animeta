@@ -92,7 +92,7 @@ class PopularWorksChart(Chart):
 class ActiveUsersChart(Chart):
 	title = u'활발한 사용자'
 	def get_query_set(self):
-		return self._filter_by_range(User.objects.annotate(factor=models.Count('history'))).order_by('-factor', 'username')
+		return self._filter_by_range(User.objects).annotate(factor=models.Count('history')).order_by('-factor', 'username')
 
 def weekly():
 	return Week.last()
