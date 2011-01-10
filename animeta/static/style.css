@@ -1,19 +1,19 @@
 /* Global Layout */
 body { margin: 0; font-size: 14px; }
 body, input, textarea, select, optgroup, option
-	{ font-family: Segoe UI, Malgun Gothic, sans-serif; }
+	{ font-family: Malgun Gothic, sans-serif; }
 a { color: #4bb000; }
 a img { border: none; }
-.inner, #nav, #content, #footer { width: 960px; margin: 0 auto; }
-#header { background: #fff url(bg.gif) bottom left repeat-x; padding: 1em; border-top: 5px solid #4bb000; overflow: hidden; zoom: 1; }
+#container { background: #fff url(bg.gif) repeat-x; }
+#header, #nav, #content, #footer { width: 960px; margin: 0 auto; }
+#header { padding: 1em; overflow: hidden; zoom: 1; }
 #header p { margin: 0; float: left; }
 .menu { float: right; margin: 0; padding: 0; list-style: none; margin-left: 2em; }
 .menu li { margin-right: 1em; display: inline; }
-.menu li a { font-size: 1.1em; text-decoration: none; line-height: 1.6; }
+.menu li a { font-weight: bold; font-size: 1.1em; text-decoration: none; line-height: 2; }
 #account { float: right; color: #999; }
 #account a { text-decoration: none; }
 #account a:hover { text-decoration: underline; }
-#container { background: #fff url(navbg.gif) repeat-x; }
 #nav { padding: 0.5em 0; overflow: hidden; }
 #nav p { font-size: 0.9em; margin: 0.6em 0 0.6em 1.5em; float: left; }
 #nav h1 { margin: 0; font-size: 1.4em; float: left; }
@@ -98,16 +98,19 @@ form.inline p { padding-left: 1em; display: inline; }
 .column li { line-height: 2 !important; }
 .work { color: #000; text-decoration: none; }
 .work:hover { color: #666; border-bottom: 1px dashed #aaa; }
-.status { color: #fff; background-color: #aaa; padding: 0.25em; margin-left: 0.5em; }
+.status { color: #fff; background-color: #b0b0b0; padding: 0.25em; margin-left: 0.5em; }
 .status a { text-decoration: none; color: #fff !important; }
 .status a:hover { padding-right: 16px; background: transparent url(edit.gif) right center no-repeat; margin-right: 2px; }
 .status.watching { background-color: #4bb000; }
 .status.no-record { background-color: #06c; }
 .history { padding-bottom: 0.5em; }
 .history p { margin: 1em 0 0.5em !important; }
-.history .user { margin-right: 0.5em; text-decoration: none; font-weight: bold; }
-.history .comment { font-size: 0.9em; text-indent: 1em; }
-.history .updated { font-size: 0.85em; margin-left: 0.5em; color: #888; }
+.history .user { margin-left: 0.5em; text-decoration: none; font-size: 0.85em; }
+.history .user:hover { text-decoration: underline; }
+.history .work { font-weight: bold; margin-right: 0.5em; }
+.history .status { margin-left: 0; }
+.history .comment { font-size: 0.9em; line-height: 1.8; }
+.history .updated { font-size: 0.85em; margin-left: 1em; color: #888; }
 .history a.updated { text-decoration: none; }
 .history a.updated:hover { text-decoration: underline; }
 .history .delete { text-decoration: none; margin-left: 0.5em; color: #f00; font-size: 0.85em; }
@@ -160,6 +163,8 @@ form.inline p { padding-left: 1em; display: inline; }
 /* History Detail */
 .history.detail { font-size: 1.2em; }
 #context { margin-left: 2em; margin-top: 1em; }
+#context h2 { padding-bottom: 0.5em; }
+#context .history { margin-left: 1em; }
 
 /* User Settings */
 #services { border-collapse: collapse; border-top: 1px solid #ccc; }

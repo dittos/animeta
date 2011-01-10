@@ -13,8 +13,12 @@
 	<td>{{ form.category }}</td>
 </tr>
 {% endif %}
+<tr>
+	<th><label for="id_status_type">작품 감상 상태</label></th>
+	<td>{{ form.status_type }}</td>
+</tr>
 <tr id="status">
-	<th>{{ form.status.label_tag }}</th>
+	<th><label for="id_status">진행율</label></th>
 	<td>
 		{{ form.status }}<span id="suffix">화</span>
 		<script type="text/javascript">
@@ -43,8 +47,6 @@
 			return false
 		})
 		</script>
-		
-		{{ form.status_type }}
 	</td>
 </tr>
 <tr class="comment">

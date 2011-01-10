@@ -8,7 +8,7 @@
 
 {% block nav %}
 <h1><a href="{% url work.views.detail work.title %}">{{ work.title }}</a></h1>
-<p><a href="{% url work.views.list_users work.title %}"><strong>{{ work.popularity }}명</strong>이 관련 기록을 남겼습니다.</a></p>
+<p><a href="{% url work.views.list_users work.title %}"><strong>{{ work.popularity }}명</strong>이 관련 기록을 남겼습니다.</a>(전체 {{ work.rank }}위)</p>
 {% if user.is_authenticated %}
 <p>나의 감상 상태: {% status_text of record %}</p>
 {% endif %}
