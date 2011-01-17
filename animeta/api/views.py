@@ -80,6 +80,10 @@ def get_user(request, name):
 		} for record in user.record_set.all()]
 	return result
 
+@oauth_required
+def get_current_user(request):
+	return get_user(request, request.user.username)
+
 def _work_as_dict(work, include_watchers=False):
 	watchers = {'total': work.popularity}
 	if include_watchers:
@@ -132,8 +136,3 @@ def get_works(request):
 def get_work(request, id):
 	work = get_object_or_404(Work, id=id)
 	return _work_as_dict(work, request.GET.get('include_watchers', 'false') == 'true')
-
-@oauth_required
-@json_response
-def nop(request):
-	return request.user.username == request.GET.get('username', '')
