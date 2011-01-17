@@ -34,6 +34,8 @@ def get_records(request):
 		queryset = queryset.filter(user__username=request.GET['user_name'])
 	if 'work_id' in request.GET:
 		queryset = queryset.filter(work__id=request.GET['work_id'])
+	if 'before' in request.GET:
+		queryset = queryset.filter(id__lt=int(request.GET['before']))
 	if request.GET.get('only_commented', '') == 'true':
 		queryset = queryset.exclude(comment='')
 
@@ -114,25 +116,29 @@ def get_works(request):
 	queryset = Work.objects.all()
 
 	if keyword.strip():
-		if match == 'exact':
-			queryset = queryset.filter(title__iexact=keyword)
-		elif match == 'prefix':
+		if match == 'prefix':
 			queryset = queryset.filter(title__istartswith=keyword)
 		elif match == 'similar':
 			queryset = queryset.extra(select={'dist': 'title_distance(%s, title)'}, select_params=[keyword])
 		else: #match == 'contains'
 			queryset = queryset.filter(title__icontains=keyword)
 
-	if sort == 'title':
-		queryset = queryset.order_by('title')
-	elif sort == 'relevance' and match == 'similar':
+	if match == 'similar':
 		queryset = queryset.extra(order_by=['dist'])
-	else: #sort == 'popular'
-		queryset = queryset.annotate(factor=Count('record', distinct=True)).exclude(factor=0).order_by('-factor', 'title')
+	else:
+		if sort == 'title':
+			queryset = queryset.order_by('title')
+		else: #sort == 'popular'
+			queryset = queryset.annotate(factor=Count('record', distinct=True)).exclude(factor=0).order_by('-factor', 'title')
 
 	return [_work_as_dict(work) for work in queryset[:count]]
 
 @json_response
 def get_work(request, id):
 	work = get_object_or_404(Work, id=id)
+	return _work_as_dict(work, request.GET.get('include_watchers', 'false') == 'true')
+
+@json_response
+def get_work_by_title(request, title):
+	work = get_object_or_404(Work, title=title)
 	return _work_as_dict(work, request.GET.get('include_watchers', 'false') == 'true')
