@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import Count
 from oauth_provider.decorators import oauth_required
-from api.decorators import json_response
+from api.decorators import api_response
 from work.models import Work
 from record.models import History, StatusTypes
 from record.templatetags.status import status_text
@@ -27,7 +27,7 @@ def _history_as_dict(history):
 		'url': 'http://animeta.net/-%d' % history.id
 	}
 
-@json_response
+@api_response
 def get_records(request):
 	queryset = History.objects.order_by('-id')
 	if 'user_name' in request.GET:
@@ -44,7 +44,7 @@ def get_records(request):
 
 	return [_history_as_dict(h) for h in queryset]
 
-@json_response
+@api_response
 def get_record(request, id):
 	history = get_object_or_404(History, id=id)
 	result = _history_as_dict(history)
@@ -52,7 +52,7 @@ def get_record(request, id):
 		result['related'] = [_history_as_dict(h) for h in History.objects.filter(work=history.work, status=history.status).exclude(user=history.user)]
 	return result
 
-@json_response
+@api_response
 def get_user(request, name):
 	user = get_object_or_404(User, username=name)
 
@@ -106,7 +106,7 @@ def _work_as_dict(work, include_watchers=False):
 		'watchers': watchers,
 	}
 
-@json_response
+@api_response
 def get_works(request):
 	count = min(int(request.GET.get('count', 20)), 100)
 	keyword = request.GET.get('keyword', '')
@@ -133,12 +133,12 @@ def get_works(request):
 
 	return [_work_as_dict(work) for work in queryset[:count]]
 
-@json_response
+@api_response
 def get_work(request, id):
 	work = get_object_or_404(Work, id=id)
 	return _work_as_dict(work, request.GET.get('include_watchers', 'false') == 'true')
 
-@json_response
+@api_response
 def get_work_by_title(request, title):
 	work = get_object_or_404(Work, title=title)
 	return _work_as_dict(work, request.GET.get('include_watchers', 'false') == 'true')
