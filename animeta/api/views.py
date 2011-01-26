@@ -142,3 +142,34 @@ def get_work(request, id):
 def get_work_by_title(request, title):
 	work = get_object_or_404(Work, title=title)
 	return _work_as_dict(work, request.GET.get('include_watchers', 'false') == 'true')
+
+@oauth_required
+@api_response
+def create_record(request):
+	if 'work_id' in request.POST:
+		try:
+			work = Work.objects.get(id=request.POST['work_id'])
+		except Work.DoesNotExist:
+			return {"error": "Invalid work_id."}
+	elif 'work_title' in request.POST:
+		work, created = Work.objects.get_or_create(title=request.POST['work_title'])
+	else:
+		return {"error": "work_id or work_title is required."}
+
+	if 'status_type' not in request.POST:
+		return {"error": "status_type is required."}
+
+	status_type = StatusTypes.from_name(request.POST['status_type'])
+	if status_type is None:
+		return {"error": "status_type should be watching, finished, suspended, or interested."}
+
+	record, created = request.user.record_set.get_or_create(work=work)
+
+	history = request.user.history_set.create(
+		work = work,
+		status = request.POST.get('status_text', ''),
+		status_type = status_type,
+		comment = request.POST.get('comment', ''),
+	)
+
+	return _history_as_dict(history)
