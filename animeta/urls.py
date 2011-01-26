@@ -1,6 +1,9 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 
+import animeta.user.views
+from django.contrib.auth.decorators import login_required
+
 urlpatterns = patterns('',
 	(r'^$', 'animeta.user.views.welcome'),
 	(r'^recent/$', 'animeta.chart.views.recent'),
@@ -10,7 +13,7 @@ urlpatterns = patterns('',
 	(r'^settings/', include('animeta.user.setting_urls')),
 	(r'^api/', include('animeta.api.urls')),
 
-	(r'^library/', 'animeta.user.views.library'),
+	(r'^library/', login_required(animeta.user.views.library)),
 	(r'^users/(?P<username>[A-Za-z0-9_]+)/', include('animeta.user.urls')),
 	(r'^records/', include('animeta.record.urls')),
 	(r'^works/', include('animeta.work.urls')),
