@@ -5,11 +5,22 @@ from chart.models import weekly, compare_charts, PopularWorksChart, ActiveUsersC
 from record.models import History
 
 def recent(request):
+	w = weekly()
+	chart = compare_charts(
+		PopularWorksChart(w, 5),
+		PopularWorksChart(w.prev(), 5)
+	)
+	rows = []
+	for row in chart:
+		rank = row['rank']
+		n = 4 // rank if rank <= 2 else 0
+		row['records'] = row['object'].history_set.exclude(comment='')[:n]
+		rows.append(row)
 	return direct_to_template(request, 'chart/index.html', {
-		'weekly_works': PopularWorksChart(weekly(), 5),
+		'weekly_works': rows,
 		'weekly_users': ActiveUsersChart(weekly(), 5),
 		'newbies': User.objects.filter(date_joined__gte=datetime.date.today()),
-		'timeline': History.objects.exclude(comment='')[:10]
+		'timeline': History.objects.exclude(comment='')[:6]
 	})
 
 def detail(request, chart_class, range_class=None, title=''):

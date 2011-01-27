@@ -7,40 +7,41 @@
 {% endblock %}
 
 {% block content %}
-<div id="charts">
-{% cache 86400 sidebar %}
-<h2><a href="/charts/works/weekly/">주간 인기 작품</a></h2>
-<ol>
-{% for item in weekly_works %}
-	<li><span class="rank">{{ item.rank }}위</span> <a href="{{ item.object.get_absolute_url }}">{{ item.object }}</a></li>
-{% endfor %}
-</ol>
-
-<h2><a href="/charts/users/weekly/">주간 활발한 사용자</a></h2>
-<ol>
-{% for item in weekly_users %}
-	<li><span class="rank">{{ item.rank }}위</span> <a href="{{ item.object.get_absolute_url }}">{{ item.object }}</a></li>
-{% endfor %}
-</ol>
-{% endcache %}
-
-<h2>오늘 가입한 사용자</h2>
-<ul id="newbies">
-{% for user in newbies %}
-	<li><a href="{{ user.get_absolute_url }}">{{ user }}</a> ({{ user.date_joined|timesince }} 전)</li>
-{% endfor %}
-</ul>
-</div>
 
 <div id="timeline">
-<h2>최근 감상평</h2>
-{% regroup timeline by updated_at|date as days %}
-{% for day in days %}
-<h3>{{ day.grouper }}</h3>
-{% for history in day.list %}
-	{% show_history history "user,work" %}
+<h2>최근 기록</h2>
+{% for history in timeline %}
+{% show_history history "user,work" %}
 {% endfor %}
+</div>
+
+<div id="weekly-popular-works">
+<h2>지난 주 인기 작품</h2>
+{% for item in weekly_works %}
+<div class="popular-work rank{{ item.rank }}">
+<p class="info">
+	<span class="rank">{{ item.rank }}위</span>
+	<a href="{{ item.object.get_absolute_url }}" class="work">{{ item.object }}</a>
+	<span class="diff">
+		{% if item.diff %}
+		지지난 주보다 {{ item.diff }}위 {% ifequal item.sign -1 %}<span class="down">&darr;</span>{% else %}<span class="up">&uarr;</span>{% endifequal %}
+		{% else %}
+		{% if item.rank <= 2 %}부동의 {{ item.rank }}위!{% endif %}
+		{% endif %}
+	</span>
+</p>
+{% for record in item.records %}
+	<div class="history">
+		<span class="status-text">{{ record|status_text }}</span>
+		<span class="comment">{{ record.comment }}</span>
+		<a href="{% url user.views.library record.user %}" class="user">{{ record.user.username }}</a>
+		<a href="{% url record.views.history_detail record.user.username record.id %}" class="updated" title="{{ record.updated_at }}">{{ record.updated_at|timesince }} 전</a>
+	</div>
 {% endfor %}
+</div>
+{% endfor %}
+
+<p><a href="/charts/works/weekly/">더 보기...</a></p>
 </div>
 
 <script type="text/javascript">$(function() { $('#login_username').focus() })</script>
