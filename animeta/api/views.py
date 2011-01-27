@@ -11,7 +11,7 @@ from record.models import History, StatusTypes
 from record.templatetags.status import status_text
 
 def _serialize_datetime(dt):
-	return pytz.timezone(settings.TIME_ZONE).localize(dt).isoformat()
+	return pytz.timezone(settings.TIME_ZONE).localize(dt)
 
 def _serialize_status(history):
 	return {'type': history.status_type_name, 'text': status_text(history), 'raw_text': history.status}
@@ -64,7 +64,7 @@ def get_user(request, name):
 
 	categories = []
 	for d in user.record_set.values('category__name').annotate(count=Count('category')).order_by():
-		categories.append({'name': d['category__name'], 'count': d['count']})
+		categories.append({'name': d['category__name'] or "", 'count': d['count']})
 
 	result = {
 		'name': user.username,
