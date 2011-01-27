@@ -1,4 +1,16 @@
+{% extends "base.html" %}
+
+{% block menu %}
+{% endblock %}
+
+{% block nav %}
+<h1>접근 권한 요청</h1>
+{% endblock %}
+
+{% block content %}
 <form method="post" action="">
+<p><strong>{{ consumer.name }}</strong>에서 사용자 계정 접근 권한을 요청하고 있습니다.</p>
 {{ form }}
 <input type="submit" value="계속" />
 </form>
+{% endblock %}

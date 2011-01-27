@@ -32,6 +32,7 @@
 <div id="header">
 	<p><a href="/"><img src="/static/animeta.gif" alt="animeta" /></a></p>
 
+{% block menu %}
 	<ul class="menu" id="global-menu">
 		<li><a href="/recent/">최근 감상평</a></li>
 		<li><a href="/works/search/">작품 찾기</a></li>
@@ -48,6 +49,7 @@
 		<li><a href="/signup/">회원가입</a></li>
 	{% endif %}
 	</ul>
+{% endblock %}
 </div>
 
 {% if messages %}
