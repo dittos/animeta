@@ -20,3 +20,15 @@ class StatusTypeField(models.SmallIntegerField):
 
 	def get_prep_value(self, value):
 		return value.id
+
+	def get_default(self):
+		return StatusTypes.Watching.id
+
+from south.modelsinspector import add_introspection_rules
+add_introspection_rules([
+	(
+		[StatusTypeField],
+		[],
+		{'default': [None, {'is_value': True}]}
+	)
+], ["^record.fields.StatusTypeField"])
