@@ -1,9 +1,5 @@
 {% extends "user/base.html" %}
 
-{% block head-extra %}
-	<link rel="stylesheet" href="/static/autocomplete/jquery.autocomplete.css" type="text/css" />
-{% endblock %}
-
 {% block content %}
 <h2>기록 불러오기</h2>
 <form method="post" action="" id="import">
@@ -19,9 +15,4 @@
 {% endfor %}
 </ul>
 <p><input type="submit" value="입력" class="button" /></p>
-
-<script type="text/javascript" src="/static/autocomplete/jquery.autocomplete.pack.js"></script>
-<script type="text/javascript">
-$(function() { $('.autocomplete').autocomplete('/records/suggest/') })
-</script>
 {% endblock %}

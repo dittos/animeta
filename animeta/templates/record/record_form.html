@@ -2,17 +2,8 @@
 
 {% block title %}기록 추가 - 애니메타{% endblock %}
 
-{% block head-extra %}
-	<link rel="stylesheet" href="/static/autocomplete/jquery.autocomplete.css" type="text/css" />
-{% endblock %}
-
 {% block content %}
 {{ form.errors }}
 
 {% include "record_form.html" %}
-
-<script type="text/javascript" src="/static/autocomplete/jquery.autocomplete.pack.js"></script>
-<script type="text/javascript">
-$(function() { $('#id_work_title').autocomplete('/records/suggest/') })
-</script>
 {% endblock %}
