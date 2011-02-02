@@ -67,9 +67,15 @@ def search(request):
 	)
 
 def merge_dashboard(request):
-	return direct_to_template(request, 'work/merge_dashboard.html', {
-		'contributors': User.objects.annotate(count=models.Count('mergerequest')).order_by('-count').exclude(count=0)
-	})
+	return list_detail.object_list(request,
+		queryset = MergeRequest.objects.order_by('-id'),
+		paginate_by = 50,
+		template_object_name = 'merge',
+		template_name = 'work/merge_dashboard.html',
+		extra_context = {
+			'contributors': User.objects.annotate(count=models.Count('mergerequest')).order_by('-count').exclude(count=0),
+		}
+	)
 
 @login_required
 @require_http_methods(['POST'])

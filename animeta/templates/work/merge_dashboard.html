@@ -12,4 +12,23 @@
 	<a href="{{ user.get_absolute_url }}">{{ user.username }}</a> <small>({{user.count}})</small>{% if not forloop.last %}, {% endif %}
 {% endfor %}
 </p>
+
+<h2>최근 병합 요청 목록</h2>
+<table>
+{% for merge in merge_list %}
+<tr>
+	<td style="padding-right: 2em">{{ merge.user }}</td>
+	<td style="text-align: right"><a href="{{ merge.target.get_absolute_url }}" class="work">{{ merge.target }}</a></td>
+	<td>+ <a href="{{ merge.source.get_absolute_url }}" class="work">{{ merge.source }}</a></td>
+</tr>
+{% endfor %}
+</table>
+
+{% if page_obj %}
+<p id="pagination">
+{% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}" class="prev-page">&larr; 이전</a>{% endif %}
+<strong>{{ page_obj.number }}</strong>/{{ paginator.num_pages }} 페이지
+{% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}" class="next-page">다음 &rarr;</a>{% endif %}
+</p>
+{% endif %}
 {% endblock %}
