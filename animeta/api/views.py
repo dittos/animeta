@@ -79,7 +79,7 @@ def get_user(request, name):
 			'status': _serialize_status(record),
 			'category': getattr(record.category, 'name', ""),
 			'updated_at': _serialize_datetime(record.updated_at),
-		} for record in user.record_set.all()]
+		} for record in user.record_set.order_by('work__title')]
 	return result
 
 @oauth_required

@@ -8,8 +8,8 @@
 .menu { float: none; clear: both; margin-left: 0; line-height: 1; }
 .menu li.menu-connect { display: none; }
 .menu li { letter-spacing: -1px; margin: 0 0.5em; }
-#charts { float: none; width: auto; }
-#timeline { margin-right: 0; border-top: 1px solid #ccc; padding-top: 0.5em; }
+#timeline { float: none; width: auto; }
+#weekly-popular-works { margin-right: 0; padding-top: 0.5em; margin-top: 2em; }
 .column { width: auto; float: none; }
 #library-header p { display: block; margin-right: 0; }
 #forms, #history { float: none; width: auto; }
@@ -19,5 +19,5 @@ form th { width: auto; }
 form.inline h2 { float: none; width: auto; }
 #id_comment { width: 15em; }
 #add-record { width: auto; }
-#comments { padding-right: 0; width: auto; float: none; }
-#videos { display: none; }
+#comments { margin-right: 0; width: auto; float: none; }
+#videos { float: none; width: auto; }

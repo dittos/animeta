@@ -8,7 +8,7 @@ def recent(request):
 	w = weekly()
 	chart = compare_charts(
 		PopularWorksChart(w, 5),
-		PopularWorksChart(w.prev(), 5)
+		PopularWorksChart(w.prev())
 	)
 	rows = []
 	for row in chart:

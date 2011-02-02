@@ -22,7 +22,12 @@ class Work(models.Model):
 		if settings.DEBUG:
 			qs = Work.objects.filter(title__icontains=self.title)
 		else:
-			qs = Work.objects.extra(select={'dist': 'title_distance(%s, title)'}, select_params=[self.title], order_by=['dist'])
+			qs = Work.objects.extra(
+				select={'dist': 'title_distance(%s, title)'},
+				select_params=[self.title],
+				where=['title_distance(%s, title) <= 0.6'],
+				params=[self.title],
+				order_by=['dist'])
 		return qs.exclude(id=self.id)
 	
 	def has_merge_request(self):
