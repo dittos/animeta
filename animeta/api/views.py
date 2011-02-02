@@ -52,6 +52,17 @@ def get_record(request, id):
 		result['related'] = [_history_as_dict(h) for h in History.objects.filter(work=history.work, status=history.status).exclude(user=history.user)]
 	return result
 
+@oauth_required
+@api_response
+def delete_record(request, id):
+	history = get_object_or_404(History, id=id)
+	if history.user != request.user:
+		return {'error': "It's not your record", 'error_code': 403}
+	history.delete()
+	if history.record.history_set.count() == 0:
+		history.record.delete()
+	return True
+
 @api_response
 def get_user(request, name):
 	user = get_object_or_404(User, username=name)

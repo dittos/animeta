@@ -21,7 +21,7 @@ def api_response(view):
 			mime = 'application/json'
 			writefunc = lambda data, stream: json.dump(data, stream, default=fallback_encode_json)
 		result = view(request, *args, **kwargs)
-		response = HttpResponse(mimetype=mime, status=422 if 'error' in result else 200)
+		response = HttpResponse(mimetype=mime, status=result.get('error_code', 422) if 'error' in result else 200)
 		writefunc(result, response)
 		return response
 	return wrapper
