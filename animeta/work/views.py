@@ -2,9 +2,11 @@ import urllib
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.db import models
 from django.views.generic import list_detail
 from django.views.generic.simple import direct_to_template
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from work.models import Work, MergeRequest
 from record.models import Record, History
@@ -63,6 +65,11 @@ def search(request):
 		queryset = Work.objects.filter(title__icontains=keyword),
 		extra_context = {'keyword': keyword},
 	)
+
+def merge_dashboard(request):
+	return direct_to_template(request, 'work/merge_dashboard.html', {
+		'contributors': User.objects.annotate(count=models.Count('mergerequest')).order_by('-count').exclude(count=0)
+	})
 
 @login_required
 @require_http_methods(['POST'])

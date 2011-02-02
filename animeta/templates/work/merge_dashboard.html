@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block nav %}
+<h1>병합 작업 현황판</h1>
+<p><a href="http://blog.animeta.net/entry/title-merge">참여하는 방법 보러가기 &raquo;</a></p>
+{% endblock %}
+
+{% block content %}
+<h2>기여해주신 분들</h2>
+<p>
+{% for user in contributors %}
+	<a href="{{ user.get_absolute_url }}">{{ user.username }}</a> <small>({{user.count}})</small>{% if not forloop.last %}, {% endif %}
+{% endfor %}
+</p>
+{% endblock %}
