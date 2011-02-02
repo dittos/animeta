@@ -42,7 +42,7 @@ form span.description { font-size: 0.8em; margin-left: 0.8em; color: #999; verti
 #intro { line-height: 1.6; }
 .aside { padding-top: 0.5em; margin: 0 0 0 650px; width: 20em; }
 .header-notice { background-color: #666; color: #eee; text-align: center; }
-.header-notice a { font-weight: bold; text-decoration: none; }
+.header-notice a { font-weight: bold; text-decoration: none; color: #65da0b; }
 .header-notice p { margin: 0; line-height: 1.8; padding: 0.5em; text-shadow: 1px 0 #333; }
 .header-notice strong { color: #fff; }
 #screenshot { margin-left: -0.5em; float: left; }

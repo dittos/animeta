@@ -14,6 +14,20 @@
 </p>
 
 <h2>최근 병합 요청 목록</h2>
+{% if user.is_authenticated %}
+<form method="post" action="">
+{% if error %}
+<p class="message">{{ error }}</p>
+{% endif %}
+<p>
+	직접 추가
+	<input type="text" name="target" class="autocomplete" /> +
+	<input type="text" name="source" class="autocomplete" />
+	<input type="submit" value="추가" />
+</p>
+</form>
+{% endif %}
+
 <table>
 {% for merge in merge_list %}
 {% if not merge.trivial %}

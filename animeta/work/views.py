@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import urllib
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
@@ -8,7 +9,7 @@ from django.views.generic.simple import direct_to_template
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from work.models import Work, MergeRequest
+from work.models import Work, MergeRequest, normalize_title
 from record.models import Record, History
 
 def old_url(request, remainder):
@@ -24,9 +25,6 @@ def _get_record(request, work):
 		record = None
 	return record
 
-def _normalize(str):
-	return str.lower().replace(' ', '')
-
 def detail(request, title):
 	work = get_object_or_404(Work, title=title)
 
@@ -37,9 +35,9 @@ def detail(request, title):
 		comments += list(history.filter(comment='')[:N-len(comments)])
 
 	similar_works = work.similar_objects[:7]
-	normal_title = _normalize(work.title)
+	normal_title = normalize_title(work.title)
 	for w in similar_works:
-		w.trivial = _normalize(w.title) == normal_title
+		w.can_merge = normalize_title(w.title) != normal_title and not w.has_merge_request(work)
 	return direct_to_template(request, "work/work_detail.html", {
 		'work': work,
 		'record': _get_record(request, work),
@@ -75,6 +73,16 @@ def search(request):
 	)
 
 def merge_dashboard(request):
+	error = None
+
+	if request.method == 'POST':
+		work = Work.objects.get(title=request.POST['target'])
+		source = Work.objects.get(title=request.POST['source'])
+		if work.has_merge_request(source):
+			error = u'이미 요청이 있습니다.'
+		else:
+			MergeRequest.objects.create(user=request.user, source=source, target=work)
+
 	return list_detail.object_list(request,
 		queryset = MergeRequest.objects.order_by('-id'),
 		paginate_by = 50,
@@ -82,6 +90,7 @@ def merge_dashboard(request):
 		template_name = 'work/merge_dashboard.html',
 		extra_context = {
 			'contributors': User.objects.annotate(count=models.Count('mergerequest')).order_by('-count').exclude(count=0),
+			'error': error,
 		}
 	)
 

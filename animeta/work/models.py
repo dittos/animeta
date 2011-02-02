@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -30,9 +31,8 @@ class Work(models.Model):
 				order_by=['dist'])
 		return qs.exclude(id=self.id)
 	
-	def has_merge_request(self):
-		return bool(MergeRequest.objects.filter(source=self)) or \
-				bool(MergeRequest.objects.filter(target=self))
+	def has_merge_request(self, w):
+		return bool(MergeRequest.objects.filter(source=self, target=w)) or bool(MergeRequest.objects.filter(target=self, source=w))
 
 	def __unicode__(self):
 		return self.title
@@ -49,6 +49,12 @@ def suggest_works(query, user=None):
 
 	return queryset.filter(title__istartswith=query)
 
+IGNORE_CHARS = u' ~-.()[]?～:'
+def normalize_title(title):
+	for ch in IGNORE_CHARS:
+		title = title.replace(ch, '')
+	return title.lower()
+
 class MergeRequest(models.Model):
 	user = models.ForeignKey(User)
 	target = models.ForeignKey(Work)
@@ -56,9 +62,7 @@ class MergeRequest(models.Model):
 
 	@property
 	def trivial(self):
-		def normalize(str):
-			return str.lower().replace(' ', '')
-		return normalize(self.target.title) == normalize(self.source.title)
+		return normalize_title(self.target.title) == normalize_title(self.source.title)
 
 	class Meta:
 		unique_together = ('target', 'source')
