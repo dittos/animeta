@@ -20,6 +20,39 @@
 
 {% block content %}
 <div id="videos">
+{% if similar_works %}
+<div id="similar">
+<h2>제목이 비슷한 작품</h2>
+<ul>
+{% for w in similar_works %}
+	<li>
+		<a href="{{ w.get_absolute_url }}" class="work">{{ w.title }}</a>
+		{% if user.is_authenticated and not w.has_merge_request %}
+		<a href="merge/{{ w.id }}/" onclick="request_merge(this); return false">[같은 작품이에요!]</a>
+		{% endif %}
+	</li>
+{% endfor %}
+</ul>
+<script type="text/javascript">
+function request_merge(link) {
+	$.ajax({
+		type: 'POST',
+		url: link.href,
+		success: function (data) { 
+			if (data == 'merged')
+				$(link).text('[요청 취소]')
+			else
+				$(link).text('[다시 요청하기]')
+		},
+		error: function (data) {
+			alert('오류가 발생했습니다. 다시 시도해보세요!')
+		}
+	})
+}
+</script>
+</div>
+{% endif %}
+
 <h2><a href="http://tvpot.daum.net/search/#service=clip&amp;q={{ work.title|urlencode }}">동영상</a></h2>
 <div id="video-search-result">
 </div>

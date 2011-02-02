@@ -1,10 +1,12 @@
 import urllib
 from django.conf import settings
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import list_detail
 from django.views.generic.simple import direct_to_template
-from work.models import Work
+from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required
+from work.models import Work, MergeRequest
 from record.models import Record, History
 
 def old_url(request, remainder):
@@ -32,6 +34,7 @@ def detail(request, title):
 		'work': work,
 		'record': _get_record(request, work),
 		'records': work.record_set,
+		'similar_works': work.similar_objects[:7],
 		'comments': comments,
 		'daum_api_key': settings.DAUM_API_KEY
 	})
@@ -60,3 +63,20 @@ def search(request):
 		queryset = Work.objects.filter(title__icontains=keyword),
 		extra_context = {'keyword': keyword},
 	)
+
+@login_required
+@require_http_methods(['POST'])
+def request_merge(request, title, id):
+	work = get_object_or_404(Work, title=title)
+
+	if request.method == 'POST':
+		source = get_object_or_404(Work, id=id)
+		try:
+			req, created = MergeRequest.objects.get_or_create(user=request.user, source=source, target=work)
+			if created:
+				return HttpResponse("merged")
+			else:
+				req.delete()
+				return HttpResponse("cancelled")
+		except:
+			return HttpResponse("fail")
