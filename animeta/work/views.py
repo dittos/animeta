@@ -24,6 +24,9 @@ def _get_record(request, work):
 		record = None
 	return record
 
+def _normalize(str):
+	return str.lower().replace(' ', '')
+
 def detail(request, title):
 	work = get_object_or_404(Work, title=title)
 
@@ -32,11 +35,16 @@ def detail(request, title):
 	comments = list(history.exclude(comment='')[:N])
 	if len(comments) < N:
 		comments += list(history.filter(comment='')[:N-len(comments)])
+
+	similar_works = work.similar_objects[:7]
+	normal_title = _normalize(work.title)
+	for w in similar_works:
+		w.trivial = _normalize(w.title) == normal_title
 	return direct_to_template(request, "work/work_detail.html", {
 		'work': work,
 		'record': _get_record(request, work),
 		'records': work.record_set,
-		'similar_works': work.similar_objects[:7],
+		'similar_works': similar_works,
 		'comments': comments,
 		'daum_api_key': settings.DAUM_API_KEY
 	})

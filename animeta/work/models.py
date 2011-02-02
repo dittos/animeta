@@ -54,5 +54,11 @@ class MergeRequest(models.Model):
 	target = models.ForeignKey(Work)
 	source = models.ForeignKey(Work, related_name='merge_with')
 
+	@property
+	def trivial(self):
+		def normalize(str):
+			return str.lower().replace(' ', '')
+		return normalize(self.target.title) == normalize(self.source.title)
+
 	class Meta:
 		unique_together = ('target', 'source')
