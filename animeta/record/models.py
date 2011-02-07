@@ -85,6 +85,7 @@ pre_save.connect(allocate_next_position, sender=Category)
 class Record(models.Model):
 	user = models.ForeignKey(User)
 	work = models.ForeignKey(Work)
+	work_title = models.CharField(max_length=100, null=True)
 	status = models.CharField(max_length=30, blank=True)
 	status_type = StatusTypeField()
 	category = models.ForeignKey(Category, null=True)
