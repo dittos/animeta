@@ -46,7 +46,7 @@ class RecordAddForm(RecordUpdateForm):
 		try:
 			self.record = self.user.record_set.get(work=work)
 		except:
-			self.record = Record(user=self.user, work=work, work_title=work.title)
+			self.record = Record(user=self.user, work=work)
 		self.record.category = self.cleaned_data['category']
 		self.record.save()
 

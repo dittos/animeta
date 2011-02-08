@@ -52,7 +52,6 @@ def update(request, id):
 		work, _ = Work.objects.get_or_create(title=request.POST['work_title'])
 		record.history_set.update(work=work)
 		record.work = work
-		record.work_title = work.title
 		record.save()
 		return _return_to_user_page(request)
 	elif 'category' in request.POST:
