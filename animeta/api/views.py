@@ -211,8 +211,8 @@ def get_chart(request, type):
 		period = period_class.last()
 		chart = compare_charts(
 			chart_class(period, count),
-			chart_class(period.prev(), count
-		))
+			chart_class(period.prev())
+		)
 	else:
 		period = None
 		chart = chart_class(None, count)
@@ -224,11 +224,12 @@ def get_chart(request, type):
 
 	result['items'] = items = []
 	for item in chart:
-		if item['diff'] is None:
-			del item['diff']
-		else:
-			item['diff'] *= item['sign']
-			del item['sign']
+		if period:
+			if item['diff'] is None:
+				del item['diff']
+			else:
+				item['diff'] *= item['sign']
+				del item['sign']
 		if type == 'work':
 			work = item['object']
 			item['work'] = {'title': work.title, 'id': work.id}
