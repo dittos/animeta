@@ -1,5 +1,6 @@
 import pytz
 from cStringIO import StringIO
+from django.http import Http404
 from django.shortcuts import get_object_or_404, render_to_response
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -9,6 +10,8 @@ from api.decorators import api_response
 from work.models import Work
 from record.models import History, StatusTypes
 from record.templatetags.status import status_text
+from chart.models import PopularWorksChart, ActiveUsersChart, compare_charts
+from chart.utils import Week, Month
 
 def _serialize_datetime(dt):
 	return pytz.timezone(settings.TIME_ZONE).localize(dt)
@@ -184,3 +187,54 @@ def create_record(request):
 	)
 
 	return _history_as_dict(history)
+
+@api_response
+def get_chart(request, type):
+	if type == 'work':
+		chart_class = PopularWorksChart
+	elif type == 'user':
+		chart_class = ActiveUsersChart
+	else:
+		raise Http404
+
+	period = request.GET.get('period')
+	if period == 'week':
+		period_class = Week
+	elif period == 'month':
+		period_class = Month
+	else:
+		period_class = None
+
+	count = min(int(request.GET.get('count', 100)), 1000)
+
+	if period_class:
+		period = period_class.last()
+		chart = compare_charts(
+			chart_class(period, count),
+			chart_class(period.prev(), count
+		))
+	else:
+		period = None
+		chart = chart_class(None, count)
+
+	result = {}
+	if period:
+		result['start_date'] = chart.start
+		result['end_date'] = chart.end
+
+	result['items'] = items = []
+	for item in chart:
+		if item['diff'] is None:
+			del item['diff']
+		else:
+			item['diff'] *= item['sign']
+			del item['sign']
+		if type == 'work':
+			work = item['object']
+			item['work'] = {'title': work.title, 'id': work.id}
+		elif type == 'user':
+			item['user'] = item['object'].username
+		del item['object']
+		items.append(item)
+
+	return result
