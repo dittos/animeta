@@ -13,6 +13,11 @@ def fallback_encode_json(obj):
 def api_response(view):
 	@functools.wraps(view)
 	def wrapper(request, *args, **kwargs):
+		if not hasattr(request, 'internal'):
+			request.internal = False
+		result = view(request, *args, **kwargs)
+		if request.internal:
+			return result
 		format = request.GET.get('format', 'json')
 		if format == 'plist':
 			mime = 'application/x-plist'
@@ -20,7 +25,6 @@ def api_response(view):
 		else: # format == 'json'
 			mime = 'application/json'
 			writefunc = lambda data, stream: json.dump(data, stream, default=fallback_encode_json)
-		result = view(request, *args, **kwargs)
 		response = HttpResponse(mimetype=mime, status=result.get('error_code', 422) if 'error' in result else 200)
 		writefunc(result, response)
 		return response
