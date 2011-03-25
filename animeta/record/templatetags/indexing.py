@@ -24,11 +24,25 @@ def group_records(records):
 	return [(k, list(v)) for (k, v) in itertools.groupby(records, key=lambda r: first_char(r.work.title))]
 
 def make_index(records, continued='cont.'):
-	per_column = (len(records) / 3) or 1
+	ngroups = len({first_char(r.work.title) for r in records})
+	titleheight = 2.2
+	per_column = ((len(records) + ngroups * titleheight) / 3) or 1
 
 	cols = [], [], []
+	col = 0
+	colheight = 0
+	lastgroup = None
 	for i, record in enumerate(records):
-		cols[min(i / per_column, 2)].append(record)
+		group = first_char(record.work.title)
+		if lastgroup is None or group != lastgroup:
+			colheight += titleheight
+			lastgroup = group
+		cols[col].append(record)
+		colheight += 1
+		if colheight > per_column:
+			lastgroup = None
+			colheight = 0
+			col = min(col + 1, 2)
 
 	cols = map(group_records, cols)
 	
