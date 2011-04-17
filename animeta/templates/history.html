@@ -3,7 +3,7 @@
 <div class="history">
 <p>
 {% if show_work %}
-	<a href="{% url work.views.detail history.work.title %}" class="work">{{ history.work.title }}</a>
+	<a href="{% url work.views.detail history.work.title %}" class="work">{{ history.record.title }}</a>
 {% endif %}
 {% status_text of history %}
 {% if history.updated_at %}

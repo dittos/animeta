@@ -5,7 +5,7 @@ from django.views.generic import list_detail
 from django.views.generic.simple import direct_to_template
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from work.models import Work, suggest_works
+from work.models import Work, suggest_works, get_or_create_work
 from record.models import Record, History, Category, Uncategorized, StatusTypes
 from record.forms import RecordAddForm, RecordUpdateForm, SimpleRecordFormSet
 from connect import get_connected_services
@@ -49,10 +49,7 @@ def _get_record(request, id):
 def update(request, id):
 	record = _get_record(request, id)
 	if 'work_title' in request.POST:
-		work, _ = Work.objects.get_or_create(title=request.POST['work_title'])
-		record.history_set.update(work=work)
-		record.work = work
-		record.save()
+		record.update_title(request.POST['work_title'])
 		return _return_to_user_page(request)
 	elif 'category' in request.POST:
 		id = request.POST['category']
@@ -90,9 +87,13 @@ def add_many(request):
 		if formset.is_valid():
 			for row in formset.cleaned_data:
 				if not row: continue
-				work, _ = Work.objects.get_or_create(title=row['work_title'])
-				addition_log.append(work.title)
-				History.objects.create(user=request.user, work=work, status_type=StatusTypes.Finished)
+				title = row['work_title'].strip()
+				work = get_or_create_work(title)
+				addition_log.append(title)
+				history = History.objects.create(user=request.user, work=work, status_type=StatusTypes.Finished)
+				record = history.record
+				record.title = title
+				record.save()
 
 	return direct_to_template(request, 'record/import.html',
 		{'owner': request.user, 'formset': SimpleRecordFormSet(),

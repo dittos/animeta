@@ -3,7 +3,7 @@
 from django import forms
 from django.forms.formsets import formset_factory
 from record.models import Record, Category, History, StatusTypes
-from work.models import Work
+from work.models import Work, TitleMapping, normalize_title, get_or_create_work
 
 class RecordUpdateForm(forms.ModelForm):
 	publish = forms.BooleanField(label=u'외부 서비스에 보내기',
@@ -42,11 +42,13 @@ class RecordAddForm(RecordUpdateForm):
 		self.user = user
 
 	def save(self):
-		work, created = Work.objects.get_or_create(title=self.cleaned_data['work_title'])
+		title = self.cleaned_data['work_title']
+		work = get_or_create_work(title)
+
 		try:
 			self.record = self.user.record_set.get(work=work)
 		except:
-			self.record = Record(user=self.user, work=work)
+			self.record = Record(user=self.user, work=work, title=title)
 		self.record.category = self.cleaned_data['category']
 		self.record.save()
 

@@ -2,7 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import pre_save, post_save, post_delete
-from work.models import Work
+from work.models import Work, get_or_create_work
 
 class StatusType(object):
 	def __init__(self, id, text):
@@ -85,6 +85,7 @@ pre_save.connect(allocate_next_position, sender=Category)
 class Record(models.Model):
 	user = models.ForeignKey(User)
 	work = models.ForeignKey(Work)
+	title = models.CharField(max_length=100)
 	status = models.CharField(max_length=30, blank=True)
 	status_type = StatusTypeField()
 	category = models.ForeignKey(Category, null=True)
@@ -101,6 +102,13 @@ class Record(models.Model):
 	def delete(self, *args, **kwargs):
 		self.history_set.delete()
 		super(Record, self).delete(*args, **kwargs)
+	
+	def update_title(self, title):
+		work = get_or_create_work(title)
+		self.history_set.update(work=work)
+		self.work = work
+		self.title = title
+		self.save()
 
 	class Meta:
 		unique_together = ('user', 'work')

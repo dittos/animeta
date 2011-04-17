@@ -22,7 +22,7 @@
 <p>새로 만들 분류에 넣을 기록 선택:</p>
 <p>
 {% for record in uncategorized.record_set %}
-	<input type="checkbox" name="record[]" value="{{ record.id }}" id="put_{{ record.id }}" /> <label for="put_{{ record.id }}">{{ record.work.title }}</label>
+	<input type="checkbox" name="record[]" value="{{ record.id }}" id="put_{{ record.id }}" /> <label for="put_{{ record.id }}">{{ record.title }}</label>
 {% endfor %}
 </p>
 {% endif %}

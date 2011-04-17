@@ -51,7 +51,7 @@ submit_when_changed('#id_type')
 		<ul>
 		{% for record in records %}
 			<li>
-				<a href="{% url work.views.detail record.work.title %}" class="work">{{ record.work.title }}</a>
+				<a href="{% url work.views.detail record.work.title %}" class="work">{{ record.title }}</a>
 				{% status_text of record %}
 			</li>
 		{% endfor %}

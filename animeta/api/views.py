@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.db.models import Count
 from oauth_provider.decorators import oauth_required
 from api.decorators import api_response
-from work.models import Work
+from work.models import Work, get_or_create_work
 from record.models import History, StatusTypes
 from record.templatetags.status import status_text
 from chart.models import PopularWorksChart, ActiveUsersChart, compare_charts
@@ -23,7 +23,7 @@ def _history_as_dict(history):
 	return {
 		'id': history.id,
 		'user': history.user.username,
-		'work': {'title': history.work.title, 'id': history.work.id},
+		'work': {'title': history.record.title, 'id': history.work.id},
 		'status': _serialize_status(history),
 		'comment': history.comment,
 		'updated_at': _serialize_datetime(history.updated_at),
@@ -89,11 +89,11 @@ def get_user(request, name):
 	if request.GET.get('include_library_items', 'true') == 'true':
 		result['library_items'] = [{
 			'id': record.work.id,
-			'title': record.work.title,
+			'title': record.title,
 			'status': _serialize_status(record),
 			'category': getattr(record.category, 'name', ""),
 			'updated_at': _serialize_datetime(record.updated_at),
-		} for record in user.record_set.order_by('work__title')]
+		} for record in user.record_set.order_by('title')]
 	return result
 
 @oauth_required
@@ -130,6 +130,10 @@ def get_works(request):
 	queryset = Work.objects.all()
 
 	if keyword.strip():
+		# disable 'similar' match in debug mode
+		if match == 'similar' and settings.DEBUG:
+			match = 'prefix'
+
 		if match == 'prefix':
 			queryset = queryset.filter(title__istartswith=keyword)
 		elif match == 'similar':
@@ -163,10 +167,12 @@ def create_record(request):
 	if 'work_id' in request.POST:
 		try:
 			work = Work.objects.get(id=request.POST['work_id'])
+			title = work.title
 		except Work.DoesNotExist:
 			return {"error": "Invalid work_id."}
 	elif 'work_title' in request.POST:
-		work, created = Work.objects.get_or_create(title=request.POST['work_title'])
+		title = request.POST['work_title']
+		work = get_or_create_work(title)
 	else:
 		return {"error": "work_id or work_title is required."}
 
@@ -177,7 +183,7 @@ def create_record(request):
 	if status_type is None:
 		return {"error": "status_type should be watching, finished, suspended, or interested."}
 
-	record, created = request.user.record_set.get_or_create(work=work)
+	record, created = request.user.record_set.get_or_create(work=work, defaults={'title': title})
 
 	history = request.user.history_set.create(
 		work = work,

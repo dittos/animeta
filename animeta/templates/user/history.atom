@@ -9,7 +9,7 @@
 	<entry>
 		<id>tag:animeta.net,{{ history.updated_at|date:"Y-m-d" }}:{{ history.id }}</id>
 		<link href="http://animeta.net{% url record.views.history_detail owner history.id %}" />
-		<title>{{ history.work.title }} {{ history|status_text }}</title>
+		<title>{{ history.record.title }} {{ history|status_text }}</title>
 		<updated>{{ history.updated_at|date:"Y-m-d\TH:i:sO" }}</updated>
 {% if history.comment %}
 		<summary>{{ history.comment }}</summary>
