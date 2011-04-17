@@ -9,6 +9,9 @@ def first_char(string):
 	if not string:
 		return '#'
 
+	if string[:4].lower() == 'the ':
+		string = string[4:]
+
 	ch = ord(string[0])
 	if ch >= 0xAC00 and ch <= 0xD7A3:
 		lead = (ch - 0xAC00) // 588
@@ -24,7 +27,7 @@ def group_records(records):
 	return [(k, list(v)) for (k, v) in itertools.groupby(records, key=lambda r: first_char(r.work.title))]
 
 def make_index(records, continued='cont.'):
-	ngroups = len({first_char(r.work.title) for r in records})
+	ngroups = len(set(first_char(r.work.title) for r in records))
 	titleheight = 2.2
 	per_column = ((len(records) + ngroups * titleheight) / 3) or 1
 
