@@ -6,4 +6,18 @@ $(function () {
 			})
 		}
 	})
+
+/*
+	$('a.dialog').live('click', function() {
+		if ($('#dialog').length == 0)
+			$('<div id="dialog" style="display: none"></div>').appendTo('body')
+		var url = this.getAttribute('href')
+		$('#dialog').load(url, function (content) {
+			var $dialog = $('#dialog')
+			$dialog.find('form[action=""]').attr('action', url)
+			$dialog.dialog()
+		})
+		return false
+	})
+*/
 })

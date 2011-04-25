@@ -98,6 +98,13 @@ class Record(models.Model):
 	@property
 	def status_type_name(self):
 		return StatusTypes.to_name(self.status_type)
+
+	def has_newer_episode(self):
+		try:
+			n = int(self.status)
+			return History.objects.filter(work=self.work, status=str(n+1), updated_at__gt=self.updated_at).count() > 0
+		except ValueError:
+			return False
 	
 	def delete(self, *args, **kwargs):
 		self.history_set.delete()

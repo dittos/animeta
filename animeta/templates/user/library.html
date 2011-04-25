@@ -53,6 +53,7 @@ submit_when_changed('#id_type')
 			<li>
 				<a href="{% url work.views.detail record.work.title %}" class="work">{{ record.title }}</a>
 				{% status_text of record %}
+				{% if record.has_newer_episode %}<span class="updated">up!</span>{% endif %}
 			</li>
 		{% endfor %}
 		</ul>
