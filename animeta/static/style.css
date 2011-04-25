@@ -140,7 +140,7 @@ form.inline p { padding-left: 1em; display: inline; }
 #pagination { padding-top: 1em; }
 #pagination .prev-page { margin-right: 1em; }
 #pagination .next-page { margin-left: 1em; }
-#records .updated { color: #ff8c00; }
+#records .updated { color: #ff8c00; font-size: 0.8em; }
 
 /* Record Import */
 #import ul { list-style: none; padding: 0; margin: 0 0 1em; width: 50em; overflow: hidden; }

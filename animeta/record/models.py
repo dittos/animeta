@@ -100,6 +100,9 @@ class Record(models.Model):
 		return StatusTypes.to_name(self.status_type)
 
 	def has_newer_episode(self):
+		if self.status_type != StatusTypes.Watching:
+			return False
+
 		try:
 			n = int(self.status)
 			return History.objects.filter(work=self.work, status=str(n+1), updated_at__gt=self.updated_at).count() > 0
