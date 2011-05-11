@@ -8,7 +8,7 @@ from connect.models import Me2Setting, TwitterSetting, FacebookSetting
 
 import me2day as me2
 import tweepy
-import facebook
+import facebook as fb
 
 @login_required
 def services(request):
@@ -86,7 +86,7 @@ def facebook(request):
         pass
 
     if request.method == 'POST':
-        user = facebook.get_user_from_cookie(request.COOKIES, settings.FACEBOOK_API_ID, settings.FACEBOOK_API_SECRET)
+        user = fb.get_user_from_cookie(request.COOKIES, settings.FACEBOOK_API_ID, settings.FACEBOOK_API_SECRET)
         FacebookSetting.objects.create(user=request.user, key=user['access_token'])
         request.user.message_set.create(message='연동에 성공했습니다.')
 

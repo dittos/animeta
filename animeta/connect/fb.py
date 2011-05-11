@@ -23,10 +23,10 @@ def post_history(setting, title, status, url, comment):
         data = {
             'link': url,
             'name': (u'%s %s' % (title, status)).encode('utf-8'),
-            'description': comment,
+            'description': comment.encode('utf-8'),
         }
         api.put_wall_post('', data)
         return True
     except Exception, e:
-        print str(e)
+	raise e
         return False
