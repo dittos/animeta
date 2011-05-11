@@ -4,3 +4,4 @@ pytz
 tweepy==1.7.1
 -e hg+https://bitbucket.org/ditto/django-oauth-provider#egg=django-oauth
 oauth2
+facebook-python-sdk

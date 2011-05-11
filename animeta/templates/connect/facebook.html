@@ -1,0 +1,63 @@
+{% extends "user/settings.html" %}
+
+{% block title %}페이스북 연동{% endblock %}
+
+{% block content %}
+<h2>페이스북 연동</h2>
+<div id="fb-root"></div>
+<script src="http://connect.facebook.net/ko_KR/all.js"></script>
+<script>
+FB.init({
+    appId  : '{{ app_id }}',
+    status : true,
+    cookie : true,
+    xfbml  : false,
+});
+</script>
+
+{% if fb_user %}
+<script>
+$(function() {
+    $('#btn-logout').click(function(event) {
+        event.preventDefault();
+        fb_logout();
+    });
+});
+
+function fb_logout() {
+    FB.logout(function(response) {
+        $('#btn-logout').parent('form').submit();
+    });
+}
+</script>
+
+<form method="post" action="/connect/facebook/disconnect/">
+<input type="submit" value="연동 해제" id="btn-logout" />
+</form>
+{% else %}
+<script>
+FB.getLoginStatus(function(response) {
+    if (!response.session) {
+        $('#btn-connect').click(function(event) {
+            event.preventDefault();
+            fb_login();
+        });
+    }
+});
+
+function fb_login() {
+    FB.login(function(response) {
+        if (response.session) {
+            $('#btn-connect').parent('form').submit();
+        } else {
+            alert('fail');
+        }
+    }, {perms: 'publish_stream,offline_access'});
+}
+</script>
+
+<form method="POST" action="">
+    <input type="submit" value="페이스북과 연결" id="btn-connect" />
+</form>
+{% endif %}
+{% endblock %}

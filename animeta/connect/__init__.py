@@ -1,10 +1,11 @@
 import me2day
 import twitter
+from . import fb
 from record.templatetags.status import status_text
 
 def get_connected_services(user):
 	services = []
-	for service in (me2day, twitter):
+	for service in (me2day, twitter, fb):
 		if getattr(service, 'available', True):
 			setting = service.get_setting(user)
 			if setting:
