@@ -31,6 +31,8 @@ def make_index(records, continued='cont.'):
 	titleheight = 2.2
 	per_column = ((len(records) + ngroups * titleheight) / 3) or 1
 
+	records = sorted(records, key=lambda r: first_char(r.work.title))
+
 	cols = [], [], []
 	col = 0
 	colheight = 0
