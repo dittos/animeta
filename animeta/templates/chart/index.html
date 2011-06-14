@@ -37,7 +37,6 @@
 		<span class="status-text">{{ record|status_text }}</span>
 		<span class="comment">{{ record.comment }}</span>
 		<a href="{% url user.views.library record.user %}" class="user">{{ record.user.username }}</a>
-		<a href="{% url record.views.history_detail record.user.username record.id %}" class="updated" title="{{ record.updated_at }}">{{ record.updated_at|timesince }} 전</a>
 	</div>
 {% endfor %}
 </div>

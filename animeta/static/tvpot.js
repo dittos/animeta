@@ -9,7 +9,7 @@ TVPot.prototype.search = function() {
 	s.type = 'text/javascript'
 	s.charset = 'utf-8'
 	s.src = 'http://apis.daum.net/search/vclip?apikey=' + this.API_KEY +
-			'&output=json&callback=tvpot.search_complete&sort=exact' +
+			'&output=json&callback=tvpot.search_complete' +
 			'&result=' + this.results_per_page +
 			'&q=' + encodeURI(this.q) +
 			'&pageno=' + this.page
@@ -33,9 +33,10 @@ TVPot.prototype.search_complete = function(data) {
 		if (i > 0 && i % 3 == 0) markup += '</tr><tr>'
 		var item = items[i]
 		var url = 'videos/tvpot/' + item.player_url.split('?vid=')[1] + '/'
+		title = item.title.replace(/&lt;(\/?b)&gt;/g, "<$1>");
 		markup += 
-			'<td>' + '<a href="' + url + '">' + '<img src="' + item.thumbnail + '" alt="' + item.title + '" class="thumbnail" />' +
-			'<a href="' + url + '" class="title">' + shorten(item.title) + '</a>' +
+			'<td>' + '<a href="' + url + '">' + '<img src="' + item.thumbnail + '" alt="' + title + '" class="thumbnail" />' +
+			'<a href="' + url + '" class="title">' + shorten(title) + '</a>' +
 			'<span class="date">' + format_date(item.pubDate) + '</span></td>'
 	}
 	markup += '</tr></table>'
