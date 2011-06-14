@@ -28,17 +28,29 @@
 </form>
 {% endif %}
 
+<form method="post" action="">
 <table>
 {% for merge in merge_list %}
-{% if not merge.trivial %}
 <tr>
 	<td style="padding-right: 2em">{{ merge.user }}</td>
-	<td style="text-align: right"><a href="{{ merge.target.get_absolute_url }}" class="work">{{ merge.target }}</a></td>
+	<td style="text-align: right"><a href="{{ merge.target.get_absolute_url }}" class="work">{{ merge.target }}</a>&nbsp;</td>
 	<td>+ <a href="{{ merge.source.get_absolute_url }}" class="work">{{ merge.source }}</a></td>
-</tr>
+{% if merge.avail %}
+{% if request.user.is_staff %}
+    <td><input type="checkbox" name="apply" value="{{ merge.id }}" /></td>
+{% else %}
+    <td></td>
 {% endif %}
+{% else %}
+    <td>&#10003;</td>
+{% endif %}
+</tr>
 {% endfor %}
 </table>
+{% if request.user.is_staff %}
+<p><input type="submit" value="적용" /></p>
+{% endif %}
+</form>
 
 {% if page_obj %}
 <p id="pagination">

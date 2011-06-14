@@ -92,8 +92,8 @@ class MergeRequest(models.Model):
 	source = models.ForeignKey(Work, related_name='merge_with')
 
 	@property
-	def trivial(self):
-		return normalize_title(self.target.title) == normalize_title(self.source.title)
+	def avail(self):
+		return normalize_title(self.target.title) != normalize_title(self.source.title) and self.target.popularity > 0 and self.source.popularity > 0
 
 	class Meta:
 		unique_together = ('target', 'source')

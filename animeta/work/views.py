@@ -76,12 +76,17 @@ def merge_dashboard(request):
 	error = None
 
 	if request.method == 'POST':
-		work = Work.objects.get(title=request.POST['target'])
-		source = Work.objects.get(title=request.POST['source'])
-		if work.has_merge_request(source):
-			error = u'이미 요청이 있습니다.'
+		if 'apply' in request.POST:
+			for id in request.POST.getlist('apply'):
+				req = MergeRequest.objects.get(id=id)
+				req.target.merge(req.source)
 		else:
-			MergeRequest.objects.create(user=request.user, source=source, target=work)
+			work = Work.objects.get(title=request.POST['target'])
+			source = Work.objects.get(title=request.POST['source'])
+			if work.has_merge_request(source):
+				error = u'이미 요청이 있습니다.'
+			else:
+				MergeRequest.objects.create(user=request.user, source=source, target=work)
 
 	return list_detail.object_list(request,
 		queryset = MergeRequest.objects.order_by('-id'),
