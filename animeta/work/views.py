@@ -3,7 +3,7 @@ import urllib
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.db import models
+from django.db import models, transaction
 from django.views.generic import list_detail
 from django.views.generic.simple import direct_to_template
 from django.views.decorators.http import require_http_methods
@@ -77,9 +77,17 @@ def merge_dashboard(request):
 
 	if request.method == 'POST':
 		if 'apply' in request.POST:
+			success = 0
+			fail = 0
 			for id in request.POST.getlist('apply'):
-				req = MergeRequest.objects.get(id=id)
-				req.target.merge(req.source)
+				with transaction.commit_on_success():
+					try:
+						req = MergeRequest.objects.get(id=id)
+						req.target.merge(req.source)
+						success += 1
+					except:
+						fail += 1
+			error = 'Success: %d, failure: %d' % (success, fail)
 		else:
 			work = Work.objects.get(title=request.POST['target'])
 			source = Work.objects.get(title=request.POST['source'])
