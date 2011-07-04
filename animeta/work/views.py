@@ -77,20 +77,22 @@ def search(request):
 
 def merge_dashboard(request):
     error = None
+    result = []
 
     if request.method == 'POST':
         if 'apply' in request.POST:
-            success = 0
-            fail = 0
             for id in request.POST.getlist('apply'):
+                req = MergeRequest.objects.get(id=id)
                 with transaction.commit_on_success():
                     try:
-                        req = MergeRequest.objects.get(id=id)
-                        req.target.merge(req.source)
-                        success += 1
+                        if req.target.popularity >= req.source.popularity:
+                            req.target.merge(req.source)
+                            result.append((False, req.target, req.source))
+                        else:
+                            req.source.merge(req.target)
+                            result.append((False, req.source, req.target))
                     except:
-                        fail += 1
-            error = 'Success: %d, failure: %d' % (success, fail)
+                        result.append((True, req.target, req.source))
         else:
             work = Work.objects.get(title=request.POST['target'])
             source = Work.objects.get(title=request.POST['source'])
@@ -107,6 +109,7 @@ def merge_dashboard(request):
         extra_context = {
             'contributors': User.objects.annotate(count=models.Count('mergerequest')).order_by('-count').exclude(count=0),
             'error': error,
+            'result': result,
         }
     )
 

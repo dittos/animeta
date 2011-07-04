@@ -6,18 +6,18 @@
 {% endblock %}
 
 {% block content %}
-<h2>기여해주신 분들</h2>
-<p>
-{% for user in contributors %}
-    <a href="{{ user.get_absolute_url }}">{{ user.username }}</a> <small>({{user.count}})</small>{% if not forloop.last %}, {% endif %}
-{% endfor %}
-</p>
-
 <h2>최근 병합 요청 목록</h2>
 {% if user.is_authenticated %}
 <form method="post" action="">
 {% if error %}
 <p class="message">{{ error }}</p>
+{% endif %}
+{% if result %}
+<p class="message">
+{% for error, self, other in result %}
+{% if error %}<strong>Error:</strong> {% endif %}{{ self.title }} &larr; {{ other.title }}<br />
+{% endfor %}
+</p>
 {% endif %}
 <p>
     직접 추가
@@ -31,7 +31,7 @@
 <form method="post" action="">
 <table>
 {% for merge in merge_list %}
-<tr>
+<tr{% if not merge.avail %} class="merged"{% endif %}>
     <td style="padding-right: 2em">{{ merge.user }}</td>
     <td style="text-align: right"><a href="{{ merge.target.get_absolute_url }}" class="work">{{ merge.target }}</a>&nbsp;</td>
     <td>+ <a href="{{ merge.source.get_absolute_url }}" class="work">{{ merge.source }}</a></td>
@@ -59,4 +59,11 @@
 {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}" class="next-page">다음 &rarr;</a>{% endif %}
 </p>
 {% endif %}
+
+<h2>기여해주신 분들</h2>
+<p>
+{% for user in contributors %}
+    <a href="{{ user.get_absolute_url }}">{{ user.username }}</a> <small>({{user.count}})</small>{% if not forloop.last %}, {% endif %}
+{% endfor %}
+</p>
 {% endblock %}

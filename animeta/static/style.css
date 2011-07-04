@@ -199,3 +199,5 @@ form.inline p { padding-left: 1em; display: inline; }
 #search-result .title { font-size: 1.2em; font-weight: bold; float: left; width: 20em; }
 #search-result .title a { text-decoration: none; }
 #search-result .my-status { display: block; }
+
+.merged, .merged td a { color: #bbb; }
