@@ -3,7 +3,7 @@ import urllib
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.db import models, transaction
+from django.db import models
 from django.views.generic import list_detail
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.models import User
@@ -83,16 +83,15 @@ def merge_dashboard(request):
         if 'apply' in request.POST:
             for id in request.POST.getlist('apply'):
                 req = MergeRequest.objects.get(id=id)
-                with transaction.commit_on_success():
-                    try:
-                        if req.target.popularity >= req.source.popularity:
-                            req.target.merge(req.source)
-                            result.append((False, req.target, req.source))
-                        else:
-                            req.source.merge(req.target)
-                            result.append((False, req.source, req.target))
-                    except:
-                        result.append((True, req.target, req.source))
+                try:
+                    if req.target.popularity >= req.source.popularity:
+                        req.target.merge(req.source)
+                        result.append((False, req.target, req.source))
+                    else:
+                        req.source.merge(req.target)
+                        result.append((False, req.source, req.target))
+                except:
+                    result.append((True, req.target, req.source))
         else:
             work = Work.objects.get(title=request.POST['target'])
             source = Work.objects.get(title=request.POST['source'])

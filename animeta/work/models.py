@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.db import models
+from django.db import models, transaction
 from django.conf import settings
 from django.contrib.auth.models import User
 
@@ -42,9 +42,10 @@ class Work(models.Model):
         return ('work.views.detail', (), {'title': self.title})
 
     def merge(self, other):
-        TitleMapping.objects.filter(work=other).update(work=self)
-        other.record_set.update(work=self)
-        other.history_set.update(work=self)
+        with transaction.commit_on_success():
+            TitleMapping.objects.filter(work=other).update(work=self)
+            other.record_set.update(work=self)
+            other.history_set.update(work=self)
 
 def suggest_works(query, user=None):
     queryset = Work.objects
