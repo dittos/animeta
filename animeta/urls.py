@@ -23,8 +23,3 @@ urlpatterns = patterns('',
 	(r'^(?P<username>[A-Za-z0-9]+)$', 'animeta.user.views.shortcut'),
 	(r'^-(?P<id>[0-9]+)$', 'animeta.record.views.shortcut'),
 )
-
-if settings.DEBUG:
-	urlpatterns += patterns('',
-		(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.ROOT_PATH + '/static'})
-	)
