@@ -25,7 +25,7 @@
 <h2>주간 인기 작품</h2>
 <ol class="chart">
 {% for item in weekly_works %}
-	<li><span class="rank">{{ item.rank }}위</span> <a href="{{ item.object.get_absolute_url }}">{{ item.object }}</a></li>
+    <li><span class="rank">{{ item.rank }}위</span> <a href="{{ item.object.get_absolute_url }}">{{ item.object }}</a></li>
 {% endfor %}
 </ol>
 </div>

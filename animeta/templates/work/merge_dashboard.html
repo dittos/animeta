@@ -9,7 +9,7 @@
 <h2>기여해주신 분들</h2>
 <p>
 {% for user in contributors %}
-	<a href="{{ user.get_absolute_url }}">{{ user.username }}</a> <small>({{user.count}})</small>{% if not forloop.last %}, {% endif %}
+    <a href="{{ user.get_absolute_url }}">{{ user.username }}</a> <small>({{user.count}})</small>{% if not forloop.last %}, {% endif %}
 {% endfor %}
 </p>
 
@@ -20,10 +20,10 @@
 <p class="message">{{ error }}</p>
 {% endif %}
 <p>
-	직접 추가
-	<input type="text" name="target" class="autocomplete" /> +
-	<input type="text" name="source" class="autocomplete" />
-	<input type="submit" value="추가" />
+    직접 추가
+    <input type="text" name="target" class="autocomplete" /> +
+    <input type="text" name="source" class="autocomplete" />
+    <input type="submit" value="추가" />
 </p>
 </form>
 {% endif %}
@@ -32,9 +32,9 @@
 <table>
 {% for merge in merge_list %}
 <tr>
-	<td style="padding-right: 2em">{{ merge.user }}</td>
-	<td style="text-align: right"><a href="{{ merge.target.get_absolute_url }}" class="work">{{ merge.target }}</a>&nbsp;</td>
-	<td>+ <a href="{{ merge.source.get_absolute_url }}" class="work">{{ merge.source }}</a></td>
+    <td style="padding-right: 2em">{{ merge.user }}</td>
+    <td style="text-align: right"><a href="{{ merge.target.get_absolute_url }}" class="work">{{ merge.target }}</a>&nbsp;</td>
+    <td>+ <a href="{{ merge.source.get_absolute_url }}" class="work">{{ merge.source }}</a></td>
 {% if merge.avail %}
 {% if request.user.is_staff %}
     <td><input type="checkbox" name="apply" value="{{ merge.id }}" /></td>

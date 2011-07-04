@@ -15,11 +15,11 @@
 
 <script type="text/javascript">
 $(function() {
-	$('#widget-code').focus(function(event) { this.select() }).select()
-	$('#apply').click(function() {
-		$('object, embed').attr('width', $('#width').val()).attr('height', $('#height').val())
-		$('#widget-code').val($('#widget-code').val().replace(/width="[0-9]+" height="[0-9]+"/g, 'width="'+$('#width').val()+'" height="'+$('#height').val()+'"'))
-	})
+    $('#widget-code').focus(function(event) { this.select() }).select()
+    $('#apply').click(function() {
+        $('object, embed').attr('width', $('#width').val()).attr('height', $('#height').val())
+        $('#widget-code').val($('#widget-code').val().replace(/width="[0-9]+" height="[0-9]+"/g, 'width="'+$('#width').val()+'" height="'+$('#height').val()+'"'))
+    })
 })
 </script>
 {% endblock %}

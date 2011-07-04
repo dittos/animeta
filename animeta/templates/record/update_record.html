@@ -13,9 +13,9 @@
 <h2>분류 바꾸기</h2>
 <p>
 <select name="category" id="category">
-	<option value="">지정 안함</option>
+    <option value="">지정 안함</option>
 {% for category in category_list %}
-	<option value="{{ category.id }}"{% ifequal record.category category %} selected="selected"{% endifequal %}>{{ category.name }}</option>
+    <option value="{{ category.id }}"{% ifequal record.category category %} selected="selected"{% endifequal %}>{{ category.name }}</option>
 {% endfor %}
 </select>
 <input type="submit" value="바꾸기" />
@@ -29,7 +29,7 @@
 <div id="history">
 <h2>지난 기록</h2>
 {% for history in history_list %}
-	{% show_history history "delete" %}
+    {% show_history history "delete" %}
 {% endfor %}
 </div>
 {% endblock %}

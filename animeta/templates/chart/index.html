@@ -20,24 +20,24 @@
 {% for item in weekly_works %}
 <div class="popular-work rank{{ item.rank }}">
 <p class="info">
-	<span class="rank">{{ item.rank }}위</span>
-	<a href="{{ item.object.get_absolute_url }}" class="work">{{ item.object }}</a>
-	{% if item.diff %}
-	<span class="diff">
-		{% ifequal item.sign 0 %}
-		{% if item.rank <= 2 %}부동의 {{ item.rank }}위!{% endif %}
-		{% else %}
-		지지난 주보다 {{ item.diff }}위 {% ifequal item.sign -1 %}<span class="down">&darr;</span>{% else %}<span class="up">&uarr;</span>{% endifequal %}
-		{% endifequal %}
-	</span>
-	{% endif %}
+    <span class="rank">{{ item.rank }}위</span>
+    <a href="{{ item.object.get_absolute_url }}" class="work">{{ item.object }}</a>
+    {% if item.diff %}
+    <span class="diff">
+        {% ifequal item.sign 0 %}
+        {% if item.rank <= 2 %}부동의 {{ item.rank }}위!{% endif %}
+        {% else %}
+        지지난 주보다 {{ item.diff }}위 {% ifequal item.sign -1 %}<span class="down">&darr;</span>{% else %}<span class="up">&uarr;</span>{% endifequal %}
+        {% endifequal %}
+    </span>
+    {% endif %}
 </p>
 {% for record in item.records %}
-	<div class="history">
-		<span class="status-text">{{ record|status_text }}</span>
-		<span class="comment">{{ record.comment }}</span>
-		<a href="{% url user.views.library record.user %}" class="user">{{ record.user.username }}</a>
-	</div>
+    <div class="history">
+        <span class="status-text">{{ record|status_text }}</span>
+        <span class="comment">{{ record.comment }}</span>
+        <a href="{% url user.views.library record.user %}" class="user">{{ record.user.username }}</a>
+    </div>
 {% endfor %}
 </div>
 {% endfor %}

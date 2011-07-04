@@ -15,9 +15,9 @@
 <p>
 <label for="category">분류:</label>
 <select name="category" id="category">
-	<option value="">전체 ({{ record_count }})</option>
+    <option value="">전체 ({{ record_count }})</option>
 {% for category in categories %}
-	<option value="{{ category.id }}"{% ifequal category_filter category.id %} selected="selected"{% endifequal %}>{{ category.name }} ({{ category.record_set.count }})</option>
+    <option value="{{ category.id }}"{% ifequal category_filter category.id %} selected="selected"{% endifequal %}>{{ category.name }} ({{ category.record_set.count }})</option>
 {% endfor %}
 </select>
 <input type="submit" value="이동" />
@@ -29,9 +29,9 @@
 
 <script type="text/javascript">
 function submit_when_changed(selector) {
-	return $(selector).live('change', function() {
-		$('#filter-form').submit()
-	})
+    return $(selector).live('change', function() {
+        $('#filter-form').submit()
+    })
 }
 
 submit_when_changed('#category').next('input:submit').hide()
@@ -45,20 +45,20 @@ submit_when_changed('#id_type')
 
 <div id="records">
 {% for column in columns %}
-	<div class="column">
-	{% for index, records in column %}
-		<h2>{{ index }}</h2>
-		<ul>
-		{% for record in records %}
-			<li>
-				<a href="{% url work.views.detail record.work.title %}" class="work">{{ record.title }}</a>
-				{% status_text of record %}
-				{% if owner == request.user and record.has_newer_episode %}<span class="updated">up!</span>{% endif %}
-			</li>
-		{% endfor %}
-		</ul>
-	{% endfor %}
-	</div>
+    <div class="column">
+    {% for index, records in column %}
+        <h2>{{ index }}</h2>
+        <ul>
+        {% for record in records %}
+            <li>
+                <a href="{% url work.views.detail record.work.title %}" class="work">{{ record.title }}</a>
+                {% status_text of record %}
+                {% if owner == request.user and record.has_newer_episode %}<span class="updated">up!</span>{% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+    {% endfor %}
+    </div>
 {% endfor %}
 </div>
 
@@ -72,7 +72,7 @@ submit_when_changed('#id_type')
 
 <script type="text/javascript">
 $('#categories li').click(function() {
-	location.href = $(this).find('a').attr('href')
+    location.href = $(this).find('a').attr('href')
 })
 </script>
 {% endblock %}

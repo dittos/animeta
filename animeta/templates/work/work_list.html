@@ -8,22 +8,22 @@
 
 {% block content %}
 <form method="get" id="search-form">
-	<input type="text" name="keyword" size="15" value="{{ keyword }}" />
-	<input type="submit" value="작품 찾기" />
+    <input type="text" name="keyword" size="15" value="{{ keyword }}" />
+    <input type="submit" value="작품 찾기" />
 </form>
 
 {% if keyword %}
 <ul id="search-result">
 {% for work in object_list %}
-	<li>
-		<span class="title"><a href="{{ work.get_absolute_url }}">{{ work.title }}</a></span>
-		{% if user.is_authenticated %}
-		<span class="my-status">
-		나의 감상 상태:
-		{% status_text of work %}
-		</span>
-		{% endif %}
-	</li>
+    <li>
+        <span class="title"><a href="{{ work.get_absolute_url }}">{{ work.title }}</a></span>
+        {% if user.is_authenticated %}
+        <span class="my-status">
+        나의 감상 상태:
+        {% status_text of work %}
+        </span>
+        {% endif %}
+    </li>
 {% endfor %}
 </ul>
 {% endif %}

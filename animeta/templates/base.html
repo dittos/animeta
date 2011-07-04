@@ -2,23 +2,23 @@
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>{% block title %}애니메타{% endblock %}</title>
-	<link rel="stylesheet" href="/static/style.css" type="text/css" />
-	<link rel="stylesheet" href="/static/mobile.css" type="text/css" media="only screen and (max-device-width: 480px)" />
-	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" type="text/css" />
-	<meta name="viewport" content="width=device-width" />
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-	<script type="text/javascript" src="/static/common.js"></script>
-	<script type="text/javascript">
-	var _gaq = [['_setAccount', 'UA-7500828-2'], ['_trackPageview']];
-	(function() {
-	 var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-	 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-	 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-	})();
-	</script>
-	{% block head-extra %}{% endblock %}
+    <title>{% block title %}애니메타{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css" type="text/css" />
+    <link rel="stylesheet" href="/static/mobile.css" type="text/css" media="only screen and (max-device-width: 480px)" />
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" type="text/css" />
+    <meta name="viewport" content="width=device-width" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/static/common.js"></script>
+    <script type="text/javascript">
+    var _gaq = [['_setAccount', 'UA-7500828-2'], ['_trackPageview']];
+    (function() {
+     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+    {% block head-extra %}{% endblock %}
 </head>
 <body>
 {% block join-now %}
@@ -36,41 +36,41 @@
 
 <div id="container">
 <div id="header">
-	<p><a href="/"><img src="/static/animeta.gif" alt="animeta" /></a></p>
+    <p><a href="/"><img src="/static/animeta.gif" alt="animeta" /></a></p>
 
 {% block menu %}
-	<ul class="menu" id="global-menu">
-		<li><a href="/recent/">최근 감상평</a></li>
-		<li><a href="/works/search/">작품 찾기</a></li>
-		<li><a href="/charts/works/weekly/">순위</a></li>
-	</ul>
+    <ul class="menu" id="global-menu">
+        <li><a href="/recent/">최근 감상평</a></li>
+        <li><a href="/works/search/">작품 찾기</a></li>
+        <li><a href="/charts/works/weekly/">순위</a></li>
+    </ul>
 
-	<ul class="menu" id="account-menu">
-	{% if user.is_authenticated %}
-		<li><a href="{{ user.get_absolute_url }}">내 기록</a></li>
-		<li id="menu-connect"><a href="/settings/">설정</a></li>
-		<li><a href="/logout/">로그아웃</a></li>
-	{% else %}
-		<li><a href="/login/">로그인</a></li>
-		<li><a href="/signup/">회원가입</a></li>
-	{% endif %}
-	</ul>
+    <ul class="menu" id="account-menu">
+    {% if user.is_authenticated %}
+        <li><a href="{{ user.get_absolute_url }}">내 기록</a></li>
+        <li id="menu-connect"><a href="/settings/">설정</a></li>
+        <li><a href="/logout/">로그아웃</a></li>
+    {% else %}
+        <li><a href="/login/">로그인</a></li>
+        <li><a href="/signup/">회원가입</a></li>
+    {% endif %}
+    </ul>
 {% endblock %}
 </div>
 
 {% if messages %}
 <ul id="messages">
 {% for message in messages %}
-	<li>{{ message }}</li>
+    <li>{{ message }}</li>
 {% endfor %}
 
-	<li id="close-messages"><a href="">닫기</a></li>
+    <li id="close-messages"><a href="">닫기</a></li>
 </ul>
 
 <script type="text/javascript">
 $('#close-messages a').click(function(event) {
-	event.preventDefault()
-	$('#messages').fadeOut('normal')
+    event.preventDefault()
+    $('#messages').fadeOut('normal')
 })
 </script>
 {% endif %}
@@ -86,9 +86,9 @@ $('#close-messages a').click(function(event) {
 </div>
 
 <p id="footer">
-	<a href="http://dittos.pe.kr/sapzil">지속 가능한 삽질</a>에서 만들고 돌립니다. /
-	<a href="http://blog.animeta.net/">공식 블로그</a> /
-	<a href="http://blog.animeta.net/guestbook">버그 신고 및 기능 건의</a>
+    <a href="http://dittos.pe.kr/sapzil">지속 가능한 삽질</a>에서 만들고 돌립니다. /
+    <a href="http://blog.animeta.net/">공식 블로그</a> /
+    <a href="http://blog.animeta.net/guestbook">버그 신고 및 기능 건의</a>
 </p>
 </div>
 </body>
