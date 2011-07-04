@@ -19,42 +19,21 @@
 {% endblock %}
 
 {% block content %}
-<div id="videos">
-{% if similar_works %}
-<div id="similar">
-<h2>제목이 비슷한 작품</h2>
-<ul>
-{% for w in similar_works %}
-    <li>
-        <a href="{{ w.get_absolute_url }}" class="work">{{ w.title }}</a>
-        {% if user.is_authenticated and w.can_merge %}
-        <a href="merge/{{ w.id }}/" onclick="request_merge(this); return false">[같은 작품이에요!]</a>
-        {% endif %}
-    </li>
-{% endfor %}
-</ul>
-<script type="text/javascript">
-function request_merge(link) {
-    $.ajax({
-        type: 'POST',
-        url: link.href,
-        success: function (data) { 
-            if (data == 'merged')
-                $(link).text('[요청 취소]')
-            else
-                $(link).text('[다시 요청하기]')
-        },
-        error: function (data) {
-            alert('오류가 발생했습니다. 다시 시도해보세요!')
-        }
-    })
-}
-</script>
-</div>
+<div id="info">
+<dl>
+    <dt>인기도</dt>
+    <dd>전체 {{ work.rank }}위, {{ work.popularity }}명이 기록 남김. <a href="{% url work.views.list_users work.title %}">자세히 보기 &rarr;</a></dd>
+
+{% if alt_titles %}
+    <dt>다른 제목</dt>
+    <dd>
+        {% for title in alt_titles %}{% if not forloop.first %}, {% endif %}{{ title }}{% endfor %}
+    </dd>
 {% endif %}
+</dl>
 
 <h2><a href="http://tvpot.daum.net/search/#service=clip&amp;q={{ work.title|urlencode }}">동영상</a></h2>
-<div id="video-search-result">
+<div id="videos">
 </div>
 </div>
 
@@ -72,7 +51,7 @@ var tvpot = new TVPot('{{ daum_api_key }}')
 $(function() {
     var m = /tvpot-page([0-9]+)/.exec(location.hash)
     if (m) tvpot.page = parseInt(m[1])
-    tvpot.$element = $('#video-search-result')
+    tvpot.$element = $('#videos')
     tvpot.q = '{{ work.title }}'
     tvpot.search()
 })

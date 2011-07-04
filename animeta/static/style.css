@@ -157,7 +157,10 @@ form.inline p { padding-left: 1em; display: inline; }
 #nav .status a { margin-right: 0; }
 #nav .status a:hover { position: static; }
 #comments { padding-right: 1em; margin-right: 410px; }
-#videos { margin-bottom: 1em; width: 410px; float: right; }
+#info { margin-bottom: 1em; width: 410px; float: right; }
+#info dl { margin-top: 0; }
+#info dt { font-weight: bold; margin: 0; }
+#info dd { margin: 0.5em 0; font-size: 0.9em; }
 #videos td { width: 120px; vertical-align: top; padding: 0.5em; }
 #videos td a { color: #666; }
 #videos .date, #videos .title { display: block; }

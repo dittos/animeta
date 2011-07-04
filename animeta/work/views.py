@@ -8,7 +8,7 @@ from django.views.generic import list_detail
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from work.models import Work, MergeRequest, normalize_title
+from work.models import Work, MergeRequest, normalize_title, TitleMapping
 from record.models import Record, History
 
 def old_url(request, remainder):
@@ -37,10 +37,14 @@ def detail(request, title):
     normal_title = normalize_title(work.title)
     for w in similar_works:
         w.can_merge = normalize_title(w.title) != normal_title and not w.has_merge_request(work)
+
+    alt_titles = TitleMapping.objects.filter(work=work) \
+            .exclude(title=work.title).values_list('title', flat=True)
     return render(request, "work/work_detail.html", {
         'work': work,
         'record': _get_record(request, work),
         'records': work.record_set,
+        'alt_titles': alt_titles,
         'similar_works': similar_works,
         'comments': comments,
         'daum_api_key': settings.DAUM_API_KEY
