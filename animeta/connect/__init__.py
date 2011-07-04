@@ -4,21 +4,21 @@ from . import fb
 from record.templatetags.status import status_text
 
 def get_connected_services(user):
-	services = []
-	for service in (me2day, twitter, fb):
-		if getattr(service, 'available', True):
-			setting = service.get_setting(user)
-			if setting:
-				services.append((service, setting))
-	return services
+    services = []
+    for service in (me2day, twitter, fb):
+        if getattr(service, 'available', True):
+            setting = service.get_setting(user)
+            if setting:
+                services.append((service, setting))
+    return services
 
 def post_history(history):
-	kwargs = {
-		'title': history.work.title,
-		'status': status_text(history),
-		'url': 'http://animeta.net/-%d' % history.id,
-		'comment': history.comment,
-	}
+    kwargs = {
+        'title': history.work.title,
+        'status': status_text(history),
+        'url': 'http://animeta.net/-%d' % history.id,
+        'comment': history.comment,
+    }
 
-	for service, setting in get_connected_services(history.user):
-		service.post_history(setting, **kwargs)
+    for service, setting in get_connected_services(history.user):
+        service.post_history(setting, **kwargs)

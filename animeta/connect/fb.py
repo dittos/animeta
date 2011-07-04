@@ -28,5 +28,5 @@ def post_history(setting, title, status, url, comment):
         api.put_wall_post('', data)
         return True
     except Exception, e:
-	raise e
+    raise e
         return False

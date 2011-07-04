@@ -8,7 +8,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-	# ('Your Name', 'your_email@domain.com'),
+    # ('Your Name', 'your_email@domain.com'),
 )
 
 MANAGERS = ADMINS
@@ -58,14 +58,14 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-	os.path.join(os.path.dirname(__file__), 'static'),
+    os.path.join(os.path.dirname(__file__), 'static'),
 )
 
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
-	'django.contrib.staticfiles.finders.FileSystemFinder',
-	'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #	'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
@@ -76,25 +76,25 @@ ADMIN_MEDIA_PREFIX = '/media/'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-	'django.template.loaders.filesystem.load_template_source',
-	'django.template.loaders.app_directories.load_template_source',
+    'django.template.loaders.filesystem.load_template_source',
+    'django.template.loaders.app_directories.load_template_source',
 #	 'django.template.loaders.eggs.load_template_source',
 )
 
 MIDDLEWARE_CLASSES = (
-	'django.middleware.common.CommonMiddleware',
-	'django.contrib.sessions.middleware.SessionMiddleware',
-	'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-	'django.core.context_processors.auth',
-	'django.core.context_processors.debug',
-	'django.core.context_processors.i18n',
-	'django.core.context_processors.media',
-	'django.core.context_processors.request',
-	'django.core.context_processors.csrf',
-	'context_processors.hijax',
+    'django.core.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.request',
+    'django.core.context_processors.csrf',
+    'context_processors.hijax',
 )
 
 ROOT_URLCONF = 'animeta.urls'
@@ -103,32 +103,32 @@ import os.path
 ROOT_PATH = os.path.dirname(__file__)
 
 TEMPLATE_DIRS = (
-	# Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-	# Always use forward slashes, even on Windows.
-	# Don't forget to use absolute paths, not relative paths.
-	ROOT_PATH + '/templates'
+    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+    ROOT_PATH + '/templates'
 )
 
 INSTALLED_APPS = (
-	'django.contrib.auth',
-	'django.contrib.sessions',
-	'django.contrib.contenttypes',
-	'django.contrib.staticfiles',
-	'south',
-	'oauth_provider',
-	'animeta.work',
-	'animeta.record',
-	'animeta.user',
-	'animeta.connect',
-	'animeta.chart',
-	'animeta.api',
+    'django.contrib.auth',
+    'django.contrib.sessions',
+    'django.contrib.contenttypes',
+    'django.contrib.staticfiles',
+    'south',
+    'oauth_provider',
+    'animeta.work',
+    'animeta.record',
+    'animeta.user',
+    'animeta.connect',
+    'animeta.chart',
+    'animeta.api',
 )
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/library/'
 
 try:
-	from settings_local import *
-	override(locals())
+    from settings_local import *
+    override(locals())
 except:
-	pass
+    pass
