@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from connect import get_connected_services
 from connect.models import Me2Setting, TwitterSetting, FacebookSetting
@@ -43,7 +42,7 @@ def me2day_disconnect(request):
         setting = Me2Setting.objects.get(user=request.user)
         setting.delete()
         request.user.message_set.create(message='인증 정보를 삭제하였습니다.')
-        return HttpResponseRedirect('/connect/me2day/')
+        return redirect('/connect/me2day/')
 
 @login_required
 def twitter(request):
@@ -62,11 +61,11 @@ def twitter(request):
             TwitterSetting.objects.create(
                 user=request.user, key=auth.access_token.key,
                 secret=auth.access_token.secret)
-            return HttpResponseRedirect('/connect/twitter/')
+            return redirect('/connect/twitter/')
         else:
             redirect_url = auth.get_authorization_url()
             request.session['request_token'] = (auth.request_token.key, auth.request_token.secret)
-            return HttpResponseRedirect(redirect_url)
+            return redirect(redirect_url)
 
 @login_required
 def twitter_disconnect(request):
@@ -74,7 +73,7 @@ def twitter_disconnect(request):
         setting = TwitterSetting.objects.get(user=request.user)
         setting.delete()
         request.user.message_set.create(message='인증 정보를 삭제하였습니다.')
-        return HttpResponseRedirect('/connect/')
+        return redirect('/connect/')
 
 @login_required
 def facebook(request):
@@ -98,4 +97,4 @@ def facebook_disconnect(request):
         setting = FacebookSetting.objects.get(user=request.user)
         setting.delete()
         request.user.message_set.create(message='인증 정보를 삭제하였습니다.')
-        return HttpResponseRedirect('/connect/')
+        return redirect('/connect/')

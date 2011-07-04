@@ -2,10 +2,9 @@
 import urllib
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.db import models, transaction
 from django.views.generic import list_detail
-from django.views.generic.simple import direct_to_template
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -38,7 +37,7 @@ def detail(request, title):
 	normal_title = normalize_title(work.title)
 	for w in similar_works:
 		w.can_merge = normalize_title(w.title) != normal_title and not w.has_merge_request(work)
-	return direct_to_template(request, "work/work_detail.html", {
+	return render(request, "work/work_detail.html", {
 		'work': work,
 		'record': _get_record(request, work),
 		'records': work.record_set,
@@ -49,7 +48,7 @@ def detail(request, title):
 
 def list_users(request, title):
 	work = get_object_or_404(Work, title=title)
-	return direct_to_template(request, "work/users.html", {
+	return render(request, "work/users.html", {
 		'work': work,
 		'record': _get_record(request, work),
 		'records': work.record_set.order_by('status_type', 'user__username')
@@ -58,7 +57,7 @@ def list_users(request, title):
 def video(request, title, provider, id):
 	work = get_object_or_404(Work, title=title)
 
-	return direct_to_template(request, "work/video.html", {
+	return render(request, "work/video.html", {
 		'work': work,
 		'record': _get_record(request, work),
 		'records': work.record_set,

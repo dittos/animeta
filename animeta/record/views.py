@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import list_detail
-from django.views.generic.simple import direct_to_template
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from work.models import Work, suggest_works, get_or_create_work
-from record.models import Record, History, Category, Uncategorized, StatusTypes
-from record.forms import RecordAddForm, RecordUpdateForm, SimpleRecordFormSet
+from .models import Record, History, Category, Uncategorized, StatusTypes
+from .forms import RecordAddForm, RecordUpdateForm, SimpleRecordFormSet
 from connect import get_connected_services
-
-def _return_to_user_page(request):
-	return HttpResponseRedirect(request.user.get_absolute_url())
 
 def save(request, form_class, object, form_initial, template_name, extra_context = {}):
 	if request.method == 'POST':
@@ -20,9 +16,9 @@ def save(request, form_class, object, form_initial, template_name, extra_context
 			form.save()
 			if request.POST.get('next'):
 				# CSRF?
-				return HttpResponseRedirect(request.POST['next'])
+				return redirect(request.POST['next'])
 			else:
-				return _return_to_user_page(request)
+				return redirect(request.user)
 	else:
 		form = form_class(object, initial=form_initial)
 
@@ -31,7 +27,7 @@ def save(request, form_class, object, form_initial, template_name, extra_context
 		'owner': request.user,
 		'connected_services': get_connected_services(request.user)
 	})
-	return direct_to_template(request, template_name, extra_context)
+	return render(request, template_name, extra_context)
 
 @login_required
 def add(request, title=''):
@@ -50,7 +46,7 @@ def update(request, id):
 	record = _get_record(request, id)
 	if 'work_title' in request.POST:
 		record.update_title(request.POST['work_title'])
-		return _return_to_user_page(request)
+		return redirect(request.user)
 	elif 'category' in request.POST:
 		id = request.POST['category']
 		if not id:
@@ -58,7 +54,7 @@ def update(request, id):
 		else:
 			record.category = request.user.category_set.get(id=id)
 		record.save()
-		return _return_to_user_page(request)
+		return redirect(request.user)
 	else:
 		return save(request,
 			RecordUpdateForm, record, {'status': record.status, 'status_type': record.status_type, 'category': record.category.id if record.category else None},
@@ -75,9 +71,9 @@ def delete(request, id):
 	record = _get_record(request, id)
 	if request.method == 'POST':
 		record.delete()
-		return _return_to_user_page(request)
+		return redirect(request.user)
 	else:
-		return direct_to_template(request, 'record/record_confirm_delete.html', {'record': record, 'owner': request.user})
+		return render(request, 'record/record_confirm_delete.html', {'record': record, 'owner': request.user})
 
 @login_required
 def add_many(request):
@@ -95,7 +91,7 @@ def add_many(request):
 				record.title = title
 				record.save()
 
-	return direct_to_template(request, 'record/import.html',
+	return render(request, 'record/import.html',
 		{'owner': request.user, 'formset': SimpleRecordFormSet(),
 		 'addition_log': addition_log})
 
@@ -104,7 +100,7 @@ def delete_category(request, id):
 	category = Category.objects.get(user=request.user, id=id)
 	request.user.record_set.filter(category=category).update(category=None)
 	category.delete()
-	return HttpResponseRedirect('/records/category/')
+	return redirect('/records/category/')
 
 @login_required
 def rename_category(request, id):
@@ -112,9 +108,9 @@ def rename_category(request, id):
 	if request.method == 'POST':
 		category.name = request.POST['name']
 		category.save()
-		return HttpResponseRedirect('/records/category/')
+		return redirect('/records/category/')
 	else:
-		return direct_to_template(request, 'record/rename_category.html',
+		return render(request, 'record/rename_category.html',
 			{'category': category})
 
 @login_required
@@ -128,11 +124,11 @@ def add_category(request):
 				record = Record.objects.get(id=record_id, user=request.user)
 				record.category = category
 				record.save()
-			return HttpResponseRedirect('/records/category/')
+			return redirect('/records/category/')
 
 @login_required
 def category(request):
-	return direct_to_template(request, 'record/manage_category.html',
+	return render(request, 'record/manage_category.html',
 		{'categories': request.user.category_set.all(),
 		 'uncategorized': Uncategorized(request.user)})
 
@@ -144,7 +140,7 @@ def reorder_category(request):
 
 def shortcut(request, id):
 	history = get_object_or_404(History, id=id)
-	return HttpResponseRedirect('/users/%s/history/%d/' % (history.user.username, history.id))
+	return redirect('/users/%s/history/%d/' % (history.user.username, history.id))
 
 def history_detail(request, username, id):
 	user = get_object_or_404(User, username=username)
@@ -168,9 +164,9 @@ def delete_history(request, username, id):
 
 	if request.method == 'POST':
 		history.delete()
-		return _return_to_user_page(request)
+		return redirect(request.user)
 	else:
-		return direct_to_template(request, 'record/history_confirm_delete.html', {'history': history, 'owner': request.user})
+		return render(request, 'record/history_confirm_delete.html', {'history': history, 'owner': request.user})
 
 def suggest(request):
 	result = suggest_works(request.GET['q'], user=request.user )
