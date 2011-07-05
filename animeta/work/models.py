@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.db import models, transaction
+from django.db import models, transaction, IntegrityError
 from django.conf import settings
 from django.contrib.auth.models import User
 
@@ -42,10 +42,26 @@ class Work(models.Model):
         return ('work.views.detail', (), {'title': self.title})
 
     def merge(self, other):
-        with transaction.commit_on_success():
-            TitleMapping.objects.filter(work=other).update(work=self)
-            other.record_set.update(work=self)
-            other.history_set.update(work=self)
+        TitleMapping.objects.filter(work=other).update(work=self)
+        forced = []
+        try:
+            with transaction.commit_on_success():
+                other.record_set.update(work=self)
+                other.history_set.update(work=self)
+        except IntegrityError, e:
+            # self와 other의 기록을 함께 가진 경우
+            # 나중에 기록된 것에 모두 합쳐버린다.
+            w = [self, other]
+            for u in User.objects.filter(record__work__in=w) \
+                .annotate(count=models.Count('record__work')) \
+                .filter(count__gt=1):
+                forced.append(u)
+                with transaction.commit_on_success():
+                    r = u.record_set.filter(work__in=w).latest('updated_at')
+                    delete = other if r.work == self else self
+                    u.record_set.filter(work=delete).delete()
+                    u.history_set.filter(work=delete).update(work=r.work)
+        return forced
 
 def suggest_works(query, user=None):
     queryset = Work.objects

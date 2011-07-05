@@ -85,13 +85,13 @@ def merge_dashboard(request):
                 req = MergeRequest.objects.get(id=id)
                 try:
                     if req.target.popularity >= req.source.popularity:
-                        req.target.merge(req.source)
-                        result.append((False, req.target, req.source))
+                        f = req.target.merge(req.source)
+                        result.append((False, req.target, req.source, f))
                     else:
-                        req.source.merge(req.target)
-                        result.append((False, req.source, req.target))
+                        f = req.source.merge(req.target)
+                        result.append((False, req.source, req.target, f))
                 except:
-                    result.append((True, req.target, req.source))
+                    result.append((True, req.target, req.source, None))
         else:
             work = Work.objects.get(title=request.POST['target'])
             source = Work.objects.get(title=request.POST['source'])

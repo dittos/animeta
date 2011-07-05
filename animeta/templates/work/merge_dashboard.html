@@ -14,8 +14,10 @@
 {% endif %}
 {% if result %}
 <p class="message">
-{% for error, self, other in result %}
-{% if error %}<strong>Error:</strong> {% endif %}{{ self.title }} &larr; {{ other.title }}<br />
+{% for error, self, other, forced in result %}
+{% if error %}<strong>Error:</strong> {% endif %}
+{{ self.title }} &larr; {{ other.title }}
+{% if forced %} <strong>강제 병합: {{ forced }}</strong>{% endif %}<br />
 {% endfor %}
 </p>
 {% endif %}
