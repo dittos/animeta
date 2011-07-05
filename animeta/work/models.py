@@ -61,6 +61,11 @@ class Work(models.Model):
                     delete = other if r.work == self else self
                     u.record_set.filter(work=delete).delete()
                     u.history_set.filter(work=delete).update(work=r.work)
+
+            # 병합 처리가 완료되면 다시 합쳐본다.
+            with transaction.commit_on_success():
+                other.record_set.update(work=self)
+                other.history_set.update(work=self)
         return forced
 
 def suggest_works(query, user=None):
