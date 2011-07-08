@@ -3,13 +3,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>{% block title %}애니메타{% endblock %}</title>
-    <link rel="stylesheet" href="/static/style.css" type="text/css" />
-    <link rel="stylesheet" href="/static/mobile.css" type="text/css" media="only screen and (max-device-width: 480px)" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}style.css" type="text/css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}mobile.css" type="text/css" media="only screen and (max-device-width: 480px)" />
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" type="text/css" />
     <meta name="viewport" content="width=device-width" />
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="/static/common.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}common.js"></script>
     <script type="text/javascript">
     var _gaq = [['_setAccount', 'UA-7500828-2'], ['_trackPageview']];
     (function() {
@@ -36,7 +36,7 @@
 
 <div id="container">
 <div id="header">
-    <p><a href="/"><img src="/static/animeta.gif" alt="animeta" /></a></p>
+    <p><a href="/"><img src="{{ STATIC_URL }}animeta.gif" alt="animeta" /></a></p>
 
 {% block menu %}
     <ul class="menu" id="global-menu">

@@ -5,7 +5,7 @@
 {% block nav %}
 <h1><a href="{% url user.views.library owner %}">{{ owner.username }} 사용자</a></h1>
 <p>
-    <a href="{% url user.views.history_feed owner %}" class="feed"><img src="/static/feed.gif" alt="Atom 피드" /></a>
+    <a href="{% url user.views.history_feed owner %}" class="feed"><img src="{{ STATIC_URL }}feed.gif" alt="Atom 피드" /></a>
 
     <a href="{% url user.views.library owner %}">작품 목록</a>
     <a href="{% url user.views.history owner %}">기록 내역</a>

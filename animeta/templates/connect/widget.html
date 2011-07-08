@@ -5,7 +5,7 @@
 {% block content %}
 <h2>블로그에 위젯 달기</h2>
 
-<object width="220" height="250" id="widget-preview"><param name="movie" value="/static/widget.swf?username={{ request.user.username }}"></param><embed src="/static/widget.swf?username={{ request.user.username }}" type="application/x-shockwave-flash" width="220" height="250"></embed></object>
+<object width="220" height="250" id="widget-preview"><param name="movie" value="{{ STATIC_URL }}widget.swf?username={{ request.user.username }}"></param><embed src="{{ STATIC_URL }}widget.swf?username={{ request.user.username }}" type="application/x-shockwave-flash" width="220" height="250"></embed></object>
 
 <p>다음 코드를 원하는 위치에 붙여넣으시면 됩니다.</p>
 <p>가로 <input type="text" size="3" id="width" value="220" />px &times; 세로 <input type="text" size="3" id="height" value="250" />px <input type="button" id="apply" value="적용" /></p>

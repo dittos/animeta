@@ -22,7 +22,7 @@
     <td>
         {{ form.status }}<span id="suffix">화</span>
         <script type="text/javascript">
-        $('#status td').append('<a href="#" id="plus-one"><img src="/static/plus.gif" alt="+1" /></a>')
+        $('#status td').append('<a href="#" id="plus-one"><img src="{{ STATIC_URL }}plus.gif" alt="+1" /></a>')
         function determine_suffix() {
             if ($('#id_status').val().match(/^(|.*\d)$/))
                 $('#suffix').show()

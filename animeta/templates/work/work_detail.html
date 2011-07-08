@@ -45,7 +45,7 @@
 </div>
 
 {% if daum_api_key %}
-<script type="text/javascript" src="/static/tvpot.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}tvpot.js"></script>
 <script type="text/javascript">
 var tvpot = new TVPot('{{ daum_api_key }}')
 $(function() {
