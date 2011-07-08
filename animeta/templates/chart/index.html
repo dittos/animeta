@@ -17,6 +17,7 @@
 
 <div id="weekly-popular-works">
 <h2>지난 주 인기 작품</h2>
+{% cache 3600 main_chart %}
 {% for item in weekly_works %}
 <div class="popular-work rank{{ item.rank }}">
 <p class="info">
@@ -41,6 +42,7 @@
 {% endfor %}
 </div>
 {% endfor %}
+{% endcache %}
 
 <p><a href="/charts/works/weekly/">더 보기...</a></p>
 </div>

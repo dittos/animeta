@@ -2,7 +2,14 @@ import datetime
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from chart.models import weekly, compare_charts, PopularWorksChart, ActiveUsersChart
-from record.models import History
+from record.models import History, include_records
+
+def load_comments(chart):
+    for row in chart:
+        rank = row['rank']
+        n = 4 // rank if rank <= 2 else 0
+        row['records'] = row['object'].history_set.select_related('user').exclude(comment='')[:n]
+        yield row
 
 def recent(request):
     w = weekly()
@@ -10,17 +17,10 @@ def recent(request):
         PopularWorksChart(w, 5),
         PopularWorksChart(w.prev())
     )
-    rows = []
-    for row in chart:
-        rank = row['rank']
-        n = 4 // rank if rank <= 2 else 0
-        row['records'] = row['object'].history_set.exclude(comment='')[:n]
-        rows.append(row)
     return render(request, 'chart/index.html', {
-        'weekly_works': rows,
-        'weekly_users': ActiveUsersChart(weekly(), 5),
-        'newbies': User.objects.filter(date_joined__gte=datetime.date.today()),
-        'timeline': History.objects.exclude(comment='')[:6]
+        'weekly_works': load_comments(chart),
+        'timeline': History.objects.select_related('user', 'work') \
+                .exclude(comment='')[:6].transform(include_records)
     })
 
 def detail(request, chart_class, range_class=None, title=''):

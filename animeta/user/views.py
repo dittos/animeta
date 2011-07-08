@@ -8,8 +8,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.views import login as login_view
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count
 from chart.models import weekly, PopularWorksChart
-from record.models import Uncategorized, StatusTypes
+from record.models import Uncategorized, StatusTypes, include_records
 from record.forms import RecordFilterForm
 
 @csrf_protect
@@ -79,9 +80,8 @@ def library(request, username=None):
     return direct_to_template(request, 'user/library.html', {
         'owner': user,
         'records': records.select_related('work', 'user').order_by('work__title'),
-        'categories': [Uncategorized(user)] + list(user.category_set.all()),
+        'categories': [Uncategorized(user)] + list(user.category_set.annotate(record_count=Count('record'))),
         'record_count': record_count,
-        'finished_count': user.record_set.filter(status='').count(),
         'category_filter': category_filter,
         'filter_form': filter_form,
     })
@@ -90,7 +90,8 @@ def history(request, username):
     user = get_object_or_404(User, username=username)
     return list_detail.object_list(request,
         template_name = 'user/history.html',
-        queryset = user.history_set.select_related('work', 'user'),
+        queryset = user.history_set.select_related('work', 'user') \
+                .transform(include_records),
         paginate_by = 8,
         extra_context = {'owner': user}
     )

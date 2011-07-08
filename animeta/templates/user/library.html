@@ -17,7 +17,7 @@
 <select name="category" id="category">
     <option value="">전체 ({{ record_count }})</option>
 {% for category in categories %}
-    <option value="{{ category.id }}"{% ifequal category_filter category.id %} selected="selected"{% endifequal %}>{{ category.name }} ({{ category.record_set.count }})</option>
+    <option value="{{ category.id }}"{% ifequal category_filter category.id %} selected="selected"{% endifequal %}>{{ category.name }} ({{ category.record_count }})</option>
 {% endfor %}
 </select>
 <input type="submit" value="이동" />

@@ -2,6 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import pre_save, post_save, post_delete
+from queryset_transform import TransformManager
 from work.models import Work, get_or_create_work
 
 class StatusType(object):
@@ -62,8 +63,13 @@ class Uncategorized(object):
     def name(self):
         return u'미분류'
 
+    @property
     def record_set(self):
         return self.user.record_set.filter(category=None)
+    
+    @property
+    def record_count(self):
+        return self.record_set.count()
 
 class Category(models.Model):
     user = models.ForeignKey(User)
@@ -93,7 +99,7 @@ class Record(models.Model):
 
     @property
     def history_set(self):
-        return self.user.history_set.filter(work=self.work)
+        return History.objects.filter(user_id=self.user_id, work_id=self.work_id)
 
     @property
     def status_type_name(self):
@@ -131,9 +137,14 @@ class History(models.Model):
     comment = models.TextField(blank=True, verbose_name=u'감상평')
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
+    objects = TransformManager()
+
     @property
     def record(self):
-        return self.user.record_set.get(work=self.work)
+        if not hasattr(self, '_record'):
+            return self.user.record_set.get(work=self.work)
+        else:
+            return self._record
 
     @property
     def status_type_name(self):
@@ -142,6 +153,16 @@ class History(models.Model):
     class Meta:
         ordering = ['-id']
         get_latest_by = 'updated_at'
+
+def include_records(qs):
+    user_ids = set(history.user_id for history in qs)
+    work_ids = set(history.work_id for history in qs)
+    records = Record.objects.filter(user__in=user_ids, work__in=work_ids)
+    dict = {}
+    for record in records:
+        dict[(record.user_id, record.work_id)] = record
+    for history in qs:
+        history._record = dict[(history.user_id, history.work_id)]
 
 def sync_record(sender, instance, **kwargs):
     record, created = Record.objects.get_or_create(user=instance.user, work=instance.work)

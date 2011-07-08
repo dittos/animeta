@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.core.cache import cache
 from django.db import models, transaction, IntegrityError
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -12,11 +13,16 @@ class Work(models.Model):
 
     @property
     def rank(self):
-        from django.db import connection
-        cursor = connection.cursor()
-        cursor.execute("SELECT rank FROM (SELECT work_id, RANK() OVER (ORDER BY COUNT(*) DESC) AS rank FROM record_record GROUP BY work_id) t WHERE work_id = %s", [self.id])
-        row = cursor.fetchone()
-        return row[0] if row else None
+        key = 'rank:%d' % self.id
+        rank = cache.get(key)
+        if not rank:
+            from django.db import connection
+            cursor = connection.cursor()
+            cursor.execute("SELECT rank FROM (SELECT work_id, RANK() OVER (ORDER BY COUNT(*) DESC) AS rank FROM record_record GROUP BY work_id) t WHERE work_id = %s", [self.id])
+            row = cursor.fetchone()
+            rank = row[0] if row else None
+            cache.set(key, rank, 60 * 60 * 24)
+        return rank
 
     @property
     def similar_objects(self):

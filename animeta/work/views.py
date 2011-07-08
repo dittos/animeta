@@ -34,9 +34,6 @@ def detail(request, title):
         comments += list(history.filter(comment='')[:N-len(comments)])
 
     similar_works = work.similar_objects[:7]
-    normal_title = normalize_title(work.title)
-    for w in similar_works:
-        w.can_merge = normalize_title(w.title) != normal_title and not w.has_merge_request(work)
 
     alt_titles = TitleMapping.objects.filter(work=work) \
             .exclude(title=work.title).values_list('title', flat=True)
@@ -55,7 +52,8 @@ def list_users(request, title):
     return render(request, "work/users.html", {
         'work': work,
         'record': _get_record(request, work),
-        'records': work.record_set.order_by('status_type', 'user__username')
+        'records': work.record_set.select_related('user') \
+                .order_by('status_type', 'user__username')
     })
 
 def video(request, title, provider, id):
