@@ -99,7 +99,7 @@ class Record(models.Model):
 
     @property
     def history_set(self):
-        return History.objects.filter(user_id=self.user_id, work_id=self.work_id)
+        return History.objects.filter(user=self.user, work=self.work)
 
     @property
     def status_type_name(self):
