@@ -1,8 +1,8 @@
-Django==1.2.4
-South==0.7.2
+Django
+South
 pytz
-tweepy==1.7.1
--e hg+https://bitbucket.org/ditto/django-oauth-provider#egg=django-oauth
+tweepy
+hg+https://bitbucket.org/ditto/django-oauth-provider#egg=django-oauth
 oauth2
-facebook-python-sdk
+python-fb
 git+git://github.com/jbalogh/django-queryset-transform.git#egg=django-queryset-transform
