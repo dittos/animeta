@@ -1,3 +1,4 @@
+import re
 import json
 import plistlib
 import functools
@@ -8,7 +9,12 @@ def fallback_encode_json(obj):
     if hasattr(obj, 'isoformat'):
         return obj.isoformat()
     else:
-        raise TypeError
+        raise TypeError(repr(obj))
+
+def _json_writefunc(data, stream, callback=None):
+    if callback: stream.write(callback + '(')
+    json.dump(data, stream, default=fallback_encode_json)
+    if callback: stream.write(')')
 
 def api_response(view):
     @functools.wraps(view)
@@ -24,7 +30,9 @@ def api_response(view):
             writefunc = plistlib.writePlist
         else: # format == 'json'
             mime = 'application/json'
-            writefunc = lambda data, stream: json.dump(data, stream, default=fallback_encode_json)
+            cb = request.REQUEST.get('callback', None)
+            if cb: cb = re.sub('[^A-Za-z0-9_$]', '', cb)
+            writefunc = lambda d, s: _json_writefunc(d, s, cb)
         response = HttpResponse(mimetype=mime, status=result.get('error_code', 422) if 'error' in result else 200)
         writefunc(result, response)
         return response

@@ -57,9 +57,11 @@ class Uncategorized(object):
     def __init__(self, user):
         self.user = user
 
+    @property
     def id(self):
         return 0
     
+    @property
     def name(self):
         return u'미분류'
 

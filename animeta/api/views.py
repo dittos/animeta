@@ -8,7 +8,7 @@ from django.db.models import Count
 from oauth_provider.decorators import oauth_required
 from api.decorators import api_response
 from work.models import Work, get_or_create_work
-from record.models import History, StatusTypes
+from record.models import History, StatusTypes, Uncategorized
 from record.templatetags.status import status_text
 from chart.models import PopularWorksChart, ActiveUsersChart, compare_charts
 from chart.utils import Week, Month
@@ -23,7 +23,7 @@ def _history_as_dict(history):
     return {
         'id': history.id,
         'user': history.user.username,
-        'work': {'title': history.record.title, 'id': history.work.id},
+        'work': history.record.title,
         'status': _serialize_status(history),
         'comment': history.comment,
         'updated_at': _serialize_datetime(history.updated_at),
@@ -33,10 +33,10 @@ def _history_as_dict(history):
 @api_response
 def get_records(request):
     queryset = History.objects.order_by('-id')
-    if 'user_name' in request.GET:
-        queryset = queryset.filter(user__username=request.GET['user_name'])
-    if 'work_id' in request.GET:
-        queryset = queryset.filter(work__id=request.GET['work_id'])
+    if 'user' in request.GET:
+        queryset = queryset.filter(user__username=request.GET['user'])
+    if 'work' in request.GET:
+        queryset = queryset.filter(work__title=request.GET['work'])
     if 'before' in request.GET:
         queryset = queryset.filter(id__lt=int(request.GET['before']))
     if request.GET.get('only_commented', '') == 'true':
@@ -66,6 +66,9 @@ def delete_record(request, id):
         history.record.delete()
     return True
 
+def _category_as_dict(category):
+    return {'id': category.id, 'name': category.name}
+
 @api_response
 def get_user(request, name):
     user = get_object_or_404(User, username=name)
@@ -76,9 +79,10 @@ def get_user(request, name):
     for d in user.record_set.values('status_type').annotate(count=Count('status_type')).order_by():
         stats[StatusTypes.to_name(d['status_type'])] = d['count']
 
+    uncategorized = Uncategorized(user)
     categories = []
-    for d in user.record_set.values('category__name').annotate(count=Count('category')).order_by():
-        categories.append({'name': d['category__name'] or "", 'count': d['count']})
+    for c in [uncategorized] + list(user.category_set.annotate(record_count=Count('record'))):
+        categories.append({'id': c.id, 'name': c.name, 'count': c.record_count})
 
     result = {
         'name': user.username,
@@ -88,10 +92,9 @@ def get_user(request, name):
     }
     if request.GET.get('include_library_items', 'true') == 'true':
         result['library_items'] = [{
-            'id': record.work.id,
             'title': record.title,
             'status': _serialize_status(record),
-            'category': getattr(record.category, 'name', ""),
+            'category': _category_as_dict(record.category or uncategorized),
             'updated_at': _serialize_datetime(record.updated_at),
         } for record in user.record_set.order_by('title')]
     return result
@@ -114,7 +117,6 @@ def _work_as_dict(work, include_watchers=False):
             watchers[StatusTypes.to_name(d['status_type'])] = d['count']
 
     return {
-        'id': work.id,
         'title': work.title,
         'rank': work.rank,
         'watchers': watchers,
@@ -152,11 +154,6 @@ def get_works(request):
     return [_work_as_dict(work) for work in queryset[:count]]
 
 @api_response
-def get_work(request, id):
-    work = get_object_or_404(Work, id=id)
-    return _work_as_dict(work, request.GET.get('include_watchers', 'false') == 'true')
-
-@api_response
 def get_work_by_title(request, title):
     work = get_object_or_404(Work, title=title)
     return _work_as_dict(work, request.GET.get('include_watchers', 'false') == 'true')
@@ -164,17 +161,11 @@ def get_work_by_title(request, title):
 @oauth_required
 @api_response
 def create_record(request):
-    if 'work_id' in request.POST:
-        try:
-            work = Work.objects.get(id=request.POST['work_id'])
-            title = work.title
-        except Work.DoesNotExist:
-            return {"error": "Invalid work_id."}
-    elif 'work_title' in request.POST:
-        title = request.POST['work_title']
+    if 'work' in request.POST:
+        title = request.POST['work']
         work = get_or_create_work(title)
     else:
-        return {"error": "work_id or work_title is required."}
+        return {"error": "work is required."}
 
     if 'status_type' not in request.POST:
         return {"error": "status_type is required."}
@@ -238,7 +229,7 @@ def get_chart(request, type):
                 del item['sign']
         if type == 'work':
             work = item['object']
-            item['work'] = {'title': work.title, 'id': work.id}
+            item['work'] = work.title
         elif type == 'user':
             item['user'] = item['object'].username
         del item['object']
