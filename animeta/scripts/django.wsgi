@@ -9,5 +9,5 @@ import urllib
 
 orig_handler = django.core.handlers.wsgi.WSGIHandler()
 def application(environ, start_response):
-	environ['PATH_INFO'] = urllib.unquote(environ['REQUEST_URI'].split('?')[0])
-	return orig_handler(environ, start_response)
+    environ['PATH_INFO'] = urllib.unquote(environ['REQUEST_URI'].split('?')[0])
+    return orig_handler(environ, start_response)

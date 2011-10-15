@@ -6,7 +6,9 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}style.css" type="text/css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}mobile.css" type="text/css" media="only screen and (max-device-width: 480px)" />
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" type="text/css" />
-    <meta name="viewport" content="width=device-width" />
+    <link rel="apple-touch-icon" href="{{ STATIC_URL }}icon@2x.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}common.js"></script>
@@ -26,10 +28,6 @@
 <div id="join-now" class="header-notice">
 <p><strong>애니메타</strong>는 애니메이션, 만화, 드라마 등의 감상 기록을 관리할 수 있는 서비스입니다.<br />내가 본 작품에 대해 간편하게 기록하고 다른 사람들과 느낌을 나눠보세요.
 <strong>아직 회원이 아니신가요? <a href="/signup/">가입하기 &raquo;</a></strong></p>
-</div>
-{% else %}
-<div id="notice" class="header-notice">
-<p><a href="/works/merge-dashboard/">제목 표기법 병합 작업</a>이 진행중입니다. 여러분의 도움이 필요합니다. <strong><a href="http://blog.animeta.net/entry/title-merge">자세히 보기</a></strong></p>
 </div>
 {% endif %}
 {% endblock %}

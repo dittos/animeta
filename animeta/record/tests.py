@@ -34,6 +34,16 @@ class TestRecordViews(TestCase):
         self.assertEquals(302, rv.status_code)
         self._assert_latest_record(data)
 
+    def test_update_record_title(self):
+        rv = self.client.get('/records/1/update/')
+        self.assertEquals(200, rv.status_code)
+        data = { 'work_title': 'test2' }
+        rv = self.client.post('/records/1/update/', data)
+        self.assertEquals(302, rv.status_code)
+        user = User.objects.get(username='ditto')
+        record = user.record_set.latest('id')
+        self.assertEquals('test2', record.title)
+
     def _assert_latest_record(self, data):
         user = User.objects.get(username='ditto')
         record = user.record_set.latest('id')

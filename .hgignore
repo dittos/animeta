@@ -3,3 +3,4 @@
 \.orig$
 ^settings_local.py$
 backup
+src

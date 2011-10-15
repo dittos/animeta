@@ -41,18 +41,26 @@ class RecordAddForm(RecordUpdateForm):
         self.fields['category'].queryset = user.category_set.all()
         self.user = user
 
-    def save(self):
+    def clean_work_title(self):
         title = self.cleaned_data['work_title']
-        work = get_or_create_work(title)
-
+        self.work = get_or_create_work(title)
         try:
-            self.record = self.user.record_set.get(work=work)
-        except:
-            self.record = Record(user=self.user, work=work, title=title)
-        self.record.category = self.cleaned_data['category']
-        self.record.save()
+            r = self.user.record_set.get(work=self.work)
+            raise forms.ValidationError(u'이미 같은 작품이 "%s"로 등록되어 있습니다.' % r.title)
+        except Record.DoesNotExist:
+            pass
+        return title
 
-        super(RecordAddForm, self).save()
+    def save(self):
+        try:
+            self.record = self.user.record_set.get(work=self.work)
+            raise Exception('Already added')
+        except Record.DoesNotExist:
+            self.record = Record(user=self.user, work=self.work, title=self.cleaned_data['work_title'])
+            self.record.category = self.cleaned_data['category']
+            self.record.save()
+
+            super(RecordAddForm, self).save()
 
 class SimpleRecordForm(forms.Form):
     work_title = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'autocomplete', 'size': 30}))

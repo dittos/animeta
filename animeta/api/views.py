@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.db.models import Count
 from oauth_provider.decorators import oauth_required
 from api.decorators import api_response
-from work.models import Work, get_or_create_work
+from work.models import Work, get_or_create_work, TitleMapping
 from record.models import History, StatusTypes, Uncategorized
 from record.templatetags.status import status_text
 from chart.models import PopularWorksChart, ActiveUsersChart, compare_charts
@@ -36,7 +36,8 @@ def get_records(request):
     if 'user' in request.GET:
         queryset = queryset.filter(user__username=request.GET['user'])
     if 'work' in request.GET:
-        queryset = queryset.filter(work__title=request.GET['work'])
+    	works = TitleMapping.objects.filter(title=request.GET['work']).values_list('work', flat=True)
+        queryset = queryset.filter(work__in=works)
     if 'before' in request.GET:
         queryset = queryset.filter(id__lt=int(request.GET['before']))
     if request.GET.get('only_commented', '') == 'true':

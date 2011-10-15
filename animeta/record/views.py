@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import list_detail
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from work.models import Work, suggest_works, get_or_create_work
 from .models import Record, History, Category, Uncategorized, StatusTypes
 from .forms import RecordAddForm, RecordUpdateForm, SimpleRecordFormSet
@@ -45,8 +47,13 @@ def _get_record(request, id):
 def update(request, id):
     record = _get_record(request, id)
     if 'work_title' in request.POST:
-        record.update_title(request.POST['work_title'])
-        return redirect(request.user)
+        try:
+            record.update_title(request.POST['work_title'])
+            return redirect(request.user)
+        except:
+            transaction.rollback()
+            messages.error(request, u'이미 같은 작품이 등록되어 있어 제목을 바꾸지 못했습니다.')
+            return redirect('/records/%d/update/' % record.id)
     elif 'category' in request.POST:
         id = request.POST['category']
         if not id:
