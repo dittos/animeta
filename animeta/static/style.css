@@ -4,13 +4,16 @@ body, input, textarea, select, optgroup, option
 	{ font-family: Malgun Gothic, sans-serif; }
 a { color: #4bb000; }
 a img { border: none; }
-#container { background: #fff url(bg.gif) repeat-x; }
+#container { }
 #header, #nav, #content, #footer { width: 960px; margin: 0 auto; }
-#header { padding: 1em; overflow: hidden; zoom: 1; }
+#header { padding: 1em; overflow: hidden; zoom: 1; border-radius: 0 0 10px 10px; box-shadow: 0 0 3px #aaa; background: -moz-linear-gradient(top, #fff, #fff 25%, #f0f0f0 75%, #fff); background: -webkit-linear-gradient(top, #fff, #fff 25%, #f0f0f0 75%, #fff); margin-bottom: 0.5em; }
+#header a:hover { position: relative; left: 1px; top: 1px; }
 #header p { margin: 0; float: left; }
-.menu { float: right; margin: 0; padding: 0; list-style: none; margin-left: 2em; }
+#global-menu { float: left; }
+#account-menu { float: right; }
+.menu { margin: 0; padding: 0; list-style: none; margin-left: 2em; }
 .menu li { margin-right: 1em; display: inline; }
-.menu li a { font-weight: bold; font-size: 1.1em; text-decoration: none; line-height: 2; }
+.menu li a { font-size: 1.1em; text-decoration: none; line-height: 2; color: #333; }
 #account { float: right; color: #999; }
 #account a { text-decoration: none; }
 #account a:hover { text-decoration: underline; }
@@ -41,7 +44,10 @@ form span.description { font-size: 0.8em; margin-left: 0.8em; color: #999; verti
 /* Welcome Page */
 #intro { line-height: 1.6; }
 .aside { padding-top: 0.5em; margin: 0 0 0 650px; width: 20em; }
-.header-notice { background-color: #666; color: #eee; text-align: center; }
+.header-notice {
+	background: -moz-linear-gradient(top, #999, #666);
+	background: -webkit-linear-gradient(top, #999, #666);
+	color: #eee; text-align: center; }
 .header-notice a { font-weight: bold; text-decoration: none; color: #65da0b; }
 .header-notice p { margin: 0; line-height: 1.8; padding: 0.5em; text-shadow: 1px 0 #333; }
 .header-notice strong { color: #fff; }
@@ -50,13 +56,14 @@ form span.description { font-size: 0.8em; margin-left: 0.8em; color: #999; verti
 /* Main Page */
 .popular-work { margin-top: 1em; }
 .popular-work .info { font-size: 1.2em; font-weight: bold; }
-.popular-work .history { margin-left: 1em; font-size: 0.95em; }
-.popular-work.rank1 .info { font-size: 1.35em; }
+.popular-work .history { margin-left: 1em; }
+.popular-work.rank1 .info { font-size: 1.4em; }
 .popular-work.rank1 .history { font-size: 1em; }
 .popular-work .status-text { font-weight: bold; margin-right: 0.5em; }
 .popular-work .diff { margin-left: 1em; font-size: 0.7em; vertical-align: 0.2em; font-weight: normal; }
+#weekly-popular-works h2, #timeline h2 { color: #999; font-size: 1.1em; letter-spacing: 0.5em; font-weight: normal; border-radius: 10px 10px 0 0; margin: 0; }
 #timeline { float: right; width: 22em; }
-#timeline .history { font-size: 0.9em; margin-top: 1em; padding: 0.75em 0.5em; background-color: #eee; border-radius: 10px; }
+#timeline .history { padding-top: 1.5em; font-size: 95%; }
 #timeline .history p { margin-top: 0 !important; }
 #timeline .history .comment { margin-bottom: 0 !important; }
 #weekly-popular-works { margin-right: 25em; }
@@ -109,7 +116,7 @@ form.inline p { padding-left: 1em; display: inline; }
 .column li { line-height: 2 !important; }
 .work { color: #000; text-decoration: none; }
 .work:hover { color: #666; border-bottom: 1px dashed #aaa; }
-.status { color: #fff; background-color: #b0b0b0; padding: 0.25em; margin-left: 0.5em; }
+.status { color: #fff; background-color: #b0b0b0; padding: 3px 4px; margin-left: 0.5em; border-radius: 5px; }
 .status a { text-decoration: none; color: #fff !important; }
 .status a:hover { padding-right: 16px; background: transparent url(edit.gif) right center no-repeat; margin-right: 2px; }
 .status.watching { background-color: #4bb000; }
@@ -201,3 +208,4 @@ form.inline p { padding-left: 1em; display: inline; }
 #search-result .my-status { display: block; }
 
 .merged, .merged td a { color: #bbb; }
+

@@ -5,7 +5,7 @@
 #nav { padding: 0 0.5em; }
 #content { padding: 0.5em; }
 #global-menu { margin-top: 0.5em; }
-.menu { float: none; clear: both; margin-left: 0; line-height: 1; }
+.menu { float: none !important; clear: both; margin-left: 0; line-height: 1; }
 .menu li.menu-connect { display: none; }
 .menu li { letter-spacing: -1px; margin: 0 0.5em; }
 #timeline { float: none; width: auto; }
