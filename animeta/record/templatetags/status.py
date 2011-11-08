@@ -9,9 +9,7 @@ from record.models import StatusTypes
 register = template.Library()
 
 def status_text(record):
-    status = record.status.strip()
-    if status and status[-1] in string.digits:
-        status += u'화'
+    status = record.get_status_display()
 
     if record.status_type != StatusTypes.Watching or status == '':
         status_type_name = record.status_type.text

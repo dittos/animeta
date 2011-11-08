@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import string
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import pre_save, post_save, post_delete
@@ -128,6 +129,12 @@ class Record(models.Model):
         self.title = title
         self.save()
 
+    def get_status_display(self):
+        status = self.status.strip()
+        if status and status[-1] in string.digits:
+            status += u'화'
+        return status
+
     class Meta:
         unique_together = ('user', 'work')
 
@@ -151,6 +158,12 @@ class History(models.Model):
     @property
     def status_type_name(self):
         return StatusTypes.to_name(self.status_type)
+
+    def get_status_display(self):
+        status = self.status.strip()
+        if status and status[-1] in string.digits:
+            status += u'화'
+        return status
 
     class Meta:
         ordering = ['-id']

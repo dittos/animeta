@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     (r'^api/', include('animeta.api.urls')),
 
     (r'^library/', login_required(animeta.user.views.library)),
+    (r'^users/(?P<username>[A-Za-z0-9_]+)/library/', include('animeta.library.urls')),
     (r'^users/(?P<username>[A-Za-z0-9_]+)/', include('animeta.user.urls')),
     (r'^records/', include('animeta.record.urls')),
     (r'^works/', include('animeta.work.urls')),
