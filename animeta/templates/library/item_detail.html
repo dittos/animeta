@@ -1,1 +1,59 @@
-<h2>{{ item.title }}</h2>
+<h2 class="item-detail-title">{{ item.title }}</h2>
+
+{% if update_form %}
+<form method="post" action="" class="status-update-form">
+<div class="update-form-status">{{ update_form.status_type }} @ {{ update_form.status }}<span id="suffix">화</span></div>
+<div class="update-form-comment"><input type="text" name="comment" /></div>
+<div class="update-form-footer">
+    <div class="update-form-publish">
+    {% if not connected_services %}
+        <input type="checkbox" disabled="disabled" />
+        외부 서비스에 보내기 (연동 안됨)
+    {% else %}
+        <label>
+            {{ update_form.publish }}
+            {% for module, setting in connected_services %}{{ module.name }}{% if not forloop.last %}, {% endif %}{% endfor %}에도 보내기
+        </label>
+    {% endif %}
+        (<a href="/connect/">설정</a>)
+    </div>
+    <input type="submit" value="저장" class="update-form-submit" />
+</div>
+<div style="clear: both"></div>
+</form>
+<script type="text/javascript">
+$('#status td').append('<a href="#" id="plus-one"><img src="{{ STATIC_URL }}plus.gif" alt="+1" /></a>')
+function determine_suffix() {
+    if ($('#id_status').val().match(/^(|.*\d)$/))
+        $('#suffix').show()
+    else
+        $('#suffix').hide()
+}
+determine_suffix()
+$('#id_status').change(determine_suffix).keyup(determine_suffix)
+$('#plus-one').live('click', function(event) {
+    var $field = $('#id_status')
+    var val = $field.val()
+    var matches = val.match(/(\d+)[^\d]*$/)
+    if (matches)
+    {
+        var digits = matches[1].length
+        var add1 = (parseInt(matches[1], 10) + 1).toString()
+        if (add1.length < digits)
+            for (var i = 0; i < digits - add1.length; i++)
+                add1 = '0' + add1
+        $field.val(val.replace(/(\d+)([^\d]*)$/, add1 + '$2'))
+    }
+    return false
+})
+$(function() {
+    $('.update-form-comment input').focus(function() {
+        $(this).parent().html('<textarea name="comment" />').find('textarea').focus();
+    });
+});
+</script>
+{% endif %}
+
+{% for record in records %}
+{% include "history.html" with history=record %}
+{% endfor %}

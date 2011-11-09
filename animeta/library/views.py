@@ -3,6 +3,9 @@
 from django.shortcuts import *
 from django.contrib.auth.models import User
 
+from record.forms import RecordUpdateForm
+from connect import get_connected_services
+
 from django import forms
 from record.models import Category
 class FilterForm(forms.Form):
@@ -52,7 +55,14 @@ def library(request, username):
 def item_detail(request, username, id):
     owner = get_object_or_404(User, username=username)
     item = owner.record_set.get(id=id)
+    if request.user == owner:
+    	form = RecordUpdateForm(item)
+    else:
+    	form = None
     return render(request, 'library/item_detail.html', {
     	'owner': owner,
     	'item': item,
+    	'records': item.history_set,
+    	'update_form': form,
+    	'connected_services': get_connected_services(owner),
     })

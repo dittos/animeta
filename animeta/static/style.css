@@ -300,14 +300,59 @@ form.inline p { padding-left: 1em; display: inline; }
 }
 
 #library-records {
-    width: 620px;
-    padding: 0 15px;
+    width: 650px;
+}
+#library-records-content {
+    padding: 10px 15px;
 }
 .records-container {
 	border: 1px solid #ccc;
 	border-left: 0;
     border-radius: 0 10px 10px 0;
-	background: url(texture.png);
-	box-shadow: inset 0 0 7px #ddd;
+	box-shadow: inset 0 0 5px #ddd;
 	overflow-y: auto;
+}
+
+.item-detail-title {
+	font-size: 24px !important;
+}
+
+.status-update-form {
+	width: 400px;
+}
+.update-form-status {
+	padding: 5px 10px;
+}
+.update-form-status,
+.update-form-status input,
+.update-form-status select {
+	font-size: 0.95em;
+}
+.update-form-comment input,
+.update-form-comment textarea {
+	width: 375px;
+	font-size: 1em;
+	border: none;
+	background-color: #fff;
+	padding: 5px;
+	margin: 0 5px;
+	border: 1px solid #ccc;
+}
+.update-form-footer {
+	padding: 5px 10px;
+	overflow: hidden;
+}
+.update-form-publish {
+	float: left;
+}
+.update-form-submit {
+	font-size: 1em;
+	float: right;
+}
+
+#library-records .status-update-form {
+	background: #f4f4f4 url(texture.png);
+	border-radius: 10px;
+	border: 1px solid #ccc;
+	margin: 20px 0;
 }
