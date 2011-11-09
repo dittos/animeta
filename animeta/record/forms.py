@@ -10,6 +10,10 @@ class RecordUpdateForm(forms.ModelForm):
             required=False, initial=False)
 
     def __init__(self, record, *args, **kwargs):
+        if 'initial' not in kwargs:
+        	kwargs['initial'] = {}
+        kwargs['initial']['status'] = record.status
+        kwargs['initial']['status_type'] = record.status_type
         super(RecordUpdateForm, self).__init__(*args, **kwargs)
         self.record = record
 

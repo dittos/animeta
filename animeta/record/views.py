@@ -64,7 +64,7 @@ def update(request, id):
         return redirect(request.user)
     else:
         return save(request,
-            RecordUpdateForm, record, {'status': record.status, 'status_type': record.status_type, 'category': record.category.id if record.category else None},
+            RecordUpdateForm, record, {},
             template_name = 'record/update_record.html',
             extra_context = {
                 'record': record,
