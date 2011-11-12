@@ -222,6 +222,7 @@ form.inline p { padding-left: 1em; display: inline; }
 	position: absolute;
 	top: 70px;
 	bottom: 40px;
+	width: 100%;
 }
 #library-items .items-footer {
 	position: absolute;
@@ -289,9 +290,17 @@ form.inline p { padding-left: 1em; display: inline; }
 .item-status {
 	float: right;
 }
-.item-watching .item-status,
-.item-interested .item-status {
+.item-status-at {
+	color: #aaa;
+	font-weight: normal;
+	font-size: small;
+}
+.item-watching .item-status {
 	color: #4bb000;
+	font-weight: bold;
+}
+.item-interested .item-status {
+	color: #f89406;
 	font-weight: bold;
 }
 .item-suspended .item-status,

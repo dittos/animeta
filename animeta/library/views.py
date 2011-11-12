@@ -3,6 +3,7 @@
 from django.shortcuts import *
 from django.contrib.auth.models import User
 
+from record.models import StatusTypes
 from record.forms import RecordUpdateForm
 from connect import get_connected_services
 
@@ -12,7 +13,8 @@ class FilterForm(forms.Form):
     category = forms.ModelChoiceField(
         label=u'분류',
         queryset=Category.objects.none(),
-        empty_label=u'전체'
+        empty_label=u'전체',
+        required=False
     )
     sort_by = forms.ChoiceField(
         label=u'정렬 기준',
@@ -40,10 +42,31 @@ class FilterForm(forms.Form):
         self.owner = owner
         self.fields['category'].queryset = Category.objects.filter(user=self.owner)
 
+    def get_items(self):
+        if not self.is_bound or not self.is_valid():
+        	category = None
+        	sort_by = self.fields['sort_by'].initial
+        	status = self.fields['status'].initial
+        else:
+        	category = self.cleaned_data['category']
+        	sort_by = self.cleaned_data['sort_by']
+        	status = self.cleaned_data['status']
+
+        items = self.owner.record_set.filter(
+            status_type__in=(StatusTypes.from_name(s) for s in status),
+        )
+        if category:
+        	items = items.filter(category=category)
+        if sort_by == 'date':
+        	items = items.order_by('-updated_at')
+        elif sort_by == 'title':
+            items = items.order_by('title')
+        return items
+
 def library(request, username):
     owner = get_object_or_404(User, username=username)
     filter_form = FilterForm(owner, request.GET or None)
-    items = owner.record_set.all()
+    items = filter_form.get_items()
     records = owner.history_set.all()[:10]
     return render(request, 'library/library.html', {
     	'owner': owner,

@@ -9,6 +9,7 @@
 {% block content %}
 <div id="library">
 <div id="library-items" class="items-container">
+<form id="item-filter-form">
     <div class="items-header">
         <div>
             분류: {{ filter_form.category }}
@@ -26,8 +27,8 @@
         <div class="item item-{{ item.status_type }}">
             <span class="item-title"><a href="{{ item.id }}">{{ item.title }}</a></span>
             <span class="item-status">
-                <span class="item-status-type">{{ item.get_status_type_display }}</span>
-                {% if item.status %}@ {{ item.get_status_display }}{% endif %}
+                {% if item.status_type != 'watching' %}<span class="item-status-type">{{ item.get_status_type_display }}</span>{% endif %}
+                {% if item.status %}<span class="item-status-at">@</span> {{ item.get_status_display }}{% endif %}
             </span>
         </div>
     {% endfor %}
@@ -36,6 +37,7 @@
     <div class="items-footer">
     {{ filter_form.status }}
     </div>
+</form>
 </div>
 
 <div id="library-records" class="records-container">
@@ -54,6 +56,9 @@ function fixContainerHeight() {
 
 $(function() {
 	fixContainerHeight();
+	$('#item-filter-form').find('input, select').change(function() {
+    	$('#item-filter-form').submit();
+    });
 	$('.item a').click(function(e) { e.preventDefault(); });
 	$('.item').click(function() {
     	$('.item').removeClass('s-selected');
