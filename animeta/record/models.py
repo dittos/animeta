@@ -17,8 +17,10 @@ class StatusType(object):
     def __eq__(self, other):
         if isinstance(other, str) or isinstance(other, unicode):
         	return self.name == other
-        else:
+        elif hasattr(other, 'name'):
         	return self.name == other.name
+        else:
+        	return False
 
     def __ne__(self, other):
         return not (self == other)

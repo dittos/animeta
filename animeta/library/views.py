@@ -46,13 +46,15 @@ def date_header(time):
     	return u'%d년 %d월' % (time.year, time.month)
 
 def groupby(iterable, key_func):
-    groups = collections.OrderedDict()
+    groups = {}
+    keys = []
     for item in iterable:
     	key = key_func(item)
     	if key not in groups:
     		groups[key] = []
+    		keys.append(key)
     	groups[key].append(item)
-    return groups.iteritems()
+    return ((key, groups[key]) for key in keys)
 
 class FilterForm(forms.Form):
     category = forms.ModelChoiceField(
