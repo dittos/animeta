@@ -23,7 +23,9 @@
     </div>
 
     <div class="items">
-    {% for item in items %}
+    {% for key, list in items %}
+        <div class="item-group-header">{{ key }}</div>
+    {% for item in list %}
         <div class="item item-{{ item.status_type }}">
             <span class="item-title"><a href="{{ item.id }}">{{ item.title }}</a></span>
             <span class="item-status">
@@ -31,6 +33,7 @@
                 {% if item.status %}<span class="item-status-at">@</span> {{ item.get_status_display }}{% endif %}
             </span>
         </div>
+    {% endfor %}
     {% endfor %}
     </div>
 

@@ -256,8 +256,16 @@ form.inline p { padding-left: 1em; display: inline; }
 	background-color: #fff;
 	overflow-y: auto;
 }
-.items .item:first-child {
+.items .item:first-child,
+.items .item-group-header:first-child {
 	border-top: 1px solid #ccc;
+}
+.item-group-header {
+	border-bottom: 1px solid #ddd;
+	background: -moz-linear-gradient(top, #f4f4f4, #fff);
+	background: -webkit-linear-gradient(top, #f4f4f4, #fff);
+	padding: 2px 10px;
+	font-size: 0.8em;
 }
 .item {
 	border-bottom: 1px solid #ddd;
