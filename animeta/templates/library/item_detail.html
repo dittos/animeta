@@ -31,7 +31,7 @@ function determine_suffix() {
 }
 determine_suffix()
 $('#id_status').change(determine_suffix).keyup(determine_suffix)
-$('#plus-one').live('click', function(event) {
+$('#plus-one').click(function(event) {
     var $field = $('#id_status')
     var val = $field.val()
     var matches = val.match(/(\d+)[^\d]*$/)
@@ -45,7 +45,7 @@ $('#plus-one').live('click', function(event) {
         $field.val(val.replace(/(\d+)([^\d]*)$/, add1 + '$2'))
     }
     return false
-})
+});
 $(function() {
     $('.update-form-comment input').focus(function() {
         $(this).parent().html('<textarea name="comment" />').find('textarea').focus();
