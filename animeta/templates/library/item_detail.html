@@ -1,7 +1,9 @@
+<p><a href="" onclick="returnToAll(); return false">&larr; 전체 기록으로 돌아가기</a></p>
+
 <h2 class="item-detail-title">{{ item.title }}</h2>
 
 {% if update_form %}
-<form method="post" action="" class="status-update-form">
+<form method="post" action="{% url library.views.update_item owner item.id %}" class="status-update-form">
 <div class="update-form-status">{{ update_form.status_type }} @ {{ update_form.status }}<span id="suffix">화</span></div>
 <div class="update-form-comment"><input type="text" name="comment" /></div>
 <div class="update-form-footer">
@@ -21,39 +23,58 @@
 </div>
 <div style="clear: both"></div>
 </form>
+
+<div id="record-list">
+{% for record in records %}
+{% include "history.html" with history=record %}
+{% endfor %}
+</div>
+
 <script type="text/javascript">
-$('.update-form-status').append('<a href="#" id="plus-one"><img src="{{ STATIC_URL }}plus.gif" alt="+1" /></a>')
-function determine_suffix() {
+function updateSuffix() {
     if ($('#id_status').val().match(/^(|.*\d)$/))
         $('#suffix').show()
     else
         $('#suffix').hide()
 }
-determine_suffix()
-$('#id_status').change(determine_suffix).keyup(determine_suffix)
-$('#plus-one').click(function(event) {
-    var $field = $('#id_status')
-    var val = $field.val()
-    var matches = val.match(/(\d+)[^\d]*$/)
-    if (matches)
-    {
-        var digits = matches[1].length
-        var add1 = (parseInt(matches[1], 10) + 1).toString()
+
+function plusOne(val) {
+    var matches = val.match(/(\d+)[^\d]*$/);
+    if (matches) {
+        var digits = matches[1].length;
+        var add1 = (parseInt(matches[1], 10) + 1).toString();
         if (add1.length < digits)
             for (var i = 0; i < digits - add1.length; i++)
-                add1 = '0' + add1
-        $field.val(val.replace(/(\d+)([^\d]*)$/, add1 + '$2'))
+                add1 = '0' + add1;
+        return val.replace(/(\d+)([^\d]*)$/, add1 + '$2');
     }
-    return false
-});
+    return null;
+}
+
 $(function() {
+    $('#id_status').bind('change keyup', updateSuffix);
+    updateSuffix();
+
+    $('.update-form-status').append('<a href="#" id="plus-one"><img src="{{ STATIC_URL }}plus.gif" alt="+1" /></a>');
+    $('#plus-one').click(function(event) {
+        var $field = $('#id_status')
+        var plus1 = plusOne($field.val());
+        if (plus1 !== null)
+        	$field.val(plus1);
+        return false
+    });
+
     $('.update-form-comment input').focus(function() {
         $(this).parent().html('<textarea name="comment" />').find('textarea').focus();
+    });
+
+    $('.status-update-form').submit(function(e) {
+    	e.preventDefault();
+    	$.post($(this).attr('action'), $(this).serialize(), function(html) {
+    		$('#record-list').prepend(html);
+    		$('.update-form-comment textarea').val('');
+        });
     });
 });
 </script>
 {% endif %}
-
-{% for record in records %}
-{% include "history.html" with history=record %}
-{% endfor %}

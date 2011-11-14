@@ -319,7 +319,7 @@ form.inline p { padding-left: 1em; display: inline; }
 #library-records {
     width: 650px;
 }
-#library-records-content {
+#library-records > div {
     padding: 10px 15px;
 }
 .records-container {

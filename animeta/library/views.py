@@ -2,6 +2,7 @@
 
 from django.shortcuts import *
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
 from record.models import StatusTypes
 from record.forms import RecordUpdateForm
@@ -126,7 +127,7 @@ def library(request, username):
 
 def item_detail(request, username, id):
     owner = get_object_or_404(User, username=username)
-    item = owner.record_set.get(id=id)
+    item = get_object_or_404(owner.record_set.all(), id=id)
     if request.user == owner:
     	form = RecordUpdateForm(item)
     else:
@@ -138,3 +139,12 @@ def item_detail(request, username, id):
     	'update_form': form,
     	'connected_services': get_connected_services(owner),
     })
+
+@login_required
+def update_item(request, username, id):
+    item = get_object_or_404(request.user.record_set.all(), id=id)
+    if request.method == 'POST':
+    	form = RecordUpdateForm(item, request.POST)
+    	if form.is_valid():
+    		history = form.save()
+    		return render(request, 'history.html', {'history': history})

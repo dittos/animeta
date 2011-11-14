@@ -29,8 +29,12 @@
         <div class="item item-{{ item.status_type }}">
             <span class="item-title"><a href="{{ item.id }}">{{ item.title }}</a></span>
             <span class="item-status">
-                {% if item.status_type != 'watching' %}<span class="item-status-type">{{ item.get_status_type_display }}</span>{% endif %}
+            {% if item.status_type == 'watching' %}
+                {% if item.status %}{{ item.get_status_display }}{% else %}{{ item.get_status_type_display }}{% endif %}
+            {% else %}
+                <span class="item-status-type">{{ item.get_status_type_display }}</span>
                 {% if item.status %}<span class="item-status-at">@</span> {{ item.get_status_display }}{% endif %}
+            {% endif %}
             </span>
         </div>
     {% endfor %}
@@ -44,17 +48,24 @@
 </div>
 
 <div id="library-records" class="records-container">
-<div id="library-records-content">
+<div id="library-history-content">
 {% for record in records %}
 {% include "history.html" with history=record show_work=1 %}
 {% endfor %}
 </div>
+<div id="library-records-content"></div>
 </div>
 </div>
 
 <script type="text/javascript">
 function fixContainerHeight() {
 	$('#library-items, #library-records').height($(window).height() - $('#library').position().top - $('#footer').outerHeight() - 5);
+}
+
+function returnToAll() {
+    $('.item').removeClass('s-selected');
+    $('#library-history-content').show();
+    $('#library-records-content').hide();
 }
 
 $(function() {
@@ -66,7 +77,8 @@ $(function() {
 	$('.item').click(function() {
     	$('.item').removeClass('s-selected');
     	$(this).addClass('s-selected');
-    	$('#library-records-content').load($(this).find('a').attr('href'));
+    	$('#library-history-content').hide();
+    	$('#library-records-content').html('').load($(this).find('a').attr('href')).show();
     });
 });
 
