@@ -8,7 +8,7 @@ from django.db.models import Count
 from oauth_provider.decorators import oauth_required
 from api.decorators import api_response
 from work.models import Work, get_or_create_work, TitleMapping
-from record.models import History, StatusTypes, Uncategorized
+from record.models import History, Record, StatusTypes, Uncategorized
 from record.templatetags.status import status_text
 from chart.models import PopularWorksChart, ActiveUsersChart, compare_charts
 from chart.utils import Week, Month
@@ -35,6 +35,9 @@ def get_records(request):
     queryset = History.objects.order_by('-id')
     if 'user' in request.GET:
         queryset = queryset.filter(user__username=request.GET['user'])
+    if 'item_id' in request.GET:
+    	item = Record.objects.get(id=request.GET['item_id'])
+    	queryset = queryset.filter(user=item.user, work=item.work)
     if 'work' in request.GET:
     	works = TitleMapping.objects.filter(title=request.GET['work']).values_list('work', flat=True)
         queryset = queryset.filter(work__in=works)
@@ -93,6 +96,7 @@ def get_user(request, name):
     }
     if request.GET.get('include_library_items', 'true') == 'true':
         result['library_items'] = [{
+        	'id': record.id,
             'title': record.title,
             'status': _serialize_status(record),
             'category': _category_as_dict(record.category or uncategorized),
