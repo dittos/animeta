@@ -9,6 +9,7 @@
 <script>
 FB.init({
     appId  : '{{ app_id }}',
+    channelUrl: '/static/fb_channel.html',
     status : true,
     cookie : true,
     xfbml  : false,
@@ -37,7 +38,7 @@ function fb_logout() {
 {% else %}
 <script>
 FB.getLoginStatus(function(response) {
-    if (!response.session) {
+    if (!response.authResponse) {
         $('#btn-connect').click(function(event) {
             event.preventDefault();
             fb_login();
@@ -47,12 +48,12 @@ FB.getLoginStatus(function(response) {
 
 function fb_login() {
     FB.login(function(response) {
-        if (response.session) {
+        if (response.authResponse) {
             $('#btn-connect').parent('form').submit();
         } else {
             alert('fail');
         }
-    }, {perms: 'publish_stream,offline_access'});
+    }, {scope: 'publish_stream,offline_access'});
 }
 </script>
 
