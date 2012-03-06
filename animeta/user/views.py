@@ -63,10 +63,11 @@ def shortcut(request, username):
 def _date_header(date):
     # 오늘/어제/그저께/그끄저께/이번 주/지난 주/이번 달/지난 달/YYYY-MM
     today = datetime.date.today()
+    dt = lambda days: today - datetime.timedelta(days=days)
     if date == today: return u'오늘'
-    elif date == today - datetime.timedelta(days=1): return u'어제'
-    elif date == today - datetime.timedelta(days=2): return u'그저께'
-    elif date == today - datetime.timedelta(days=3): return u'그끄저께'
+    elif date == dt(days=1): return u'어제'
+    elif date == dt(days=2): return u'그저께'
+    elif date == dt(days=3): return u'그끄저께'
     elif date.year == today.year and date.month == today.month:
         return u'이번 달'
     else:
@@ -111,7 +112,7 @@ def library(request, username=None):
             key = _date_header(record.updated_at.date())
             if last_key != key:
                 if group:
-                    groups.append((key, group))
+                    groups.append((last_key, group))
                 last_key = key
                 group = []
             group.append(record)
