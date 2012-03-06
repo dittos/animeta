@@ -32,7 +32,11 @@ TVPot.prototype.search_complete = function(data) {
     for (var i = 0; i < items.length; i++) {
         if (i > 0 && i % 3 == 0) markup += '</tr><tr>'
         var item = items[i]
-        var url = 'videos/tvpot/' + item.player_url.split('?vid=')[1] + '/'
+        var url;
+        if (item.player_url)
+            url = 'videos/tvpot/' + item.player_url.split('?vid=')[1] + '/'
+        else
+        	url = item.link;
         title = item.title.replace(/&lt;(\/?b)&gt;/g, "<$1>");
         markup += 
             '<td>' + '<a href="' + url + '">' + '<img src="' + item.thumbnail + '" alt="' + title + '" class="thumbnail" />' +
