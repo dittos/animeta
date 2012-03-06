@@ -24,9 +24,21 @@ def first_char(string):
         return '#'
 
 def group_records(records):
-    return [(k, list(v)) for (k, v) in itertools.groupby(records, key=lambda r: first_char(r.work.title))]
+    groups = {}
+    for record in records:
+        key = first_char(record.title)
+        if key not in groups:
+            groups[key] = []
+        groups[key].append(record)
+
+    result = []
+    for key in sorted(groups.keys()):
+        result.append((key, groups[key]))
+    return result
 
 def make_index(records, continued='cont.'):
+    return group_records(records)
+
     ngroups = len(set(first_char(r.work.title) for r in records))
     titleheight = 2.2
     per_column = ((len(records) + ngroups * titleheight) / 3) or 1
@@ -72,5 +84,5 @@ class MakeIndexNode(template.Node):
         self.columns_var = columns_var
 
     def render(self, context):
-        context[self.columns_var] = make_index(context[self.records_var], u'계속')
+        context[self.columns_var] = group_records(context[self.records_var])
         return ''

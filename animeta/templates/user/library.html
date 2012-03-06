@@ -4,9 +4,14 @@
 {% load indexing %}
 
 {% block content %}
+<div id="records">
 <div id="library-header">
 <form method="get" action="" id="filter-form">
+<input type="hidden" name="sort" id="sort-field" value="{{ sort }}" />
+
 <p>작품이 {{ record_count }}개 등록되어 있습니다.</p>
+
+<p id="sorting-type">정렬: <a href="?sort=date" id="sort-by-date">시간순</a> <a href="?sort=title" id="sort-by-title">제목순</a></p>
 
 <p>
 상태: {{ filter_form.type }}
@@ -36,31 +41,39 @@ function submit_when_changed(selector) {
 
 submit_when_changed('#category').next('input:submit').hide()
 submit_when_changed('#id_type')
+
+var sortField = $('#sort-field');
+$('#sort-by-' + sortField.val()).addClass('active');
+$('#sort-by-date').click(function() {
+    sortField.val('date');
+    $('#filter-form').submit();
+    return false;
+});
+$('#sort-by-title').click(function() {
+    sortField.val('title');
+    $('#filter-form').submit();
+    return false;
+});
 </script>
 </form>
 </div>
 
 {% ifnotequal record_count 0 %}
-{% index records as columns %}
 
-<div id="records">
-{% for column in columns %}
-    <div class="column">
-    {% for index, records in column %}
-        <h2>{{ index }}</h2>
-        <ul>
-        {% for record in records %}
-            <li>
-                <a href="{% url work.views.detail record.work.title %}" class="work">{{ record.title }}</a>
-                {% status_text of record %}
-                {% if owner == request.user and record.has_newer_episode %}<span class="updated">up!</span>{% endif %}
-            </li>
-        {% endfor %}
-        </ul>
+{% for index, records in record_groups %}
+<div class="group">
+    <h2>{{ index }}</h2>
+    <ul>
+    {% for record in records %}
+        <li>
+            <a href="{% url work.views.detail record.work.title %}" class="work">{{ record.title }}</a>
+            {% status_text of record %}
+            {% if owner == request.user and record.has_newer_episode %}<span class="updated">up!</span>{% endif %}
+        </li>
     {% endfor %}
-    </div>
-{% endfor %}
+    </ul>
 </div>
+{% endfor %}
 
 {% else %}
 {% ifequal owner request.user %}
@@ -69,6 +82,7 @@ submit_when_changed('#id_type')
 <p>귀띔: 굳이 처음부터 모든 작품을 등록할 필요는 없습니다. 생각 날 때마다 해보세요.</p>
 {% endifequal %}
 {% endifnotequal %}
+</div>
 
 <script type="text/javascript">
 $('#categories li').click(function() {

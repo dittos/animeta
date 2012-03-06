@@ -110,12 +110,15 @@ form.inline p { padding-left: 1em; display: inline; }
 /* User Section */
 #nav a.add-record { color: #06c; font-weight: bolder; }
 #nav .feed { vertical-align: -25%; }
-.column { width: 33%; float: left; }
-.column h2 { font-size: 1.2em; margin-top: 0; }
-.column ul { margin-left: 1.5em; padding-left: 0; list-style: square; }
-.column li { line-height: 2 !important; }
+#records .group { border-top: 1px solid #ddd; padding: 0.5em 0; }
+#records h2 { width: 8em; font-size: 1.2em; margin: 0.5em; padding: 0; float: left; clear: left; color: #666; }
+#records ul { margin: 0 0 0 11em; padding: 0; list-style: none; }
+#records li { padding: 0.5em; font-size: 1.1em; }
+#sorting-type a { text-decoration: none; padding: 3px 7px; border-radius: 10px; color: #666; }
+#sorting-type a:hover { background-color: #999; color: #fff; }
+#sorting-type a.active:hover, #sorting-type .active { background-color: #666; color: #fff; }
 .work { color: #000; text-decoration: none; }
-.work:hover { color: #666; border-bottom: 1px dashed #aaa; }
+a.work:hover { color: #666; border-bottom: 1px dashed #aaa; }
 .status { color: #fff; background-color: #b0b0b0; padding: 3px 4px; margin-left: 0.5em; border-radius: 5px; }
 .status a { text-decoration: none; color: #fff !important; }
 .status a:hover { padding-right: 16px; background: transparent url(edit.gif) right center no-repeat; margin-right: 2px; }
@@ -210,7 +213,7 @@ form.inline p { padding-left: 1em; display: inline; }
 .merged, .merged td a { color: #bbb; }
 
 /* Library (new) */
-#library-records,
+#library-content,
 #library-items {
     float: left;
 }
@@ -316,11 +319,9 @@ form.inline p { padding-left: 1em; display: inline; }
 	color: #777;
 }
 
-#library-records {
-    width: 650px;
-}
-#library-records > div {
-    padding: 10px 15px;
+#library-content {
+    width: 620px;
+    padding: 0 15px;
 }
 .records-container {
 	border: 1px solid #ccc;
@@ -367,7 +368,7 @@ form.inline p { padding-left: 1em; display: inline; }
 	float: right;
 }
 
-#library-records .status-update-form {
+#library-content .status-update-form {
 	background: #f4f4f4 url(texture.png);
 	border-radius: 10px;
 	border: 1px solid #ccc;

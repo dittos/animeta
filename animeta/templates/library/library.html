@@ -9,79 +9,72 @@
 {% block content %}
 <div id="library">
 <div id="library-items" class="items-container">
-<form id="item-filter-form">
     <div class="items-header">
         <div>
-            분류: {{ filter_form.category }}
+            분류: <select id="category"></select>
             {% ifequal owner request.user %}
             <a href="/records/category/">관리</a>
             {% endifequal %}
         </div>
         <div>
-            정렬 기준: {{ filter_form.sort_by }}
+            정렬 기준: 
+            <label><input type="radio" name="order_by" value="date" checked="checked" /> 날짜</label>
+            <label><input type="radio" name="order_by" value="title" /> 제목</label>
         </div>
     </div>
 
     <div class="items">
-    {% for key, list in items %}
-        <div class="item-group-header">{{ key }}</div>
-    {% for item in list %}
-        <div class="item item-{{ item.status_type }}">
-            <span class="item-title"><a href="{{ item.id }}">{{ item.title }}</a></span>
-            <span class="item-status">
-            {% if item.status_type == 'watching' %}
-                {% if item.status %}{{ item.get_status_display }}{% else %}{{ item.get_status_type_display }}{% endif %}
-            {% else %}
-                <span class="item-status-type">{{ item.get_status_type_display }}</span>
-                {% if item.status %}<span class="item-status-at">@</span> {{ item.get_status_display }}{% endif %}
-            {% endif %}
-            </span>
-        </div>
-    {% endfor %}
-    {% endfor %}
     </div>
 
     <div class="items-footer">
-    {{ filter_form.status }}
+    <ul>
+        <li><label><input checked="checked" type="checkbox" name="status" value="watching"> 보는 중</label></li>
+        <li><label><input type="checkbox" name="status" value="finished"> 완료</label></li>
+        <li><label><input type="checkbox" name="status" value="suspended"> 중단</label></li>
+        <li><label><input checked="checked" type="checkbox" name="status" value="interested"> 관심 작품</label></li>
+    </ul>
     </div>
-</form>
 </div>
 
-<div id="library-records" class="records-container">
-<div id="library-history-content">
-{% for record in records %}
-{% include "history.html" with history=record show_work=1 %}
-{% endfor %}
-</div>
-<div id="library-records-content"></div>
+<div id="library-content" class="records-container">
 </div>
 </div>
+
+<script type="text/x-template" id="item-template">
+<span class="item-title"><%= item.get('title') %></span>
+<span class="item-status">
+<% if (item.get('status').type === 'watching') { %>
+    <% if (item.get('status').raw_text) { %><%= item.getStatusDisplay() %><% } else { %><%= item.getStatusTypeDisplay() %><% } %>
+<% } else { %>
+    <span class="item-status-type"><%= item.getStatusTypeDisplay() %></span>
+    <% if (item.get('status').raw_text) { %><span class="item-status-at">@</span> <%= item.getStatusDisplay() %><% } %>
+<% } %>
+</span>
+</script>
+
+<script type="text/x-template" id="item-detail-template">
+<p><a href="#">&larr; 전체 기록으로 돌아가기</a></p>
+<h2 class="item-detail-title"><%= item.get('title') %></h2>
+<div id="record-list">
+</div>
+</script>
+
+<script type="text/x-template" id="record-template">
+<p>
+    <span class="work"><% if (showTitle) { %><%= record.get('work') %><% } %></span>
+    <span class="status"><%= record.get('status').text %></span>
+    <span class="updated timeago" title="<%= record.get('updated_at') %>"><%= record.get('updated_at') %></span>
+</p>
+<% if (record.get('comment')) { %><p class="comment"><%= record.get('comment') %></p><% } %>
+</script>
 
 <script type="text/javascript">
-function fixContainerHeight() {
-	$('#library-items, #library-records').height($(window).height() - $('#library').position().top - $('#footer').outerHeight() - 5);
-}
-
-function returnToAll() {
-    $('.item').removeClass('s-selected');
-    $('#library-history-content').show();
-    $('#library-records-content').hide();
-}
-
-$(function() {
-	fixContainerHeight();
-	$('#item-filter-form').find('input, select').change(function() {
-    	$('#item-filter-form').submit();
-    });
-	$('.item a').click(function(e) { e.preventDefault(); });
-	$('.item').click(function() {
-    	$('.item').removeClass('s-selected');
-    	$(this).addClass('s-selected');
-    	$('#library-history-content').hide();
-    	$('#library-records-content').html('').load($(this).find('a').attr('href')).show();
-    });
-});
-
-$(window).bind('resize', fixContainerHeight);
+var API_BASE = 'http://animeta.net/api/v1/';
+var USERNAME = '{{ owner.username|escapejs }}';
+$.ajaxSetup({dataType: 'jsonp', jsonp: 'callback'});
 </script>
+<script type="text/javascript" src="{{ STATIC_URL }}jquery.timeago.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}underscore.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}backbone.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}library.js"></script>
 {% endblock %}

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_protect
@@ -12,6 +14,8 @@ from django.db.models import Count
 from chart.models import weekly, PopularWorksChart
 from record.models import Uncategorized, StatusTypes, include_records
 from record.forms import RecordFilterForm
+from record.templatetags.indexing import group_records
+import datetime
 
 @csrf_protect
 def welcome(request):
@@ -56,6 +60,24 @@ def shortcut(request, username):
     except User.DoesNotExist:
         return HttpResponseRedirect('/%s/' % username)
 
+def _date_header(date):
+    # 오늘/어제/그저께/그끄저께/이번 주/지난 주/이번 달/지난 달/YYYY-MM
+    today = datetime.date.today()
+    if date == today: return u'오늘'
+    elif date == today - datetime.timedelta(days=1): return u'어제'
+    elif date == today - datetime.timedelta(days=2): return u'그저께'
+    elif date == today - datetime.timedelta(days=3): return u'그끄저께'
+    elif date.year == today.year and date.month == today.month:
+        return u'이번 달'
+    else:
+        last_month = (today.year, today.month - 1)
+        if last_month[1] == 0:
+            last_month = (last_month[0] - 1, 12)
+        if date.year == last_month[0] and date.month == last_month[1]:
+            return u'지난 달'
+        else:
+            return date.strftime('%Y/%m')
+
 def library(request, username=None):
     if username:
         user = get_object_or_404(User, username=username)
@@ -77,12 +99,30 @@ def library(request, username=None):
         except:
             pass
 
+    records = records.select_related('work', 'user')
+    sort = request.GET.get('sort', 'date')
+    if sort == 'title':
+        groups = group_records(records.order_by('title'))
+    elif sort == 'date':
+        groups = []
+        last_key = None
+        group = None
+        for record in records.order_by('-updated_at'):
+            key = _date_header(record.updated_at.date())
+            if last_key != key:
+                if group:
+                    groups.append((key, group))
+                last_key = key
+                group = []
+            group.append(record)
+
     return direct_to_template(request, 'user/library.html', {
         'owner': user,
-        'records': records.select_related('work', 'user').order_by('work__title'),
+        'record_groups': groups,
         'categories': [Uncategorized(user)] + list(user.category_set.annotate(record_count=Count('record'))),
         'record_count': record_count,
         'category_filter': category_filter,
+        'sort': sort,
         'filter_form': filter_form,
     })
 

@@ -12,6 +12,9 @@
 #weekly-popular-works { margin-right: 0; padding-top: 0.5em; margin-top: 2em; }
 .column { width: auto; float: none; }
 #library-header p { display: block; margin-right: 0; }
+#records .group { border: none; }
+#records h2 { float: none; padding: 0; }
+#records ul { margin: 0; }
 #forms, #history { float: none; width: auto; }
 #history { margin-left: 0; }
 form table, form table input, form table select { font-size: 1em; }
