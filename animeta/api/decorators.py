@@ -29,9 +29,12 @@ def api_response(view):
             mime = 'application/x-plist'
             writefunc = plistlib.writePlist
         else: # format == 'json'
-            mime = 'application/json'
             cb = request.REQUEST.get('callback', None)
-            if cb: cb = re.sub('[^A-Za-z0-9_$]', '', cb)
+            if cb:
+            	cb = re.sub('[^A-Za-z0-9_$]', '', cb)
+            	mime = 'application/javascript'
+            else:
+                mime = 'application/json'
             writefunc = lambda d, s: _json_writefunc(d, s, cb)
         response = HttpResponse(mimetype=mime, status=result.get('error_code', 422) if 'error' in result else 200)
         writefunc(result, response)

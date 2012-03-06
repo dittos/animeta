@@ -15,7 +15,7 @@
 #forms, #history { float: none; width: auto; }
 #history { margin-left: 0; }
 form table, form table input, form table select { font-size: 1em; }
-form th { width: auto; }
+form th { width: auto !important; min-width: 0 !important; padding-left: 0 !important; }
 form.inline h2 { float: none; width: auto; }
 #id_comment { width: 15em; }
 #add-record { width: auto; }
