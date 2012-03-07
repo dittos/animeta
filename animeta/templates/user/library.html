@@ -60,8 +60,16 @@ $('#sort-by-title').click(function() {
 
 {% ifnotequal record_count 0 %}
 
+{% if sort == 'title' %}
+<p>건너뛰기:
 {% for index, records in record_groups %}
-<div class="group">
+<a href="#group{{ forloop.counter }}">{{ index }}</a> {% if not forloop.last %}&middot;{% endif %}
+{% endfor %}
+</p>
+{% endif %}
+
+{% for index, records in record_groups %}
+<div class="group" id="group{{ forloop.counter }}">
     <h2>{{ index }}</h2>
     <ul>
     {% for record in records %}
