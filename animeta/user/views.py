@@ -106,20 +106,29 @@ def library(request, username=None):
 
     records = records.select_related('work', 'user')
     sort = request.GET.get('sort', 'date')
+    groups = None
     if sort == 'title':
         groups = group_records(records.order_by('title'))
     elif sort == 'date':
         groups = []
         last_key = None
         group = None
+        unknown_group = []
         for record in records.order_by('-updated_at'):
-            key = _date_header(record.updated_at.date())
-            if last_key != key:
-                if group:
-                    groups.append((last_key, group))
-                last_key = key
-                group = []
-            group.append(record)
+            if record.updated_at is None:
+            	unknown_group.append(record)
+            else:
+                key = _date_header(record.updated_at.date())
+                if last_key != key:
+                    if group:
+                        groups.append((last_key, group))
+                    last_key = key
+                    group = []
+                group.append(record)
+        if group:
+            groups.append((last_key, group))
+        if unknown_group:
+        	groups.append(('?', unknown_group))
 
     return direct_to_template(request, 'user/library.html', {
         'owner': user,
