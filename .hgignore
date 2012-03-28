@@ -1,6 +1,6 @@
 \.pyc$
 \.swp$
 \.orig$
-^settings_local.py$
+^animeta/settings_local.py$
 backup
 src
