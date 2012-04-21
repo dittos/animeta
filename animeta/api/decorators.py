@@ -4,6 +4,8 @@ import plistlib
 import functools
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
+from oauth_provider.decorators import oauth_required
+from .models import get_user_from_token
 
 def fallback_encode_json(obj):
     if hasattr(obj, 'isoformat'):
@@ -45,3 +47,18 @@ def route_by_method(**mapping):
     def view(request, *args, **kwargs):
         return mapping[request.method](request, *args, **kwargs)
     return require_http_methods(mapping.keys())(view)
+
+def api_auth_required(view):
+    @functools.wraps(view)
+    def _inner(request, *args, **kwargs):
+        if 'HTTP_X_ANIMETA_TOKEN' in request.META:
+            # Using Simple Auth mode
+            token = request.META['HTTP_X_ANIMETA_TOKEN']
+            user = get_user_from_token(token)
+            if not user:
+                return HttpResponse('Invalid session token.', status=403)
+            request.user = user
+            return view(request, *args, **kwargs)
+        else:
+            return oauth_required(view)(request, *args, **kwargs)
+    return _inner

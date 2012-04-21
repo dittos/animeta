@@ -1,12 +1,13 @@
 import pytz
 from cStringIO import StringIO
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
 from django.conf import settings
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db.models import Count
-from oauth_provider.decorators import oauth_required
-from api.decorators import api_response
+from api.decorators import api_response, api_auth_required
+from api.models import generate_session_token
 from work.models import Work, get_or_create_work, TitleMapping
 from record.models import History, Record, StatusTypes, Uncategorized
 from record.templatetags.status import status_text
@@ -29,6 +30,23 @@ def _history_as_dict(history):
         'updated_at': _serialize_datetime(history.updated_at),
         'url': 'http://animeta.net/-%d' % history.id
     }
+
+def auth(request):
+    if request.method == 'POST':
+        for key in 'username', 'password', 'app_token':
+            if key not in request.POST:
+                return HttpResponse('Parameter "%s" is required.' % key, status=400)
+
+        if request.POST['app_token'] not in getattr(settings, 'API_APP_TOKENS', []):
+            return HttpResponse('Invalid application token.', status=403)
+
+        user = authenticate(username=request.POST['username'], password=request.POST['password'])
+        if user is not None and user.is_active:
+            return HttpResponse(generate_session_token(user))
+        else:
+            return HttpResponse('Incorrect username or password.', status=403)
+
+    return HttpResponse('Only POST method is allowed.', status=400)
 
 @api_response
 def get_records(request):
@@ -59,7 +77,7 @@ def get_record(request, id):
         result['related'] = [_history_as_dict(h) for h in History.objects.filter(work=history.work, status=history.status).exclude(user=history.user)]
     return result
 
-@oauth_required
+@api_auth_required
 @api_response
 def delete_record(request, id):
     history = get_object_or_404(History, id=id)
@@ -104,7 +122,7 @@ def get_user(request, name):
         } for record in user.record_set.order_by('title')]
     return result
 
-@oauth_required
+@api_auth_required
 def get_current_user(request):
     return get_user(request, request.user.username)
 
@@ -163,7 +181,7 @@ def get_work_by_title(request, title):
     work = get_object_or_404(Work, title=title)
     return _work_as_dict(work, request.GET.get('include_watchers', 'false') == 'true')
 
-@oauth_required
+@api_auth_required
 @api_response
 def create_record(request):
     if 'work' in request.POST:
