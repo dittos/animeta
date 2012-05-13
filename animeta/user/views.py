@@ -18,15 +18,6 @@ from record.templatetags.indexing import group_records
 import datetime
 
 @csrf_protect
-def welcome(request):
-    if request.user.is_authenticated():
-        return HttpResponseRedirect('/recent/')
-    else:
-        return direct_to_template(request, 'welcome.html', {
-            'weekly_works': PopularWorksChart(weekly(), 5)
-        })
-
-@csrf_protect
 def login(request):
     if request.POST.has_key('remember'):
         request.session.set_expiry(3600 * 24 * 14)

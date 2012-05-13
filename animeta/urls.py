@@ -5,7 +5,8 @@ import animeta.user.views
 from django.contrib.auth.decorators import login_required
 
 urlpatterns = patterns('',
-    (r'^(?:recent/)?$', 'animeta.chart.views.recent'),
+    (r'^$', 'animeta.chart.views.main'),
+    (r'^timeline/$', 'animeta.chart.views.timeline'),
     (r'^login/', 'animeta.user.views.login'),
     (r'^logout/', 'django.contrib.auth.views.logout', {'next_page': '/'}),
     (r'^signup/', 'animeta.user.views.signup'),

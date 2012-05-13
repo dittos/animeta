@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% load status history %}
+
+{% block nav %}
+<h1>최근 감상평</h1>
+{% endblock %}
+
+{% block content %}
+{% for history in object_list %}
+{% show_history history "user,work" %}
+{% endfor %}
+
+{% if page_obj %}
+<p id="pagination">
+{% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}" class="prev-page">&larr; 이전</a>{% endif %}
+<strong>{{ page_obj.number }}</strong>/{{ paginator.num_pages }} 페이지
+{% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}" class="next-page">다음 &rarr;</a>{% endif %}
+</p>
+{% endif %}
+{% endblock %}
