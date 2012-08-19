@@ -97,8 +97,9 @@ class Category(models.Model):
         return self.name
 
 def allocate_next_position(sender, instance, **kwargs):
-    max = instance.user.category_set.aggregate(models.Max('position'))['position__max'] or 0
-    instance.position = max + 1
+    if instance.id is None:
+        max = instance.user.category_set.aggregate(models.Max('position'))['position__max'] or 0
+        instance.position = max + 1
 
 pre_save.connect(allocate_next_position, sender=Category)
 
