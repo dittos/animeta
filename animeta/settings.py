@@ -124,6 +124,7 @@ INSTALLED_APPS = (
     'animeta.connect',
     'animeta.chart',
     'animeta.api',
+    'animeta.moderation',
 )
 
 LOGIN_URL = '/login/'

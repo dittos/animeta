@@ -19,8 +19,9 @@ urlpatterns = patterns('',
     (r'^works/', include('animeta.work.urls')),
     (r'^charts/', include('animeta.chart.urls')),
     (r'^connect/', include('animeta.connect.urls')),
+    (r'^moderation/', include('animeta.moderation.urls')),
 
-    (r'^titles/(?P<remainder>.*)$', 'animeta.work.views.old_url'), # compat
+    (r'^titles/(?P<remainder>.*)/$', 'animeta.work.views.old_url'), # compat
     (r'^(?P<username>[A-Za-z0-9]+)$', 'animeta.user.views.shortcut'),
     (r'^-(?P<id>[0-9]+)$', 'animeta.record.views.shortcut'),
 )

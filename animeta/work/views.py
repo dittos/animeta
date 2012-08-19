@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 import urllib
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
-from django.db import models
+from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import list_detail
-from django.views.decorators.http import require_http_methods
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from work.models import Work, MergeRequest, normalize_title, TitleMapping
+from work.models import Work, TitleMapping
 from record.models import Record, History
 
 def old_url(request, remainder):
-    return HttpResponseRedirect('/works/' + urllib.quote(remainder.encode('UTF-8')))
+    return redirect('work.views.detail', title=remainder)
+
+def merge_dashboard(request):
+    return redirect('/moderation/merge/')
 
 def _get_record(request, work):
     if request.user.is_authenticated():
@@ -72,57 +72,3 @@ def search(request):
         queryset = Work.objects.filter(title__icontains=keyword),
         extra_context = {'keyword': keyword},
     )
-
-def merge_dashboard(request):
-    error = None
-    result = []
-
-    if request.method == 'POST':
-        if 'apply' in request.POST:
-            for id in request.POST.getlist('apply'):
-                req = MergeRequest.objects.get(id=id)
-                try:
-                    if req.target.popularity >= req.source.popularity:
-                        f = req.target.merge(req.source)
-                        result.append((False, req.target, req.source, f))
-                    else:
-                        f = req.source.merge(req.target)
-                        result.append((False, req.source, req.target, f))
-                except:
-                    result.append((True, req.target, req.source, None))
-        else:
-            work = Work.objects.get(title=request.POST['target'])
-            source = Work.objects.get(title=request.POST['source'])
-            if work.has_merge_request(source):
-                error = u'이미 요청이 있습니다.'
-            else:
-                MergeRequest.objects.create(user=request.user, source=source, target=work)
-
-    return list_detail.object_list(request,
-        queryset = MergeRequest.objects.order_by('-id'),
-        paginate_by = 50,
-        template_object_name = 'merge',
-        template_name = 'work/merge_dashboard.html',
-        extra_context = {
-            'contributors': User.objects.annotate(count=models.Count('mergerequest')).order_by('-count').exclude(count=0),
-            'error': error,
-            'result': result,
-        }
-    )
-
-@login_required
-@require_http_methods(['POST'])
-def request_merge(request, title, id):
-    work = get_object_or_404(Work, title=title)
-
-    if request.method == 'POST':
-        source = get_object_or_404(Work, id=id)
-        try:
-            req, created = MergeRequest.objects.get_or_create(user=request.user, source=source, target=work)
-            if created:
-                return HttpResponse("merged")
-            else:
-                req.delete()
-                return HttpResponse("cancelled")
-        except:
-            return HttpResponse("fail")
