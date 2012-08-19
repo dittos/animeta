@@ -1,0 +1,7 @@
+*.pyc
+*.swp
+*.orig
+backup
+src
+env
+settings_local.py
