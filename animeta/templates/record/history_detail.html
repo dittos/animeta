@@ -3,13 +3,13 @@
 {% load status history %}
 
 {% block content %}
-{% show_history history "work,delete" %}
+{% include "history.html" with show_work=1 show_delete=can_delete %}
 
 {% if object_list %}
 <div id="context">
 <h2>다른 사람들은?</h2>
 {% for history in object_list %}
-    {% show_history history "user,delete" %}
+    {% include "history.html" with show_user=1 %}
 {% endfor %}
 
 {% if page_obj %}

@@ -12,7 +12,7 @@
 {% if show_user %}
     <a href="{% url user.views.library history.user %}" class="user">{{ history.user.username }}</a>
 {% endif %}
-{% if can_delete %}
+{% if show_delete %}
     <a href="{% url record.views.delete_history history.user.username history.id %}" class="delete dialog">지우기</a>
 {% endif %}
 </p>

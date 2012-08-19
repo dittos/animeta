@@ -3,7 +3,7 @@
 {% load status history %}
 
 {% block content %}
-{% show_history history "work" %}
+{% include "history.html" with show_work=1 %}
 
 <div id="context">
 <form method="post" action="" id="delete-record">

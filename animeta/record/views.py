@@ -63,6 +63,7 @@ def update(request, id):
         record.save()
         return redirect(request.user)
     else:
+        history_list = request.user.history_set.filter(work=record.work)
         return save(request,
             RecordUpdateForm, record, {},
             template_name = 'record/update_record.html',
@@ -70,7 +71,8 @@ def update(request, id):
                 'record': record,
                 'work': record.work,
                 'category_list': request.user.category_set.all(),
-                'history_list': request.user.history_set.filter(work=record.work)
+                'history_list': history_list,
+                'can_delete': request.user == record.user and history_list.count() > 1
             })
 
 @login_required
@@ -156,7 +158,7 @@ def history_detail(request, username, id):
         queryset = History.objects.filter(work=history.work, status=history.status).exclude(user=user).exclude(comment=''),
         paginate_by = 10,
         template_name = 'record/history_detail.html',
-        extra_context = {'owner': user, 'history': history}
+        extra_context = {'owner': user, 'history': history, 'can_delete': history.deletable_by(request.user)}
     )
 
 @login_required

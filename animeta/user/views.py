@@ -131,12 +131,19 @@ def library(request, username=None):
         'filter_form': filter_form,
     })
 
+def include_delete_flag(user):
+    def _callback(qs):
+        for history in qs:
+            history.can_delete = history.deletable_by(user)
+    return _callback
+
 def history(request, username):
     user = get_object_or_404(User, username=username)
     return list_detail.object_list(request,
         template_name = 'user/history.html',
         queryset = user.history_set.select_related('work', 'user') \
-                .transform(include_records),
+                .transform(include_records) \
+                .transform(include_delete_flag(request.user)),
         paginate_by = 8,
         extra_context = {'owner': user}
     )

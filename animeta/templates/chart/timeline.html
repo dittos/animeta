@@ -8,7 +8,7 @@
 
 {% block content %}
 {% for history in object_list %}
-{% show_history history "user,work" %}
+{% include "history.html" with show_user=1 show_work=1 %}
 {% endfor %}
 
 {% if page_obj %}

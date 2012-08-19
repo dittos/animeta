@@ -40,7 +40,7 @@
 <div id="comments">
 <h2>기록</h2>
 {% for history in comments %}
-    {% show_history history "user" %}
+    {% include "history.html" with show_user=1 %}
 {% endfor %}
 </div>
 

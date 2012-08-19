@@ -176,6 +176,9 @@ class History(models.Model):
             status += u'화'
         return status
 
+    def deletable_by(self, user):
+        return self.user == user and self.record.history_set.count() > 1 # XXX: N+1 query problem
+
     class Meta:
         ordering = ['-id']
         get_latest_by = 'updated_at'

@@ -11,7 +11,7 @@
 <div id="timeline">
 <h2>최근 기록</h2>
 {% for history in timeline %}
-{% show_history history "user,work" %}
+{% include "history.html" with show_user=1 show_work=1 %}
 {% endfor %}
 <p><a href="/timeline/">더 보기...</a></p>
 </div>

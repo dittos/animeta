@@ -29,7 +29,7 @@
 <div id="history">
 <h2>지난 기록</h2>
 {% for history in history_list %}
-    {% show_history history "delete" %}
+    {% include "history.html" with show_delete=can_delete %}
 {% endfor %}
 </div>
 {% endblock %}
