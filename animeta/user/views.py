@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import list_detail
-from django.views.generic.simple import direct_to_template
 from django.contrib.auth import login as _login
 from django.contrib.auth.models import User
 from django.contrib.auth.views import login as login_view
@@ -34,22 +32,22 @@ def signup(request):
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             _login(request, user)
             request.session.set_expiry(0)
-            return HttpResponseRedirect('/users/%s/' % user.username)
+            return redirect(user)
     else:
         form = UserCreationForm()
 
-    return direct_to_template(request, 'registration/signup.html', {'form': form})
+    return render(request, 'registration/signup.html', {'form': form})
 
 @login_required
 def settings(request):
-    return direct_to_template(request, 'user/settings.html')
+    return render(request, 'user/settings.html')
 
 def shortcut(request, username):
     try:
         user = User.objects.get(username=username)
-        return HttpResponseRedirect('/users/%s/' % username)
+        return redirect(user)
     except User.DoesNotExist:
-        return HttpResponseRedirect('/%s/' % username)
+        return redirect('/%s/' % username)
 
 def _date_header(date):
     # 오늘/어제/그저께/그끄저께/이번 주/지난 주/이번 달/지난 달/YYYY-MM
@@ -121,7 +119,7 @@ def library(request, username=None):
         if unknown_group:
         	groups.append(('?', unknown_group))
 
-    return direct_to_template(request, 'user/library.html', {
+    return render(request, 'user/library.html', {
         'owner': user,
         'record_groups': groups,
         'categories': [Uncategorized(user)] + list(user.category_set.annotate(record_count=Count('record'))),

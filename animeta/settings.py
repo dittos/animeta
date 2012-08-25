@@ -84,6 +84,7 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
 )
@@ -96,6 +97,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.core.context_processors.request',
     'django.core.context_processors.csrf',
+    'django.contrib.messages.context_processors.messages',
     'context_processors.hijax',
 )
 
@@ -116,6 +118,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
+    'django.contrib.messages',
     'south',
     'oauth_provider',
     'animeta.work',

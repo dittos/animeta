@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from connect import get_connected_services
 from connect.models import Me2Setting, TwitterSetting, FacebookSetting
@@ -41,7 +42,7 @@ def me2day_disconnect(request):
     if request.method == 'POST':
         setting = Me2Setting.objects.get(user=request.user)
         setting.delete()
-        request.user.message_set.create(message='인증 정보를 삭제하였습니다.')
+        messages.success(request, u'인증 정보를 삭제하였습니다.')
         return redirect('/connect/me2day/')
 
 @login_required
@@ -72,7 +73,7 @@ def twitter_disconnect(request):
     if request.method == 'POST':
         setting = TwitterSetting.objects.get(user=request.user)
         setting.delete()
-        request.user.message_set.create(message='인증 정보를 삭제하였습니다.')
+        messages.success(request, u'인증 정보를 삭제하였습니다.')
         return redirect('/connect/')
 
 @login_required
@@ -87,7 +88,7 @@ def facebook(request):
     if request.method == 'POST':
         user = fb.get_user_from_cookie(request.COOKIES, settings.FACEBOOK_API_ID, settings.FACEBOOK_API_SECRET)
         FacebookSetting.objects.create(user=request.user, key=user['access_token'])
-        request.user.message_set.create(message='연동에 성공했습니다.')
+        messages.success(request, u'연동에 성공했습니다.')
 
     return render(request, 'connect/facebook.html', {'app_id': settings.FACEBOOK_API_ID, 'fb_user': user})
 
@@ -96,5 +97,5 @@ def facebook_disconnect(request):
     if request.method == 'POST':
         setting = FacebookSetting.objects.get(user=request.user)
         setting.delete()
-        request.user.message_set.create(message='인증 정보를 삭제하였습니다.')
+        messages.success(request, u'인증 정보를 삭제하였습니다.')
         return redirect('/connect/')

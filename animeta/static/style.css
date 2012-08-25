@@ -5,7 +5,7 @@ body, input, textarea, select, optgroup, option
 	{ font-family: Malgun Gothic, sans-serif; }
 a { color: #4bb000; }
 a img { border: none; }
-#header, #nav, #content, #footer { width: 960px; margin: 0 auto; }
+#header, #messages, #nav, #content, #footer { width: 960px; margin: 0 auto; }
 #header { padding: 1em; overflow: hidden; zoom: 1; border-radius: 0 0 10px 10px; box-shadow: 0 0 3px #aaa; background: -moz-linear-gradient(top, #fff, #fff 25%, #f0f0f0 75%, #fff); background: -webkit-linear-gradient(top, #fff, #fff 25%, #f0f0f0 75%, #fff); margin-bottom: 0.5em; }
 #header a:hover { position: relative; left: 1px; top: 1px; }
 #header p { margin: 0; float: left; }
