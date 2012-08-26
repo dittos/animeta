@@ -31,22 +31,23 @@ def _history_as_dict(history):
         'url': 'http://animeta.net/-%d' % history.id
     }
 
+@api_response
 def auth(request):
     if request.method == 'POST':
         for key in 'username', 'password', 'app_token':
             if key not in request.POST:
-                return HttpResponse('Parameter "%s" is required.' % key, status=400)
+                return {'error': 'Parameter "%s" is required.' % key, 'error_code': 403}
 
         if request.POST['app_token'] not in getattr(settings, 'API_APP_TOKENS', []):
-            return HttpResponse('Invalid application token.', status=403)
+            return {'error': 'Invalid application token.', 'error_code': 403}
 
         user = authenticate(username=request.POST['username'], password=request.POST['password'])
         if user is not None and user.is_active:
-            return HttpResponse(generate_session_token(user))
+            return {'token': generate_session_token(user)}
         else:
-            return HttpResponse('Incorrect username or password.', status=403)
+            return {'error': 'Incorrect username or password.', 'error_code': 403}
 
-    return HttpResponse('Only POST method is allowed.', status=400)
+    return {'error': 'Only POST method is allowed.', 'error_code': 400}
 
 @api_response
 def get_records(request):
