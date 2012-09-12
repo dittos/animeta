@@ -31,30 +31,6 @@
 <a href="/records/category/">관리</a>
 {% endifequal %}
 </p>
-
-<script type="text/javascript">
-function submit_when_changed(selector) {
-    return $(selector).live('change', function() {
-        $('#filter-form').submit()
-    })
-}
-
-submit_when_changed('#category').next('input:submit').hide()
-submit_when_changed('#id_type')
-
-var sortField = $('#sort-field');
-$('#sort-by-' + sortField.val()).addClass('active');
-$('#sort-by-date').click(function() {
-    sortField.val('date');
-    $('#filter-form').submit();
-    return false;
-});
-$('#sort-by-title').click(function() {
-    sortField.val('title');
-    $('#filter-form').submit();
-    return false;
-});
-</script>
 </form>
 </div>
 
@@ -91,10 +67,30 @@ $('#sort-by-title').click(function() {
 {% endifequal %}
 {% endifnotequal %}
 </div>
+{% endblock %}
 
+{% block js %}
 <script type="text/javascript">
-$('#categories li').click(function() {
-    location.href = $(this).find('a').attr('href')
-})
+function submit_when_changed(selector) {
+    return $(selector).live('change', function() {
+        $('#filter-form').submit()
+    })
+}
+
+submit_when_changed('#category').next('input:submit').hide()
+submit_when_changed('#id_type')
+
+var sortField = $('#sort-field');
+$('#sort-by-' + sortField.val()).addClass('active');
+$('#sort-by-date').click(function() {
+    sortField.val('date');
+    $('#filter-form').submit();
+    return false;
+});
+$('#sort-by-title').click(function() {
+    sortField.val('title');
+    $('#filter-form').submit();
+    return false;
+});
 </script>
 {% endblock %}

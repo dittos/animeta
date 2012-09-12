@@ -28,21 +28,25 @@
 {% endif %}
 <p>분류 이름: <input type="text" name="name" size="12" /> <input type="submit" value="추가" /></p>
 </form>
+{% endblock %}
 
+{% block js %}
 <script type="text/javascript">
 //$('.rename').click(function(event) {
 //    event.preventDefault()
 //    $(this).parent().load($(this).attr('href'))
 //})
 
-$('#categories').sortable({
-    update: function(event, ui) {
-        var order = []
-        $(this).find('li').each(function() {
-            order.push($(this).attr('id').split('-')[1])
-        })
-        $.post('reorder/', {order: order})
-    }
-}).disableSelection()
+$(function() {
+    $('#categories').sortable({
+        update: function(event, ui) {
+            var order = []
+            $(this).find('li').each(function() {
+                order.push($(this).attr('id').split('-')[1])
+            })
+            $.post('reorder/', {order: order})
+        }
+    }).disableSelection()
+});
 </script>
 {% endblock %}

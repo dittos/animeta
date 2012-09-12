@@ -10,7 +10,9 @@
     <object type="application/x-shockwave-flash" data="http://flvs.daum.net/flvPlayer.swf?vid={{ video_id }}" width="502" height="399" allowfullscreen="true"></object>
     <!--> <![endif]-->
 </object>
+{% endblock %}
 
+{% block js %}
 <script type="text/javascript">
 $(function() {
     $('#content').append('<div id="record-form-side"></div>')

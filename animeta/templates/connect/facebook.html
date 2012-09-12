@@ -17,25 +17,18 @@ FB.init({
 </script>
 
 {% if fb_user %}
-<script>
-$(function() {
-    $('#btn-logout').click(function(event) {
-        event.preventDefault();
-        fb_logout();
-    });
-});
-
-function fb_logout() {
-    FB.logout(function(response) {
-        $('#btn-logout').parent('form').submit();
-    });
-}
-</script>
-
 <form method="post" action="/connect/facebook/disconnect/">
 <input type="submit" value="연동 해제" id="btn-logout" />
 </form>
 {% else %}
+<form method="POST" action="">
+    <input type="submit" value="페이스북과 연결" id="btn-connect" />
+</form>
+{% endif %}
+{% endblock %}
+
+{% block js %}
+{% if not fb_user %}
 <script>
 FB.getLoginStatus(function(response) {
     if (!response.authResponse) {
@@ -56,9 +49,5 @@ function fb_login() {
     }, {scope: 'publish_stream,offline_access'});
 }
 </script>
-
-<form method="POST" action="">
-    <input type="submit" value="페이스북과 연결" id="btn-connect" />
-</form>
 {% endif %}
 {% endblock %}

@@ -17,3 +17,7 @@
 {% include "registration/login_form.html" %}
 </form>
 {% endblock %}
+
+{% block js %}
+<script type="text/javascript">$(function() { $('#login_username').focus() })</script>
+{% endblock %}

@@ -12,7 +12,9 @@
 <p><textarea cols="50" rows="5" id="widget-code" readonly="readonly">{% filter force_escape %}
 <object width="220" height="250"><param name="movie" value="http://animeta.net/static/widget.swf?username={{ request.user.username }}"></param><embed src="http://animeta.net/static/widget.swf?username={{ request.user.username }}" type="application/x-shockwave-flash" width="220" height="250"></embed></object>
 {% endfilter %}</textarea></p>
+{% endblock %}
 
+{% block js %}
 <script type="text/javascript">
 $(function() {
     $('#widget-code').focus(function(event) { this.select() }).select()

@@ -5,13 +5,10 @@
     <title>{% block title %}애니메타{% endblock %}</title>
     <link rel="stylesheet" href="{{ STATIC_URL }}style.css" type="text/css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}mobile.css" type="text/css" media="only screen and (max-device-width: 480px)" />
-    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" type="text/css" />
+    <link rel="stylesheet" href="//ajax.aspnetcdn.com/ajax/jquery.ui/1.8.23/themes/base/jquery-ui.css" type="text/css" />
     <link rel="apple-touch-icon" href="{{ STATIC_URL }}icon@2x.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi" />
     <meta name="apple-mobile-web-app-capable" content="no" />
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}common.js"></script>
     <script type="text/javascript">
     var _gaq = [['_setAccount', 'UA-7500828-2'], ['_trackPageview']];
     (function() {
@@ -88,6 +85,13 @@ $('#close-messages a').click(function(event) {
     <a href="http://blog.animeta.net/">공식 블로그</a> /
     <a href="http://blog.animeta.net/guestbook">버그 신고 및 기능 건의</a>
 </p>
+
+<script type="text/javascript">window.STATIC_URL = '{{ STATIC_URL }}'</script>
+<script type="text/javascript" src="//ajax.aspnetcdn.com/ajax/jquery/jquery-1.8.1.min.js"></script>
+<script type="text/javascript" src="//ajax.aspnetcdn.com/ajax/jquery.ui/1.8.23/jquery-ui.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}common.js?new"></script>
+{% block js %}
+{% endblock %}
 </div>
 </body>
 </html>
