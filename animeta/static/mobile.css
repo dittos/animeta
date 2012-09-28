@@ -16,7 +16,7 @@
 #records h2 { float: none; padding: 0; }
 #records ul { margin: 0; }
 #forms, #history { float: none; width: auto; }
-#history { margin-left: 0; }
+#history { margin-left: 0; clear: both; }
 form table, form table input, form table select { font-size: 1em; }
 form th { width: auto !important; min-width: 0 !important; padding-left: 0 !important; }
 form.inline h2 { float: none; width: auto; }

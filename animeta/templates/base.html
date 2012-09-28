@@ -4,11 +4,13 @@
 <head>
     <title>{% block title %}애니메타{% endblock %}</title>
     <link rel="stylesheet" href="{{ STATIC_URL }}style.css" type="text/css" />
-    <link rel="stylesheet" href="{{ STATIC_URL }}mobile.css" type="text/css" media="only screen and (max-device-width: 480px)" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}mobile.css" type="text/css" media="only screen and (max-width: 480px)" />
     <link rel="stylesheet" href="//ajax.aspnetcdn.com/ajax/jquery.ui/1.8.23/themes/base/jquery-ui.css" type="text/css" />
     <link rel="apple-touch-icon" href="{{ STATIC_URL }}icon@2x.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi" />
     <meta name="apple-mobile-web-app-capable" content="no" />
+    <meta name="google-site-verification" content="dhlhxHlQ_wDcoxu7hcyfWoXOyD79pPryal6fVLUxLeg" />
+    {% block head-extra %}{% endblock %}
     <script type="text/javascript">
     var _gaq = [['_setAccount', 'UA-7500828-2'], ['_trackPageview']];
     (function() {
@@ -17,7 +19,6 @@
      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
     })();
     </script>
-    {% block head-extra %}{% endblock %}
 </head>
 <body>
 {% block join-now %}
