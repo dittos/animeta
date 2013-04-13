@@ -21,17 +21,9 @@
     </script>
 </head>
 <body>
-{% block join-now %}
-{% if not user.is_authenticated %}
-<div id="join-now" class="header-notice">
-<p><strong>애니메타</strong>는 애니메이션, 만화, 드라마 등의 감상 기록을 관리할 수 있는 서비스입니다.
-<strong>아직 회원이 아니신가요? <a href="/signup/">가입하기 &raquo;</a></strong></p>
-</div>
-{% endif %}
-{% endblock %}
-
 <div id="container">
 <div id="header">
+<div id="header-inner">
     <p><a href="/"><img src="{{ STATIC_URL }}animeta.gif" alt="animeta" /></a></p>
 
 {% block menu %}
@@ -53,6 +45,16 @@
     </ul>
 {% endblock %}
 </div>
+</div>
+
+{% block join-now %}
+{% if not user.is_authenticated %}
+<div id="join-now" class="header-notice">
+    <p><strong>애니메타</strong>는 애니메이션, 만화, 드라마 등의 감상 기록을 관리할 수 있는 서비스입니다.</p>
+    <div class="btn"><a href="/signup/">지금 바로 가입하기 &raquo;</a></div>
+</div>
+{% endif %}
+{% endblock %}
 
 {% if messages %}
 <ul id="messages">

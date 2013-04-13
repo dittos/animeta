@@ -1,5 +1,8 @@
-#join-now { font-size: 0.8em; }
-#header, #nav, #content, #footer { width: auto; }
+#join-now { font-size: 1em; margin-left: 0.5em; margin-right: 0.5em; }
+#join-now p { line-height: 1.5; float: none; }
+#join-now .btn { margin-top: 0.5em; }
+#join-now .btn a { float: none; text-align: center; }
+.header-notice, #header-inner, #nav, #content, #footer { width: auto; }
 #header { text-align: center; }
 #header p { float: none; }
 #nav { padding: 0 0.5em; }
