@@ -12,13 +12,13 @@ class Migration(SchemaMigration):
         db.alter_column('record_record', 'updated_at', self.gf('django.db.models.fields.DateTimeField')(null=True))
 
         # Changing field 'Record.status_type'
-        db.alter_column('record_record', 'status_type', self.gf('record.fields.StatusTypeField')())
+        #db.alter_column('record_record', 'status_type', self.gf('record.fields.StatusTypeField')())
 
         # Changing field 'History.updated_at'
         db.alter_column('record_history', 'updated_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, null=True))
 
         # Changing field 'History.status_type'
-        db.alter_column('record_history', 'status_type', self.gf('record.fields.StatusTypeField')())
+        #db.alter_column('record_history', 'status_type', self.gf('record.fields.StatusTypeField')())
 
 
     def backwards(self, orm):
