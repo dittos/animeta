@@ -98,7 +98,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.core.context_processors.csrf',
     'django.contrib.messages.context_processors.messages',
-    'context_processors.hijax',
+    'animeta.context_processors.hijax',
 )
 
 ROOT_URLCONF = 'animeta.urls'
@@ -121,20 +121,17 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'south',
     'oauth_provider',
-    'animeta.work',
-    'animeta.record',
-    'animeta.user',
-    'animeta.connect',
-    'animeta.chart',
-    'animeta.api',
-    'animeta.moderation',
+
+    'work',
+    'record',
+    'user',
+    'connect',
+    'chart',
+    'api',
+    'moderation',
 )
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/library/'
 
-try:
-    from settings_local import *
-    override(locals())
-except:
-    pass
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
