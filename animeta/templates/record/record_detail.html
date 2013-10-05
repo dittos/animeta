@@ -6,6 +6,7 @@
 <div class="record-detail-header">
     <h1><a href="{{ record.work.get_absolute_url }}" class="work">{{ record.title }}</a></h1>
 
+{% if form %}
     <form method="post" action="{% url 'record.views.update_title' record.id %}" class="title-form">
         <input type="text" name="title" value="{{ record.title }}" class="autocomplete" size="12" />
         <button type="submit">저장</button>
@@ -26,8 +27,10 @@
         </select>
         <input type="submit" value="바꾸기" />
     </form>
+{% endif %}
 </div>
 
+{% if form %}
 <form class="record-detail-update" method="post">
     <div class="progress">
         {{ form.status_type }} @ {{ form.status }}<span id="suffix">화</span>
@@ -46,6 +49,7 @@
         <button type="submit">기록 추가</button>
     </div>
 </form>
+{% endif %}
 
 <div id="history">
 {% for history in history_list %}

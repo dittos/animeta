@@ -192,9 +192,44 @@ form.inline p { padding-left: 1em; display: inline; }
 #nav a.add-record { color: #06c; font-weight: bolder; }
 #nav .feed { vertical-align: -25%; }
 #records .group { border-top: 1px solid #ddd; padding: 0.5em 0; }
-#records h2 { width: 8em; font-size: 1.2em; margin: 0.5em 0; padding: 0; float: left; clear: left; color: #666; }
-#records ul { margin: 0 0 0 11em; padding: 0; list-style: none; }
-#records li { padding: 0.5em 0; font-size: 1.1em; }
+#records h2 { width: 8em; font-size: 1.2em; margin: 0.5em 0; padding: 0; float: left; clear: left; color: #555; font-weight: normal; }
+#records ul { margin: 0 0 0 10em; padding: 0; list-style: none; }
+#records li { padding: 0.25em 0; font-size: 1.1em; }
+
+#records .item a {
+    display: inline-block;
+    padding: 0.25em 0.5em;
+    text-decoration: none;
+    color: #959595;
+}
+#records .item a:hover {
+    border-radius: 3px;
+    background: #999;
+    color: #fff;
+}
+#records .item.can-edit a:hover .item-status {
+    padding-right: 16px;
+    background: transparent url(edit.gif) right center no-repeat;
+    margin-right: 2px;
+}
+#records .item-status {
+    margin-left: 0.5em;
+    font-weight: bold;
+}
+#records .item-watching a {
+    color: #555;
+    font-weight: bold;
+}
+#records .item-watching a:hover {
+    background-color: #4bb000;
+}
+#records .item-watching .item-status {
+    color: #4bb000;
+}
+#records .item-watching a:hover .item-status {
+    color: #fff;
+}
+
 #sorting-type a { text-decoration: none; padding: 3px 7px; border-radius: 10px; color: #666; }
 #sorting-type a:hover { background-color: #999; color: #fff; }
 #sorting-type a.active:hover, #sorting-type .active { background-color: #666; color: #fff; }

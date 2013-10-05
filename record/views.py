@@ -70,20 +70,26 @@ def update_category(request, id):
         messages.info(request, u'분류를 "%s"(으)로 바꿨습니다.' % name)
     return redirect(request.user)
 
-@login_required
 def update(request, id):
-    record = _get_record(request, id)
-    history_list = request.user.history_set.filter(work=record.work)
-    return save(request,
-        RecordUpdateForm, record, {},
-        template_name = 'record/update_record.html',
-        extra_context = {
-            'record': record,
-            'work': record.work,
+    template_name = 'record/record_detail.html'
+    record = get_object_or_404(Record, id=id)
+    history_list = record.history_set
+    context = {
+        'record': record,
+        'owner': record.user,
+        'history_list': history_list,
+    }
+    if request.user == record.user:
+        context.update({
             'category_list': request.user.category_set.all(),
-            'history_list': history_list,
-            'can_delete': request.user == record.user and history_list.count() > 1
+            'can_delete': history_list.count() > 1
         })
+        return save(request,
+            RecordUpdateForm, record, {},
+            template_name = template_name,
+            extra_context = context)
+    else:
+        return render(request, template_name, context)
 
 @login_required
 def delete(request, id):
