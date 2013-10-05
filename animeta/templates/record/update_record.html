@@ -1,35 +1,62 @@
-{% extends "work/base.html" %}
+{% extends "user/base.html" %}
 
 {% load status %}
 
 {% block content %}
-<div id="forms">
-<form method="post" action="" class="inline">
-<h2>제목 표기 바꾸기</h2>
-<p><input type="text" name="work_title" value="{{ record.title }}" class="autocomplete" /> <input type="submit" value="바꾸기" /></p>
-</form>
+<div class="record-detail-header">
+    <h1><a href="{{ record.work.get_absolute_url }}" class="work">{{ record.title }}</a></h1>
 
-<form method="post" action="" class="inline">
-<h2>분류 바꾸기</h2>
-<p>
-<select name="category" id="category">
-    <option value="">지정 안함</option>
-{% for category in category_list %}
-    <option value="{{ category.id }}"{% ifequal record.category category %} selected="selected"{% endifequal %}>{{ category.name }}</option>
-{% endfor %}
-</select>
-<input type="submit" value="바꾸기" />
-</p>
-</form>
+    <form method="post" action="{% url 'record.views.update_title' record.id %}" class="title-form">
+        <input type="text" name="title" value="{{ record.title }}" class="autocomplete" size="12" />
+        <button type="submit">저장</button>
+        <a href="#" onclick="cancelTitleEditing()">취소</a>
+    </form>
 
-<h2>기록 추가</h2>
-{% include "record_form.html" %}
+    <a href="#" class="btn btn-edit-title">제목 수정</a>
+
+    <a href="{% url "record.views.delete" record.id %}" class="btn btn-delete">삭제</a>
+    
+    <form method="post" action="{% url 'record.views.update_category' record.id %}" class="category-form btn">
+        <label>분류:</label> {% if record.category %}{{ record.category.name }}{% else %}지정 안함{% endif %} ▼
+        <select name="category" id="category">
+            <option value="">지정 안함</option>
+        {% for category in category_list %}
+            <option value="{{ category.id }}"{% ifequal record.category category %} selected="selected"{% endifequal %}>{{ category.name }}</option>
+        {% endfor %}
+        </select>
+        <input type="submit" value="바꾸기" />
+    </form>
+</div>
+
+<div id="forms" class="record-detail-update">
+    {% include "record_form.html" %}
 </div>
 
 <div id="history">
-<h2>지난 기록</h2>
 {% for history in history_list %}
     {% include "history.html" with show_delete=can_delete %}
 {% endfor %}
 </div>
+{% endblock %}
+
+{% block js %}
+<script>
+$('.category-form #category').on('change', function() {
+    this.form.submit();
+});
+$('.category-form input:submit').hide();
+
+$('.title-form').hide();
+$('.btn-edit-title').on('click', function() {
+    $('.record-detail-header h1').hide();
+    $('.btn-edit-title').hide();
+    $('.title-form').show();
+});
+
+function cancelTitleEditing() {
+    $('.record-detail-header h1').show();
+    $('.btn-edit-title').show();
+    $('.title-form').hide();
+}
+</script>
 {% endblock %}

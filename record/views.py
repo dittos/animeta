@@ -44,36 +44,46 @@ def _get_record(request, id):
     return record
 
 @login_required
-def update(request, id):
+def update_title(request, id):
     record = _get_record(request, id)
-    if 'work_title' in request.POST:
+    if request.method == 'POST':
         try:
-            record.update_title(request.POST['work_title'])
-            return redirect(request.user)
+            record.update_title(request.POST['title'])
+            messages.info(request, u'제목을 바꿨습니다.')
         except:
             transaction.rollback()
             messages.error(request, u'이미 같은 작품이 등록되어 있어 제목을 바꾸지 못했습니다.')
-            return redirect('/records/%d/update/' % record.id)
-    elif 'category' in request.POST:
+    return redirect(request.user)
+
+@login_required
+def update_category(request, id):
+    record = _get_record(request, id)
+    if request.method == 'POST':
         id = request.POST['category']
         if not id:
             record.category = None
+            name = u'지정 안함'
         else:
             record.category = request.user.category_set.get(id=id)
+            name = record.category.name
         record.save()
-        return redirect(request.user)
-    else:
-        history_list = request.user.history_set.filter(work=record.work)
-        return save(request,
-            RecordUpdateForm, record, {},
-            template_name = 'record/update_record.html',
-            extra_context = {
-                'record': record,
-                'work': record.work,
-                'category_list': request.user.category_set.all(),
-                'history_list': history_list,
-                'can_delete': request.user == record.user and history_list.count() > 1
-            })
+        messages.info(request, u'분류를 "%s"(으)로 바꿨습니다.' % name)
+    return redirect(request.user)
+
+@login_required
+def update(request, id):
+    record = _get_record(request, id)
+    history_list = request.user.history_set.filter(work=record.work)
+    return save(request,
+        RecordUpdateForm, record, {},
+        template_name = 'record/update_record.html',
+        extra_context = {
+            'record': record,
+            'work': record.work,
+            'category_list': request.user.category_set.all(),
+            'history_list': history_list,
+            'can_delete': request.user == record.user and history_list.count() > 1
+        })
 
 @login_required
 def delete(request, id):
