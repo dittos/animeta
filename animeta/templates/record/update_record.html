@@ -28,9 +28,24 @@
     </form>
 </div>
 
-<div id="forms" class="record-detail-update">
-    {% include "record_form.html" %}
-</div>
+<form class="record-detail-update" method="post">
+    <div class="progress">
+        {{ form.status_type }} @ {{ form.status }}<span id="suffix">화</span>
+    </div>
+    {{ form.comment }}
+    <div class="actions">
+    {% if not connected_services %}
+        <input type="checkbox" disabled="disabled" />
+    {% else %}
+        {{ form.publish }}
+    {% endif %}
+
+        {{ form.publish.label_tag }}
+        ({% for module, setting in connected_services %}{{ module.name }}{% if not forloop.last %}, {% endif %}{% empty %}없음{% endfor %} / <a href="/connect/">설정</a>)
+
+        <button type="submit">기록 추가</button>
+    </div>
+</form>
 
 <div id="history">
 {% for history in history_list %}

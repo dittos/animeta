@@ -102,9 +102,6 @@ ol.chart, #charts ol { margin-left: 0.5em; padding: 0; list-style: none; }
 #add-record { width: 40em; float: left; }
 #add-record th, #add-record td { padding: 0.5em; }
 #connected-services th { vertical-align: top; }
-#forms { margin-top: 0.5em; overflow: hidden; }
-#forms form { clear: both; }
-#forms h2 { font-size: 1.1em; }
 #history { clear: both; }
 form.inline { margin-bottom: 0.5em; overflow: hidden; }
 form.inline h2 { width: 8em; float: left; }
@@ -161,11 +158,30 @@ form.inline p { padding-left: 1em; display: inline; }
 }
 .record-detail-update {
     clear: both;
-    overflow: hidden;
+    padding: 1em 0;
     margin-bottom: 1em;
+    border-bottom: 1px solid #ccc;
 }
-.record-detail-update th {
-    min-width: 0;
+.record-detail-update .progress {
+    padding-bottom: 0.5em;
+}
+.record-detail-update .progress,
+.record-detail-update .progress input,
+.record-detail-update .progress select {
+    font-size: 16px;
+}
+.record-detail-update .actions {
+    padding-top: 0.5em;
+}
+.record-detail-update button {
+    background: #4bb000;
+    color: #fff;
+    border: 1px solid #357d00;
+    padding: 3px 5px;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    margin-left: 1em;
 }
 
 /* Record Delete */
@@ -300,7 +316,6 @@ a.work:hover { color: #666; border-bottom: 1px dashed #aaa; }
 #records .group { border: none; }
 #records h2 { float: none; padding: 0; }
 #records ul { margin: 0; }
-#forms, #history { float: none; width: auto; }
 form table, form table input, form table select { font-size: 1em; }
 form th { width: auto !important; min-width: 0 !important; padding-left: 0 !important; }
 form.inline h2 { float: none; width: auto; }

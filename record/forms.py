@@ -31,7 +31,7 @@ class RecordUpdateForm(forms.ModelForm):
         model = History
         widgets = {
             'status': forms.TextInput(attrs={'size': 5}),
-            'comment': forms.Textarea(attrs={'rows': 3, 'cols': 20}),
+            'comment': forms.Textarea(attrs={'rows': 3, 'cols': 30}),
         }
         exclude = ('updated_at', )
 
