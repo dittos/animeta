@@ -219,165 +219,37 @@ a.work:hover { color: #666; border-bottom: 1px dashed #aaa; }
 
 .merged, .merged td a { color: #bbb; }
 
-/* Library (new) */
-#library-content,
-#library-items {
-    float: left;
-}
-#library-items {
-    width: 300px;
-    position: relative;
-}
-#library-items .items {
-	position: absolute;
-	top: 70px;
-	bottom: 40px;
-	width: 100%;
-}
-#library-items .items-footer {
-	position: absolute;
-	bottom: 0;
-}
-.items-container {
-    background-color: #f4f4f4;
-    border: 1px solid #ccc;
-    border-radius: 10px 0 0 10px;
-}
-.items-footer {
-    padding: 10px;
-}
+@media (max-width: 480px) {
 
-.items-header div {
-	margin: 10px;
-}
-.items-header ul,
-.items-footer ul {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	display: inline;
-}
-.items-header li,
-.items-footer li {
-	display: inline;
-}
+#join-now { font-size: 1em; margin-left: 0.5em; margin-right: 0.5em; }
+#join-now p { line-height: 1.5; float: none; }
+#join-now .btn { margin-top: 0.5em; }
+#join-now .btn a { float: none; text-align: center; }
+.header-notice, #header-inner, #nav, #content, #footer, #info { width: auto; }
+#info { float: none; }
+#header { text-align: center; }
+#header p { float: none; }
+#nav { padding: 0 0.5em; }
+#content { padding: 0.5em; }
+#global-menu { margin-top: 0.5em; }
+.menu { float: none !important; clear: both; margin-left: 0; line-height: 1; }
+.menu li.menu-connect { display: none; }
+.menu li { letter-spacing: -1px; margin: 0 0.5em; }
+#timeline { float: none; width: auto; }
+#weekly-popular-works { margin-right: 0; padding-top: 0.5em; margin-top: 2em; }
+.column { width: auto; float: none; }
+#library-header p { display: block; margin-right: 0; }
+#records .group { border: none; }
+#records h2 { float: none; padding: 0; }
+#records ul { margin: 0; }
+#forms, #history { float: none; width: auto; }
+#history { margin-left: 0; clear: both; }
+form table, form table input, form table select { font-size: 1em; }
+form th { width: auto !important; min-width: 0 !important; padding-left: 0 !important; }
+form.inline h2 { float: none; width: auto; }
+#id_comment { width: 15em; }
+#add-record { width: auto; }
+#comments { margin-right: 0; width: auto; float: none; }
+#videos { float: none; width: auto; }
 
-.items {
-	background-color: #fff;
-	overflow-y: auto;
-}
-.items .item:first-child,
-.items .item-group-header:first-child {
-	border-top: 1px solid #ccc;
-}
-.item-group-header {
-	border-bottom: 1px solid #ddd;
-	background: -moz-linear-gradient(top, #f4f4f4, #fff);
-	background: -webkit-linear-gradient(top, #f4f4f4, #fff);
-	padding: 2px 10px;
-	font-size: 0.8em;
-}
-.item {
-	border-bottom: 1px solid #ddd;
-	padding: 10px;
-	cursor: pointer;
-	clear: both;
-	overflow: hidden;
-	-moz-transition: 0.1s background linear;
-	-webkit-transition: 0.1s background linear;
-}
-.item:hover,
-.item.s-selected {
-	background-color: #fafafa;
-	text-shadow: 1px 1px 0 #fff;
-	box-shadow: 0 0 3px #eee;
-}
-.item:active,
-.item.s-selected {
-	background: -moz-linear-gradient(top, #fff, #f4f4f4);
-	background: -webkit-linear-gradient(top, #fff, #f4f4f4);
-}
-.item-title {
-	float: left;
-}
-.item-title a {
-	text-decoration: none;
-	font-weight: bold;
-	color: #666;
-}
-.item-status {
-	float: right;
-}
-.item-status-at {
-	color: #aaa;
-	font-weight: normal;
-	font-size: small;
-}
-.item-watching .item-status {
-	color: #4bb000;
-	font-weight: bold;
-}
-.item-interested .item-status {
-	color: #f89406;
-	font-weight: bold;
-}
-.item-suspended .item-status,
-.item-finished .item-status {
-	color: #777;
-}
-
-#library-content {
-    width: 620px;
-    padding: 0 15px;
-}
-.records-container {
-	border: 1px solid #ccc;
-	border-left: 0;
-    border-radius: 0 10px 10px 0;
-	box-shadow: inset 0 0 5px #ddd;
-	overflow-y: auto;
-}
-
-.item-detail-title {
-	font-size: 24px !important;
-}
-
-.status-update-form {
-	width: 400px;
-}
-.update-form-status {
-	padding: 5px 10px;
-}
-.update-form-status,
-.update-form-status input,
-.update-form-status select {
-	font-size: 0.95em;
-}
-.update-form-comment input,
-.update-form-comment textarea {
-	width: 375px;
-	font-size: 1em;
-	border: none;
-	background-color: #fff;
-	padding: 5px;
-	margin: 0 5px;
-	border: 1px solid #ccc;
-}
-.update-form-footer {
-	padding: 5px 10px;
-	overflow: hidden;
-}
-.update-form-publish {
-	float: left;
-}
-.update-form-submit {
-	font-size: 1em;
-	float: right;
-}
-
-#library-content .status-update-form {
-	background: #f4f4f4 url(texture.png);
-	border-radius: 10px;
-	border: 1px solid #ccc;
-	margin: 20px 0;
 }
