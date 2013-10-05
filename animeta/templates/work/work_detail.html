@@ -5,7 +5,7 @@
 {% block head-extra %}
     <meta property="og:title" content="{{ work.title }}" />
     <meta property="og:type" content="tv_show" />
-    <meta property="og:url" content="http://animeta.net{% url work.views.detail work.title %}" />
+    <meta property="og:url" content="http://animeta.net{% url "work.views.detail" work.title %}" />
     <meta property="og:image" content="http://animeta.net/static/animeta.gif" />
     <meta property="og:site_name" content="animeta" />
     <meta property="og:description" content="" />
@@ -29,7 +29,7 @@
 <div id="info">
 <dl>
     <dt>인기도</dt>
-    <dd>전체 {{ work.rank }}위, {{ work.popularity }}명이 기록 남김. <a href="{% url work.views.list_users work.title %}">자세히 보기 &rarr;</a></dd>
+    <dd>전체 {{ work.rank }}위, {{ work.popularity }}명이 기록 남김. <a href="{% url "work.views.list_users" work.title %}">자세히 보기 &rarr;</a></dd>
 
 {% if alt_titles %}
     <dt>다른 제목</dt>

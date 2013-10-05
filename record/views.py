@@ -2,7 +2,7 @@
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
-from django.views.generic import list_detail
+from django.views.generic import ListView
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -151,15 +151,24 @@ def shortcut(request, id):
     history = get_object_or_404(History, id=id)
     return redirect('/users/%s/history/%d/' % (history.user.username, history.id))
 
-def history_detail(request, username, id):
-    user = get_object_or_404(User, username=username)
-    history = get_object_or_404(user.history_set, id=id)
-    return list_detail.object_list(request,
-        queryset = History.objects.filter(work=history.work, status=history.status).exclude(user=user).exclude(comment=''),
-        paginate_by = 10,
-        template_name = 'record/history_detail.html',
-        extra_context = {'owner': user, 'history': history, 'can_delete': history.deletable_by(request.user)}
-    )
+class HistoryDetailView(ListView):
+    paginate_by = 10
+    template_name = 'record/history_detail.html'
+
+    def get_queryset(self):
+        self.user = get_object_or_404(User, username=self.kwargs['username'])
+        self.history = get_object_or_404(self.user.history_set, id=self.kwargs['id'])
+        return History.objects.filter(work=self.history.work, status=self.history.status) \
+                .exclude(user=self.user).exclude(comment='')
+
+    def get_context_data(self, **kwargs):
+        context = super(HistoryDetailView, self).get_context_data(**kwargs)
+        context.update({
+            'owner': self.user,
+            'history': self.history,
+            'can_delete': self.history.deletable_by(self.request.user),
+        })
+        return context
 
 @login_required
 def delete_history(request, username, id):

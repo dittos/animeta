@@ -2,7 +2,7 @@
 
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.csrf import csrf_protect
-from django.views.generic import list_detail
+from django.views.generic import ListView
 from django.contrib.auth import login as _login
 from django.contrib.auth.models import User
 from django.contrib.auth.views import login as login_view
@@ -135,23 +135,34 @@ def include_delete_flag(user):
             history.can_delete = history.deletable_by(user)
     return _callback
 
-def history(request, username):
-    user = get_object_or_404(User, username=username)
-    return list_detail.object_list(request,
-        template_name = 'user/history.html',
-        queryset = user.history_set.select_related('work', 'user') \
-                .transform(include_records) \
-                .transform(include_delete_flag(request.user)),
-        paginate_by = 8,
-        extra_context = {'owner': user}
-    )
+class HistoryListView(ListView):
+    template_name = 'user/history.html'
+    paginate_by = 8
 
-def history_feed(request, username):
-    user = get_object_or_404(User, username=username)
-    return list_detail.object_list(request,
-        template_name = 'user/history.atom',
-        queryset = user.history_set.select_related('work', 'user'),
-        paginate_by = 20,
-        extra_context = {'owner': user},
-        mimetype = 'application/atom+xml'
-    )
+    def get_queryset(self):
+        self.user = get_object_or_404(User, username=self.kwargs['username'])
+        return self.user.history_set.select_related('work', 'user') \
+                .transform(include_records) \
+                .transform(include_delete_flag(self.request.user))
+
+    def get_context_data(self, **kwargs):
+        context = super(HistoryListView, self).get_context_data(**kwargs)
+        context['owner'] = self.user
+        return context
+
+class HistoryFeedView(ListView):
+    template_name = 'user/history.atom'
+    paginate_by = 20
+
+    def get_queryset(self):
+        self.user = get_object_or_404(User, username=self.kwargs['username'])
+        return self.user.history_set.select_related('work', 'user')
+
+    def get_context_data(self, **kwargs):
+        context = super(HistoryFeedView, self).get_context_data(**kwargs)
+        context['owner'] = self.user
+        return context
+
+    def render_to_response(self, context, **response_kwargs):
+        response_kwargs['mimetype'] = 'application/atom+xml'
+        return super(HistoryFeedView, self).render_to_response(context, **response_kwargs)

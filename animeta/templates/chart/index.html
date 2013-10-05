@@ -38,7 +38,7 @@
     <div class="history">
         <span class="status-text">{{ record|status_text }}</span>
         <span class="comment">{{ record.comment }}</span>
-        <a href="{% url user.views.library record.user %}" class="user">{{ record.user.username }}</a>
+        <a href="{% url "user.views.library" record.user %}" class="user">{{ record.user.username }}</a>
     </div>
 {% endfor %}
 </div>

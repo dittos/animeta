@@ -49,7 +49,7 @@
     <th></th>
     <td>
         <input type="submit" value="기록" />
-        {% if record %}또는 <a href="{% url record.views.delete record.id %}">삭제</a>{% endif %}
+        {% if record %}또는 <a href="{% url "record.views.delete" record.id %}">삭제</a>{% endif %}
     </td>
 </tr>
 </table>

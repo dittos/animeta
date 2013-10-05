@@ -2,7 +2,7 @@
 import urllib
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
-from django.views.generic import list_detail
+from django.views.generic import ListView
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from work.models import Work, TitleMapping
@@ -66,9 +66,12 @@ def video(request, title, provider, id):
         'video_id': id
     })
 
-def search(request):
-    keyword = request.GET.get('keyword', '')
-    return list_detail.object_list(request,
-        queryset = Work.objects.filter(title__icontains=keyword),
-        extra_context = {'keyword': keyword},
-    )
+class SearchView(ListView):
+    def get_queryset(self):
+        self.keyword = self.request.GET.get('keyword', '')
+        return Work.objects.filter(title__icontains=self.keyword)
+
+    def get_context_data(self, **kwargs):
+        context = super(SearchView, self).get_context_data(**kwargs)
+        context['keyword'] = self.keyword
+        return context

@@ -1,5 +1,6 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns
+from moderation.views import MergeDashboardView
 
 urlpatterns = patterns('moderation.views',
-    (r'^merge/$', 'merge_dashboard'),
+    (r'^merge/$', MergeDashboardView.as_view()),
 )

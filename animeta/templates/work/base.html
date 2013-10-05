@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block nav %}
-<h1><a href="{% url work.views.detail work.title %}">{{ work.title }}</a></h1>
+<h1><a href="{% url "work.views.detail" work.title %}">{{ work.title }}</a></h1>
 {% if user.is_authenticated %}
 <p>나의 감상 상태: {% status_text of record %}</p>
 {% endif %}

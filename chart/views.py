@@ -1,7 +1,7 @@
 import datetime
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from django.views.generic import list_detail
+from django.views.generic import ListView
 from chart.models import weekly, compare_charts, PopularWorksChart, ActiveUsersChart
 from record.models import History, include_records
 
@@ -24,13 +24,11 @@ def main(request):
                 .exclude(comment='')[:6].transform(include_records)
     })
 
-def timeline(request):
-    return list_detail.object_list(request,
-        template_name = 'chart/timeline.html',
-        queryset = History.objects.select_related('work', 'user') \
-                .exclude(comment='').transform(include_records),
-        paginate_by = 8
-    )
+class TimelineView(ListView):
+    template_name = 'chart/timeline.html'
+    queryset = History.objects.select_related('work', 'user') \
+            .exclude(comment='').transform(include_records)
+    paginate_by = 8
 
 def detail(request, chart_class, range_class=None, title=''):
     if range_class:

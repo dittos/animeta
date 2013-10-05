@@ -1,12 +1,12 @@
-from django.conf.urls.defaults import *
-from django.conf import settings
+from django.conf.urls import patterns, include, url
 
 import user.views
 from django.contrib.auth.decorators import login_required
+from chart.views import TimelineView
 
 urlpatterns = patterns('',
     (r'^$', 'chart.views.main'),
-    (r'^timeline/$', 'chart.views.timeline'),
+    (r'^timeline/$', TimelineView.as_view()),
     (r'^login/', 'user.views.login'),
     (r'^logout/', 'django.contrib.auth.views.logout', {'next_page': '/'}),
     (r'^signup/', 'user.views.signup'),

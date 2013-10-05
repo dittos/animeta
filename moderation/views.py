@@ -3,18 +3,28 @@ from django.db import models
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
-from django.views.generic import list_detail
+from django.views.generic import ListView
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
 from work.models import Work
 from .models import MergeRequest, has_merge_request, merge
 
-def merge_dashboard(request):
-    error = None
-    result = []
+class MergeDashboardView(ListView):
+    queryset = MergeRequest.objects.order_by('-id')
+    paginate_by = 50
+    context_object_name = 'merge_list'
+    template_name = 'moderation/merge.html'
 
-    if request.method == 'POST':
+    def __init__(self, *args, **kwargs):
+        super(MergeDashboardView, self).__init__(*args, **kwargs)
+        self.error = None
+        self.result = []
+
+    def post(self, request):
+        error = None
+        result = []
+
         if 'apply' in request.POST:
             for id in request.POST.getlist('apply'):
                 req = MergeRequest.objects.get(id=id)
@@ -35,14 +45,15 @@ def merge_dashboard(request):
             else:
                 MergeRequest.objects.create(user=request.user, source=source, target=work)
 
-    return list_detail.object_list(request,
-        queryset = MergeRequest.objects.order_by('-id'),
-        paginate_by = 50,
-        template_object_name = 'merge',
-        template_name = 'moderation/merge.html',
-        extra_context = {
+        self.error = error
+        self.result = result
+        return super(MergeDashboardView, self).get(request)
+
+    def get_context_data(self, **kwargs):
+        context = super(MergeDashboardView, self).get_context_data(**kwargs)
+        context.update({
             'contributors': User.objects.annotate(count=models.Count('mergerequest')).order_by('-count').exclude(count=0),
-            'error': error,
-            'result': result,
-        }
-    )
+            'error': self.error,
+            'result': self.result,
+        })
+        return context

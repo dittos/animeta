@@ -8,7 +8,7 @@
 <h2>{{ group.list.0.status_type.text }} ({{ group.list|length }}명)</h2>
 <ul>
 {% for record in group.list %}
-    <li><a href="{% url user.views.library record.user %}">{{ record.user }}</a></li>
+    <li><a href="{% url "user.views.library" record.user %}">{{ record.user }}</a></li>
 {% endfor %}
 </ul>
 {% endfor %}
