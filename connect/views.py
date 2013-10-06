@@ -57,16 +57,19 @@ def twitter(request):
             token = request.session['request_token']
             del request.session['request_token']
             auth.set_request_token(*token)
-            auth.get_access_token(request.GET.get('oauth_verifier'))
+            try:
+                auth.get_access_token(request.GET.get('oauth_verifier'))
 
-            TwitterSetting.objects.create(
-                user=request.user, key=auth.access_token.key,
-                secret=auth.access_token.secret)
-            return redirect('/connect/twitter/')
-        else:
-            redirect_url = auth.get_authorization_url()
-            request.session['request_token'] = (auth.request_token.key, auth.request_token.secret)
-            return redirect(redirect_url)
+                TwitterSetting.objects.create(
+                    user=request.user, key=auth.access_token.key,
+                    secret=auth.access_token.secret)
+                return redirect('/connect/twitter/')
+            except tweepy.TweepError:
+                pass
+
+        redirect_url = auth.get_authorization_url()
+        request.session['request_token'] = (auth.request_token.key, auth.request_token.secret)
+        return redirect(redirect_url)
 
 @login_required
 def twitter_disconnect(request):
