@@ -4,9 +4,12 @@ from django import forms
 from django.forms.formsets import formset_factory
 from record.models import Record, Category, History, StatusTypes
 from work.models import Work, TitleMapping, normalize_title, get_or_create_work
+from connect import post_history
 
 class RecordUpdateForm(forms.ModelForm):
-    publish = forms.BooleanField(label=u'외부 서비스에 보내기',
+    publish_twitter = forms.BooleanField(label=u'Twitter에 보내기',
+            required=False, initial=False)
+    publish_facebook = forms.BooleanField(label=u'Facebook에 보내기',
             required=False, initial=False)
 
     def __init__(self, record, *args, **kwargs):
@@ -22,9 +25,12 @@ class RecordUpdateForm(forms.ModelForm):
         history.user = self.record.user
         history.work = self.record.work
         history.save()
-        if self.cleaned_data['publish']:
-            from connect import post_history
-            post_history(history)
+        services = []
+        if self.cleaned_data['publish_twitter']:
+            services.append('twitter')
+        if self.cleaned_data['publish_facebook']:
+            services.append('facebook')
+        post_history(history, services)
         return history
 
     class Meta:

@@ -26,23 +26,11 @@
 </tr>
 <tr id="connected-services">
     <th>
-    {% if not connected_services %}
-        <input type="checkbox" disabled="disabled" />
-    {% else %}
-        {{ form.publish }}
-    {% endif %}
     </th>
     <td>
-        {{ form.publish.label_tag }}<br />
-        <span class="description">
-        연동된 서비스: 
-        {% for module, setting in connected_services %}
-            {{ module.name }}{% if not forloop.last %}, {% endif %}
-        {% empty %}
-            없음
-        {% endfor %}
-            <a href="/connect/">설정</a>
-        </span>
+        {{ form.publish_twitter }} {{ form.publish_twitter.label_tag }}
+        {{ form.publish_facebook }} {{ form.publish_facebook.label_tag }}
+        (<a href="/connect/">설정</a>)
     </td>
 </tr>
 <tr>

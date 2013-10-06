@@ -37,14 +37,9 @@
     </div>
     {{ form.comment }}
     <div class="actions">
-    {% if not connected_services %}
-        <input type="checkbox" disabled="disabled" />
-    {% else %}
-        {{ form.publish }}
-    {% endif %}
-
-        {{ form.publish.label_tag }}
-        ({% for module, setting in connected_services %}{{ module.name }}{% if not forloop.last %}, {% endif %}{% empty %}없음{% endfor %} / <a href="/connect/">설정</a>)
+        {{ form.publish_twitter }} {{ form.publish_twitter.label_tag }}
+        {{ form.publish_facebook }} {{ form.publish_facebook.label_tag }}
+        (<a href="/connect/">설정</a>)
 
         <button type="submit">기록 추가</button>
     </div>
