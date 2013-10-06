@@ -24,7 +24,7 @@ a img { border: none; }
 #nav a:hover { position: relative; left: 1px; top: 1px; }
 #facebook-like { margin-left: 1.5em; margin-top: 0.5em; float: left; }
 #nav h1 a { margin: 0; }
-#messages, .message { background-color: #ffa; border: 1px solid #deb200; list-style: none; margin: 0 1em; padding: 0; }
+#messages, .message { background-color: #ffa; border: 1px solid #deb200; list-style: none; margin: 0 auto; padding: 0; }
 .message { margin: 0 0 1em 0; padding: 0.5em; }
 #messages li { border-bottom: 1px dotted #deb200; padding: 0.5em; }
 #close-messages { font-size: 0.8em; border-bottom: 0 !important; }
@@ -192,7 +192,7 @@ form.inline p { padding-left: 1em; display: inline; }
 #nav a.add-record { color: #06c; font-weight: bolder; }
 #nav .feed { vertical-align: -25%; }
 #records .group { border-top: 1px solid #ddd; padding: 0.5em 0; }
-#records h2 { width: 8em; font-size: 1.2em; margin: 0.5em 0; padding: 0; float: left; clear: left; color: #555; font-weight: normal; }
+#records h2 { width: 8em; font-size: 1.1em; line-height: 1.6; margin: 0.5em 0; padding: 0; float: left; clear: left; color: #555; font-weight: normal; }
 #records ul { margin: 0 0 0 10em; padding: 0; list-style: none; }
 #records li { padding: 0.25em 0; font-size: 1.1em; }
 
@@ -217,7 +217,7 @@ form.inline p { padding-left: 1em; display: inline; }
     font-weight: bold;
 }
 #records .item-watching a {
-    color: #555;
+    color: #000;
     font-weight: bold;
 }
 #records .item-watching a:hover {

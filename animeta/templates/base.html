@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>{% block title %}애니메타{% endblock %}</title>
-    <link rel="stylesheet" href="{{ STATIC_URL }}style.css" type="text/css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}style.css?3" type="text/css" />
     <link rel="stylesheet" href="//ajax.aspnetcdn.com/ajax/jquery.ui/1.8.23/themes/base/jquery-ui.css" type="text/css" />
     <link rel="apple-touch-icon" href="{{ STATIC_URL }}icon@2x.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi" />
@@ -61,15 +61,8 @@
     <li>{{ message }}</li>
 {% endfor %}
 
-    <li id="close-messages"><a href="">닫기</a></li>
+    <li id="close-messages"><a href="" onclick="$('#messages').hide(); return false">닫기</a></li>
 </ul>
-
-<script type="text/javascript">
-$('#close-messages a').click(function(event) {
-    event.preventDefault()
-    $('#messages').fadeOut('normal')
-})
-</script>
 {% endif %}
 
 <div id="nav">
