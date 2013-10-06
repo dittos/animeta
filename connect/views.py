@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from connect import get_connected_services
 from connect.models import Me2Setting, TwitterSetting, FacebookSetting
 
-import me2day as me2
 import tweepy
 import facebook as fb
 
@@ -15,35 +14,6 @@ def services(request):
     return render(request, 'connect/services.html', {
         'services': [service.name.lower() for (service, _) in get_connected_services(request.user)]
     })
-
-@login_required
-def me2day(request):
-    status = None
-
-    try:
-        setting = Me2Setting.objects.get(user=request.user)
-    except:
-        setting = None
-
-    if request.method == 'POST':
-        setting = Me2Setting(user=request.user, userid=request.POST['me2_userid'], userkey=request.POST['me2_userkey'])
-        try:
-            me2.call('noop', uid=setting.userid, user_key=setting.userkey)
-            setting.save()
-            status = 'auth_ok'
-        except:
-            status = 'auth_fail'
-            setting = None
-            
-    return render(request, 'connect/me2day.html', {'status': status, 'setting': setting})
-
-@login_required
-def me2day_disconnect(request):
-    if request.method == 'POST':
-        setting = Me2Setting.objects.get(user=request.user)
-        setting.delete()
-        messages.success(request, u'인증 정보를 삭제하였습니다.')
-        return redirect('/connect/me2day/')
 
 @login_required
 def twitter(request):
