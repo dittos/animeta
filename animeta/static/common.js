@@ -48,3 +48,17 @@ $(function () {
         return false
     })
 })
+
+function initServiceToggles(form) {
+    var connectedServices = form.data('connected-services').split(' ');
+    $('#id_publish_twitter', form).on('change', function() {
+        if (this.checked && $.inArray('twitter', connectedServices) === -1) {
+            window.open('/connect/twitter/');
+        }
+    });
+    $('#id_publish_facebook', form).on('change', function() {
+        if (this.checked && $.inArray('facebook', connectedServices) === -1) {
+            window.open('/connect/facebook/');
+        }
+    });
+}

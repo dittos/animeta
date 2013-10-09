@@ -4,12 +4,12 @@ from django import forms
 from django.forms.formsets import formset_factory
 from record.models import Record, Category, History, StatusTypes
 from work.models import Work, TitleMapping, normalize_title, get_or_create_work
-from connect import post_history
+from connect import post_history, get_connected_services
 
 class RecordUpdateForm(forms.ModelForm):
-    publish_twitter = forms.BooleanField(label=u'Twitter에 보내기',
+    publish_twitter = forms.BooleanField(label=u'트위터',
             required=False, initial=False)
-    publish_facebook = forms.BooleanField(label=u'Facebook에 보내기',
+    publish_facebook = forms.BooleanField(label=u'페이스북',
             required=False, initial=False)
 
     def __init__(self, record, *args, **kwargs):
@@ -19,6 +19,10 @@ class RecordUpdateForm(forms.ModelForm):
         kwargs['initial']['status_type'] = record.status_type
         super(RecordUpdateForm, self).__init__(*args, **kwargs)
         self.record = record
+
+    @property
+    def connected_services(self):
+        return ' '.join(get_connected_services(self.record.user))
 
     def save(self):
         history = super(RecordUpdateForm, self).save(commit=False)
@@ -50,6 +54,10 @@ class RecordAddForm(RecordUpdateForm):
         super(RecordAddForm, self).__init__(Record(), *args, **kwargs)
         self.fields['category'].queryset = user.category_set.all()
         self.user = user
+
+    @property
+    def connected_services(self):
+        return ' '.join(get_connected_services(self.user))
 
     def clean_work_title(self):
         title = self.cleaned_data['work_title']

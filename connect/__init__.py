@@ -7,7 +7,7 @@ def get_connected_services(user):
         if getattr(service, 'available', True):
             setting = service.get_setting(user)
             if setting:
-                services.append((service, setting))
+                services.append(service.name.lower())
     return services
 
 def post_history(history, services):

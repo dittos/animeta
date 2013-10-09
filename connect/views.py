@@ -12,7 +12,7 @@ import facebook as fb
 @login_required
 def services(request):
     return render(request, 'connect/services.html', {
-        'services': [service.name.lower() for (service, _) in get_connected_services(request.user)]
+        'services': get_connected_services(request.user),
     })
 
 @login_required
