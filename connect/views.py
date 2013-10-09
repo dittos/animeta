@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from connect.models import Me2Setting, TwitterSetting, FacebookSetting
@@ -28,13 +29,27 @@ def twitter(request):
             TwitterSetting.objects.create(
                 user=request.user, key=auth.access_token.key,
                 secret=auth.access_token.secret)
-            return redirect('/settings/')
+            if request.session['popup']:
+                js = 'opener.onTwitterConnect(true); window.close()'
+                return HttpResponse('<script>%s</script>' % js)
+            else:
+                return redirect('/settings/')
         except tweepy.TweepError:
             pass
 
-    redirect_url = auth.get_authorization_url()
-    request.session['request_token'] = (auth.request_token.key, auth.request_token.secret)
-    return redirect(redirect_url)
+    popup = request.GET.get('popup') == 'true'
+    try:
+        redirect_url = auth.get_authorization_url()
+        request.session['request_token'] = (auth.request_token.key, auth.request_token.secret)
+        request.session['popup'] = popup
+        return redirect(redirect_url)
+    except tweepy.TweepError:
+        if popup:
+            js = 'opener.onTwitterConnect(false); window.close()'
+            return HttpResponse('<script>%s</script>' % js)
+        else:
+            messages.error(request, u'인증에 실패했습니다. 잠시 후 다시 시도해주세요.')
+            return redirect('/settings/')
 
 @login_required
 def twitter_disconnect(request):

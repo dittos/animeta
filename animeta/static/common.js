@@ -51,9 +51,17 @@ $(function () {
 
 function initServiceToggles(form) {
     var connectedServices = form.data('connected-services').split(' ');
+    window.onTwitterConnect = function(ok) {
+        if (ok) {
+            connectedServices.push('twitter');
+        } else {
+            alert('연동 실패. 잠시 후 다시 시도해주세요.');
+            $('#id_publish_twitter')[0].checked = false;
+        }
+    }
     $('#id_publish_twitter', form).on('change', function() {
         if (this.checked && $.inArray('twitter', connectedServices) === -1) {
-            window.open('/connect/twitter/');
+            window.open('/connect/twitter/?popup=true');
         }
     });
     $('#id_publish_facebook', form).on('change', function() {
