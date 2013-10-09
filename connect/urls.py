@@ -2,7 +2,6 @@ from django.conf.urls.defaults import *
 from django.views.generic import TemplateView
 
 urlpatterns = patterns('',
-    (r'^$', 'connect.views.services'),
     (r'^twitter/$', 'connect.views.twitter'),
     (r'^twitter/disconnect/$', 'connect.views.twitter_disconnect'),
     (r'^facebook/$', 'connect.views.facebook'),

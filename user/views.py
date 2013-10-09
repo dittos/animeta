@@ -2,14 +2,16 @@
 
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.csrf import csrf_protect
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 from django.contrib.auth import login as _login
 from django.contrib.auth.models import User
 from django.contrib.auth.views import login as login_view
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.db.models import Count
 from chart.models import weekly, PopularWorksChart
+from connect import get_connected_services
 from record.models import Uncategorized, StatusTypes, include_records
 from record.forms import RecordFilterForm
 from record.templatetags.indexing import group_records
@@ -38,9 +40,26 @@ def signup(request):
 
     return render(request, 'registration/signup.html', {'form': form})
 
-@login_required
-def settings(request):
-    return render(request, 'user/settings.html')
+class SettingsView(TemplateView):
+    template_name = 'user/settings.html'
+
+    def get(self, request, *args, **kwargs):
+        self.password_change_form = PasswordChangeForm(user=request.user)
+        return super(SettingsView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.password_change_form = PasswordChangeForm(user=request.user, data=request.POST)
+        if self.password_change_form.is_valid():
+            self.password_change_form.save()
+            messages.success(request, u'암호를 바꿨습니다.')
+            return redirect('/settings/')
+        return super(SettingsView, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        return {
+            'password_change_form': self.password_change_form,
+            'services': get_connected_services(self.request.user),
+        }
 
 def shortcut(request, username):
     try:

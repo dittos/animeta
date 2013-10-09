@@ -10,7 +10,7 @@ urlpatterns = patterns('',
     (r'^login/', 'user.views.login'),
     (r'^logout/', 'django.contrib.auth.views.logout', {'next_page': '/'}),
     (r'^signup/', 'user.views.signup'),
-    (r'^settings/', include('user.setting_urls')),
+    (r'^settings/', login_required(user.views.SettingsView.as_view())),
     (r'^api/', include('api.urls')),
 
     (r'^library/', login_required(user.views.library)),
