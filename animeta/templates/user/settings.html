@@ -48,7 +48,7 @@
         {% else %}
             <form method="post" action="/connect/facebook/" id="connect-fb-form">
                 <input type="hidden" name="token" />
-                <a href="#" onclick="connectFacebook(); return false">연결하기</a>
+                <a href="#" onclick="connectFacebookThenSubmit(); return false">연결하기</a>
             </form>
         {% endif %}
     </td>
@@ -63,27 +63,11 @@
 
 {% block js %}
 <script>
-function submitFacebookAuthResponse(response) {
-    var form = $('#connect-fb-form');
-    form.find('input[name="token"]').val(response.authResponse.accessToken);
-    form.submit();
-}
-
-function connectFacebook(link) {
-    window.fbInitCallbacks.push(function(FB) {
-        FB.getLoginStatus(function(response) {
-            if (response.status == 'connected') {
-                submitFacebookAuthResponse(response);
-            } else {
-                FB.login(function(response) {
-                    if (response.authResponse) {
-                        submitFacebookAuthResponse(response);
-                    } else {
-                        alert('fail');
-                    }
-                }, {scope: 'publish_stream,offline_access'});
-            }
-        });
+function connectFacebookThenSubmit() {
+    connectFacebook(function(response) {
+        var form = $('#connect-fb-form');
+        form.find('input[name="token"]').val(response.authResponse.accessToken);
+        form.submit();
     });
 }
 </script>

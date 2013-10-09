@@ -53,7 +53,8 @@ def facebook(request):
         pass
 
     FacebookSetting.objects.create(user=request.user, key=request.POST['token'])
-    messages.success(request, u'연동에 성공했습니다.')
+    if not request.is_ajax:
+        messages.success(request, u'연동에 성공했습니다.')
     return redirect('/settings/')
 
 @login_required

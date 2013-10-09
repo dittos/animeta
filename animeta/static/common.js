@@ -57,8 +57,39 @@ function initServiceToggles(form) {
         }
     });
     $('#id_publish_facebook', form).on('change', function() {
+        var self = this;
         if (this.checked && $.inArray('facebook', connectedServices) === -1) {
-            window.open('/connect/facebook/');
+            connectFacebook(function(response) {
+                var req = $.post('/connect/facebook/', {token: response.authResponse.accessToken});
+                req.success(function() {
+                    connectedServices.push('facebook');
+                });
+                req.error(function() {
+                    alert('연동 실패');
+                    self.checked = false;
+                });
+            }, function(response) {
+                self.checked = false;
+            });
         }
+    });
+}
+
+function connectFacebook(callback, errorCallback) {
+    window.fbInitCallbacks.push(function(FB) {
+        FB.getLoginStatus(function(response) {
+            if (response.status == 'connected') {
+                callback(response);
+            } else {
+                FB.login(function(response) {
+                    if (response.authResponse) {
+                        callback(response);
+                    } else {
+                        if (errorCallback)
+                            errorCallback(response);
+                    }
+                }, {scope: 'publish_stream,offline_access'});
+            }
+        });
     });
 }
