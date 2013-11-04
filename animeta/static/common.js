@@ -48,3 +48,85 @@ $(function () {
         return false
     })
 })
+
+function initServiceToggles(form) {
+    var connectedServices = form.data('connected-services').split(' ');
+    var twitterToggle = $('#id_publish_twitter', form);
+    window.onTwitterConnect = function(ok) {
+        if (ok) {
+            connectedServices.push('twitter');
+            twitterToggle[0].checked = true;
+        } else {
+            alert('연동 실패. 잠시 후 다시 시도해주세요.');
+        }
+    }
+    twitterToggle.on('change', function() {
+        if (this.checked && $.inArray('twitter', connectedServices) === -1) {
+            window.open('/connect/twitter/?popup=true');
+            this.checked = false;
+        }
+    });
+
+    var facebookToggle = $('#id_publish_facebook', form);
+    function tryEnableFacebook(silent) {
+        var toggle = facebookToggle[0];
+        toggle.checked = false;
+        connectFacebook(function(response) {
+            attachFacebookToken(response.authResponse.accessToken);
+            toggle.checked = true;
+        }, function() { }, silent);
+    }
+    facebookToggle.on('change', function() {
+        if (this.checked)
+            tryEnableFacebook(false);
+    });
+    var fbTokenField = null;
+    function attachFacebookToken(token) {
+        if (!fbTokenField) {
+            fbTokenField = $('<input type="hidden" name="fb_token" />');
+            $(form).append(fbTokenField);
+        }
+        fbTokenField.val(token);
+    }
+    function savePublishState() {
+        if (!window.localStorage) return;
+        window.localStorage['publishTwitter'] = twitterToggle[0].checked;
+        window.localStorage['publishFacebook'] = facebookToggle[0].checked;
+    }
+    function restorePublishState() {
+        if (!window.localStorage) return;
+        if (window.localStorage['publishTwitter'] === 'true') {
+            if ($.inArray('twitter', connectedServices) !== -1) {
+                twitterToggle[0].checked = true;
+            }
+        }
+        if (window.localStorage['publishFacebook'] === 'true') {
+            tryEnableFacebook(true);
+        }
+    }
+
+    restorePublishState();
+    form.on('submit', function() {
+        savePublishState();
+    });
+}
+
+function connectFacebook(callback, errorCallback, silent) {
+    window.fbInitCallbacks.push(function(FB) {
+        FB.getLoginStatus(function(response) {
+            if (response.status == 'connected') {
+                callback(response);
+            } else {
+                if (silent) return;
+                FB.login(function(response) {
+                    if (response.authResponse) {
+                        callback(response);
+                    } else {
+                        if (errorCallback)
+                            errorCallback(response);
+                    }
+                }, {scope: 'publish_stream'});
+            }
+        });
+    });
+}

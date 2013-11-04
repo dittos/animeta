@@ -9,7 +9,6 @@ from django.contrib import messages
 from work.models import Work, suggest_works, get_or_create_work
 from .models import Record, History, Category, Uncategorized, StatusTypes
 from .forms import RecordAddForm, RecordUpdateForm, SimpleRecordFormSet
-from connect import get_connected_services
 
 def save(request, form_class, object, form_initial, template_name, extra_context = {}):
     if request.method == 'POST':
@@ -27,7 +26,6 @@ def save(request, form_class, object, form_initial, template_name, extra_context
     extra_context.update({
         'form': form,
         'owner': request.user,
-        'connected_services': get_connected_services(request.user)
     })
     return render(request, template_name, extra_context)
 

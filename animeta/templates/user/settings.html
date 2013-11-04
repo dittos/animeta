@@ -1,26 +1,74 @@
 {% extends base %}
 
 {% block nav %}
-<h1>설정</h1>
-<p>
-    <a href="/settings/">암호 바꾸기</a>
-    <a href="/connect/">외부 서비스 연동</a>
-</p>
+<h1><a href="/settings/">설정</a></h1>
 {% endblock %}
 
 {% block content %}
 <form method="post" action="">
 {% csrf_token %}
 <h2>암호 바꾸기</h2>
-{% if request.GET.changed %}
-<p>암호를 바꿨습니다.</p>
-{% endif %}
 <table>
-{{ form.as_table }}
+{{ password_change_form.as_table }}
 <tr>
     <th></th>
     <td><input type="submit" value="바꾸기" class="button" /></td>
 </tr>
 </table>
 </form>
+
+<h2>외부 서비스 연동</h2>
+<table id="services">
+<tr>
+    <th>서비스 이름</th>
+    <th>설명</th>
+    <th>연동 상태</th>
+</tr>
+<tr>
+    <td class="name">트위터</td>
+    <td class="description">기록을 남기면 트윗이 함께 올라갑니다.</td>
+    <td class="connection">
+        {% if "twitter" in services %}
+            <form method="post" action="/connect/twitter/disconnect/">
+                <input type="submit" value="연결 끊기" />
+            </form>
+        {% else %}
+            <a href="/connect/twitter/">연결하기</a>
+        {% endif %}
+    </td>
+</tr>
+<tr>
+    <td class="name">페이스북</td>
+    <td class="description">기록을 남기면 상태 업데이트가 함께 올라갑니다.</td>
+    <td class="connection">
+        {% if "facebook" in services %}
+            <form method="post" action="/connect/facebook/disconnect/">
+                <input type="submit" value="연결 끊기" />
+            </form>
+        {% else %}
+            <form method="post" action="/connect/facebook/" id="connect-fb-form">
+                <input type="hidden" name="token" />
+                <a href="#" onclick="connectFacebookThenSubmit(); return false">연결하기</a>
+            </form>
+        {% endif %}
+    </td>
+</tr>
+<tr>
+    <td class="name">블로그 위젯</td>
+    <td class="description">블로그에 애니메타 기록을 중계해보세요!</td>
+    <td class="connection"><a href="/connect/widget/">설치 방법</a></td>
+</tr>
+</table>
+{% endblock %}
+
+{% block js %}
+<script>
+function connectFacebookThenSubmit() {
+    connectFacebook(function(response) {
+        var form = $('#connect-fb-form');
+        form.find('input[name="token"]').val(response.authResponse.accessToken);
+        form.submit();
+    });
+}
+</script>
 {% endblock %}

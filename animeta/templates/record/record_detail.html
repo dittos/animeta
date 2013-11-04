@@ -31,21 +31,15 @@
 </div>
 
 {% if form %}
-<form class="record-detail-update" method="post">
+<form class="record-detail-update" method="post" data-connected-services="{{ form.connected_services }}">
     <div class="progress">
         {{ form.status_type }} @ {{ form.status }}<span id="suffix">화</span>
     </div>
     {{ form.comment }}
     <div class="actions">
-    {% if not connected_services %}
-        <input type="checkbox" disabled="disabled" />
-    {% else %}
-        {{ form.publish }}
-    {% endif %}
-
-        {{ form.publish.label_tag }}
-        ({% for module, setting in connected_services %}{{ module.name }}{% if not forloop.last %}, {% endif %}{% empty %}없음{% endfor %} / <a href="/connect/">설정</a>)
-
+        공유:
+        {{ form.publish_twitter }} {{ form.publish_twitter.label_tag }}
+        {{ form.publish_facebook }} {{ form.publish_facebook.label_tag }}
         <button type="submit">기록 추가</button>
     </div>
 </form>
@@ -77,5 +71,6 @@ function cancelTitleEditing() {
     $('.btn-edit-title').show();
     $('.title-form').hide();
 }
+initServiceToggles($('.record-detail-update'));
 </script>
 {% endblock %}

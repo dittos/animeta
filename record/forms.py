@@ -4,10 +4,15 @@ from django import forms
 from django.forms.formsets import formset_factory
 from record.models import Record, Category, History, StatusTypes
 from work.models import Work, TitleMapping, normalize_title, get_or_create_work
+from connect import post_history, get_connected_services
+from connect.models import FacebookSetting
 
 class RecordUpdateForm(forms.ModelForm):
-    publish = forms.BooleanField(label=u'외부 서비스에 보내기',
+    publish_twitter = forms.BooleanField(label=u'트위터',
             required=False, initial=False)
+    publish_facebook = forms.BooleanField(label=u'페이스북',
+            required=False, initial=False)
+    fb_token = forms.CharField(widget=forms.HiddenInput, required=False)
 
     def __init__(self, record, *args, **kwargs):
         if 'initial' not in kwargs:
@@ -17,14 +22,30 @@ class RecordUpdateForm(forms.ModelForm):
         super(RecordUpdateForm, self).__init__(*args, **kwargs)
         self.record = record
 
+    @property
+    def connected_services(self):
+        return ' '.join(get_connected_services(self.record.user))
+
     def save(self):
         history = super(RecordUpdateForm, self).save(commit=False)
         history.user = self.record.user
         history.work = self.record.work
         history.save()
-        if self.cleaned_data['publish']:
-            from connect import post_history
-            post_history(history)
+        services = []
+        if self.cleaned_data['publish_twitter']:
+            services.append('twitter')
+        if self.cleaned_data['publish_facebook']:
+            services.append('facebook')
+            if self.cleaned_data['fb_token']:
+                fb, created = FacebookSetting.objects.get_or_create(
+                    user=self.record.user,
+                    key=self.cleaned_data['fb_token']
+                )
+                if not created:
+                    fb.key = self.cleaned_data['fb_token']
+                    fb.save()
+
+        post_history(history, services)
         return history
 
     class Meta:
@@ -44,6 +65,10 @@ class RecordAddForm(RecordUpdateForm):
         super(RecordAddForm, self).__init__(Record(), *args, **kwargs)
         self.fields['category'].queryset = user.category_set.all()
         self.user = user
+
+    @property
+    def connected_services(self):
+        return ' '.join(get_connected_services(self.user))
 
     def clean_work_title(self):
         title = self.cleaned_data['work_title']
