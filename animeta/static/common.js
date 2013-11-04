@@ -51,20 +51,23 @@ $(function () {
 
 function initServiceToggles(form) {
     var connectedServices = form.data('connected-services').split(' ');
+    var twitterToggle = $('#id_publish_twitter', form);
+    var facebookToggle = $('#id_publish_facebook', form);
     window.onTwitterConnect = function(ok) {
         if (ok) {
             connectedServices.push('twitter');
+            twitterToggle[0].checked = true;
         } else {
             alert('연동 실패. 잠시 후 다시 시도해주세요.');
-            $('#id_publish_twitter')[0].checked = false;
         }
     }
-    $('#id_publish_twitter', form).on('change', function() {
+    twitterToggle.on('change', function() {
         if (this.checked && $.inArray('twitter', connectedServices) === -1) {
             window.open('/connect/twitter/?popup=true');
+            this.checked = false;
         }
     });
-    $('#id_publish_facebook', form).on('change', function() {
+    facebookToggle.on('change', function() {
         var self = this;
         if (this.checked && $.inArray('facebook', connectedServices) === -1) {
             connectFacebook(function(response) {
@@ -80,6 +83,28 @@ function initServiceToggles(form) {
                 self.checked = false;
             });
         }
+    });
+    function savePublishState() {
+        if (!window.localStorage) return;
+        window.localStorage['publishTwitter'] = twitterToggle[0].checked;
+        window.localStorage['publishFacebook'] = facebookToggle[0].checked;
+    }
+    function restorePublishState() {
+        if (!window.localStorage) return;
+        if (window.localStorage['publishTwitter'] === 'true') {
+            if ($.inArray('twitter', connectedServices) !== -1) {
+                twitterToggle[0].checked = true;
+            }
+        }
+        if (window.localStorage['publishFacebook'] === 'true') {
+            if ($.inArray('facebook', connectedServices) !== -1) {
+                facebookToggle[0].checked = true;
+            }
+        }
+    }
+    restorePublishState();
+    form.on('submit', function() {
+        savePublishState();
     });
 }
 
