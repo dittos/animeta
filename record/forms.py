@@ -5,12 +5,14 @@ from django.forms.formsets import formset_factory
 from record.models import Record, Category, History, StatusTypes
 from work.models import Work, TitleMapping, normalize_title, get_or_create_work
 from connect import post_history, get_connected_services
+from connect.models import FacebookSetting
 
 class RecordUpdateForm(forms.ModelForm):
     publish_twitter = forms.BooleanField(label=u'트위터',
             required=False, initial=False)
     publish_facebook = forms.BooleanField(label=u'페이스북',
             required=False, initial=False)
+    fb_token = forms.CharField(widget=forms.HiddenInput, required=False)
 
     def __init__(self, record, *args, **kwargs):
         if 'initial' not in kwargs:
@@ -34,6 +36,15 @@ class RecordUpdateForm(forms.ModelForm):
             services.append('twitter')
         if self.cleaned_data['publish_facebook']:
             services.append('facebook')
+            if self.cleaned_data['fb_token']:
+                fb, created = FacebookSetting.objects.get_or_create(
+                    user=self.record.user,
+                    key=self.cleaned_data['fb_token']
+                )
+                if not created:
+                    fb.key = self.cleaned_data['fb_token']
+                    fb.save()
+
         post_history(history, services)
         return history
 

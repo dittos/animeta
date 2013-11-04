@@ -52,7 +52,6 @@ $(function () {
 function initServiceToggles(form) {
     var connectedServices = form.data('connected-services').split(' ');
     var twitterToggle = $('#id_publish_twitter', form);
-    var facebookToggle = $('#id_publish_facebook', form);
     window.onTwitterConnect = function(ok) {
         if (ok) {
             connectedServices.push('twitter');
@@ -67,23 +66,28 @@ function initServiceToggles(form) {
             this.checked = false;
         }
     });
+
+    var facebookToggle = $('#id_publish_facebook', form);
+    function tryEnableFacebook(silent) {
+        var toggle = facebookToggle[0];
+        toggle.checked = false;
+        connectFacebook(function(response) {
+            attachFacebookToken(response.authResponse.accessToken);
+            toggle.checked = true;
+        }, function() { }, silent);
+    }
     facebookToggle.on('change', function() {
-        var self = this;
-        if (this.checked && $.inArray('facebook', connectedServices) === -1) {
-            connectFacebook(function(response) {
-                var req = $.post('/connect/facebook/', {token: response.authResponse.accessToken});
-                req.success(function() {
-                    connectedServices.push('facebook');
-                });
-                req.error(function() {
-                    alert('연동 실패');
-                    self.checked = false;
-                });
-            }, function(response) {
-                self.checked = false;
-            });
-        }
+        if (this.checked)
+            tryEnableFacebook(false);
     });
+    var fbTokenField = null;
+    function attachFacebookToken(token) {
+        if (!fbTokenField) {
+            fbTokenField = $('<input type="hidden" name="fb_token" />');
+            $(form).append(fbTokenField);
+        }
+        fbTokenField.val(token);
+    }
     function savePublishState() {
         if (!window.localStorage) return;
         window.localStorage['publishTwitter'] = twitterToggle[0].checked;
@@ -97,23 +101,23 @@ function initServiceToggles(form) {
             }
         }
         if (window.localStorage['publishFacebook'] === 'true') {
-            if ($.inArray('facebook', connectedServices) !== -1) {
-                facebookToggle[0].checked = true;
-            }
+            tryEnableFacebook(true);
         }
     }
+
     restorePublishState();
     form.on('submit', function() {
         savePublishState();
     });
 }
 
-function connectFacebook(callback, errorCallback) {
+function connectFacebook(callback, errorCallback, silent) {
     window.fbInitCallbacks.push(function(FB) {
         FB.getLoginStatus(function(response) {
             if (response.status == 'connected') {
                 callback(response);
             } else {
+                if (silent) return;
                 FB.login(function(response) {
                     if (response.authResponse) {
                         callback(response);
@@ -121,7 +125,7 @@ function connectFacebook(callback, errorCallback) {
                         if (errorCallback)
                             errorCallback(response);
                     }
-                }, {scope: 'publish_stream,offline_access'});
+                }, {scope: 'publish_stream'});
             }
         });
     });
