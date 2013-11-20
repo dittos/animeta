@@ -36,14 +36,14 @@ class RecordUpdateForm(forms.ModelForm):
             services.append('twitter')
         if self.cleaned_data['publish_facebook']:
             services.append('facebook')
-            if self.cleaned_data['fb_token']:
-                fb, created = FacebookSetting.objects.get_or_create(
-                    user=self.record.user,
-                    key=self.cleaned_data['fb_token']
-                )
-                if not created:
-                    fb.key = self.cleaned_data['fb_token']
-                    fb.save()
+            token = self.cleaned_data['fb_token']
+            if token:
+                try:
+                    fb = FacebookSetting.objects.get(user=self.record.user)
+                except FacebookSetting.DoesNotExist:
+                    fb = FacebookSetting(user=self.record.user)
+                fb.key = token
+                fb.save()
 
         post_history(history, services)
         return history
