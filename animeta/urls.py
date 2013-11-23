@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
-
-import user.views
 from django.contrib.auth.decorators import login_required
+from django.views.generic import TemplateView
+import user.views
 from chart.views import TimelineView
 
 urlpatterns = patterns('',
@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     (r'^logout/', 'django.contrib.auth.views.logout', {'next_page': '/'}),
     (r'^signup/', 'user.views.signup'),
     (r'^settings/', login_required(user.views.SettingsView.as_view())),
+    (r'^support/', TemplateView.as_view(template_name='support.html')),
     (r'^api/', include('api.urls')),
 
     (r'^library/', login_required(user.views.library)),
