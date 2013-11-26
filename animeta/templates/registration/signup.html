@@ -37,3 +37,13 @@
 </table>
 </form>
 {% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script>
+$(':submit').prop('disabled', false);
+$('form').on('submit', function() {
+    $(this).find(':submit').prop('disabled', true);
+});
+</script>
+{% endblock %}
