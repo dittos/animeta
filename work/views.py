@@ -6,7 +6,7 @@ from django.views.generic import ListView
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from work.models import Work, TitleMapping
-from record.models import Record, History
+from record.models import Record, History, get_episodes
 
 def old_url(request, remainder):
     return redirect('work.views.detail', title=remainder)
@@ -39,12 +39,25 @@ def detail(request, title):
             .exclude(title=work.title).values_list('title', flat=True)
     return render(request, "work/work_detail.html", {
         'work': work,
+        'episodes': get_episodes(work),
         'record': _get_record(request, work),
         'records': work.record_set,
         'alt_titles': alt_titles,
         'similar_works': similar_works,
         'comments': comments,
         'daum_api_key': settings.DAUM_API_KEY
+    })
+
+def episode_detail(request, title, ep):
+    ep = int(ep)
+    work = get_object_or_404(Work, title=title)
+    history_list = work.history_set.filter(status=str(ep)).exclude(comment='').order_by('-id')
+    return render(request, 'work/episode.html', {
+        'work': work,
+        'current_episode': ep,
+        'episodes': get_episodes(work),
+        'record': _get_record(request, work),
+        'history_list': history_list,
     })
 
 def list_users(request, title):

@@ -210,3 +210,14 @@ def sync_record(sender, instance, **kwargs):
 
 post_save.connect(sync_record, sender=History)
 post_delete.connect(sync_record, sender=History)
+
+def get_episodes(work):
+    q = work.history_set.order_by('status').values('status').annotate(models.Count('status'))
+    result = []
+    for row in q:
+        try:
+            episode = int(row['status'])
+        except ValueError:
+            continue
+        result.append(episode)
+    return sorted(result)

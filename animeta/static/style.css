@@ -284,6 +284,9 @@ a.work:hover { color: #666; border-bottom: 1px dashed #aaa; }
 #nav .status a { margin-right: 0; }
 #nav .status a:hover { position: static; }
 #comments { padding-right: 1em; margin-right: 410px; }
+.episodes { padding-bottom: 0.5em; }
+.episodes a { color: #666; }
+.episodes .active { color: #4bb000; font-weight: bold; text-decoration: none; }
 #info { margin-bottom: 1em; width: 410px; float: right; }
 #info dl { margin-top: 0; }
 #info dt { font-weight: bold; margin: 0; }
