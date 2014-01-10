@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import include, patterns, url
 
 urlpatterns = patterns('record.views',
     (r'^suggest/$', 'suggest'),

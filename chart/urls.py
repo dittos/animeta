@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.conf.urls.defaults import *
+from django.conf.urls import include, patterns, url
 from chart.models import *
 from chart.utils import *
 

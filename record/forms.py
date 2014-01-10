@@ -19,6 +19,7 @@ class RecordUpdateForm(forms.ModelForm):
         	kwargs['initial'] = {}
         kwargs['initial']['status'] = record.status
         kwargs['initial']['status_type'] = record.status_type
+        kwargs['label_suffix'] = ''
         super(RecordUpdateForm, self).__init__(*args, **kwargs)
         self.record = record
 
