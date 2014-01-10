@@ -8,3 +8,4 @@ psycopg2==2.5
 pytz==2013b
 tweepy==2.0
 wsgiref==0.1.2
+Babel==1.3
