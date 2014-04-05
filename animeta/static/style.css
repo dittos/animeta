@@ -59,6 +59,7 @@ form span.description { font-size: 0.8em; margin-left: 0.8em; color: #999; verti
 .header-notice p { margin: 0; line-height: 2.7em; float: left; }
 .header-notice strong { font-weight: normal; color: #000; }
 #join-now .btn a { color: #fff; border-radius: 3px; background-color: #4bb000; display: block; float: right; padding: .75em 1em; line-height: 1; }
+#banner-anitable .close { float: right; color: #666; font-size: 12px; }
 #screenshot { margin-left: -0.5em; float: left; }
 
 /* Main Page */
