@@ -194,7 +194,7 @@ form.inline p { padding-left: 1em; display: inline; }
 #nav a.add-record { color: #06c; font-weight: bolder; }
 #nav .feed { vertical-align: -25%; }
 #records .group { border-top: 1px solid #ddd; padding: 0.5em 0; }
-#records h2 { width: 8em; font-size: 1.1em; line-height: 1.6; margin: 0.5em 0; padding: 0; float: left; clear: left; color: #555; font-weight: normal; }
+#records .group h2 { width: 8em; font-size: 1.1em; line-height: 1.6; margin: 0.5em 0; padding: 0; float: left; clear: left; color: #555; font-weight: normal; }
 #records ul { margin: 0 0 0 10em; padding: 0; list-style: none; }
 #records li { padding: 0.25em 0; font-size: 1.1em; }
 
