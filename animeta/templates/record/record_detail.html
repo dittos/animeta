@@ -72,5 +72,22 @@ function cancelTitleEditing() {
     $('.title-form').hide();
 }
 initServiceToggles($('.record-detail-update'));
+
+function plusOne(val) {
+    var matches = val.match(/(\d+)[^\d]*$/);
+    if (!matches)
+        return val;
+    var add1 = (parseInt(matches[1], 10) + 1).toString();
+    var digits = matches[1].length;
+    if (add1.length < digits)
+        for (var i = 0; i < digits - add1.length; i++)
+            add1 = '0' + add1
+    return val.replace(/(\d+)([^\d]*)$/, add1 + '$2');
+}
+var status = '{{ record.status|escapejs }}';
+$('#id_status').focus(function() {
+    var self = this;
+    window.setTimeout(function() { self.select(); }, 50);
+}).val(plusOne(status));
 </script>
 {% endblock %}
