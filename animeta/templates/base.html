@@ -56,11 +56,6 @@
 {% endif %}
 {% endblock %}
 
-<div id="banner-anitable" class="header-notice" style="display: none">
-<p><a href="http://anitable.com/2014Q2?utm_source=animeta&utm_medium=link&utm_campaign=topnotice" target="_blank">2014년 4월 신작 시간표를 확인해보세요.</a></p>
-<a href="#" class="close" onclick="window.localStorage['banner-anitable-dismissed'] = true; $('#banner-anitable').hide(); return false">&times; 그만 보기</a>
-</div>
-
 {% if messages %}
 <ul id="messages">
 {% for message in messages %}
@@ -115,10 +110,6 @@
    }(document, 'script', 'facebook-jssdk'));
 </script>
 <script type="text/javascript" src="{{ STATIC_URL }}common.js"></script>
-<script>
-if (localStorage && !localStorage['banner-anitable-dismissed'])
-    $('#banner-anitable').show();
-</script>
 {% block js %}
 {% endblock %}
 </div>
