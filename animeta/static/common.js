@@ -114,3 +114,28 @@ function connectFacebook(callback, errorCallback, silent) {
         });
     });
 }
+
+function initAutoGrow(input, minLength, maxLength) {
+    var prevLength = 0;
+    var timer = null;
+    minLength = minLength || 3;
+    maxLength = maxLength || 10;
+    var update = function() {
+        var currentLength = input.val().length;
+        input.css('width', Math.max(minLength, Math.min(maxLength, currentLength)) + 'em');
+        prevLength = currentLength;
+    };
+    input.on({
+        focus: function() {
+            timer = setInterval(function() {
+                if (prevLength != input.val().length)
+                    update();
+            }, 50);
+        },
+        blur: function() {
+            clearInterval(timer);
+            timer = null;
+        }
+    });
+    update();
+}
