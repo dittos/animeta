@@ -33,7 +33,11 @@
 {% if form %}
 <form class="record-detail-update" method="post" data-connected-services="{{ form.connected_services }}">
     <div class="progress">
-        {{ form.status_type }} @ {{ form.status }}<span id="suffix">화</span>
+        {{ form.status_type }} @
+        {% if record.status %}
+        <span class="progress-current">{{ record.status }} &rarr;</span>
+        {% endif %}
+        {{ form.status }}<span id="suffix">화</span>
     </div>
     {{ form.comment }}
     <div class="actions">
@@ -84,11 +88,21 @@ function plusOne(val) {
             add1 = '0' + add1
     return val.replace(/(\d+)([^\d]*)$/, add1 + '$2');
 }
+function updateWidth(input) {
+    input.css('width', Math.max(3, input.val().length) + 'em');
+}
 var status = '{{ record.status|escapejs }}';
 $('#id_status').focus(function() {
     var self = this;
     window.setTimeout(function() { self.select(); }, 50);
+}).keyup(function() {
+    updateWidth($(this));
 }).val(plusOne(status));
+updateWidth($('#id_status'));
+
+$('<a href="#" class="plus-one"><img src="' + window.STATIC_URL + 'plus.gif" alt="+1" /></a>')
+    .click(function() { $('#id_status').val(plusOne($('#id_status').val())); })
+    .insertAfter('#suffix');
 
 $('#id_comment').focus();
 </script>

@@ -26,9 +26,13 @@
     <p><a href="/"><img src="{{ STATIC_URL }}animeta.gif" alt="animeta" /></a></p>
 
 {% block menu %}
+    {% if not keyword %}
+    <form action="/works/search/" class="search-form">
+        <input type="search" name="keyword" size="15" placeholder="검색할 작품명을 입력하세요">
+    </form>
+    {% endif %}
     <ul class="menu" id="global-menu">
         <li><a href="/timeline/">최근 감상평</a></li>
-        <li><a href="/works/search/">작품 찾기</a></li>
         <li><a href="/charts/works/weekly/">순위</a></li>
         <li><a href="http://anitable.com/2014Q2?utm_source=animeta&utm_medium=link&utm_campaign=topnav" target="_blank" style="color: #27AE60; font-weight: bold">시간표</a></li>
     </ul>
