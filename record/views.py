@@ -6,7 +6,7 @@ from django.views.generic import ListView
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from work.models import Work, suggest_works, get_or_create_work
+from work.models import Work, get_or_create_work
 from .models import Record, History, Category, Uncategorized, StatusTypes
 from .forms import RecordAddForm, RecordUpdateForm, SimpleRecordFormSet
 
@@ -199,7 +199,3 @@ def delete_history(request, username, id):
         return redirect(request.user)
     else:
         return render(request, 'record/history_confirm_delete.html', {'history': history, 'owner': request.user})
-
-def suggest(request):
-    result = suggest_works(request.GET['q'], user=request.user )
-    return HttpResponse('\n'.join(result[:10].values_list('title', flat=True)))
