@@ -33,7 +33,7 @@ def make_key(s):
 
 def make_regex(q):
     # We don't need to escape the key. Special characters are removed already.
-    return '.*' + u'.*'.join(map(_make_key, q)) + '.*'
+    return '.*' + u'.*'.join(filter(None, map(_make_key, q))) + '.*'
 
 def search_works(q):
     regex = make_regex(q)
