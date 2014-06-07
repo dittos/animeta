@@ -26,10 +26,15 @@ function debouncingSource(source, rate) {
     };
 }
 
+function openWork(title) {
+    location.href = '/works/' + encodeURIComponent(title) + '/';
+}
+
+var searchSource = cachingSource(debouncingSource(function (q, cb) {
+    $.getJSON('/search/', {q: q}, cb);
+}, 200), 20);
 $('.global-search input').typeahead({highlight: true, hint: false}, {
-    source: cachingSource(debouncingSource(function (q, cb) {
-        $.getJSON('/search/', {q: q}, cb);
-    }, 200), 20),
+    source: searchSource,
     displayKey: 'title',
     templates: {
         suggestion: function(item) {
@@ -37,7 +42,20 @@ $('.global-search input').typeahead({highlight: true, hint: false}, {
         }
     }
 }).on('typeahead:selected', function(event, item) {
-    location.href = '/works/' + encodeURIComponent(item.title) + '/';
+    openWork(item.title);
+}).on('keypress', function(event) {
+    if (event.keyCode == 13) {
+        var self = this;
+        var q = self.value;
+        searchSource(q, function(data) {
+            if (q != self.value || data.length == 0)
+                return;
+            if (data.filter(function(item) { return item.title == q; }).length == 1)
+                openWork(q);
+            else
+                openWork(data[0].title);
+        });
+    }
 });
 
 $(function () {
