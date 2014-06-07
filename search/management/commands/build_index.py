@@ -9,7 +9,7 @@ def add_ranks(objects):
     prev = -1
     for i, obj in enumerate(objects):
         if prev != obj.record_count:
-            rank = i
+            rank = i + 1
         prev = obj.record_count
         obj.rank = rank
 

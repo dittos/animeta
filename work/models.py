@@ -11,32 +11,6 @@ class Work(models.Model):
     def popularity(self):
         return self.record_set.count()
 
-    @property
-    def rank(self):
-        key = 'rank:%d' % self.id
-        rank = cache.get(key)
-        if not rank:
-            from django.db import connection
-            cursor = connection.cursor()
-            cursor.execute("SELECT rank FROM (SELECT work_id, RANK() OVER (ORDER BY COUNT(*) DESC) AS rank FROM record_record GROUP BY work_id) t WHERE work_id = %s", [self.id])
-            row = cursor.fetchone()
-            rank = row[0] if row else None
-            cache.set(key, rank, 60 * 60 * 24)
-        return rank
-
-    @property
-    def similar_objects(self):
-        if settings.DEBUG:
-            qs = Work.objects.filter(title__icontains=self.title)
-        else:
-            qs = Work.objects.extra(
-                select={'dist': 'title_distance(%s, title)'},
-                select_params=[self.title],
-                where=['title_distance(%s, title) <= 0.6'],
-                params=[self.title],
-                order_by=['dist'])
-        return qs.exclude(id=self.id)
-
     def __unicode__(self):
         return self.title
 
