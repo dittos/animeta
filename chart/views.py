@@ -20,8 +20,9 @@ def main(request):
     )
     return render(request, 'chart/index.html', {
         'weekly_works': load_comments(chart),
-        'timeline': History.objects.select_related('user', 'work') \
-                .exclude(comment='')[:6].transform(include_records)
+        'timeline': (History.objects.select_related('user', 'work')
+                .filter(work__index__record_count__gt=1)
+                .exclude(comment='')[:6].transform(include_records))
     })
 
 class TimelineView(ListView):
