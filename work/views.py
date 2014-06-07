@@ -75,13 +75,3 @@ def video(request, title, provider, id):
         'records': work.record_set,
         'video_id': id
     })
-
-class SearchView(ListView):
-    def get_queryset(self):
-        self.keyword = self.request.GET.get('keyword', '')
-        return Work.objects.filter(title__icontains=self.keyword)
-
-    def get_context_data(self, **kwargs):
-        context = super(SearchView, self).get_context_data(**kwargs)
-        context['keyword'] = self.keyword
-        return context
