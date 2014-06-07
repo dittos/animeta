@@ -23,12 +23,14 @@
 <div id="container">
 <div id="header">
 <div id="header-inner">
-    <p><a href="/"><img src="{{ STATIC_URL }}animeta.gif" alt="animeta" /></a></p>
+    <p class="logo"><a href="/"><img src="{{ STATIC_URL }}animeta.gif" alt="animeta" /></a></p>
 
 {% block menu %}
+    <div class="global-search">
+        <input type="search" placeholder="작품 검색" />
+    </div>
     <ul class="menu" id="global-menu">
         <li><a href="/timeline/">최근 감상평</a></li>
-        <li><a href="/works/search/">작품 찾기</a></li>
         <li><a href="/charts/works/weekly/">순위</a></li>
         <li><a href="http://anitable.com/2014Q2?utm_source=animeta&utm_medium=link&utm_campaign=topnav" target="_blank" style="color: #27AE60; font-weight: bold">시간표</a></li>
     </ul>
@@ -45,6 +47,7 @@
     </ul>
 {% endblock %}
 </div>
+<div style="clear: both"></div>
 </div>
 
 {% block join-now %}
@@ -109,6 +112,7 @@
      fjs.parentNode.insertBefore(js, fjs);
    }(document, 'script', 'facebook-jssdk'));
 </script>
+<script src="//cdn.jsdelivr.net/typeahead.js/0.10.2/typeahead.bundle.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}common.js"></script>
 {% block js %}
 {% endblock %}
