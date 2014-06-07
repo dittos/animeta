@@ -22,7 +22,7 @@ a img { border: none; }
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
 }
-.global-search .tt-dropdown-menu {
+.tt-dropdown-menu {
     display: block;
     border: 1px solid #ccc;
     background-color: #fff;
@@ -31,18 +31,18 @@ a img { border: none; }
     overflow-y: auto;
     margin-top: -1px;
 }
-.global-search .tt-suggestion {
+.tt-suggestion {
     display: block;
     padding: 5px !important;
     cursor: pointer;
 }
-.global-search .tt-suggestion .count {
+.tt-suggestion .count {
     font-size: 11px;
     color: #999;
     white-space: nowrap;
     display: inline-block;
 }
-.global-search .tt-cursor {
+.tt-cursor {
     background-color: #f4f4f4;
 }
 #global-menu { float: left; }

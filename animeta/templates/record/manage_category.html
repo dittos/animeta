@@ -1,5 +1,10 @@
 {% extends base %}
 
+{% block head-extra %}
+    {{ super }}
+    <link rel="stylesheet" href="//ajax.aspnetcdn.com/ajax/jquery.ui/1.8.23/themes/base/jquery-ui.css" type="text/css" />
+{% endblock %}
+
 {% block nav %}
 <h1>분류 관리</h1>
 {% endblock %}
@@ -31,6 +36,7 @@
 {% endblock %}
 
 {% block js %}
+<script type="text/javascript" src="//ajax.aspnetcdn.com/ajax/jquery.ui/1.8.23/jquery-ui.min.js"></script>
 <script type="text/javascript">
 //$('.rename').click(function(event) {
 //    event.preventDefault()

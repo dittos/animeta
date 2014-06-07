@@ -16,6 +16,7 @@ function cachingSource(source, maxSize) {
         });
     };
 }
+
 function debouncingSource(source, rate) {
     var timer = null;
     return function(q, cb) {
@@ -30,17 +31,24 @@ function openWork(title) {
     location.href = '/works/' + encodeURIComponent(title) + '/';
 }
 
+function escapeHTML(html) {
+    return html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+var typeaheadTemplates = {
+    suggestion: function(item) {
+        return '<span class="title">' + escapeHTML(item.title) + '</span> <span class="count">' + item.n + '명 기록</span>';
+    }
+};
+
 var searchSource = cachingSource(debouncingSource(function (q, cb) {
     $.getJSON('/search/', {q: q}, cb);
 }, 200), 20);
+
 $('.global-search input').typeahead({highlight: true, hint: false}, {
     source: searchSource,
     displayKey: 'title',
-    templates: {
-        suggestion: function(item) {
-            return '<span class="title">' + item.title + '</span> <span class="count">' + item.n + '명 기록</span>';
-        }
-    }
+    templates: typeaheadTemplates
 }).on('typeahead:selected', function(event, item) {
     openWork(item.title);
 }).on('keypress', function(event) {
@@ -58,29 +66,15 @@ $('.global-search input').typeahead({highlight: true, hint: false}, {
     }
 });
 
-$(function () {
-    $('#id_work_title, .autocomplete').autocomplete({
-        source: function (request, callback) {
-            $.getJSON('/search/suggest/', {q: request.term}, function (data) {
-                callback($.map(data, function (work) { return work.title }))
-            })
-        }
-    })
+$('#id_work_title, .autocomplete').typeahead(null, {
+    source: cachingSource(debouncingSource(function (q, cb) {
+        $.getJSON('/search/suggest/', {q: q}, cb);
+    }, 200), 20),
+    displayKey: 'title',
+    templates: typeaheadTemplates
+});
 
-/*
-    $('a.dialog').live('click', function() {
-        if ($('#dialog').length == 0)
-            $('<div id="dialog" style="display: none"></div>').appendTo('body')
-        var url = this.getAttribute('href')
-        $('#dialog').load(url, function (content) {
-            var $dialog = $('#dialog')
-            $dialog.find('form[action=""]').attr('action', url)
-            $dialog.dialog()
-        })
-        return false
-    })
-*/
-    
+$(function () {
     function determine_suffix() {
         var status = $('#id_status');
         if (status.length == 0) return;
