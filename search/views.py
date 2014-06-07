@@ -11,10 +11,10 @@ def _to_dict(work):
 
 def search(request):
     q = request.GET['q']
-    result = map(_to_dict, search_works(q))
+    result = map(_to_dict, search_works(q)[:30])
     return HttpResponse(json.dumps(result), content_type='application/json')
 
 def suggest(request):
     q = request.GET['q']
-    result = map(_to_dict, suggest_works(q))
+    result = map(_to_dict, suggest_works(q)[:30])
     return HttpResponse(json.dumps(result), content_type='application/json')
