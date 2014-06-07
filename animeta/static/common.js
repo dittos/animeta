@@ -43,7 +43,7 @@ $('.global-search input').typeahead({highlight: true, hint: false}, {
 $(function () {
     $('#id_work_title, .autocomplete').autocomplete({
         source: function (request, callback) {
-            $.getJSON('/api/v1/works', {match: 'prefix', sort: 'popular', count: 10, keyword: request.term}, function (data) {
+            $.getJSON('/search/suggest/', {q: request.term}, function (data) {
                 callback($.map(data, function (work) { return work.title }))
             })
         }

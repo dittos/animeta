@@ -39,3 +39,7 @@ def search_works(q):
     regex = make_regex(q)
     work_ids = WorkTitleIndex.objects.filter(key__regex=regex).values('work_id')
     return WorkIndex.objects.filter(work_id__in=work_ids, record_count__gt=1).order_by('rank')
+
+def suggest_works(q):
+    work_ids = WorkTitleIndex.objects.filter(key__startswith=make_key(q)).values('work_id')
+    return WorkIndex.objects.filter(work_id__in=work_ids, record_count__gt=1).order_by('rank')
