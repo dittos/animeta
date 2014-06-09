@@ -120,7 +120,7 @@ def get_user(request, name):
             'status': _serialize_status(record),
             'category': _category_as_dict(record.category or uncategorized),
             'updated_at': _serialize_datetime(record.updated_at),
-        } for record in user.record_set.order_by('title')]
+        } for record in user.record_set.order_by('-updated_at')]
     return result
 
 @api_auth_required
