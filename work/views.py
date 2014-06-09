@@ -33,8 +33,6 @@ def detail(request, title):
     if len(comments) < N:
         comments += list(history.filter(comment='')[:N-len(comments)])
 
-    similar_works = work.similar_objects[:7]
-
     alt_titles = TitleMapping.objects.filter(work=work) \
             .exclude(title=work.title).values_list('title', flat=True)
     return render(request, "work/work_detail.html", {
@@ -43,7 +41,6 @@ def detail(request, title):
         'record': _get_record(request, work),
         'records': work.record_set,
         'alt_titles': alt_titles,
-        'similar_works': similar_works,
         'comments': comments,
         'daum_api_key': settings.DAUM_API_KEY
     })
@@ -78,13 +75,3 @@ def video(request, title, provider, id):
         'records': work.record_set,
         'video_id': id
     })
-
-class SearchView(ListView):
-    def get_queryset(self):
-        self.keyword = self.request.GET.get('keyword', '')
-        return Work.objects.filter(title__icontains=self.keyword)
-
-    def get_context_data(self, **kwargs):
-        context = super(SearchView, self).get_context_data(**kwargs)
-        context['keyword'] = self.keyword
-        return context

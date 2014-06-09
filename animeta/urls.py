@@ -25,4 +25,7 @@ urlpatterns = patterns('',
     (r'^titles/(?P<remainder>.*)/$', 'work.views.old_url'), # compat
     (r'^(?P<username>[A-Za-z0-9]+)$', 'user.views.shortcut'),
     (r'^-(?P<id>[0-9]+)$', 'record.views.shortcut'),
+
+    (r'^search/$', 'search.views.search'),
+    (r'^search/suggest/$', 'search.views.suggest'),
 )

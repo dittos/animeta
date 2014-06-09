@@ -128,7 +128,7 @@ def get_current_user(request):
     return get_user(request, request.user.username)
 
 def _work_as_dict(work, include_watchers=False):
-    watchers = {'total': work.popularity}
+    watchers = {'total': work.index.record_count}
     if include_watchers:
         for t in StatusTypes.types:
             watchers[t.name] = []
@@ -142,7 +142,7 @@ def _work_as_dict(work, include_watchers=False):
 
     return {
         'title': work.title,
-        'rank': work.rank,
+        'rank': work.index.rank,
         'watchers': watchers,
     }
 

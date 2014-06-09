@@ -1,7 +1,6 @@
 from django.conf.urls import include, patterns, url
 
 urlpatterns = patterns('record.views',
-    (r'^suggest/$', 'suggest'),
     (r'^add/(.+)/$', 'add'),
     (r'^add/$', 'add'),
     (r'^import/$', 'add_many'),

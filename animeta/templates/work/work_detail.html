@@ -21,7 +21,7 @@
 <div id="info">
 <dl>
     <dt>인기도</dt>
-    <dd>전체 {{ work.rank }}위, {{ work.popularity }}명이 기록 남김. <a href="{% url "work.views.list_users" work.title %}">자세히 보기 &rarr;</a></dd>
+    <dd>전체 {{ work.index.rank }}위, {{ work.index.record_count }}명이 기록 남김. <a href="{% url "work.views.list_users" work.title %}">자세히 보기 &rarr;</a></dd>
 
 {% if alt_titles %}
     <dt>다른 제목</dt>

@@ -7,10 +7,44 @@ a { color: #4bb000; }
 a img { border: none; }
 .header-notice, #header-inner, #messages, #nav, #content, #footer { width: 960px; margin: 0 auto; }
 #header { padding: 1em; zoom: 1; border-bottom: 1px solid #4bb000; margin-bottom: 0.5em; background-color: #fff; }
-#header-inner { overflow: hidden; }
 #header a:hover { position: relative; left: 1px; top: 1px; }
-#header p { margin: 0; float: left; }
-#header .search-form { float: left; }
+#header .logo { margin: 0; float: left; }
+#header .global-search { float: left; margin-left: 2em; }
+.global-search {
+    width: 200px;
+}
+.global-search .twitter-typeahead { width: 100%; }
+.global-search .tt-hint, .global-search .tt-input {
+    padding: 5px;
+    border: 1px solid #bbb;
+    width: 100%;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.tt-dropdown-menu {
+    display: block;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    max-height: 300px;
+    width: 300px;
+    overflow-y: auto;
+    margin-top: -1px;
+}
+.tt-suggestion {
+    display: block;
+    padding: 5px !important;
+    cursor: pointer;
+}
+.tt-suggestion .count {
+    font-size: 11px;
+    color: #999;
+    white-space: nowrap;
+    display: inline-block;
+}
+.tt-cursor {
+    background-color: #f4f4f4;
+}
 #global-menu { float: left; }
 #account-menu { float: right; }
 .menu { margin: 0; padding: 0; list-style: none; margin-left: 2em; }
@@ -378,7 +412,15 @@ form.inline h2 { float: none; width: auto; }
 #join-now .btn { margin-top: 0.5em; }
 #join-now .btn a { float: none; text-align: center; }
 #header { text-align: center; }
-#header p { float: none; }
+#header .logo { float: none; }
+#header .global-search { float: none; margin-left: 0; width: 100%; margin-top: 0.5em; }
+#header .global-search .tt-dropdown-menu {
+    text-align: left;
+    width: 100%;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
 #global-menu { margin-top: 0.5em; }
 .menu { float: none !important; clear: both; margin-left: 0; line-height: 1; }
 .menu li.menu-connect { display: none; }
