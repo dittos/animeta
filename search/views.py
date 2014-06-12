@@ -7,6 +7,7 @@ def _to_dict(work):
     return {
         'title': work.title,
         'n': work.record_count,
+        'id': work.work_id,
     }
 
 def search(request):
