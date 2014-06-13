@@ -2,6 +2,10 @@
 
 {% block content %}
 
+{% if work %}
+<p><a href="{% url 'moderation.views.index' %}">홈</a></p>
+{% endif %}
+
 <h1>작품 추가</h1>
 <form method="post" action="{% url 'moderation.views.create_work' %}">
 <input name="title"> <button type="submit">추가</button>
@@ -69,6 +73,17 @@
 </form>
 <div class="merge-conflicts">
 </div>
+
+{% else %}
+
+<hr>
+<h1>최근 추가 작품</h1>
+
+<ul>
+{% for work in recent_works %}
+    <li><a href="{% url 'moderation.views.work_detail' work_id=work.id %}">{{ work.title }}</a> ({{ work.index.record_count }}명 기록)</li>
+{% endfor %}
+</ul>
 
 {% endif %}
 

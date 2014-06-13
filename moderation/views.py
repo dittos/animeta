@@ -64,7 +64,9 @@ def test_is_staff(user):
 
 @user_passes_test(test_is_staff)
 def index(request):
-    return render(request, 'moderation/index.html')
+    return render(request, 'moderation/index.html', {
+        'recent_works': Work.objects.order_by('-id').filter(index__record_count__gt=0)[:20]
+    })
 
 @user_passes_test(test_is_staff)
 def create_work(request):
