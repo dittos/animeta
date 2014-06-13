@@ -39,23 +39,21 @@
 
 <h2>제목들</h2>
 <table>
-{% for mapping in work.title_mappings.all %}
-{% with count=mapping.record_count %}
+{% for mapping in title_mappings %}
     <tr>
         <td>{{ mapping.title }}</td>
-        <td>{{ count }} Records</td>
+        <td>{{ mapping.count }} Records</td>
         <td>
         {% if mapping.title == work.title %}
             <b>대표 제목</b>
         {% else %}
             <a href="{% url 'moderation.views.set_primary_title' mapping_id=mapping.id %}">대표 제목으로 설정</a>
-            {% if count == 0 %}
+            {% if mapping.count == 0 %}
                 / <a href="{% url 'moderation.views.delete_mapping' mapping_id=mapping.id %}">삭제</a>
             {% endif %}
         {% endif %}
         </td>
     </tr>
-{% endwith %}
 {% endfor %}
 </table>
 

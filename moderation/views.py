@@ -77,7 +77,11 @@ def create_work(request):
 @user_passes_test(test_is_staff)
 def work_detail(request, work_id):
     work = Work.objects.get(pk=work_id)
-    return render(request, 'moderation/index.html', {'work': work})
+    title_mappings = list(work.title_mappings.all())
+    for mapping in title_mappings:
+        mapping.count = mapping.record_count
+    title_mappings.sort(key=lambda m: m.count, reverse=True)
+    return render(request, 'moderation/index.html', {'work': work, 'title_mappings': title_mappings})
 
 @user_passes_test(test_is_staff)
 def merge_work(request, work_id):
