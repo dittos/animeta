@@ -92,7 +92,7 @@
 {% block js %}
 <script>
 var modSearchSource = cachingSource(debouncingSource(function (q, cb) {
-    $.getJSON('/search/?min_record_count=1', {q: q}, cb);
+    $.getJSON('/search/?min_record_count=0', {q: q}, cb);
 }, 200), 20);
 
 $('.work-title-search').typeahead({hint: false}, {
