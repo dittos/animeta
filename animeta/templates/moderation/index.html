@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if work %}
+<p><a href="{% url 'moderation.views.index' %}">홈</a></p>
+{% endif %}
+
+<h1>작품 추가</h1>
+<form method="post" action="{% url 'moderation.views.create_work' %}">
+<input name="title"> <button type="submit">추가</button>
+</form>
+
+<hr>
+
+<h1>작품 검색</h1>
+<input class="work-title-search" value="{{ work.title }}">
+
+{% if work %}
+
+<table>
+    <tr>
+        <th>ID</th>
+        <td>{{ work.id }}</td>
+    </tr>
+
+    <tr>
+        <th>Record Count (Index)</th>
+        <td>{{ work.index.record_count }}</td>
+    </tr>
+
+    <tr>
+        <th>Rank (Index)</th>
+        <td>{{ work.index.rank }}</td>
+    </tr>
+</table>
+
+<br>
+
+<h2>제목들</h2>
+<table>
+{% for mapping in title_mappings %}
+    <tr>
+        <td>{{ mapping.title }}</td>
+        <td>{{ mapping.count }} Records</td>
+        <td>
+        {% if mapping.title == work.title %}
+            <b>대표 제목</b>
+        {% else %}
+            <a href="{% url 'moderation.views.set_primary_title' mapping_id=mapping.id %}">대표 제목으로 설정</a>
+            {% if mapping.count == 0 %}
+                / <a href="{% url 'moderation.views.delete_mapping' mapping_id=mapping.id %}">삭제</a>
+            {% endif %}
+        {% endif %}
+        </td>
+    </tr>
+{% endfor %}
+</table>
+
+<form method="post" action="{% url 'moderation.views.add_mapping' work_id=work.id %}">
+    <input type="text" name="title"> <button type="submit">제목 추가</button>
+</form>
+
+<br>
+<h2>병합</h2>
+<form method="post" action="{% url 'moderation.views.merge_work' work_id=work.id %}" onsubmit="return checkConflicts(this)">
+    <input type="hidden" name="other_id" class="merge-work-other-id">
+    <input class="work-title-merge"> <span class="merge-work-other-id-preview"></span>
+    <label><input type="checkbox" name="force" value="1"> 강제로</label>
+    <button type="submit">병합</button>
+</form>
+<div class="merge-conflicts">
+</div>
+
+{% else %}
+
+<hr>
+<h1>최근 추가 작품</h1>
+
+<ul>
+{% for work in recent_works %}
+    <li><a href="{% url 'moderation.views.work_detail' work_id=work.id %}">{{ work.title }}</a> ({{ work.index.record_count }}명 기록)</li>
+{% endfor %}
+</ul>
+
+{% endif %}
+
+{% endblock %}
+
+{% block js %}
+<script>
+var modSearchSource = cachingSource(debouncingSource(function (q, cb) {
+    $.getJSON('/search/?min_record_count=0', {q: q}, cb);
+}, 200), 20);
+
+$('.work-title-search').typeahead({hint: false}, {
+    source: modSearchSource,
+    displayKey: 'title',
+    templates: typeaheadTemplates
+}).on('typeahead:selected', function(event, item) {
+    location.href = '/moderation/works/' + item.id + '/';
+});
+
+{% if work %}
+$('.work-title-merge').typeahead({hint: false}, {
+    source: modSearchSource,
+    displayKey: 'title',
+    templates: typeaheadTemplates
+}).on('typeahead:selected', function(event, item) {
+    $('.merge-work-other-id').val(item.id);
+    $('.merge-work-other-id-preview').text('(id=' + item.id + ')');
+});
+function checkConflicts(form) {
+    $.post(form.action, $(form).serialize()).then(function(result) {
+        if (!result.ok) {
+            if (result.error) {
+                alert(result.error);
+                return;
+            }
+            var log = $('.merge-conflicts');
+            log.html('<b>Conflicts:</b>');
+            result.conflicts.forEach(function(c) {
+                log.append('<br>' + c.username + ': ');
+                c.ids.forEach(function(id) {
+                    log.append('<a href="/records/' + id + '/">' + id + '</a> ');
+                });
+            });
+        } else {
+            location.href = location.href;
+        }
+    });
+    return false;
+}
+{% endif %}
+</script>
+{% endblock %}

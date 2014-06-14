@@ -51,9 +51,13 @@ def normalize_title(title):
     return result.lower().strip()
 
 class TitleMapping(models.Model):
-    work = models.ForeignKey(Work)
+    work = models.ForeignKey(Work, related_name='title_mappings')
     title = models.CharField(max_length=100, unique=True)
     key = models.CharField(max_length=100)
+
+    @property
+    def record_count(self):
+        return self.work.record_set.filter(title=self.title).count()
 
     def save(self, *args, **kwargs):
         self.key = normalize_title(self.title)
