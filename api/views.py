@@ -207,7 +207,9 @@ def create_record(request):
         comment = request.POST.get('comment', ''),
     )
 
-    return _history_as_dict(history)
+    result = _history_as_dict(history)
+    result['record_id'] = record.id
+    return result
 
 @api_response
 def get_chart(request, type):

@@ -58,6 +58,8 @@ def api_auth_required(view):
             if not user:
                 return HttpResponse('Invalid session token.', status=403)
             request.user = user
+
+        if request.user.is_authenticated():
             return view(request, *args, **kwargs)
         else:
             return oauth_required(view)(request, *args, **kwargs)

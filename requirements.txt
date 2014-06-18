@@ -5,7 +5,7 @@ git+git://github.com/jbalogh/django-queryset-transform.git#egg=django-queryset-t
 httplib2==0.8
 oauth2==1.5.211
 psycopg2==2.5
-pytz==2013b
+pytz==2014.4
 tweepy==2.2
 wsgiref==0.1.2
 Babel==1.3

@@ -11,7 +11,8 @@ input,
 textarea,
 select,
 optgroup,
-option {
+option,
+button {
   font-family: Malgun Gothic, sans-serif;
 }
 a {
@@ -63,6 +64,9 @@ a img {
 }
 .header .menu-account {
   float: right;
+}
+.header .menu-account li:last-child {
+  margin-right: 0;
 }
 .global-search {
   width: 200px;

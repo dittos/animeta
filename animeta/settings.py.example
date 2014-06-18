@@ -27,3 +27,5 @@ FACEBOOK_API_SECRET = ''
 
 SESSION_COOKIE_DOMAIN = None
 #SESSION_COOKIE_DOMAIN = '.animeta.net'
+
+ANITABLE_DATA_DIR = '/path/to/anitable.com/data'
