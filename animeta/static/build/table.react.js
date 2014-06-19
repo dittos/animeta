@@ -5,7 +5,7 @@ function nullslast(val) {
 }
 
 function keyComparator(keyFunc) {
-    return function(a, b) {
+    return function(a, b)  {
         a = keyFunc(a);
         b = keyFunc(b);
         if (a < b)
@@ -16,85 +16,87 @@ function keyComparator(keyFunc) {
     };
 }
 
-var scheduleComparator = keyComparator(function(item) {
-    return nullslast(item.schedule.jp && item.schedule.jp.date);
-});
+var scheduleComparator = keyComparator(function(item)  
+    {return nullslast(item.schedule.jp && item.schedule.jp.date);}
+);
 
-var preferKRScheduleComparator = keyComparator(function(item) {
-    return nullslast(item.schedule.kr && item.schedule.kr.date
-        || item.schedule.jp && item.schedule.jp.date);
-});
+var preferKRScheduleComparator = keyComparator(function(item) 
+    {return nullslast(item.schedule.kr && item.schedule.kr.date
+        || item.schedule.jp && item.schedule.jp.date);}
+);
 
-var recordCountComparator = keyComparator(function(item) {
-    return -item.record_count;
-});
+var recordCountComparator = keyComparator(function(item)  {return -item.record_count;});
 
-(function(exports, initialData) {
-    var listeners = [];
+var comparatorMap = {
+    'schedule': scheduleComparator,
+    'schedule.kr': preferKRScheduleComparator,
+    'recordCount': recordCountComparator
+};
 
-    exports.addChangeListener = function(listener) {
-        listeners.push(listener);
+
+    function ChangeListenable() {"use strict";
+        this.$ChangeListenable_listeners = [];
+    }
+
+    ChangeListenable.prototype.addChangeListener=function(callback) {"use strict";
+        this.$ChangeListenable_listeners.push(callback);
     };
 
-    exports.removeChangeListener = function(listener) {
-        listeners = listeners.filter(function(obj) {
-            return obj != listener;
-        });
+    ChangeListenable.prototype.removeChangeListener=function(callback) {"use strict";
+        this.$ChangeListenable_listeners = this.$ChangeListenable_listeners.filter(function(cb)  {return cb != callback;});
     };
 
-    var emitChange = function() {
-        listeners.forEach(function(listener) {
-            listener();
-        });
+    ChangeListenable.prototype.emitChange=function() {"use strict";
+        this.$ChangeListenable_listeners.forEach(function(callback)  {return callback();});
     };
 
-    var items = initialData.items;
-    var ordering = 'schedule';
 
-    exports.getAllItems = function() {
-        return items;
+for(var ChangeListenable____Key in ChangeListenable){if(ChangeListenable.hasOwnProperty(ChangeListenable____Key)){ScheduleStore[ChangeListenable____Key]=ChangeListenable[ChangeListenable____Key];}}var ____SuperProtoOfChangeListenable=ChangeListenable===null?null:ChangeListenable.prototype;ScheduleStore.prototype=Object.create(____SuperProtoOfChangeListenable);ScheduleStore.prototype.constructor=ScheduleStore;ScheduleStore.__superConstructor__=ChangeListenable;
+    function ScheduleStore(initialData) {"use strict";
+        ChangeListenable.call(this);
+        this.$ScheduleStore_items = initialData.items;
+        this.$ScheduleStore_ordering = 'schedule';
+        this.$ScheduleStore_containsKRSchedule = initialData.contains_kr_schedule;
+        this.$ScheduleStore_sort();
+    }
+
+    ScheduleStore.prototype.getAllItems=function() {"use strict";
+        return this.$ScheduleStore_items;
     };
 
-    exports.getOrdering = function() {
-        return ordering;
+    ScheduleStore.prototype.getOrdering=function() {"use strict";
+        return this.$ScheduleStore_ordering;
     };
 
-    var comparatorMap = {
-        'schedule': scheduleComparator,
-        'schedule.kr': preferKRScheduleComparator,
-        'recordCount': recordCountComparator
+    ScheduleStore.prototype.setOrdering=function(ordering) {"use strict";
+        this.$ScheduleStore_ordering = ordering;
+        this.$ScheduleStore_sort();
+        this.emitChange();
     };
 
-    var sortItems = function() {
-        items.sort(comparatorMap[ordering]);
+    ScheduleStore.prototype.$ScheduleStore_sort=function() {"use strict";
+        this.$ScheduleStore_items.sort(comparatorMap[this.$ScheduleStore_ordering]);
     };
 
-    exports.setOrdering = function(newOrdering) {
-        ordering = newOrdering;
-        sortItems();
-        emitChange();
+    ScheduleStore.prototype.containsKRSchedule=function() {"use strict";
+        return this.$ScheduleStore_containsKRSchedule;
     };
 
-    sortItems();
-
-    exports.containsKRSchedule = function() {
-        return initialData.contains_kr_schedule;
-    };
-
-    exports.favoriteItem = function(item) {
-        // TODO: loading state
+    ScheduleStore.prototype.favoriteItem=function(item) {"use strict";
         return $.post('/api/v1/records', {
             work: item.title,
             status_type: 'interested'
-        }).then(function(result) {
+        }).then(function(result)  {
             item.record = {
                 id: result.record_id
             };
             item.record_count++;
-            emitChange();
-        });
+            this.emitChange();
+        }.bind(this));
     };
-})(ScheduleStore = {}, APP_DATA);
+
+
+var scheduleStore = new ScheduleStore(APP_DATA);
 
 function formatPeriod(period) {
     var parts = period.split('Q');
@@ -105,7 +107,6 @@ function formatPeriod(period) {
 var HeaderView = React.createClass({displayName: 'HeaderView',
     render: function() {
         var period = formatPeriod(this.props.period);
-        var self = this;
         var options;
         if (!this.props.excludeKR) {
             options = [
@@ -119,13 +120,11 @@ var HeaderView = React.createClass({displayName: 'HeaderView',
                 {value: 'recordCount', label: '인기'}
             ];
         }
-        var switches = options.map(function(option) {
-            return React.DOM.span( {className:self.props.ordering == option.value ? 'active' : '',
+        var switches = options.map(function(option)  {
+            return React.DOM.span( {className:this.props.ordering == option.value ? 'active' : '',
                 key:option.value,
-                onClick:function() {
-                    ScheduleStore.setOrdering(option.value);
-                }}, option.label);
-        });
+                onClick:function()  {return scheduleStore.setOrdering(option.value);}}, option.label);
+        }.bind(this));
         return (
             React.DOM.div( {className:"page-header"}, 
                 React.DOM.div( {className:"settings"}, 
@@ -151,16 +150,6 @@ if (!/i(Phone|Pad|Pod)|Android|Safari/.test(navigator.userAgent)) {
 
 BLANK_IMG_URI = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
 
-var blazyInvalidation = null;
-function invalidateBlazy() {
-    if (!blazyInvalidation) {
-        blazyInvalidation = setTimeout(function() {
-            blazy.revalidate();
-            blazyInvalidation = null;
-        }, 0);
-    }
-}
-
 var ItemPosterView = React.createClass({displayName: 'ItemPosterView',
     width: 233,
     height: 318,
@@ -173,11 +162,24 @@ var ItemPosterView = React.createClass({displayName: 'ItemPosterView',
     },
 
     componentDidMount: function() {
-        invalidateBlazy();
+        ItemPosterView.invalidate();
     },
 
     componentDidUpdate: function() {
-        invalidateBlazy();
+        ItemPosterView.invalidate();
+    },
+    
+    statics: {
+        invalidation: null,
+
+        invalidate: function() {
+            if (!this.invalidation) {
+                this.invalidation = setTimeout(function()  {
+                    blazy.revalidate();
+                    this.invalidation = null;
+                }.bind(this), 0);
+            }
+        }
     }
 });
 
@@ -226,30 +228,6 @@ function getTime(value) {
     return result;
 }
 
-var ScheduleView = React.createClass({displayName: 'ScheduleView',
-    render: function() {
-        var date, broadcasts;
-        if (this.props.schedule) {
-            date = this.props.schedule.date;
-            if (date)
-                date = new Date(date);
-            broadcasts = this.props.schedule.broadcasts;
-            if (broadcasts)
-                broadcasts = broadcasts.join(', ');
-        }
-        return (
-            React.DOM.div( {className:"item-schedule item-schedule-" + this.props.country}, 
-                date
-                    ? [React.DOM.span( {className:"date"}, getDate(date)), ' ',
-                       React.DOM.span( {className:"time"}, getTime(date))]
-                    : React.DOM.span( {className:"date"}, "미정"),
-                ' ',
-                broadcasts ? React.DOM.span( {className:"broadcasts"}, "(",broadcasts,")") : ''
-            )
-        );
-    }
-});
-
 var FavButton = React.createClass({displayName: 'FavButton',
     render: function() {
         return (
@@ -265,41 +243,17 @@ var FavButton = React.createClass({displayName: 'FavButton',
 var ItemView = React.createClass({displayName: 'ItemView',
     render: function() {
         var item = this.props.item;
-        var studios = item.studios ? item.studios.join(', ') : '제작사 미정';
-        var source = SOURCE_TYPE_MAP[item.source];
         return (
             React.DOM.div( {className:"item"}, 
                 React.DOM.div( {className:"item-inner"}, 
                     React.DOM.div( {className:"item-poster-wrap"}, 
                         ItemPosterView( {src:item.image_url} )
                     ),
-                    React.DOM.div( {className:"item-frame"}, 
-                        React.DOM.div( {className:"item-overlay"}, 
-                            React.DOM.h3( {className:"item-title"}, item.title),
-                            React.DOM.div( {className:"item-info"}, 
-                                React.DOM.span( {className:"studio"}, studios),
-                                source ? [' / ', React.DOM.span( {className:"source"}, source)] : ''
-                            ),
-                            ScheduleView( {country:"jp", schedule:item.schedule.jp} ),
-                            item.schedule.kr
-                                ? ScheduleView( {country:"kr", schedule:item.schedule.kr} ) : ''
-                        )
-                    ),
+                    React.DOM.div( {dangerouslySetInnerHTML:{__html: ItemView.template(this.getTemplateContext())}} ),
                     React.DOM.div( {className:"item-actions"}, 
                         FavButton( {active:item.record != null,
                             count:item.record_count,
                             onClick:this.handleFavButtonClick} )
-                    ),
-                    React.DOM.div( {className:"item-links"}, 
-                    item.links.website ?
-                        React.DOM.a( {href:item.links.website, className:"link link-official", target:"_blank"}, "공식 사이트")
-                        : '',
-                    item.links.enha ?
-                        React.DOM.a( {href:item.links.enha, className:"link link-enha", target:"_blank"}, "엔하위키")
-                        : '',
-                    item.links.ann ?
-                        React.DOM.a( {href:item.links.ann, className:"link link-ann", target:"_blank"}, "ANN (en)")
-                        : ''
                     )
                 )
             )
@@ -312,16 +266,45 @@ var ItemView = React.createClass({displayName: 'ItemView',
         if (record) {
             window.open('/records/' + record.id + '/');
         } else {
-            ScheduleStore.favoriteItem(this.props.item);
+            scheduleStore.favoriteItem(this.props.item);
         }
+    },
+
+    getTemplateContext: function() {
+        var context = $.extend(/*deep:*/ true, {}, this.props.item);
+        if (context.studios)
+            context.studios = context.studios.join(', ');
+        if (context.source)
+            context.source = SOURCE_TYPE_MAP[context.source];
+        if (!context.schedule.jp)
+            context.schedule.jp = {};
+        ['jp', 'kr'].forEach(function(country)  {
+            var schedule = context.schedule[country];
+            if (!schedule) {
+                return;
+            }
+            var date = schedule.date;
+            if (date) {
+                date = new Date(date);
+                schedule.date = getDate(date);
+                schedule.time = getTime(date);
+            }
+            if (schedule.broadcasts)
+                schedule.broadcasts = schedule.broadcasts.join(', ');
+        });
+        return context;
+    },
+
+    statics: {
+        template: Handlebars.compile($('#template-item-info').html())
     }
 });
 
 function getAppViewState() {
     return {
-        items: ScheduleStore.getAllItems(),
-        ordering: ScheduleStore.getOrdering(),
-        excludeKR: !ScheduleStore.containsKRSchedule()
+        items: scheduleStore.getAllItems(),
+        ordering: scheduleStore.getOrdering(),
+        excludeKR: !scheduleStore.containsKRSchedule()
     };
 }
 
@@ -331,11 +314,11 @@ var AppView = React.createClass({displayName: 'AppView',
     },
 
     componentDidMount: function() {
-        ScheduleStore.addChangeListener(this._onChange);
+        scheduleStore.addChangeListener(this._onChange);
     },
 
     componentWillUnmount: function() {
-        ScheduleStore.removeChangeListener(this._onChange);
+        scheduleStore.removeChangeListener(this._onChange);
     },
 
     render: function() {
@@ -346,9 +329,9 @@ var AppView = React.createClass({displayName: 'AppView',
                     excludeKR:this.state.excludeKR} ),
 
                 React.DOM.div( {className:"items"}, 
-                this.state.items.map(function(item) {
-                    return ItemView( {item:item, key:item.id} );
-                })
+                this.state.items.map(function(item) 
+                    {return ItemView( {item:item, key:item.id} );}
+                )
                 )
             )
         );

@@ -10,7 +10,7 @@ gulp.task('less', function() {
 
 gulp.task('jsx', function() {
     return gulp.src('animeta/static/js/*.react.js')
-        .pipe(react())
+        .pipe(react({harmony: true}))
         .pipe(gulp.dest('animeta/static/build'));
 });
 

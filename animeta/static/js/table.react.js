@@ -5,7 +5,7 @@ function nullslast(val) {
 }
 
 function keyComparator(keyFunc) {
-    return function(a, b) {
+    return (a, b) => {
         a = keyFunc(a);
         b = keyFunc(b);
         if (a < b)
@@ -16,85 +16,87 @@ function keyComparator(keyFunc) {
     };
 }
 
-var scheduleComparator = keyComparator(function(item) {
-    return nullslast(item.schedule.jp && item.schedule.jp.date);
-});
+var scheduleComparator = keyComparator((item) => 
+    nullslast(item.schedule.jp && item.schedule.jp.date)
+);
 
-var preferKRScheduleComparator = keyComparator(function(item) {
-    return nullslast(item.schedule.kr && item.schedule.kr.date
-        || item.schedule.jp && item.schedule.jp.date);
-});
+var preferKRScheduleComparator = keyComparator((item) =>
+    nullslast(item.schedule.kr && item.schedule.kr.date
+        || item.schedule.jp && item.schedule.jp.date)
+);
 
-var recordCountComparator = keyComparator(function(item) {
-    return -item.record_count;
-});
+var recordCountComparator = keyComparator((item) => -item.record_count);
 
-(function(exports, initialData) {
-    var listeners = [];
+var comparatorMap = {
+    'schedule': scheduleComparator,
+    'schedule.kr': preferKRScheduleComparator,
+    'recordCount': recordCountComparator
+};
 
-    exports.addChangeListener = function(listener) {
-        listeners.push(listener);
-    };
+class ChangeListenable {
+    constructor() {
+        this._listeners = [];
+    }
 
-    exports.removeChangeListener = function(listener) {
-        listeners = listeners.filter(function(obj) {
-            return obj != listener;
-        });
-    };
+    addChangeListener(callback) {
+        this._listeners.push(callback);
+    }
 
-    var emitChange = function() {
-        listeners.forEach(function(listener) {
-            listener();
-        });
-    };
+    removeChangeListener(callback) {
+        this._listeners = this._listeners.filter((cb) => cb != callback);
+    }
 
-    var items = initialData.items;
-    var ordering = 'schedule';
+    emitChange() {
+        this._listeners.forEach((callback) => callback());
+    }
+}
 
-    exports.getAllItems = function() {
-        return items;
-    };
+class ScheduleStore extends ChangeListenable {
+    constructor(initialData) {
+        super();
+        this._items = initialData.items;
+        this._ordering = 'schedule';
+        this._containsKRSchedule = initialData.contains_kr_schedule;
+        this._sort();
+    }
 
-    exports.getOrdering = function() {
-        return ordering;
-    };
+    getAllItems() {
+        return this._items;
+    }
 
-    var comparatorMap = {
-        'schedule': scheduleComparator,
-        'schedule.kr': preferKRScheduleComparator,
-        'recordCount': recordCountComparator
-    };
+    getOrdering() {
+        return this._ordering;
+    }
 
-    var sortItems = function() {
-        items.sort(comparatorMap[ordering]);
-    };
+    setOrdering(ordering) {
+        this._ordering = ordering;
+        this._sort();
+        this.emitChange();
+    }
 
-    exports.setOrdering = function(newOrdering) {
-        ordering = newOrdering;
-        sortItems();
-        emitChange();
-    };
+    _sort() {
+        this._items.sort(comparatorMap[this._ordering]);
+    }
 
-    sortItems();
+    containsKRSchedule() {
+        return this._containsKRSchedule;
+    }
 
-    exports.containsKRSchedule = function() {
-        return initialData.contains_kr_schedule;
-    };
-
-    exports.favoriteItem = function(item) {
-        // TODO: loading state
+    favoriteItem(item) {
         return $.post('/api/v1/records', {
             work: item.title,
             status_type: 'interested'
-        }).then(function(result) {
+        }).then((result) => {
             item.record = {
                 id: result.record_id
             };
             item.record_count++;
-            emitChange();
+            this.emitChange();
         });
-    };
-})(ScheduleStore = {}, APP_DATA);
+    }
+}
+
+var scheduleStore = new ScheduleStore(APP_DATA);
 
 function formatPeriod(period) {
     var parts = period.split('Q');
@@ -105,7 +107,6 @@ function formatPeriod(period) {
 var HeaderView = React.createClass({
     render: function() {
         var period = formatPeriod(this.props.period);
-        var self = this;
         var options;
         if (!this.props.excludeKR) {
             options = [
@@ -119,12 +120,10 @@ var HeaderView = React.createClass({
                 {value: 'recordCount', label: '인기'}
             ];
         }
-        var switches = options.map(function(option) {
-            return <span className={self.props.ordering == option.value ? 'active' : ''}
+        var switches = options.map((option) => {
+            return <span className={this.props.ordering == option.value ? 'active' : ''}
                 key={option.value}
-                onClick={function() {
-                    ScheduleStore.setOrdering(option.value);
-                }}>{option.label}</span>;
+                onClick={() => scheduleStore.setOrdering(option.value)}>{option.label}</span>;
         });
         return (
             <div className="page-header">
@@ -151,16 +150,6 @@ if (!/i(Phone|Pad|Pod)|Android|Safari/.test(navigator.userAgent)) {
 
 BLANK_IMG_URI = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
 
-var blazyInvalidation = null;
-function invalidateBlazy() {
-    if (!blazyInvalidation) {
-        blazyInvalidation = setTimeout(function() {
-            blazy.revalidate();
-            blazyInvalidation = null;
-        }, 0);
-    }
-}
-
 var ItemPosterView = React.createClass({
     width: 233,
     height: 318,
@@ -173,11 +162,24 @@ var ItemPosterView = React.createClass({
     },
 
     componentDidMount: function() {
-        invalidateBlazy();
+        ItemPosterView.invalidate();
     },
 
     componentDidUpdate: function() {
-        invalidateBlazy();
+        ItemPosterView.invalidate();
+    },
+    
+    statics: {
+        invalidation: null,
+
+        invalidate: function() {
+            if (!this.invalidation) {
+                this.invalidation = setTimeout(() => {
+                    blazy.revalidate();
+                    this.invalidation = null;
+                }, 0);
+            }
+        }
     }
 });
 
@@ -226,30 +228,6 @@ function getTime(value) {
     return result;
 }
 
-var ScheduleView = React.createClass({
-    render: function() {
-        var date, broadcasts;
-        if (this.props.schedule) {
-            date = this.props.schedule.date;
-            if (date)
-                date = new Date(date);
-            broadcasts = this.props.schedule.broadcasts;
-            if (broadcasts)
-                broadcasts = broadcasts.join(', ');
-        }
-        return (
-            <div className={"item-schedule item-schedule-" + this.props.country}>
-                {date
-                    ? [<span className="date">{getDate(date)}</span>, ' ',
-                       <span className="time">{getTime(date)}</span>]
-                    : <span className="date">미정</span>}
-                {' '}
-                {broadcasts ? <span className="broadcasts">({broadcasts})</span> : ''}
-            </div>
-        );
-    }
-});
-
 var FavButton = React.createClass({
     render: function() {
         return (
@@ -265,41 +243,17 @@ var FavButton = React.createClass({
 var ItemView = React.createClass({
     render: function() {
         var item = this.props.item;
-        var studios = item.studios ? item.studios.join(', ') : '제작사 미정';
-        var source = SOURCE_TYPE_MAP[item.source];
         return (
             <div className="item">
                 <div className="item-inner">
                     <div className="item-poster-wrap">
                         <ItemPosterView src={item.image_url} />
                     </div>
-                    <div className="item-frame">
-                        <div className="item-overlay">
-                            <h3 className="item-title">{item.title}</h3>
-                            <div className="item-info">
-                                <span className="studio">{studios}</span>
-                                {source ? [' / ', <span className="source">{source}</span>] : ''}
-                            </div>
-                            <ScheduleView country="jp" schedule={item.schedule.jp} />
-                            {item.schedule.kr
-                                ? <ScheduleView country="kr" schedule={item.schedule.kr} /> : ''}
-                        </div>
-                    </div>
+                    <div dangerouslySetInnerHTML={{__html: ItemView.template(this.getTemplateContext())}} />
                     <div className="item-actions">
                         <FavButton active={item.record != null}
                             count={item.record_count}
                             onClick={this.handleFavButtonClick} />
-                    </div>
-                    <div className="item-links">
-                    {item.links.website ?
-                        <a href={item.links.website} className="link link-official" target="_blank">공식 사이트</a>
-                        : ''}
-                    {item.links.enha ?
-                        <a href={item.links.enha} className="link link-enha" target="_blank">엔하위키</a>
-                        : ''}
-                    {item.links.ann ?
-                        <a href={item.links.ann} className="link link-ann" target="_blank">ANN (en)</a>
-                        : ''}
                     </div>
                 </div>
             </div>
@@ -312,16 +266,45 @@ var ItemView = React.createClass({
         if (record) {
             window.open('/records/' + record.id + '/');
         } else {
-            ScheduleStore.favoriteItem(this.props.item);
+            scheduleStore.favoriteItem(this.props.item);
         }
+    },
+
+    getTemplateContext: function() {
+        var context = $.extend(/*deep:*/ true, {}, this.props.item);
+        if (context.studios)
+            context.studios = context.studios.join(', ');
+        if (context.source)
+            context.source = SOURCE_TYPE_MAP[context.source];
+        if (!context.schedule.jp)
+            context.schedule.jp = {};
+        ['jp', 'kr'].forEach((country) => {
+            var schedule = context.schedule[country];
+            if (!schedule) {
+                return;
+            }
+            var date = schedule.date;
+            if (date) {
+                date = new Date(date);
+                schedule.date = getDate(date);
+                schedule.time = getTime(date);
+            }
+            if (schedule.broadcasts)
+                schedule.broadcasts = schedule.broadcasts.join(', ');
+        });
+        return context;
+    },
+
+    statics: {
+        template: Handlebars.compile($('#template-item-info').html())
     }
 });
 
 function getAppViewState() {
     return {
-        items: ScheduleStore.getAllItems(),
-        ordering: ScheduleStore.getOrdering(),
-        excludeKR: !ScheduleStore.containsKRSchedule()
+        items: scheduleStore.getAllItems(),
+        ordering: scheduleStore.getOrdering(),
+        excludeKR: !scheduleStore.containsKRSchedule()
     };
 }
 
@@ -331,11 +314,11 @@ var AppView = React.createClass({
     },
 
     componentDidMount: function() {
-        ScheduleStore.addChangeListener(this._onChange);
+        scheduleStore.addChangeListener(this._onChange);
     },
 
     componentWillUnmount: function() {
-        ScheduleStore.removeChangeListener(this._onChange);
+        scheduleStore.removeChangeListener(this._onChange);
     },
 
     render: function() {
@@ -346,9 +329,9 @@ var AppView = React.createClass({
                     excludeKR={this.state.excludeKR} />
 
                 <div className="items">
-                {this.state.items.map(function(item) {
-                    return <ItemView item={item} key={item.id} />;
-                })}
+                {this.state.items.map((item) =>
+                    <ItemView item={item} key={item.id} />
+                )}
                 </div>
             </div>
         );
