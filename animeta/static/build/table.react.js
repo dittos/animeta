@@ -1,5 +1,9 @@
 /** @jsx React.DOM */
 
+function getLoginURL() {
+    return '/login/?next=' + encodeURIComponent(location.pathname);
+}
+
 function nullslast(val) {
     return [!val, val];
 }
@@ -46,8 +50,8 @@ var comparatorMap = {
         this.$ChangeListenable_listeners = this.$ChangeListenable_listeners.filter(function(cb)  {return cb != callback;});
     };
 
-    ChangeListenable.prototype.emitChange=function() {"use strict";
-        this.$ChangeListenable_listeners.forEach(function(callback)  {return callback();});
+    ChangeListenable.prototype.emitChange=function(data) {"use strict";
+        this.$ChangeListenable_listeners.forEach(function(callback)  {return callback(data);});
     };
 
 
@@ -92,7 +96,10 @@ for(var ChangeListenable____Key in ChangeListenable){if(ChangeListenable.hasOwnP
                 id: result.record_id
             };
             item.record_count++;
-            this.emitChange();
+            this.emitChange({
+                event: 'favorite-added',
+                title: item.title
+            });
         }.bind(this));
     };
 
@@ -263,8 +270,8 @@ var ItemView = React.createClass({displayName: 'ItemView',
 
     handleFavButtonClick: function() {
         if (!USERNAME) {
-            alert('로그인 후 이용해주세요.');
-            location.href = '/login/?next=' + encodeURIComponent(location.pathname);
+            alert('로그인 후 관심 등록할 수 있습니다.');
+            location.href = getLoginURL();
             return;
         }
 
@@ -307,6 +314,39 @@ var ItemView = React.createClass({displayName: 'ItemView',
     }
 });
 
+var NotificationView = React.createClass({displayName: 'NotificationView',
+    getInitialState: function() {
+        return {hidden: true};
+    },
+
+    componentWillUnmount: function() {
+        if (this.state.timer)
+            clearTimeout(this.state.timer);
+    },
+
+    show: function(message, timeout) {
+        var update = {
+            message: message,
+            hidden: false
+        };
+        if (this.state.timer)
+            clearTimeout(this.state.timer);
+        if (timeout)
+            update.timer = setTimeout(function()  {return this.setState({hidden: true});}.bind(this), timeout);
+        this.setState(update);
+    },
+
+    render: function() {
+        return (
+            React.DOM.div( {className:"panel-fav" + (this.state.hidden ? ' hidden' : '')}, 
+                React.DOM.div( {className:"panel-fav-inner"}, 
+                this.state.message
+                )
+            )
+        );
+    }
+});
+
 function getAppViewState() {
     return {
         items: scheduleStore.getAllItems(),
@@ -322,6 +362,12 @@ var AppView = React.createClass({displayName: 'AppView',
 
     componentDidMount: function() {
         scheduleStore.addChangeListener(this._onChange);
+        if (!USERNAME) {
+            this.refs.notification.show([
+                '관심 등록은 로그인 후 가능합니다. ',
+                React.DOM.a( {href:getLoginURL(), className:"btn"}, "로그인")
+            ]);
+        }
     },
 
     componentWillUnmount: function() {
@@ -339,13 +385,18 @@ var AppView = React.createClass({displayName: 'AppView',
                 this.state.items.map(function(item) 
                     {return ItemView( {item:item, key:item.id} );}
                 )
-                )
+                ),
+
+                NotificationView( {ref:"notification"} )
             )
         );
     },
 
-    _onChange: function() {
+    _onChange: function(data) {
         this.setState(getAppViewState());
+        if (data && data.event == 'favorite-added') {
+            this.refs.notification.show(['관심 등록 완료 — ', React.DOM.b(null, data.title)], 3000);
+        }
     }
 });
 

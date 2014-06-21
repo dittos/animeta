@@ -279,7 +279,7 @@ html.touch .btn-fav:after {
   bottom: -100px;
   opacity: 0;
 }
-.panel-fav .btn-save {
+.panel-fav .btn {
   display: inline-block;
   border-radius: 5px;
   padding: 10px 20px;
@@ -291,11 +291,11 @@ html.touch .btn-fav:after {
   border: 3px solid #fff;
   transition: background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease;
 }
-.panel-fav .btn-save:hover {
+.panel-fav .btn:hover {
   border-color: #34495e;
 }
-.panel-fav .btn-save:active,
-.panel-fav .btn-save.active {
+.panel-fav .btn:active,
+.panel-fav .btn.active {
   border-color: #34495e;
   color: #fff;
   background-color: #34495e;

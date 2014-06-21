@@ -1,5 +1,9 @@
 /** @jsx React.DOM */
 
+function getLoginURL() {
+    return '/login/?next=' + encodeURIComponent(location.pathname);
+}
+
 function nullslast(val) {
     return [!val, val];
 }
@@ -46,8 +50,8 @@ class ChangeListenable {
         this._listeners = this._listeners.filter((cb) => cb != callback);
     }
 
-    emitChange() {
-        this._listeners.forEach((callback) => callback());
+    emitChange(data) {
+        this._listeners.forEach((callback) => callback(data));
     }
 }
 
@@ -92,7 +96,10 @@ class ScheduleStore extends ChangeListenable {
                 id: result.record_id
             };
             item.record_count++;
-            this.emitChange();
+            this.emitChange({
+                event: 'favorite-added',
+                title: item.title
+            });
         });
     }
 }
@@ -263,8 +270,8 @@ var ItemView = React.createClass({
 
     handleFavButtonClick: function() {
         if (!USERNAME) {
-            alert('로그인 후 이용해주세요.');
-            location.href = '/login/?next=' + encodeURIComponent(location.pathname);
+            alert('로그인 후 관심 등록할 수 있습니다.');
+            location.href = getLoginURL();
             return;
         }
 
@@ -307,6 +314,39 @@ var ItemView = React.createClass({
     }
 });
 
+var NotificationView = React.createClass({
+    getInitialState: function() {
+        return {hidden: true};
+    },
+
+    componentWillUnmount: function() {
+        if (this.state.timer)
+            clearTimeout(this.state.timer);
+    },
+
+    show: function(message, timeout) {
+        var update = {
+            message: message,
+            hidden: false
+        };
+        if (this.state.timer)
+            clearTimeout(this.state.timer);
+        if (timeout)
+            update.timer = setTimeout(() => this.setState({hidden: true}), timeout);
+        this.setState(update);
+    },
+
+    render: function() {
+        return (
+            <div className={"panel-fav" + (this.state.hidden ? ' hidden' : '')}>
+                <div className="panel-fav-inner">
+                {this.state.message}
+                </div>
+            </div>
+        );
+    }
+});
+
 function getAppViewState() {
     return {
         items: scheduleStore.getAllItems(),
@@ -322,6 +362,12 @@ var AppView = React.createClass({
 
     componentDidMount: function() {
         scheduleStore.addChangeListener(this._onChange);
+        if (!USERNAME) {
+            this.refs.notification.show([
+                '관심 등록은 로그인 후 가능합니다. ',
+                <a href={getLoginURL()} className="btn">로그인</a>
+            ]);
+        }
     },
 
     componentWillUnmount: function() {
@@ -340,12 +386,17 @@ var AppView = React.createClass({
                     <ItemView item={item} key={item.id} />
                 )}
                 </div>
+
+                <NotificationView ref="notification" />
             </div>
         );
     },
 
-    _onChange: function() {
+    _onChange: function(data) {
         this.setState(getAppViewState());
+        if (data && data.event == 'favorite-added') {
+            this.refs.notification.show(['관심 등록 완료 — ', <b>{data.title}</b>], 3000);
+        }
     }
 });
 
