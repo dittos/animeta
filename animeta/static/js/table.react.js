@@ -338,8 +338,8 @@ var NotificationView = React.createClass({
 
     render: function() {
         return (
-            <div className={"panel-fav" + (this.state.hidden ? ' hidden' : '')}>
-                <div className="panel-fav-inner">
+            <div className={"panel" + (this.state.hidden ? ' hidden' : '')}>
+                <div className="panel-inner">
                 {this.state.message}
                 </div>
             </div>
@@ -365,7 +365,7 @@ var AppView = React.createClass({
         if (!USERNAME) {
             this.refs.notification.show([
                 '관심 등록은 로그인 후 가능합니다. ',
-                <a href={getLoginURL()} className="btn">로그인</a>
+                <a href={getLoginURL()} className="btn btn-login">로그인</a>
             ]);
         }
     },

@@ -92,10 +92,6 @@
     margin-bottom: @grid-spacing;
     width: 25%;
 }
-.show-if-fav {
-    display: none;
-    &.state-fav { display: block; }
-}
 .item-inner {
     margin-left: @grid-spacing;
     position: relative;
@@ -260,8 +256,8 @@ html.touch .btn-fav {
     padding-top: 7px;
 }
 
-.panel-fav-inner { max-width: @page-width; margin: 0 auto; }
-.panel-fav {
+.panel-inner { max-width: @page-width; margin: 0 auto; }
+.panel {
     box-shadow: 0 2px 8px #222;
     background: #27ae60;
     background: fadeout(#27ae60, 5%);
@@ -310,7 +306,7 @@ html.touch .btn-fav {
         .broadcasts { display: none; }
     }
     .item-schedule-kr .broadcasts { display: inline; }
-    .panel-fav {
+    .panel {
         padding: 20px 10px;
         font-size: 16px;
         font-weight: bold;
@@ -318,6 +314,6 @@ html.touch .btn-fav {
     }
 
     // Disable transitions
-    .btn-fav, .btn-save, .btn-login
+    .btn-fav, .btn-login
     { transition: none; }
 }

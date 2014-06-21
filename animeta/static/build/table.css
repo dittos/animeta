@@ -76,12 +76,6 @@
   margin-bottom: 10px;
   width: 25%;
 }
-.show-if-fav {
-  display: none;
-}
-.show-if-fav.state-fav {
-  display: block;
-}
 .item-inner {
   margin-left: 10px;
   position: relative;
@@ -256,11 +250,11 @@ html.touch .btn-fav:after {
   background-size: 16px 16px;
   padding-left: 22px;
 }
-.panel-fav-inner {
+.panel-inner {
   max-width: 962px;
   margin: 0 auto;
 }
-.panel-fav {
+.panel {
   box-shadow: 0 2px 8px #222;
   background: #27ae60;
   background: rgba(39, 174, 96, 0.95);
@@ -275,11 +269,11 @@ html.touch .btn-fav:after {
   transition: opacity 250ms ease, bottom 250ms ease;
   opacity: 1;
 }
-.panel-fav.hidden {
+.panel.hidden {
   bottom: -100px;
   opacity: 0;
 }
-.panel-fav .btn {
+.panel .btn {
   display: inline-block;
   border-radius: 5px;
   padding: 10px 20px;
@@ -291,11 +285,11 @@ html.touch .btn-fav:after {
   border: 3px solid #fff;
   transition: background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease;
 }
-.panel-fav .btn:hover {
+.panel .btn:hover {
   border-color: #34495e;
 }
-.panel-fav .btn:active,
-.panel-fav .btn.active {
+.panel .btn:active,
+.panel .btn.active {
   border-color: #34495e;
   color: #fff;
   background-color: #34495e;
@@ -328,14 +322,13 @@ html.touch .btn-fav:after {
   .item-schedule-kr .broadcasts {
     display: inline;
   }
-  .panel-fav {
+  .panel {
     padding: 20px 10px;
     font-size: 16px;
     font-weight: bold;
     line-height: 1.5;
   }
   .btn-fav,
-  .btn-save,
   .btn-login {
     transition: none;
   }
