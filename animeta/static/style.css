@@ -300,8 +300,7 @@ a.work:hover { color: #666; border-bottom: 1px dashed #aaa; }
 #weekly-popular-works { margin-right: 0; padding-top: 0.5em; margin-top: 2em; }
 .column { width: auto; float: none; }
 #library-header p { display: block; margin-right: 0; }
-#records .group { border: none; }
-#records .group h2 { float: none; padding: 0; }
+#records .group h2 { float: none; padding: 0 0.5em; }
 #records ul { margin: 0; }
 form table, form table input, form table select { font-size: 1em; }
 form th { width: auto !important; min-width: 0 !important; padding-left: 0 !important; }

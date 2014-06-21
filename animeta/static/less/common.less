@@ -152,7 +152,7 @@ a img {
     }
 }
 
-.notice-join-now .btn a {
+.header-notice .btn a {
     color: #fff;
     border-radius: 3px;
     background-color: @color-main;
@@ -234,6 +234,18 @@ a img {
     clear: both;
 }
 
+.notice {
+    font-size: 1.1em;
+    border-top: 1px solid #7a0;
+    padding: 1em 0;
+
+    a {
+        font-weight: bold;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+}
+
 .footer {
     width: @page-width;
     margin: 0 auto;
@@ -250,17 +262,15 @@ a img {
 }
 
 @media (max-width: 960px) {
-    .notice-join-now {
-        margin-left: 0.5em;
-        margin-right: 0.5em;
-    }
-
     .header-notice, .header-inner, #nav, #content, .footer {
         width: auto !important;
     }
 
     #nav { padding: 0 0.5em; }
     #content { padding: 0.5em; }
+    .notice {
+        padding: 1em 0.5em;
+    }
 }
 
 @media (max-width: 480px) {

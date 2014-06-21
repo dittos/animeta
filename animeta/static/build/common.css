@@ -130,7 +130,7 @@ a img {
   font-weight: normal;
   color: #000;
 }
-.notice-join-now .btn a {
+.header-notice .btn a {
   color: #fff;
   border-radius: 3px;
   background-color: #4bb000;
@@ -202,6 +202,16 @@ a img {
   padding: 1em 0;
   clear: both;
 }
+.notice {
+  font-size: 1.1em;
+  border-top: 1px solid #7a0;
+  padding: 1em 0;
+}
+.notice a {
+  font-weight: bold;
+  text-decoration: none;
+  white-space: nowrap;
+}
 .footer {
   width: 960px;
   margin: 0 auto;
@@ -216,10 +226,6 @@ a img {
   border-bottom: 1px solid #ccc;
 }
 @media (max-width: 960px) {
-  .notice-join-now {
-    margin-left: 0.5em;
-    margin-right: 0.5em;
-  }
   .header-notice,
   .header-inner,
   #nav,
@@ -232,6 +238,9 @@ a img {
   }
   #content {
     padding: 0.5em;
+  }
+  .notice {
+    padding: 1em 0.5em;
   }
 }
 @media (max-width: 480px) {

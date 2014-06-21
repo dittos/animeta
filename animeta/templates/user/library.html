@@ -44,6 +44,13 @@
 </p>
 {% endif %}
 
+{% if owner == user %}
+<div class="notice notice-animetable">
+7월 신작을 클릭 한번으로 관심 등록!
+<a href="/table/2014Q3/?utm_source=self&amp;utm_medium=link&amp;utm_campaign=library">2014년 7월 신작 보러가기</a>
+</div>
+{% endif %}
+
 {% for index, records in record_groups %}
 <div class="group" id="group{{ forloop.counter }}">
     <h2>{{ index }}</h2>
