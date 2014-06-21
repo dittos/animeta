@@ -55,7 +55,7 @@ class ScheduleStore extends ChangeListenable {
     constructor(initialData) {
         super();
         this._items = initialData.items;
-        this._ordering = 'schedule';
+        this._ordering = window.localStorage['animeta.table.' + PERIOD + '.ordering'] || 'schedule';
         this._containsKRSchedule = initialData.contains_kr_schedule;
         this._sort();
     }
@@ -70,6 +70,7 @@ class ScheduleStore extends ChangeListenable {
 
     setOrdering(ordering) {
         this._ordering = ordering;
+        window.localStorage['animeta.table.' + PERIOD + '.ordering'] = ordering;
         this._sort();
         this.emitChange();
     }
@@ -261,6 +262,12 @@ var ItemView = React.createClass({
     },
 
     handleFavButtonClick: function() {
+        if (!USERNAME) {
+            alert('로그인 후 이용해주세요.');
+            location.href = '/login/?next=' + encodeURIComponent(location.pathname);
+            return;
+        }
+
         var self = this;
         var record = this.props.item.record;
         if (record) {

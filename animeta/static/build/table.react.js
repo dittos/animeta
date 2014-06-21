@@ -55,7 +55,7 @@ for(var ChangeListenable____Key in ChangeListenable){if(ChangeListenable.hasOwnP
     function ScheduleStore(initialData) {"use strict";
         ChangeListenable.call(this);
         this.$ScheduleStore_items = initialData.items;
-        this.$ScheduleStore_ordering = 'schedule';
+        this.$ScheduleStore_ordering = window.localStorage['animeta.table.' + PERIOD + '.ordering'] || 'schedule';
         this.$ScheduleStore_containsKRSchedule = initialData.contains_kr_schedule;
         this.$ScheduleStore_sort();
     }
@@ -70,6 +70,7 @@ for(var ChangeListenable____Key in ChangeListenable){if(ChangeListenable.hasOwnP
 
     ScheduleStore.prototype.setOrdering=function(ordering) {"use strict";
         this.$ScheduleStore_ordering = ordering;
+        window.localStorage['animeta.table.' + PERIOD + '.ordering'] = ordering;
         this.$ScheduleStore_sort();
         this.emitChange();
     };
@@ -261,6 +262,12 @@ var ItemView = React.createClass({displayName: 'ItemView',
     },
 
     handleFavButtonClick: function() {
+        if (!USERNAME) {
+            alert('로그인 후 이용해주세요.');
+            location.href = '/login/?next=' + encodeURIComponent(location.pathname);
+            return;
+        }
+
         var self = this;
         var record = this.props.item.record;
         if (record) {
