@@ -118,7 +118,6 @@ def annotate_statuses(items, user):
     for item in items:
         work = TitleMapping.objects.get(title=item['title']).work
         item['work_id'] = work.id
-        item['record_count'] = work.index.record_count
         item['record'] = None
         if user.is_authenticated():
             try:
@@ -128,6 +127,10 @@ def annotate_statuses(items, user):
                 }
             except Record.DoesNotExist:
                 pass
+        if item['record']:
+            item['record_count'] = work.record_set.count()
+        else:
+            item['record_count'] = work.index.record_count
         if 'kr' in item.get('schedule', {}):
             data['contains_kr_schedule'] = True
     return data
