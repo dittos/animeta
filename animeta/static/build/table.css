@@ -1,0 +1,335 @@
+#content {
+  width: auto;
+  padding: 0;
+}
+#nav {
+  display: none;
+}
+.anitable-container {
+  color: #444;
+  font-size: 14px;
+  line-height: 1;
+  max-width: 962px;
+  margin: 20px auto;
+  padding: 0 10px;
+}
+.anitable-container a {
+  color: #666;
+}
+.anitable-container form {
+  margin: 0;
+}
+.page-title {
+  font-size: 20px;
+  text-align: center;
+  margin: 0;
+}
+.page-header {
+  margin: 0 0 20px;
+  position: relative;
+}
+.page-header .settings {
+  position: absolute;
+  right: 0;
+}
+.page-header .settings-item {
+  float: left;
+  margin-left: 10px;
+}
+.settings .switch {
+  border: 1px solid #27ae60;
+  line-height: 20px;
+  display: inline-block;
+}
+.settings .switch span {
+  padding: 0 5px;
+  color: #666;
+  display: inline-block;
+  cursor: pointer;
+}
+.settings .switch span:hover {
+  color: #27ae60;
+}
+.settings .switch .active {
+  font-weight: bold;
+  background-color: #27ae60;
+  color: #fff !important;
+}
+.settings span:not(.active) {
+  position: relative;
+}
+.settings span:not(.active):after {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  right: -12px;
+  bottom: -12px;
+}
+.items {
+  clear: both;
+  margin-left: -10px;
+  overflow: hidden;
+}
+.item {
+  float: left;
+  margin-bottom: 10px;
+  width: 25%;
+}
+.item-inner {
+  margin-left: 10px;
+  position: relative;
+  overflow: hidden;
+  background: #2c3e50;
+}
+.item-poster {
+  display: block;
+  width: 100%;
+  height: auto;
+  position: absolute;
+  top: 0;
+}
+.item-poster-wrap:before {
+  content: "";
+  display: block;
+  padding-top: 136.4806867%;
+}
+.item-poster-wrap {
+  position: relative;
+  margin-bottom: 34px;
+}
+.b-fade .item-poster {
+  opacity: 0;
+  transition: opacity 500ms ease-in-out 100ms;
+  backface-visibility: hidden;
+}
+.b-fade .item-poster.b-loaded {
+  opacity: 1;
+}
+.item-frame {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 34px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.25);
+}
+.item-overlay {
+  padding: 12px 10px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  color: #fff;
+  background: #000;
+  background: rgba(0, 0, 0, 0.8);
+}
+html.cssgradients .item-overlay {
+  padding-top: 40px;
+  background: -webkit-linear-gradient(rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.65) 50%, rgba(0, 0, 0, 0.9) 100%);
+  background: linear-gradient(rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.65) 50%, rgba(0, 0, 0, 0.9) 100%);
+}
+.item-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px;
+}
+.item-actions .btn-fav {
+  cursor: pointer;
+}
+.btn-fav {
+  display: block;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  border-radius: 999em;
+  padding: 0 8px;
+  text-decoration: none;
+  box-shadow: 0 2px 8px #222;
+  font-size: 18px;
+  background: #fff;
+  color: #444444;
+  border: 3px solid #fff;
+  transition: background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease;
+  position: relative;
+}
+.btn-fav:hover {
+  border-color: #27ae60;
+}
+.btn-fav:active,
+.btn-fav.active {
+  border-color: #27ae60;
+  color: #fff;
+  background-color: #27ae60;
+}
+.btn-fav input {
+  position: absolute;
+  opacity: 0;
+  filter: alpha(opacity=0);
+  cursor: pointer;
+  pointer-events: none;
+}
+html.touch .btn-fav {
+  position: relative;
+}
+html.touch .btn-fav:after {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  right: -12px;
+  bottom: -12px;
+}
+.item-links {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 33px;
+  line-height: 33px;
+  text-align: center;
+  background-color: #e8e8e8;
+  border: 1px solid #bbb;
+  border-top: 0;
+}
+.item-links .link {
+  font-size: 12px;
+  color: #444;
+  text-decoration: none;
+  margin-right: 10px;
+}
+.item-links .link:hover {
+  text-decoration: underline;
+}
+.item-links .link:last-child {
+  margin-right: 0;
+}
+.item-title {
+  font-size: 16px;
+  text-shadow: 0 1px 0 #000;
+  margin: 0;
+  line-height: 1.2;
+  padding-bottom: 7px;
+}
+.item-info {
+  font-size: 13px;
+  color: #ddd;
+  padding-bottom: 10px;
+}
+.item-info .studio,
+.item-info .source {
+  white-space: nowrap;
+}
+.item-schedule {
+  font-size: 13px;
+  color: #fff;
+  padding-bottom: 2px;
+}
+.item-schedule .date {
+  font-weight: bold;
+  margin-right: 2px;
+}
+.item-schedule .broadcasts {
+  color: #ccc;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.item-schedule-jp:before {
+  content: "";
+  background: url(../flag-jp.png) left center no-repeat;
+  background-size: 16px 16px;
+  padding-left: 22px;
+}
+.item-schedule-kr {
+  padding-top: 7px;
+}
+.item-schedule-kr:before {
+  content: "";
+  background: url(../flag-kr.png) left center no-repeat;
+  background-size: 16px 16px;
+  padding-left: 22px;
+}
+.panel-inner {
+  max-width: 962px;
+  margin: 0 auto;
+}
+.panel {
+  box-shadow: 0 2px 8px #222;
+  background: #27ae60;
+  background: rgba(39, 174, 96, 0.95);
+  padding: 30px 10px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  color: #fff;
+  font-size: 20px;
+  text-align: center;
+  transition: opacity 250ms ease, bottom 250ms ease;
+  opacity: 1;
+}
+.panel.hidden {
+  bottom: -100px;
+  opacity: 0;
+}
+.panel .btn {
+  display: inline-block;
+  border-radius: 5px;
+  padding: 10px 20px;
+  text-decoration: none;
+  font-size: 16px;
+  cursor: pointer;
+  background: #fff;
+  color: #444444;
+  border: 3px solid #fff;
+  transition: background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease;
+}
+.panel .btn:hover {
+  border-color: #34495e;
+}
+.panel .btn:active,
+.panel .btn.active {
+  border-color: #34495e;
+  color: #fff;
+  background-color: #34495e;
+}
+@media screen and (max-width: 960px) {
+  .item {
+    width: 33.3333%;
+  }
+}
+@media screen and (max-width: 640px) {
+  .page-title {
+    text-align: left;
+  }
+  .item {
+    width: 50%;
+  }
+  .item-title {
+    letter-spacing: -1px;
+    font-size: 15px;
+  }
+  .item-info {
+    font-size: 12px;
+  }
+  .item-schedule {
+    letter-spacing: -1px;
+  }
+  .item-schedule .broadcasts {
+    display: none;
+  }
+  .item-schedule-kr .broadcasts {
+    display: inline;
+  }
+  .panel {
+    padding: 20px 10px;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.5;
+  }
+  .btn-fav,
+  .btn-login {
+    transition: none;
+  }
+}

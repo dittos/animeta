@@ -1,71 +1,3 @@
-/* Global Layout */
-html, body { height: 100%; }
-body { margin: 0; font-size: 14px; }
-body, input, textarea, select, optgroup, option
-	{ font-family: Malgun Gothic, sans-serif; }
-a { color: #4bb000; }
-a img { border: none; }
-.header-notice, #header-inner, #messages, #nav, #content, #footer { width: 960px; margin: 0 auto; }
-#header { padding: 1em; zoom: 1; border-bottom: 1px solid #4bb000; margin-bottom: 0.5em; background-color: #fff; }
-#header a:hover { position: relative; left: 1px; top: 1px; }
-#header .logo { margin: 0; float: left; }
-#header .global-search { float: left; margin-left: 2em; }
-.global-search {
-    width: 200px;
-}
-.global-search .twitter-typeahead { width: 100%; }
-.global-search .tt-hint, .global-search .tt-input {
-    padding: 5px;
-    border: 1px solid #bbb;
-    width: 100%;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-}
-.tt-dropdown-menu {
-    display: block;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    max-height: 300px;
-    width: 300px;
-    overflow-y: auto;
-    margin-top: -1px;
-}
-.tt-suggestion {
-    display: block;
-    padding: 5px !important;
-    cursor: pointer;
-}
-.tt-suggestion .count {
-    font-size: 11px;
-    color: #999;
-    white-space: nowrap;
-    display: inline-block;
-}
-.tt-cursor {
-    background-color: #f4f4f4;
-}
-#global-menu { float: left; }
-#account-menu { float: right; }
-.menu { margin: 0; padding: 0; list-style: none; margin-left: 2em; }
-.menu li { margin-right: 1em; display: inline; }
-.menu li a { font-size: 1.1em; text-decoration: none; line-height: 2; color: #333; }
-#account { float: right; color: #999; }
-#account a { text-decoration: none; }
-#account a:hover { text-decoration: underline; }
-#nav { padding: 0.5em 0; overflow: hidden; }
-#nav p { font-size: 0.9em; margin: 0.6em 0 0.6em 1.5em; float: left; }
-#nav h1 { margin: 0; font-size: 1.4em; float: left; }
-#nav a { text-decoration: none; margin-right: 1em; color: #4b4b4b; }
-#nav a:hover { position: relative; left: 1px; top: 1px; }
-#facebook-like { margin-left: 1.5em; margin-top: 0.5em; float: left; }
-#nav h1 a { margin: 0; }
-#messages, .message { background-color: #ffa; border: 1px solid #deb200; list-style: none; margin: 0 auto; padding: 0; }
-.message { margin: 0 0 1em 0; padding: 0.5em; }
-#messages li { border-bottom: 1px dotted #deb200; padding: 0.5em; }
-#close-messages { font-size: 0.8em; border-bottom: 0 !important; }
-#close-messages a { display: block; text-decoration: none; font-weight: bold; color: #deb200; }
-#content { padding: 1em 0; clear: both; }
 #content p { margin: 0 0 1em; }
 #content li { line-height: 1.6; }
 form table, form table input, form table select { font-size: 1.1em; }
@@ -74,28 +6,6 @@ form th { text-align: right; min-width: 6em; font-weight: normal; padding-right:
 form span.description { font-size: 0.8em; margin-left: 0.8em; color: #999; vertical-align: 0.2em; }
 #content h1 { margin-top: 0; font-size: 1.4em; }
 #content h2 { font-size: 1.2em; margin: 0 0 1em; }
-#footer { padding: 2em; font-size: 0.9em; clear: both; margin-top: 0; color: #666; }
-#footer a { text-decoration: none; color: #666; border-bottom: 1px solid #ccc; }
-
-/* Welcome Page */
-#intro { line-height: 1.6; }
-.aside { padding-top: 0.5em; margin: 0 0 0 650px; width: 20em; }
-.header-notice {
-    margin: 1em auto;
-    padding: 1em;
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-    border-radius: 3px;
-    color: #666;
-    overflow: hidden;
-    font-size: 1.2em;
-}
-.header-notice a { font-weight: bold; text-decoration: none; }
-.header-notice p { margin: 0; line-height: 2.7em; float: left; }
-.header-notice strong { font-weight: normal; color: #000; }
-#join-now .btn a { color: #fff; border-radius: 3px; background-color: #4bb000; display: block; float: right; padding: .75em 1em; line-height: 1; }
-#banner-anitable .close { float: right; color: #666; font-size: 12px; }
-#screenshot { margin-left: -0.5em; float: left; }
 
 /* Main Page */
 .popular-work { margin-top: 1em; }
@@ -330,6 +240,7 @@ a.work:hover { color: #666; border-bottom: 1px dashed #aaa; }
 #nav .chart-nav a:hover { position: static; }
 
 /* Work Page */
+#facebook-like { margin-left: 1.5em; margin-top: 0.5em; float: left; }
 #nav .status { margin-right: 1em; }
 #nav .status a { margin-right: 0; }
 #nav .status a:hover { position: static; }
@@ -384,17 +295,12 @@ a.work:hover { color: #666; border-bottom: 1px dashed #aaa; }
 
 @media (max-width: 960px) {
 
-#join-now { margin-left: 0.5em; margin-right: 0.5em; }
-.header-notice, #header-inner, #nav, #content, #footer, #info { width: auto; }
-#info { float: none; }
-#nav { padding: 0 0.5em; }
-#content { padding: 0.5em; }
+#info { width: auto; float: none; }
 #timeline { float: none; width: auto; }
 #weekly-popular-works { margin-right: 0; padding-top: 0.5em; margin-top: 2em; }
 .column { width: auto; float: none; }
 #library-header p { display: block; margin-right: 0; }
-#records .group { border: none; }
-#records .group h2 { float: none; padding: 0; }
+#records .group h2 { float: none; padding: 0 0.5em; }
 #records ul { margin: 0; }
 form table, form table input, form table select { font-size: 1em; }
 form th { width: auto !important; min-width: 0 !important; padding-left: 0 !important; }
@@ -407,24 +313,6 @@ form.inline h2 { float: none; width: auto; }
 
 @media (max-width: 480px) {
 
-#join-now { font-size: 1em; }
-#join-now p { line-height: 1.5; float: none; }
-#join-now .btn { margin-top: 0.5em; }
-#join-now .btn a { float: none; text-align: center; }
-#header { text-align: center; }
-#header .logo { float: none; }
-#header .global-search { float: none; margin-left: 0; width: 100%; margin-top: 0.5em; }
-#header .global-search .tt-dropdown-menu {
-    text-align: left;
-    width: 100%;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-}
-#global-menu { margin-top: 0.5em; }
-.menu { float: none !important; clear: both; margin-left: 0; line-height: 1; }
-.menu li.menu-connect { display: none; }
-.menu li { letter-spacing: -1px; margin: 0 0.5em; }
 #id_comment { width: 15em; }
 
 }

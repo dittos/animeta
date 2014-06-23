@@ -2,8 +2,12 @@
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+    <meta charset="UTF-8">
     <title>{% block title %}애니메타{% endblock %}</title>
+    <link rel="stylesheet" href="{{ STATIC_URL }}build/common.css" type="text/css" />
+    {% block stylesheets %}
     <link rel="stylesheet" href="{{ STATIC_URL }}style.css?3" type="text/css" />
+    {% endblock %}
     <link rel="apple-touch-icon" href="{{ STATIC_URL }}icon@2x.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi" />
     <meta name="apple-mobile-web-app-capable" content="no" />
@@ -19,25 +23,24 @@
     </script>
 </head>
 <body>
-<div id="container">
-<div id="header">
-<div id="header-inner">
-    <p class="logo"><a href="/"><img src="{{ STATIC_URL }}animeta.gif" alt="animeta" /></a></p>
+<div class="header">
+<div class="header-inner">
+    <div class="logo"><a href="/"><img src="{{ STATIC_URL }}animeta.gif" alt="animeta" /></a></div>
 
 {% block menu %}
     <div class="global-search">
         <input type="search" placeholder="작품 검색" />
     </div>
-    <ul class="menu" id="global-menu">
+    <ul class="menu menu-global">
         <li><a href="/timeline/">최근 감상평</a></li>
         <li><a href="/charts/works/weekly/">순위</a></li>
-        <li><a href="http://anitable.com/2014Q2?utm_source=animeta&utm_medium=link&utm_campaign=topnav" target="_blank" style="color: #27AE60; font-weight: bold">시간표</a></li>
+        <li><a href="/table/">시간표</a></li>
     </ul>
 
-    <ul class="menu" id="account-menu">
+    <ul class="menu menu-account">
     {% if user.is_authenticated %}
         <li><a href="{{ user.get_absolute_url }}">내 기록</a></li>
-        <li id="menu-connect"><a href="/settings/">설정</a></li>
+        <li><a href="/settings/">설정</a></li>
         <li><a href="/logout/">로그아웃</a></li>
     {% else %}
         <li><a href="/login/">로그인</a></li>
@@ -51,7 +54,7 @@
 
 {% block join-now %}
 {% if not user.is_authenticated %}
-<div id="join-now" class="header-notice">
+<div class="header-notice notice-join-now">
     <p><strong>애니메타</strong>는 애니메이션, 만화, 드라마 등의 감상 기록을 관리할 수 있는 서비스입니다.</p>
     <div class="btn"><a href="/signup/">지금 바로 가입하기 &raquo;</a></div>
 </div>
@@ -59,12 +62,12 @@
 {% endblock %}
 
 {% if messages %}
-<ul id="messages">
+<ul id="messages" class="messages">
 {% for message in messages %}
     <li>{{ message }}</li>
 {% endfor %}
 
-    <li id="close-messages"><a href="" onclick="$('#messages').hide(); return false">닫기</a></li>
+    <li class="close"><a href="" onclick="$('#messages').hide(); return false">닫기</a></li>
 </ul>
 {% endif %}
 
@@ -78,12 +81,12 @@
 {% endblock %}
 </div>
 
-<p id="footer">
+<div class="footer">
     <a href="http://dittos.pe.kr/sapzil">지속 가능한 삽질</a>에서 만들고 돌립니다. /
     <a href="http://blog.animeta.net/">공식 블로그</a> /
     <a href="/support/">버그 신고 및 기능 건의</a> /
     <a href="http://github.com/dittos/animeta" target="_blank">Fork me on GitHub</a>
-</p>
+</div>
 
 <script type="text/javascript">window.STATIC_URL = '{{ STATIC_URL }}'</script>
 <script type="text/javascript" src="//ajax.aspnetcdn.com/ajax/jquery/jquery-1.8.1.min.js"></script>
@@ -114,6 +117,5 @@
 <script type="text/javascript" src="{{ STATIC_URL }}common.js"></script>
 {% block js %}
 {% endblock %}
-</div>
 </body>
 </html>
