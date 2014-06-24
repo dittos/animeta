@@ -114,6 +114,11 @@
    }(document, 'script', 'facebook-jssdk'));
 </script>
 <script src="//cdn.jsdelivr.net/typeahead.js/0.10.2/typeahead.jquery.min.js"></script>
+<!--[if lt IE 9]>
+<script src="//cdn.jsdelivr.net/es5.shim/2.1.0/es5-shim.min.js"></script>
+<script src="//cdn.jsdelivr.net/es5.shim/2.1.0/es5-sham.min.js"></script>
+<![endif]-->
+<script src="http://fb.me/react-with-addons-0.10.0.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}common.js"></script>
 {% block js %}
 {% endblock %}
