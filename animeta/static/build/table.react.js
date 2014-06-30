@@ -208,7 +208,7 @@ function zerofill(n) {
     return n;
 }
 
-WEEKDAYS = ['월', '화', '수', '목', '금', '토', '일'];
+WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
 function getDate(value) {
     var weekday = WEEKDAYS[value.getDay()];
