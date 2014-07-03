@@ -9,12 +9,23 @@
 <form method="get" action="" id="filter-form">
 <input type="hidden" name="sort" id="sort-field" value="{{ sort }}" />
 
-<p>작품이 {{ record_count }}개 등록되어 있습니다.</p>
+<p>
+    작품이 {{ record_count }}개 등록되어 있습니다.
+    {% if record_count != record_display_count %}
+    ({{ record_display_count }}개 표시 중)
+    {% endif %}
+</p>
 
 <p id="sorting-type">정렬: <a href="?sort=date" id="sort-by-date">시간순</a> <a href="?sort=title" id="sort-by-title">제목순</a></p>
 
 <p>
-상태: {{ filter_form.type }}
+<label for="id_type">상태:</label>
+<select name="type" id="id_type">
+    <option value="">전체 ({{ record_count }})</option>
+{% for status_type in status_types %}
+    <option value="{{ status_type.value }}"{% if status_type_filter == status_type.value %} selected{% endif %}>{{ status_type.label }} ({{ status_type.count }})</option>
+{% endfor %}
+</select>
 </p>
 
 <p>

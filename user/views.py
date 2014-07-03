@@ -13,7 +13,6 @@ from django.db.models import Count
 from chart.models import weekly, PopularWorksChart
 from connect import get_connected_services
 from record.models import Uncategorized, StatusTypes, include_records
-from record.forms import RecordFilterForm
 from record.templatetags.indexing import group_records
 import datetime
 
@@ -100,9 +99,15 @@ def library(request, username=None):
     records = user.record_set
     record_count = records.count()
 
-    filter_form = RecordFilterForm(request.GET)
-    if filter_form.is_valid() and filter_form.cleaned_data['type']:
-        records = records.filter(status_type=filter_form.cleaned_data['type'])
+    status_types = [{
+        'value': t,
+        'label': t.text,
+        'count': records.filter(status_type=t).count(),
+    } for t in StatusTypes.types]
+    status_type_filter = request.GET.get('type')
+    if status_type_filter:
+        t = StatusTypes.from_name(status_type_filter)
+        records = records.filter(status_type=t)
 
     category_filter = None
     if request.GET.get('category'):
@@ -116,13 +121,15 @@ def library(request, username=None):
     sort = request.GET.get('sort', 'date')
     groups = None
     if sort == 'title':
-        groups = group_records(records.order_by('title'))
+        records = list(records.order_by('title'))
+        groups = group_records(records)
     elif sort == 'date':
+        records = list(records.order_by('-updated_at'))
         groups = []
         last_key = None
         group = None
         unknown_group = []
-        for record in records.order_by('-updated_at'):
+        for record in records:
             if record.updated_at is None:
             	unknown_group.append(record)
             else:
@@ -141,11 +148,13 @@ def library(request, username=None):
     return render(request, 'user/library.html', {
         'owner': user,
         'record_groups': groups,
+        'status_types': status_types,
+        'status_type_filter': status_type_filter,
         'categories': [Uncategorized(user)] + list(user.category_set.annotate(record_count=Count('record'))),
         'record_count': record_count,
+        'record_display_count': len(records),
         'category_filter': category_filter,
         'sort': sort,
-        'filter_form': filter_form,
     })
 
 def include_delete_flag(user):
