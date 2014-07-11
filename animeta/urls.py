@@ -29,6 +29,6 @@ urlpatterns = patterns('',
     (r'^search/$', 'search.views.search'),
     (r'^search/suggest/$', 'search.views.suggest'),
 
-    (r'^table/$', 'table.views.redirect_to_current'),
-    url(r'^table/(?P<period>[0-9]{4}Q[1-4])/$', 'table.views.index', name='table-index'),
+    url(r'^table/$', 'table.views.index', name='table-index'),
+    url(r'^table/(?P<period>[0-9]{4}Q[1-4])/$', 'table.views.get_period', name='table-period'),
 )

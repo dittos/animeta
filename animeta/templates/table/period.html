@@ -6,7 +6,7 @@
 
 {% block stylesheets %}
     <!-- override style.css -->
-    <link rel="stylesheet" href="{{ STATIC_URL }}build/table.css" type="text/css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}build/table-period.css" type="text/css">
 {% endblock %}
 
 {% block head-extra %}
@@ -77,5 +77,5 @@ var PERIOD = '{{ period }}';
 var USERNAME = '{{ user.username }}';
 var APP_DATA = {{ data|safe }};
 </script>
-<script src="{{ STATIC_URL }}build/table.react.js"></script>
+<script src="{{ STATIC_URL }}build/table-period.react.js"></script>
 {% endblock %}
