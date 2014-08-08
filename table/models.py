@@ -124,6 +124,8 @@ def annotate_statuses(items, user):
                 record = user.record_set.get(work=work)
                 item['record'] = {
                     'id': record.id,
+                    'status': record.status,
+                    'status_type': record.status_type.name,
                 }
             except Record.DoesNotExist:
                 pass

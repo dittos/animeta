@@ -1,0 +1,104 @@
+.schedule-container {
+  line-height: 1;
+  font-size: 16px;
+}
+.schedule-nav {
+  overflow: hidden;
+  border-bottom: 1px solid #ddd;
+  background: #fff;
+  background: rgba(255, 255, 255, 0.9);
+}
+.schedule-nav-logo {
+  display: none;
+  float: left;
+  font-weight: bold;
+}
+.schedule-nav-logo a {
+  text-decoration: none;
+  float: left;
+  padding: 10px 0;
+  margin-right: 30px;
+}
+.schedule-nav-days {
+  float: left;
+}
+.schedule-nav-days .tab {
+  float: left;
+  margin-right: 20px;
+  padding: 10px 0;
+  text-align: center;
+  cursor: pointer;
+  text-shadow: 1px 1px 0 #eee;
+}
+.schedule-nav-days .tab:hover {
+  color: #4bb000;
+}
+.schedule-nav-days .tab.active {
+  font-weight: bold;
+  color: #4bb000;
+}
+.sticky .schedule-nav-logo {
+  display: block;
+}
+.schedule-nav-country {
+  float: right;
+}
+.schedule-nav-country img {
+  opacity: 0.25;
+  cursor: pointer;
+}
+.schedule-nav-country img.active,
+.schedule-nav-country img:hover {
+  opacity: 1;
+}
+.schedule-content {
+  clear: both;
+}
+.schedule-day {
+  padding-bottom: 10px;
+}
+.schedule-day-title {
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
+  margin-bottom: 10px;
+  clear: both;
+}
+.schedule-item {
+  padding-top: 10px;
+  overflow: hidden;
+  clear: both;
+}
+.item-poster {
+  float: left;
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+  margin-right: 10px;
+  border: 1px solid #000;
+}
+.item-poster img {
+  width: 100%;
+  display: block;
+}
+.item-schedule {
+  font-size: 0.9em;
+  color: #4bb000;
+  padding-top: 10px;
+  padding-bottom: 15px;
+}
+.item-schedule .item-schedule-time {
+  padding-bottom: 10px;
+}
+.item-schedule-time {
+  font-weight: bold;
+  padding-right: 5px;
+}
+.item-title {
+  color: #444;
+  text-decoration: none;
+  font-size: 1.4em;
+}
+.item-status {
+  padding-top: 15px;
+  color: #666;
+}
