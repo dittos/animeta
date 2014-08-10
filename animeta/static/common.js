@@ -66,13 +66,17 @@ $('.global-search input').typeahead({highlight: true, hint: false}, {
     }
 });
 
-$('#id_work_title, .autocomplete').typeahead(null, {
-    source: cachingSource(debouncingSource(function (q, cb) {
-        $.getJSON('/search/suggest/', {q: q}, cb);
-    }, 200), 20),
-    displayKey: 'title',
-    templates: typeaheadTemplates
-});
+function initTypeahead(selector) {
+    return $(selector).typeahead(null, {
+        source: cachingSource(debouncingSource(function (q, cb) {
+            $.getJSON('/search/suggest/', {q: q}, cb);
+        }, 200), 20),
+        displayKey: 'title',
+        templates: typeaheadTemplates
+    });
+}
+
+initTypeahead('#id_work_title, .autocomplete');
 
 $(function () {
     function determine_suffix() {

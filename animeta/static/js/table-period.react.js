@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 
 var util = require('./util');
+var BaseStore = require('./BaseStore');
 var LazyImageView = require('./LazyImage');
 require('../less/table-period.less');
 
@@ -29,25 +30,7 @@ var comparatorMap = {
     'recordCount': recordCountComparator
 };
 
-class ChangeListenable {
-    constructor() {
-        this._listeners = [];
-    }
-
-    addChangeListener(callback) {
-        this._listeners.push(callback);
-    }
-
-    removeChangeListener(callback) {
-        this._listeners = this._listeners.filter((cb) => cb != callback);
-    }
-
-    emitChange(data) {
-        this._listeners.forEach((callback) => callback(data));
-    }
-}
-
-class ScheduleStore extends ChangeListenable {
+class ScheduleStore extends BaseStore {
     constructor(initialData) {
         super();
         this._items = initialData.items;
