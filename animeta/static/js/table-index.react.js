@@ -1,9 +1,9 @@
 /** @jsx React.DOM */
 
 var util = require('./util');
+var PositionSticky = require('./PositionSticky');
+var LazyImageView = require('./LazyImage');
 require('../less/table-index.less');
-
-var mountTarget = $('.anitable-container')[0];
 
 var SCROLL_DEBOUNCE = 20;
 
@@ -15,14 +15,6 @@ function getInitialData() {
         currentUserName: USERNAME,
         items: APP_DATA.items
     };
-}
-
-function deepCopy(obj) {
-    return $.extend(/*deep:*/ true, {}, obj);
-}
-
-function getSimpleTime(date) {
-    return util.zerofill(date.getHours()) + ':' + util.zerofill(date.getMinutes());
 }
 
 function getWorkURL(item) {
@@ -81,9 +73,12 @@ var Item = React.createClass({
         }
         return (
             <div className="schedule-item">
-                <div className="item-poster"><img src={item.image_url} /></div>
+                <div className="item-poster"><LazyImageView src={item.image_url} /></div>
                 <div className="item-schedule">
-                    <span className="item-schedule-time">{WEEKDAYS[item.schedule.date.getDay()]} {item.schedule.time}</span>
+                    <span className="item-schedule-time">
+                        {WEEKDAYS[item.schedule.date.getDay()]}{' '}
+                        {util.formatTime(item.schedule.date)}
+                    </span>
                     {'/ '}
                     <span className="item-schedule-broadcasts">{item.schedule.broadcasts}</span>
                 </div>
@@ -100,12 +95,12 @@ function groupItemsByWeekday(items, preferKR) {
         groups.push({index: i, title: WEEKDAYS[i], items: []});
     }
     items.forEach(item => {
-        item = deepCopy(item);
+        item = util.deepCopy(item);
         item.schedule = item.schedule[preferKR ? 'kr' : 'jp'];
         if (item.schedule && item.schedule.date) {
             var date = new Date(item.schedule.date);
             item.schedule.date = date;
-            item.schedule.time = getSimpleTime(date);
+            item.schedule.time = util.getTime(date);
             groups[date.getDay()].items.push(item);
         }
     });
@@ -114,75 +109,6 @@ function groupItemsByWeekday(items, preferKR) {
     });
     return groups;
 }
-
-function debounce(fn, t) {
-    var timer;
-    return function() {
-        var self = this;
-        if (timer) clearTimeout(timer);
-        timer = setTimeout(function() {
-            fn.call(self);
-            timer = null;
-        }, t);
-    };
-}
-
-var PositionSticky = React.createClass({
-    mixins: [React.addons.PureRenderMixin],
-
-    getInitialState() {
-        return {sticky: false};
-    },
-
-    componentDidMount() {
-        this.measure();
-        $(window).scroll(this.handleScroll).resize(this.handleResize);
-    },
-
-    render() {
-        var children = React.Children.map(this.props.children, child =>
-            React.addons.cloneWithProps(child, {sticky: this.state.sticky})
-        );
-        if (!this.state.sticky) {
-            return <div><div ref="content">{children}</div></div>;
-        } else {
-            return (
-                <div>
-                    <div ref="content" className="sticky"
-                        style={{position: 'fixed', top: 0, left: this.state.left, right: this.state.right}}>
-                        {children}
-                    </div>
-                    <div style={{height: this.state.height}} />
-                </div>
-            );
-        }
-    },
-
-    handleScroll() {
-        var nextSticky = $(window).scrollTop() > this._offsetTop;
-        if (this.state.sticky != nextSticky) {
-            this.setState({sticky: nextSticky});
-        }
-    },
-
-    handleResize() {
-        var wasSticky = this.state.sticky;
-        this.setState({sticky: false}, () => {
-            this.measure();
-            this.setState({sticky: wasSticky});
-        });
-    },
-
-    measure() {
-        this._offsetTop = $(this.getDOMNode()).offset().top;
-
-        var node = $(this.refs.content.getDOMNode());
-        var left = node.position().left;
-        var right = $('body').width() - (left + node.width());
-        var height = node.height();
-        this.setState({left: left, right: right, height: height});
-    }
-});
 
 var Schedule = React.createClass({
     getInitialState() {
@@ -236,7 +162,7 @@ var Schedule = React.createClass({
         });
     },
 
-    handleScroll: debounce(function() {
+    handleScroll: util.debounce(function() {
         var $content = $(window);
         var $nav = $(this.refs.nav.getDOMNode());
         var contentOffset = $content.scrollTop() + $nav.height();
@@ -255,4 +181,4 @@ var Schedule = React.createClass({
     }, SCROLL_DEBOUNCE)
 });
 
-React.renderComponent(Schedule(appData), mountTarget);
+React.renderComponent(Schedule(appData), $('.anitable-container')[0]);

@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 
 var util = require('./util');
+var LazyImageView = require('./LazyImage');
 require('../less/table-period.less');
 
 function getLoginURL() {
@@ -140,48 +141,6 @@ var HeaderView = React.createClass({
     }
 });
 
-var blazy = null;
-// Disable lazy loading on mobile browsers.
-if (!/i(Phone|Pad|Pod)|Android|Safari/.test(navigator.userAgent)) {
-    document.documentElement.className += ' b-fade';
-    blazy = new Blazy;
-}
-
-BLANK_IMG_URI = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-
-var ItemPosterView = React.createClass({
-    width: 233,
-    height: 318,
-
-    render: blazy ? function() {
-        return <img src={BLANK_IMG_URI} data-src={this.props.src}
-            width={this.width} height={this.height} className="item-poster b-lazy" />;
-    } : function() {
-        return <img src={this.props.src} width={this.width} height={this.height} className="item-poster" />;
-    },
-
-    componentDidMount() {
-        ItemPosterView.invalidate();
-    },
-
-    componentDidUpdate() {
-        ItemPosterView.invalidate();
-    },
-    
-    statics: {
-        invalidation: null,
-
-        invalidate() {
-            if (!this.invalidation) {
-                this.invalidation = setTimeout(() => {
-                    blazy.revalidate();
-                    this.invalidation = null;
-                }, 0);
-            }
-        }
-    }
-});
-
 SOURCE_TYPE_MAP = {
     'manga': '만화 원작', 
     'original': '오리지널',
@@ -197,27 +156,6 @@ WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 function getDate(value) {
     var weekday = WEEKDAYS[value.getDay()];
     return util.zerofill(value.getMonth() + 1) + '/' + util.zerofill(value.getDate()) + ' (' + weekday + ')';
-}
-
-HOURS = [];
-for (var h = 0; h < 24; h++) {
-    var result;
-    if (h < 12)
-        result = '오전 ' + h + '시';
-    else if (h == 12)
-        result = '정오';
-    else
-        result = '오후 ' + (h - 12) + '시';
-    HOURS[h] = result;
-}
-
-function getTime(value) {
-    var result = HOURS[value.getHours()];
-    var m = value.getMinutes();
-    if (m > 0) {
-        result += ' ' + util.zerofill(m) + '분';
-    }
-    return result;
 }
 
 var FavButton = React.createClass({
@@ -239,7 +177,7 @@ var ItemView = React.createClass({
             <div className="item">
                 <div className="item-inner">
                     <div className="item-poster-wrap">
-                        <ItemPosterView src={item.image_url} />
+                        <LazyImageView src={item.image_url} width={233} height={318} className="item-poster" />
                     </div>
                     <div dangerouslySetInnerHTML={{__html: ItemView.template(this.getTemplateContext())}} />
                     <div className="item-actions">
@@ -269,7 +207,7 @@ var ItemView = React.createClass({
     },
 
     getTemplateContext() {
-        var context = $.extend(/*deep:*/ true, {}, this.props.item);
+        var context = util.deepCopy(this.props.item);
         if (context.studios)
             context.studios = context.studios.join(', ');
         if (context.source)
@@ -285,7 +223,7 @@ var ItemView = React.createClass({
             if (date) {
                 date = new Date(date);
                 schedule.date = getDate(date);
-                schedule.time = getTime(date);
+                schedule.time = util.formatTime(date);
             }
             if (schedule.broadcasts)
                 schedule.broadcasts = schedule.broadcasts.join(', ');
@@ -384,7 +322,4 @@ var AppView = React.createClass({
     }
 });
 
-React.renderComponent(
-    <AppView period={PERIOD} />,
-    $('.anitable-container')[0]
-);
+React.renderComponent(<AppView period={PERIOD} />, $('.anitable-container')[0]);
