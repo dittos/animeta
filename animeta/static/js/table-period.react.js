@@ -1,5 +1,6 @@
 /** @jsx React.DOM */
 
+var util = require('./util');
 require('../less/table-period.less');
 
 function getLoginURL() {
@@ -10,28 +11,16 @@ function nullslast(val) {
     return [!val, val];
 }
 
-function keyComparator(keyFunc) {
-    return (a, b) => {
-        a = keyFunc(a);
-        b = keyFunc(b);
-        if (a < b)
-            return -1;
-        if (a > b)
-            return 1;
-        return 0;
-    };
-}
-
-var scheduleComparator = keyComparator((item) => 
+var scheduleComparator = util.keyComparator((item) => 
     nullslast(item.schedule.jp && item.schedule.jp.date)
 );
 
-var preferKRScheduleComparator = keyComparator((item) =>
+var preferKRScheduleComparator = util.keyComparator((item) =>
     nullslast(item.schedule.kr && item.schedule.kr.date
         || item.schedule.jp && item.schedule.jp.date)
 );
 
-var recordCountComparator = keyComparator((item) => -item.record_count);
+var recordCountComparator = util.keyComparator((item) => -item.record_count);
 
 var comparatorMap = {
     'schedule': scheduleComparator,
@@ -203,18 +192,11 @@ SOURCE_TYPE_MAP = {
     'novel': '소설 원작'
 };
 
-function zerofill(n) {
-    n = String(n);
-    if (n.length == 1)
-        n = '0' + n;
-    return n;
-}
-
 WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
 function getDate(value) {
     var weekday = WEEKDAYS[value.getDay()];
-    return zerofill(value.getMonth() + 1) + '/' + zerofill(value.getDate()) + ' (' + weekday + ')';
+    return util.zerofill(value.getMonth() + 1) + '/' + util.zerofill(value.getDate()) + ' (' + weekday + ')';
 }
 
 HOURS = [];
@@ -233,7 +215,7 @@ function getTime(value) {
     var result = HOURS[value.getHours()];
     var m = value.getMinutes();
     if (m > 0) {
-        result += ' ' + zerofill(m) + '분';
+        result += ' ' + util.zerofill(m) + '분';
     }
     return result;
 }

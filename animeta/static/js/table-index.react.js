@@ -1,5 +1,6 @@
 /** @jsx React.DOM */
 
+var util = require('./util');
 require('../less/table-index.less');
 
 var mountTarget = $('.anitable-container')[0];
@@ -20,27 +21,8 @@ function deepCopy(obj) {
     return $.extend(/*deep:*/ true, {}, obj);
 }
 
-function keyComparator(keyFunc) {
-    return (a, b) => {
-        a = keyFunc(a);
-        b = keyFunc(b);
-        if (a < b)
-            return -1;
-        if (a > b)
-            return 1;
-        return 0;
-    };
-}
-
-function zerofill(n) {
-    n = String(n);
-    if (n.length == 1)
-        n = '0' + n;
-    return n;
-}
-
 function getSimpleTime(date) {
-    return zerofill(date.getHours()) + ':' + zerofill(date.getMinutes());
+    return util.zerofill(date.getHours()) + ':' + util.zerofill(date.getMinutes());
 }
 
 function getWorkURL(item) {
@@ -128,15 +110,9 @@ function groupItemsByWeekday(items, preferKR) {
         }
     });
     groups.forEach(group => {
-        group.items.sort(keyComparator(item => item.schedule.time));
+        group.items.sort(util.keyComparator(item => item.schedule.time));
     });
     return groups;
-}
-
-function wrap(n, mod) {
-    if (n >= 0)
-        return n % mod;
-    return n + mod;
 }
 
 function debounce(fn, t) {

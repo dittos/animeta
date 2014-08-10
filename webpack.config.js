@@ -10,7 +10,7 @@ module.exports = {
     },
     module: {
         loaders: [
-            { test: /\.react\.js$/, loader: 'jsx-loader?harmony' },
+            { test: /\.js$/, loader: 'jsx-loader?harmony' },
             { test: /\.less$/, loader: 'style!css!less' },
             { test: /\.png$/, loader: 'file' }
         ]
