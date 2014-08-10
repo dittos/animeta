@@ -1,5 +1,7 @@
 /** @jsx React.DOM */
 
+require('../less/table-period.less');
+
 function getLoginURL() {
     return '/login/?next=' + encodeURIComponent(location.pathname);
 }

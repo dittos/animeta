@@ -1,5 +1,7 @@
 /** @jsx React.DOM */
 
+require('../less/table-index.less');
+
 var mountTarget = $('.anitable-container')[0];
 
 var SCROLL_DEBOUNCE = 20;
