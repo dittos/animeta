@@ -1,5 +1,9 @@
 /** @jsx React.DOM */
 
+var util = require('./util');
+var LazyImageView = require('./LazyImage');
+require('../less/table-period.less');
+
 function getLoginURL() {
     return '/login/?next=' + encodeURIComponent(location.pathname);
 }
@@ -8,28 +12,16 @@ function nullslast(val) {
     return [!val, val];
 }
 
-function keyComparator(keyFunc) {
-    return (a, b) => {
-        a = keyFunc(a);
-        b = keyFunc(b);
-        if (a < b)
-            return -1;
-        if (a > b)
-            return 1;
-        return 0;
-    };
-}
-
-var scheduleComparator = keyComparator((item) => 
+var scheduleComparator = util.keyComparator((item) => 
     nullslast(item.schedule.jp && item.schedule.jp.date)
 );
 
-var preferKRScheduleComparator = keyComparator((item) =>
+var preferKRScheduleComparator = util.keyComparator((item) =>
     nullslast(item.schedule.kr && item.schedule.kr.date
         || item.schedule.jp && item.schedule.jp.date)
 );
 
-var recordCountComparator = keyComparator((item) => -item.record_count);
+var recordCountComparator = util.keyComparator((item) => -item.record_count);
 
 var comparatorMap = {
     'schedule': scheduleComparator,
@@ -113,7 +105,7 @@ function formatPeriod(period) {
 }
 
 var HeaderView = React.createClass({
-    render: function() {
+    render() {
         var period = formatPeriod(this.props.period);
         var options;
         if (!this.props.excludeKR) {
@@ -149,48 +141,6 @@ var HeaderView = React.createClass({
     }
 });
 
-var blazy = null;
-// Disable lazy loading on mobile browsers.
-if (!/i(Phone|Pad|Pod)|Android|Safari/.test(navigator.userAgent)) {
-    document.documentElement.className += ' b-fade';
-    blazy = new Blazy;
-}
-
-BLANK_IMG_URI = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-
-var ItemPosterView = React.createClass({
-    width: 233,
-    height: 318,
-
-    render: blazy ? function() {
-        return <img src={BLANK_IMG_URI} data-src={this.props.src}
-            width={this.width} height={this.height} className="item-poster b-lazy" />;
-    } : function() {
-        return <img src={this.props.src} width={this.width} height={this.height} className="item-poster" />;
-    },
-
-    componentDidMount: function() {
-        ItemPosterView.invalidate();
-    },
-
-    componentDidUpdate: function() {
-        ItemPosterView.invalidate();
-    },
-    
-    statics: {
-        invalidation: null,
-
-        invalidate: function() {
-            if (!this.invalidation) {
-                this.invalidation = setTimeout(() => {
-                    blazy.revalidate();
-                    this.invalidation = null;
-                }, 0);
-            }
-        }
-    }
-});
-
 SOURCE_TYPE_MAP = {
     'manga': '만화 원작', 
     'original': '오리지널',
@@ -201,43 +151,15 @@ SOURCE_TYPE_MAP = {
     'novel': '소설 원작'
 };
 
-function zerofill(n) {
-    n = String(n);
-    if (n.length == 1)
-        n = '0' + n;
-    return n;
-}
-
 WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
 function getDate(value) {
     var weekday = WEEKDAYS[value.getDay()];
-    return zerofill(value.getMonth() + 1) + '/' + zerofill(value.getDate()) + ' (' + weekday + ')';
-}
-
-HOURS = [];
-for (var h = 0; h < 24; h++) {
-    var result;
-    if (h < 12)
-        result = '오전 ' + h + '시';
-    else if (h == 12)
-        result = '정오';
-    else
-        result = '오후 ' + (h - 12) + '시';
-    HOURS[h] = result;
-}
-
-function getTime(value) {
-    var result = HOURS[value.getHours()];
-    var m = value.getMinutes();
-    if (m > 0) {
-        result += ' ' + zerofill(m) + '분';
-    }
-    return result;
+    return util.zerofill(value.getMonth() + 1) + '/' + util.zerofill(value.getDate()) + ' (' + weekday + ')';
 }
 
 var FavButton = React.createClass({
-    render: function() {
+    render() {
         return (
             <label className={'btn-fav' + (this.props.active ? ' active' : '')}
                 onClick={this.props.onClick}>
@@ -249,13 +171,13 @@ var FavButton = React.createClass({
 });
 
 var ItemView = React.createClass({
-    render: function() {
+    render() {
         var item = this.props.item;
         return (
             <div className="item">
                 <div className="item-inner">
                     <div className="item-poster-wrap">
-                        <ItemPosterView src={item.image_url} />
+                        <LazyImageView src={item.image_url} width={233} height={318} className="item-poster" />
                     </div>
                     <div dangerouslySetInnerHTML={{__html: ItemView.template(this.getTemplateContext())}} />
                     <div className="item-actions">
@@ -268,7 +190,7 @@ var ItemView = React.createClass({
         );
     },
 
-    handleFavButtonClick: function() {
+    handleFavButtonClick() {
         if (!USERNAME) {
             alert('로그인 후 관심 등록할 수 있습니다.');
             location.href = getLoginURL();
@@ -284,8 +206,8 @@ var ItemView = React.createClass({
         }
     },
 
-    getTemplateContext: function() {
-        var context = $.extend(/*deep:*/ true, {}, this.props.item);
+    getTemplateContext() {
+        var context = util.deepCopy(this.props.item);
         if (context.studios)
             context.studios = context.studios.join(', ');
         if (context.source)
@@ -301,7 +223,7 @@ var ItemView = React.createClass({
             if (date) {
                 date = new Date(date);
                 schedule.date = getDate(date);
-                schedule.time = getTime(date);
+                schedule.time = util.formatTime(date);
             }
             if (schedule.broadcasts)
                 schedule.broadcasts = schedule.broadcasts.join(', ');
@@ -315,16 +237,16 @@ var ItemView = React.createClass({
 });
 
 var NotificationView = React.createClass({
-    getInitialState: function() {
+    getInitialState() {
         return {hidden: true};
     },
 
-    componentWillUnmount: function() {
+    componentWillUnmount() {
         if (this.state.timer)
             clearTimeout(this.state.timer);
     },
 
-    show: function(message, timeout) {
+    show(message, timeout) {
         var update = {
             message: message,
             hidden: false
@@ -336,7 +258,7 @@ var NotificationView = React.createClass({
         this.setState(update);
     },
 
-    render: function() {
+    render() {
         return (
             <div className={"panel" + (this.state.hidden ? ' hidden' : '')}>
                 <div className="panel-inner">
@@ -356,11 +278,11 @@ function getAppViewState() {
 }
 
 var AppView = React.createClass({
-    getInitialState: function() {
+    getInitialState() {
         return getAppViewState();
     },
 
-    componentDidMount: function() {
+    componentDidMount() {
         scheduleStore.addChangeListener(this._onChange);
         if (!USERNAME) {
             this.refs.notification.show([
@@ -370,11 +292,11 @@ var AppView = React.createClass({
         }
     },
 
-    componentWillUnmount: function() {
+    componentWillUnmount() {
         scheduleStore.removeChangeListener(this._onChange);
     },
 
-    render: function() {
+    render() {
         return (
             <div>
                 <HeaderView period={this.props.period}
@@ -392,7 +314,7 @@ var AppView = React.createClass({
         );
     },
 
-    _onChange: function(data) {
+    _onChange(data) {
         this.setState(getAppViewState());
         if (data && data.event == 'favorite-added') {
             this.refs.notification.show(['관심 등록 완료 — ', <b>{data.title}</b>], 3000);
@@ -400,7 +322,4 @@ var AppView = React.createClass({
     }
 });
 
-React.renderComponent(
-    <AppView period={PERIOD} />,
-    $('.anitable-container')[0]
-);
+React.renderComponent(<AppView period={PERIOD} />, $('.anitable-container')[0]);
