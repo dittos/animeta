@@ -50,7 +50,7 @@ function getWorkURL(item) {
 WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
 var Nav = React.createClass({
-    render: function() {
+    render() {
         var tabs = [];
         for (var i = 0; i < WEEKDAYS.length; i++) {
             tabs.push(
@@ -88,7 +88,7 @@ var STATUS_TYPES = {
 };
 
 var Item = React.createClass({
-    render: function() {
+    render() {
         var item = this.props.item;
         var status;
         if (item.record) {
@@ -154,16 +154,16 @@ function debounce(fn, t) {
 var PositionSticky = React.createClass({
     mixins: [React.addons.PureRenderMixin],
 
-    getInitialState: function() {
+    getInitialState() {
         return {sticky: false};
     },
 
-    componentDidMount: function() {
+    componentDidMount() {
         this.measure();
         $(window).scroll(this.handleScroll).resize(this.handleResize);
     },
 
-    render: function() {
+    render() {
         var children = React.Children.map(this.props.children, child =>
             React.addons.cloneWithProps(child, {sticky: this.state.sticky})
         );
@@ -182,14 +182,14 @@ var PositionSticky = React.createClass({
         }
     },
 
-    handleScroll: function() {
+    handleScroll() {
         var nextSticky = $(window).scrollTop() > this._offsetTop;
         if (this.state.sticky != nextSticky) {
             this.setState({sticky: nextSticky});
         }
     },
 
-    handleResize: function() {
+    handleResize() {
         var wasSticky = this.state.sticky;
         this.setState({sticky: false}, () => {
             this.measure();
@@ -197,7 +197,7 @@ var PositionSticky = React.createClass({
         });
     },
 
-    measure: function() {
+    measure() {
         this._offsetTop = $(this.getDOMNode()).offset().top;
 
         var node = $(this.refs.content.getDOMNode());
@@ -209,19 +209,19 @@ var PositionSticky = React.createClass({
 });
 
 var Schedule = React.createClass({
-    getInitialState: function() {
+    getInitialState() {
         return {
             focusedIndex: new Date().getDay(),
             preferKR: window.localStorage['animeta.table.preferKR']
         };
     },
 
-    componentDidMount: function() {
+    componentDidMount() {
         this.handleDaySelect(this.state.focusedIndex);
         $(window).scroll(this.handleScroll);
     },
 
-    render: function() {
+    render() {
         var groups = groupItemsByWeekday(this.props.items, this.state.preferKR);
         var i = this.state.focusedIndex;
         return (
@@ -241,7 +241,7 @@ var Schedule = React.createClass({
         );
     },
 
-    handleDaySelect: function(i) {
+    handleDaySelect(i) {
         var $content = $(window);
         var scrollTop = 0;
         if (i > 0) {
@@ -253,7 +253,7 @@ var Schedule = React.createClass({
         setTimeout(() => this.setState({focusedIndex: i}), SCROLL_DEBOUNCE * 2);
     },
 
-    handleCountrySelect: function(country) {
+    handleCountrySelect(country) {
         this.setState({preferKR: country == 'KR'}, () => {
             this.handleDaySelect(this.state.focusedIndex);
             window.localStorage['animeta.table.preferKR'] = this.state.preferKR;

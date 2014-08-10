@@ -115,7 +115,7 @@ function formatPeriod(period) {
 }
 
 var HeaderView = React.createClass({
-    render: function() {
+    render() {
         var period = formatPeriod(this.props.period);
         var options;
         if (!this.props.excludeKR) {
@@ -171,18 +171,18 @@ var ItemPosterView = React.createClass({
         return <img src={this.props.src} width={this.width} height={this.height} className="item-poster" />;
     },
 
-    componentDidMount: function() {
+    componentDidMount() {
         ItemPosterView.invalidate();
     },
 
-    componentDidUpdate: function() {
+    componentDidUpdate() {
         ItemPosterView.invalidate();
     },
     
     statics: {
         invalidation: null,
 
-        invalidate: function() {
+        invalidate() {
             if (!this.invalidation) {
                 this.invalidation = setTimeout(() => {
                     blazy.revalidate();
@@ -239,7 +239,7 @@ function getTime(value) {
 }
 
 var FavButton = React.createClass({
-    render: function() {
+    render() {
         return (
             <label className={'btn-fav' + (this.props.active ? ' active' : '')}
                 onClick={this.props.onClick}>
@@ -251,7 +251,7 @@ var FavButton = React.createClass({
 });
 
 var ItemView = React.createClass({
-    render: function() {
+    render() {
         var item = this.props.item;
         return (
             <div className="item">
@@ -270,7 +270,7 @@ var ItemView = React.createClass({
         );
     },
 
-    handleFavButtonClick: function() {
+    handleFavButtonClick() {
         if (!USERNAME) {
             alert('로그인 후 관심 등록할 수 있습니다.');
             location.href = getLoginURL();
@@ -286,7 +286,7 @@ var ItemView = React.createClass({
         }
     },
 
-    getTemplateContext: function() {
+    getTemplateContext() {
         var context = $.extend(/*deep:*/ true, {}, this.props.item);
         if (context.studios)
             context.studios = context.studios.join(', ');
@@ -317,16 +317,16 @@ var ItemView = React.createClass({
 });
 
 var NotificationView = React.createClass({
-    getInitialState: function() {
+    getInitialState() {
         return {hidden: true};
     },
 
-    componentWillUnmount: function() {
+    componentWillUnmount() {
         if (this.state.timer)
             clearTimeout(this.state.timer);
     },
 
-    show: function(message, timeout) {
+    show(message, timeout) {
         var update = {
             message: message,
             hidden: false
@@ -338,7 +338,7 @@ var NotificationView = React.createClass({
         this.setState(update);
     },
 
-    render: function() {
+    render() {
         return (
             <div className={"panel" + (this.state.hidden ? ' hidden' : '')}>
                 <div className="panel-inner">
@@ -358,11 +358,11 @@ function getAppViewState() {
 }
 
 var AppView = React.createClass({
-    getInitialState: function() {
+    getInitialState() {
         return getAppViewState();
     },
 
-    componentDidMount: function() {
+    componentDidMount() {
         scheduleStore.addChangeListener(this._onChange);
         if (!USERNAME) {
             this.refs.notification.show([
@@ -372,11 +372,11 @@ var AppView = React.createClass({
         }
     },
 
-    componentWillUnmount: function() {
+    componentWillUnmount() {
         scheduleStore.removeChangeListener(this._onChange);
     },
 
-    render: function() {
+    render() {
         return (
             <div>
                 <HeaderView period={this.props.period}
@@ -394,7 +394,7 @@ var AppView = React.createClass({
         );
     },
 
-    _onChange: function(data) {
+    _onChange(data) {
         this.setState(getAppViewState());
         if (data && data.event == 'favorite-added') {
             this.refs.notification.show(['관심 등록 완료 — ', <b>{data.title}</b>], 3000);
