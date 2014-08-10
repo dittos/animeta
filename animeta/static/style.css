@@ -52,7 +52,7 @@ form.inline { margin-bottom: 0.5em; overflow: hidden; }
 form.inline h2 { width: 8em; float: left; }
 form.inline p { padding-left: 1em; display: inline; }
 .record-detail-header {
-    overflow: hidden;
+    float: left;
     margin-bottom: 1em;
 }
 .record-detail-header h1 {

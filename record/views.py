@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
@@ -45,12 +46,27 @@ def _get_record(request, id):
 def update_title(request, id):
     record = _get_record(request, id)
     if request.method == 'POST':
+        success = False
+        message = None
         try:
             record.update_title(request.POST['title'])
-            messages.info(request, u'제목을 바꿨습니다.')
+            success = True
+            message = u'제목을 바꿨습니다.'
         except:
             transaction.rollback()
-            messages.error(request, u'이미 같은 작품이 등록되어 있어 제목을 바꾸지 못했습니다.')
+            message = u'이미 같은 작품이 등록되어 있어 제목을 바꾸지 못했습니다.'
+
+        if not request.is_ajax():
+            if success:
+                messages.info(request, message)
+            else:
+                messages.error(request, message)
+        else:
+            return HttpResponse(
+                json.dumps(dict(ok=success, message=message)),
+                content_type='application/json',
+                status=200 if success else 422, # 422 Unprocessable Entity
+            )
     return redirect(request.user)
 
 @login_required
@@ -65,7 +81,10 @@ def update_category(request, id):
             record.category = request.user.category_set.get(id=id)
             name = record.category.name
         record.save()
-        messages.info(request, u'분류를 "%s"(으)로 바꿨습니다.' % name)
+        if not request.is_ajax():
+            messages.info(request, u'분류를 "%s"(으)로 바꿨습니다.' % name)
+        else:
+            return HttpResponse(json.dumps(dict(ok=True)), content_type='application/json')
     return redirect(request.user)
 
 def update(request, id):

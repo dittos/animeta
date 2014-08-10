@@ -3,31 +3,10 @@
 {% load status %}
 
 {% block content %}
-<div class="record-detail-header">
-    <h1><a href="{{ record.work.get_absolute_url }}" class="work">{{ record.title }}</a></h1>
-
-{% if form %}
-    <form method="post" action="{% url 'record.views.update_title' record.id %}" class="title-form">
-        <input type="text" name="title" value="{{ record.title }}" class="autocomplete" size="12" />
-        <button type="submit">저장</button>
-        <a href="#" onclick="cancelTitleEditing()">취소</a>
-    </form>
-
-    <a href="#" class="btn btn-edit-title">제목 수정</a>
-
-    <a href="{% url "record.views.delete" record.id %}" class="btn btn-delete">삭제</a>
-    
-    <form method="post" action="{% url 'record.views.update_category' record.id %}" class="category-form btn">
-        <label>분류:</label> {% if record.category %}{{ record.category.name }}{% else %}지정 안함{% endif %} ▼
-        <select name="category" id="category">
-            <option value="">지정 안함</option>
-        {% for category in category_list %}
-            <option value="{{ category.id }}"{% ifequal record.category category %} selected="selected"{% endifequal %}>{{ category.name }}</option>
-        {% endfor %}
-        </select>
-        <input type="submit" value="바꾸기" />
-    </form>
-{% endif %}
+<div class="library-container">
+    <div class="record-detail-header">
+        <h1><a href="{{ record.work.get_absolute_url }}" class="work">{{ record.title }}</a></h1>
+    </div>
 </div>
 
 {% if form %}
@@ -57,24 +36,8 @@
 {% endblock %}
 
 {% block js %}
+{% if form %}
 <script>
-$('.category-form #category').on('change', function() {
-    this.form.submit();
-});
-$('.category-form input:submit').hide();
-
-$('.title-form').hide();
-$('.btn-edit-title').on('click', function() {
-    $('.record-detail-header h1').hide();
-    $('.btn-edit-title').hide();
-    $('.title-form').show();
-});
-
-function cancelTitleEditing() {
-    $('.record-detail-header h1').show();
-    $('.btn-edit-title').show();
-    $('.title-form').hide();
-}
 initServiceToggles($('.record-detail-update'));
 
 function plusOne(val) {
@@ -97,5 +60,19 @@ $('<a href="#" class="plus-one"><img src="' + window.STATIC_URL + 'plus.gif" alt
     .insertAfter('#suffix');
 
 $('#id_comment').focus();
+
+var categoryList = [];
+{% for category in category_list %}
+categoryList.push({id: {{ category.id }}, name: '{{ category.name|escapejs }}'});
+{% endfor %}
+
+APP_DATA = {
+    title: '{{ record.title|escapejs }}',
+    recordId: {{ record.id }},
+    categoryList: categoryList,
+    categoryId: {{ record.category_id|default:'null' }}
+};
 </script>
+<script src="{{ STATIC_URL }}build/library.react.js"></script>
+{% endif %}
 {% endblock %}

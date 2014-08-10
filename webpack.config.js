@@ -1,7 +1,8 @@
 module.exports = {
     entry: {
         'table-index': './animeta/static/js/table-index.react.js',
-        'table-period': './animeta/static/js/table-period.react.js'
+        'table-period': './animeta/static/js/table-period.react.js',
+        'library': './animeta/static/js/library.react.js'
     },
     output: {
         path: 'animeta/static/build',
