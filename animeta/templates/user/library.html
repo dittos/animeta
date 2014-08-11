@@ -94,7 +94,7 @@
 {% block js %}
 <script type="text/javascript">
 function submit_when_changed(selector) {
-    return $(selector).live('change', function() {
+    return $(selector).on('change', function() {
         $('#filter-form').submit()
     })
 }
