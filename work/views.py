@@ -24,8 +24,11 @@ def _get_record(request, work):
         record = None
     return record
 
+def _get_work(title):
+    return get_object_or_404(TitleMapping, title=title).work
+
 def detail(request, title):
-    work = get_object_or_404(Work, title=title)
+    work = _get_work(title)
 
     N = 6
     history = work.history_set.all().select_related('user')
@@ -47,7 +50,7 @@ def detail(request, title):
 
 def episode_detail(request, title, ep):
     ep = int(ep)
-    work = get_object_or_404(Work, title=title)
+    work = _get_work(title)
     history_list = work.history_set.filter(status=str(ep)).exclude(comment='').order_by('-id')
     return render(request, 'work/episode.html', {
         'work': work,
@@ -58,7 +61,7 @@ def episode_detail(request, title, ep):
     })
 
 def list_users(request, title):
-    work = get_object_or_404(Work, title=title)
+    work = _get_work(title)
     return render(request, "work/users.html", {
         'work': work,
         'record': _get_record(request, work),
@@ -67,7 +70,7 @@ def list_users(request, title):
     })
 
 def video(request, title, provider, id):
-    work = get_object_or_404(Work, title=title)
+    work = _get_work(title)
 
     return render(request, "work/video.html", {
         'work': work,
