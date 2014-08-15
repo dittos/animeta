@@ -196,7 +196,7 @@ var PostComposerView = React.createClass({
                 <StatusInputView id="id_status" name="status"
                     defaultValue={plusOne(this.props.currentStatus)} />
             </div>
-            <textarea name="comment" rows={3} cols={30} autoFocus />
+            <textarea id="id_comment" name="comment" rows={3} cols={30} autoFocus />
             <div className="actions">
                 {'공유: '}
                 <input type="checkbox" id="id_publish_twitter" name="publish_twitter" />
