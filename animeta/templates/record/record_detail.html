@@ -9,25 +9,6 @@
     </div>
 </div>
 
-{% if form %}
-<form class="record-detail-update" method="post" data-connected-services="{{ form.connected_services }}">
-    <div class="progress">
-        {{ form.status_type }} @
-        {% if record.status %}
-        <span class="progress-current">{{ record.status }} &rarr;</span>
-        {% endif %}
-        {{ form.status }}<span id="suffix">화</span>
-    </div>
-    {{ form.comment }}
-    <div class="actions">
-        공유:
-        {{ form.publish_twitter }} {{ form.publish_twitter.label_tag }}
-        {{ form.publish_facebook }} {{ form.publish_facebook.label_tag }}
-        <button type="submit">기록 추가</button>
-    </div>
-</form>
-{% endif %}
-
 <div id="history">
 {% for history in history_list %}
     {% include "history.html" with show_delete=can_delete %}
@@ -38,8 +19,6 @@
 {% block js %}
 {% if form %}
 <script>
-initServiceToggles($('.record-detail-update'));
-
 function plusOne(val) {
     var matches = val.match(/(\d+)[^\d]*$/);
     if (!matches)
@@ -51,15 +30,6 @@ function plusOne(val) {
             add1 = '0' + add1
     return val.replace(/(\d+)([^\d]*)$/, add1 + '$2');
 }
-var status = '{{ record.status|escapejs }}';
-$('#id_status').val(plusOne(status));
-initAutoGrow($('#id_status'));
-
-$('<a href="#" class="plus-one"><img src="' + window.STATIC_URL + 'plus.gif" alt="+1" /></a>')
-    .click(function() { $('#id_status').val(plusOne($('#id_status').val())); })
-    .insertAfter('#suffix');
-
-$('#id_comment').focus();
 
 var categoryList = [];
 {% for category in category_list %}
@@ -70,7 +40,10 @@ APP_DATA = {
     title: '{{ record.title|escapejs }}',
     recordId: {{ record.id }},
     categoryList: categoryList,
-    categoryId: {{ record.category_id|default:'null' }}
+    categoryId: {{ record.category_id|default:'null' }},
+    connectedServices: '{{ form.connected_services|escapejs }}',
+    status: '{{ record.status }}',
+    statusType: '{{ record.status_type.name }}'
 };
 </script>
 <script src="{{ STATIC_URL }}build/library.react.js"></script>
