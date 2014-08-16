@@ -1,5 +1,9 @@
 var webpack = require('webpack');
 
+var moduleReplacePlugin = new webpack.NormalModuleReplacementPlugin(
+    /ReactErrorUtils$/, __dirname + '/animeta/static/js/ReactErrorUtils.js'
+);
+
 var definePlugin = new webpack.DefinePlugin({
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
 });
@@ -8,6 +12,7 @@ var commonsPlugin = new webpack.optimize.CommonsChunkPlugin('common.js');
 
 module.exports = {
     plugins: [
+        moduleReplacePlugin,
         definePlugin,
         commonsPlugin
     ],
