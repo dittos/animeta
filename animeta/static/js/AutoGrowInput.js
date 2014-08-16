@@ -1,5 +1,7 @@
 /** @jsx React.DOM */
 
+var React = require('react');
+
 var AutoGrowInput = React.createClass({
     getInitialState() {
         return {size: this.props.minSize};

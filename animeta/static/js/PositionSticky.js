@@ -1,5 +1,7 @@
 /** @jsx React.DOM */
 
+var React = require('react/addons');
+
 var PositionSticky = React.createClass({
     mixins: [React.addons.PureRenderMixin],
 

@@ -1,5 +1,6 @@
 /** @jsx React.DOM */
 
+var React = require('react');
 var BaseStore = require('./BaseStore');
 var AutoGrowInput = require('./AutoGrowInput');
 

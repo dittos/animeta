@@ -1,5 +1,6 @@
 /** @jsx React.DOM */
 
+var React = require('react');
 var util = require('./util');
 var BaseStore = require('./BaseStore');
 var LazyImageView = require('./LazyImage');

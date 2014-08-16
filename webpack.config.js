@@ -1,4 +1,16 @@
+var webpack = require('webpack');
+
+var definePlugin = new webpack.DefinePlugin({
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+});
+
+var commonsPlugin = new webpack.optimize.CommonsChunkPlugin('common.js');
+
 module.exports = {
+    plugins: [
+        definePlugin,
+        commonsPlugin
+    ],
     entry: {
         'table-index': './animeta/static/js/table-index.react.js',
         'table-period': './animeta/static/js/table-period.react.js',
