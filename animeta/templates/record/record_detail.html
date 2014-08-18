@@ -37,13 +37,9 @@ categoryList.push({id: {{ category.id }}, name: '{{ category.name|escapejs }}'})
 {% endfor %}
 
 APP_DATA = {
-    title: '{{ record.title|escapejs }}',
     recordId: {{ record.id }},
     categoryList: categoryList,
-    categoryId: {{ record.category_id|default:'null' }},
-    connectedServices: '{{ form.connected_services|escapejs }}',
-    status: '{{ record.status }}',
-    statusType: '{{ record.status_type.name }}'
+    connectedServices: '{{ form.connected_services|escapejs }}'
 };
 </script>
 <script src="{{ STATIC_URL }}build/{{ asset_filenames.library }}"></script>

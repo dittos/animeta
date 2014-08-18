@@ -5,28 +5,33 @@ var BaseStore = require('./BaseStore');
 var AutoGrowInput = require('./AutoGrowInput');
 
 class RecordStore extends BaseStore {
-    constructor(title, categoryId) {
+    constructor() {
         super();
-        this._title = title;
-        this._categoryId = categoryId;
+        this._objects = {};
     }
 
-    setTitle(title) {
-        this._title = title;
-        this.emitChange();
+    getById(id) {
+        return this._objects[id] || null;
     }
 
-    getTitle() {
-        return this._title;
+    find(id) {
+        return $.get(this._urlFor(id)).then(record => {
+            this._objects[id] = record;
+            this.emitChange();
+            return $.Deferred().resolve(record);
+        });
     }
 
-    getCategoryId() {
-        return this._categoryId;
+    update(id, data) {
+        return $.post(this._urlFor(id), data).then(record => {
+            this._objects[id] = record;
+            this.emitChange();
+            return $.Deferred().resolve(record);
+        });
     }
 
-    setCategoryId(categoryId) {
-        this._categoryId = categoryId;
-        this.emitChange();
+    _urlFor(id) {
+        return '/api/v2/records/' + id;
     }
 }
 
@@ -132,18 +137,14 @@ var HeaderView = React.createClass({
     },
 
     handleTitleSave(title) {
-        $.post(`/records/${this.props.recordId}/update/title/`, {title: title})
-            .then(result => {
-                recordStore.setTitle(title);
+        recordStore.update(this.props.recordId, {title: title})
+            .then(() => {
                 this.setState({isEditingTitle: false});
             });
     },
 
     handleCategoryChange(categoryId) {
-        $.post(`/records/${this.props.recordId}/update/category/`, {category: categoryId})
-            .then(result => {
-                recordStore.setCategoryId(categoryId);
-            });
+        recordStore.update(this.props.recordId, {category_id: categoryId});
     }
 });
 
@@ -214,42 +215,46 @@ var PostComposerView = React.createClass({
     }
 });
 
-function getRecordStoreState() {
+function getRecordStoreState(recordId) {
     return {
-        title: recordStore.getTitle(),
-        categoryId: recordStore.getCategoryId()
+        record: recordStore.getById(recordId)
     };
 }
 
 var AppView = React.createClass({
     getInitialState() {
-        return getRecordStoreState();
+        return {isLoading: true};
     },
 
     _onChange() {
-        this.setState(getRecordStoreState());
+        this.setState(getRecordStoreState(this.props.recordId));
     },
 
     componentDidMount() {
-        recordStore.addChangeListener(this._onChange);
+        recordStore.find(this.props.recordId).then(record => {
+            this.setState({isLoading: false, record: record});
+            recordStore.addChangeListener(this._onChange);
+        });
     },
 
     render() {
+        if (this.state.isLoading)
+            return <div>로드 중...</div>;
         return <div>
             <HeaderView
                 recordId={this.props.recordId}
-                title={this.state.title}
-                categoryId={this.state.categoryId}
+                title={this.state.record.title}
+                categoryId={this.state.record.category_id}
                 categoryList={this.props.categoryList} />
             <PostComposerView
-                currentStatus={this.props.status}
-                initialStatusType={this.props.statusType}
+                currentStatus={this.state.record.status}
+                initialStatusType={this.state.record.statusType}
                 connectedServices={this.props.connectedServices} />
         </div>;
     }
 });
 
-recordStore = new RecordStore(APP_DATA.title, APP_DATA.categoryId);
+recordStore = new RecordStore();
 
 React.renderComponent(AppView(APP_DATA), $('.library-container')[0]);
 
