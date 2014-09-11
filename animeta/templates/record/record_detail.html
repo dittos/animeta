@@ -17,31 +17,5 @@
 {% endblock %}
 
 {% block js %}
-{% if form %}
-<script>
-function plusOne(val) {
-    var matches = val.match(/(\d+)[^\d]*$/);
-    if (!matches)
-        return val;
-    var add1 = (parseInt(matches[1], 10) + 1).toString();
-    var digits = matches[1].length;
-    if (add1.length < digits)
-        for (var i = 0; i < digits - add1.length; i++)
-            add1 = '0' + add1
-    return val.replace(/(\d+)([^\d]*)$/, add1 + '$2');
-}
-
-var categoryList = [];
-{% for category in category_list %}
-categoryList.push({id: {{ category.id }}, name: '{{ category.name|escapejs }}'});
-{% endfor %}
-
-APP_DATA = {
-    recordId: {{ record.id }},
-    categoryList: categoryList,
-    connectedServices: '{{ form.connected_services|escapejs }}'
-};
-</script>
 <script src="{{ STATIC_URL }}build/{{ asset_filenames.library }}"></script>
-{% endif %}
 {% endblock %}

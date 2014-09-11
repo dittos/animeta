@@ -19,7 +19,7 @@ module.exports = config = {
     },
     module: {
         loaders: [
-            { test: /\.js$/, loader: 'jsx-loader?harmony' },
+            { test: /\.js[x]?$/, loader: 'jsx-loader?harmony' },
             { test: /\.less$/, loader: 'style!css!less' },
             { test: /\.png$/, loader: 'file' }
         ]

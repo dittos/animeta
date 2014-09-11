@@ -14,7 +14,9 @@ from chart.models import weekly, PopularWorksChart
 from connect import get_connected_services
 from record.models import Uncategorized, StatusTypes, include_records
 from record.templatetags.indexing import group_records
+from api import views_v2 as api_v2
 import datetime
+import json
 
 @csrf_protect
 def login(request):
@@ -96,65 +98,14 @@ def library(request, username=None):
     else:
         user = request.user
 
-    records = user.record_set
-    record_count = records.count()
-
-    status_types = [{
-        'value': t,
-        'label': t.text,
-        'count': records.filter(status_type=t).count(),
-    } for t in StatusTypes.types]
-    status_type_filter = request.GET.get('type')
-    if status_type_filter:
-        t = StatusTypes.from_name(status_type_filter)
-        records = records.filter(status_type=t)
-
-    category_filter = None
-    if request.GET.get('category'):
-        try:
-            category_filter = int(request.GET['category'])
-            records = records.filter(category=category_filter or None)
-        except:
-            pass
-
-    records = records.select_related('work', 'user')
-    sort = request.GET.get('sort', 'date')
-    groups = None
-    if sort == 'title':
-        records = list(records.order_by('title'))
-        groups = group_records(records)
-    elif sort == 'date':
-        records = list(records.order_by('-updated_at'))
-        groups = []
-        last_key = None
-        group = None
-        unknown_group = []
-        for record in records:
-            if record.updated_at is None:
-            	unknown_group.append(record)
-            else:
-                key = _date_header(record.updated_at.date())
-                if last_key != key:
-                    if group:
-                        groups.append((last_key, group))
-                    last_key = key
-                    group = []
-                group.append(record)
-        if group:
-            groups.append((last_key, group))
-        if unknown_group:
-        	groups.append(('?', unknown_group))
-
     return render(request, 'user/library.html', {
         'owner': user,
-        'record_groups': groups,
-        'status_types': status_types,
-        'status_type_filter': status_type_filter,
-        'categories': [Uncategorized(user)] + list(user.category_set.annotate(record_count=Count('record'))),
-        'record_count': record_count,
-        'record_display_count': len(records),
-        'category_filter': category_filter,
-        'sort': sort,
+        'preload_data': json.dumps({
+            'owner': api_v2.serialize_user(user),
+            'categories': map(api_v2.serialize_category, [Uncategorized(user)] + list(user.category_set.all())),
+            'current_user': api_v2.serialize_user(request.user) if request.user.is_authenticated() else None,
+            'records': map(api_v2.serialize_record, user.record_set.all()),
+        })
     })
 
 def include_delete_flag(user):

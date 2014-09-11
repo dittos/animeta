@@ -18,6 +18,8 @@ var AutoGrowInput = React.createClass({
 
     handleChange(event) {
         this.setState({size: event.target.value.length});
+        if (this.props.onChange)
+            this.props.onChange();
     }
 });
 

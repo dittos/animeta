@@ -1,116 +1,15 @@
 {% extends "user/base.html" %}
 
-{% load status %}
-{% load indexing %}
+{% block stylesheets %}
+{% endblock %}
 
 {% block content %}
-<div id="records">
-<div id="library-header">
-<form method="get" action="" id="filter-form">
-<input type="hidden" name="sort" id="sort-field" value="{{ sort }}" />
-
-<p>
-    작품이 {{ record_count }}개 등록되어 있습니다.
-    {% if record_count != record_display_count %}
-    ({{ record_display_count }}개 표시 중)
-    {% endif %}
-</p>
-
-<p id="sorting-type">정렬: <a href="?sort=date" id="sort-by-date">시간순</a> <a href="?sort=title" id="sort-by-title">제목순</a></p>
-
-<p>
-<label for="id_type">상태:</label>
-<select name="type" id="id_type">
-    <option value="">전체 ({{ record_count }})</option>
-{% for status_type in status_types %}
-    <option value="{{ status_type.value }}"{% if status_type_filter == status_type.value %} selected{% endif %}>{{ status_type.label }} ({{ status_type.count }})</option>
-{% endfor %}
-</select>
-</p>
-
-<p>
-<label for="category">분류:</label>
-<select name="category" id="category">
-    <option value="">전체 ({{ record_count }})</option>
-{% for category in categories %}
-    <option value="{{ category.id }}"{% ifequal category_filter category.id %} selected="selected"{% endifequal %}>{{ category.name }} ({{ category.record_count }})</option>
-{% endfor %}
-</select>
-<input type="submit" value="이동" />
-
-{% ifequal owner request.user %}
-<a href="/records/category/">관리</a>
-{% endifequal %}
-</p>
-</form>
-</div>
-
-{% ifnotequal record_count 0 %}
-
-{% if sort == 'title' %}
-<p>건너뛰기:
-{% for index, records in record_groups %}
-<a href="#group{{ forloop.counter }}">{{ index }}</a> {% if not forloop.last %}&middot;{% endif %}
-{% endfor %}
-</p>
-{% endif %}
-
-{% if owner == user %}
-<div class="notice notice-animetable">
-10월 신작을 클릭 한번으로 관심 등록!
-<a href="/table/2014Q4/?utm_source=self&amp;utm_medium=link&amp;utm_campaign=library">2014년 10월 신작 보러가기</a>
-</div>
-{% endif %}
-
-{% for index, records in record_groups %}
-<div class="group" id="group{{ forloop.counter }}">
-    <h2>{{ index }}</h2>
-    <ul>
-    {% for record in records %}
-        <li class="item item-{{ record.status_type }}{% if owner == request.user %} can-edit{% endif %}">
-        <a href="{% url "record-detail" record.id %}">
-            <span class="item-title">{{ record.title }}</span>
-            <span class="item-status">{{ record|status_text }}</span>
-            {% if owner == request.user and record.has_newer_episode %}<span class="updated">up!</span>{% endif %}
-        </a>
-        </li>
-    {% endfor %}
-    </ul>
-</div>
-{% endfor %}
-
-{% else %}
-{% ifequal owner request.user %}
-<h2>아직 기록이 하나도 없네요.</h2>
-<p>위에 있는 <a href="/records/add/" class="add-record">기록 추가</a>를 눌러 감상 기록을 등록할 수 있습니다. 아니면, <a href="/records/import/">한꺼번에 기록을 여러개 추가</a>하세요.</p>
-<p>귀띔: 굳이 처음부터 모든 작품을 등록할 필요는 없습니다. 생각 날 때마다 해보세요.</p>
-{% endifequal %}
-{% endifnotequal %}
-</div>
+<div class="library-container"></div>
 {% endblock %}
 
 {% block js %}
-<script type="text/javascript">
-function submit_when_changed(selector) {
-    return $(selector).on('change', function() {
-        $('#filter-form').submit()
-    })
-}
-
-submit_when_changed('#category').next('input:submit').hide()
-submit_when_changed('#id_type')
-
-var sortField = $('#sort-field');
-$('#sort-by-' + sortField.val()).addClass('active');
-$('#sort-by-date').click(function() {
-    sortField.val('date');
-    $('#filter-form').submit();
-    return false;
-});
-$('#sort-by-title').click(function() {
-    sortField.val('title');
-    $('#filter-form').submit();
-    return false;
-});
+<script>
+var PreloadData = eval('({{ preload_data|escapejs }})');
 </script>
+<script src="{{ STATIC_URL }}build/library.react.js?4"></script>
 {% endblock %}
