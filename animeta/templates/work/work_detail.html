@@ -51,17 +51,8 @@
 {% endblock %}
 
 {% block js %}
-{% if daum_api_key %}
-<script type="text/javascript" src="{{ STATIC_URL }}tvpot.js"></script>
-<script type="text/javascript">
-var tvpot = new TVPot('{{ daum_api_key }}')
-$(function() {
-    var m = /tvpot-page([0-9]+)/.exec(location.hash)
-    if (m) tvpot.page = parseInt(m[1])
-    tvpot.$element = $('#videos')
-    tvpot.q = '{{ work.title }}'
-    tvpot.search()
-})
+<script>
+var PreloadData = eval('({{ preload_data|escapejs }})');
 </script>
-{% endif %}
+<script type="text/javascript" src="{{ STATIC_URL }}build/work.react.js"></script>
 {% endblock %}

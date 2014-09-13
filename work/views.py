@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import urllib
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
@@ -38,14 +39,19 @@ def detail(request, title):
 
     alt_titles = TitleMapping.objects.filter(work=work) \
             .exclude(title=work.title).values_list('title', flat=True)
+    episodes = get_episodes(work)
     return render(request, "work/work_detail.html", {
         'work': work,
-        'episodes': get_episodes(work),
+        'episodes': episodes,
         'record': _get_record(request, work),
         'records': work.record_set,
         'alt_titles': alt_titles,
         'comments': comments,
-        'daum_api_key': settings.DAUM_API_KEY
+        'preload_data': json.dumps({
+            'work': {'title': work.title},
+            'episodes': episodes,
+            'daum_api_key': settings.DAUM_API_KEY,
+        })
     })
 
 def episode_detail(request, title, ep):

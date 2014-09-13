@@ -246,19 +246,31 @@ a.work:hover { color: #666; border-bottom: 1px dashed #aaa; }
 #nav .status a:hover { position: static; }
 #comments { padding-right: 1em; margin-right: 410px; }
 .episodes { padding-bottom: 0.5em; }
-.episodes a { color: #666; }
+.episodes a, .episodes .episode { color: #666; text-decoration: underline; cursor: pointer; }
 .episodes .active { color: #4bb000; font-weight: bold; text-decoration: none; }
 #info { margin-bottom: 1em; width: 410px; float: right; }
 #info dl { margin-top: 0; }
 #info dt { font-weight: bold; margin: 0; }
 #info dd { margin: 0.5em 0; font-size: 0.9em; }
-#videos td { width: 120px; vertical-align: top; padding: 0.5em; }
+#videos table { border-collapse: collapse; }
+#videos td { width: 120px; vertical-align: top; padding: 0 1em 1em 0; }
 #videos td a { color: #666; }
 #videos .date, #videos .title { display: block; }
-#videos .thumbnail { width: 120px; height: 90px; }
-#videos .thumbnail img { width: 120px; height: 90px; }
+#videos .thumbnail { width: 128px; min-height: 70px; }
+#videos .thumbnail img { width: 100%; }
 #videos .title { font-size: 0.9em; }
 #videos .date { font-size: 0.8em; padding-top: 0.5em; }
+#videos .load-more {
+    cursor: pointer;
+    color: #fff;
+    border: 1px solid #357d00;
+    background-color: #4bb000;
+    padding: 0.5em;
+    text-align: center;
+}
+#videos .load-more.loading {
+    background-color: #999;
+}
 #video { float: left; }
 #record-form-side { margin-left: 500px; }
 #record-form-side table, #record-form-side table input { font-size: 1em !important; }
