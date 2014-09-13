@@ -64,8 +64,10 @@ var VideoSearchResult = React.createClass({
                 isLoading: false,
                 result: result
             }, () => {
-                if (page > 1)
-                    window.scrollBy(0, 10000);
+                if (page > 1) {
+                    var $el = $(this.getDOMNode());
+                    window.scrollTo(0, $el.offset().top + $el.height() - $(window).height() + 100);
+                }
             });
         });
     },
