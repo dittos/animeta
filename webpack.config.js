@@ -15,7 +15,7 @@ module.exports = config = {
     output: {
         path: 'animeta/static/build',
         publicPath: '/static/build/',
-        filename: '[name]-[hash].js'
+        filename: '[name].js'
     },
     module: {
         loaders: [
@@ -60,6 +60,8 @@ if (process.env.NODE_ENV == 'production') {
         uglifyPlugin,
         commonsPlugin
     ].concat(config.plugins);
+
+    config.output.filename = '[name]-[hash].js';
 
     config.devtool = 'source-map';
 } else {

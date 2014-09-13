@@ -6,5 +6,6 @@ src
 env
 settings_local.py
 node_modules
-animeta/static/build/*.(js|png|map)
+animeta/static/build/*.js
+animeta/static/build/*.png
 animeta/assets.py

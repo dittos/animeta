@@ -122,7 +122,9 @@ Raven.config('http://fb3fd1fc77c94c4799d9fc7228260818@sentry.sapzil.org/3', {
     //whitelistUrls: [/example\.com/]
 }).install();
 </script>
+{% if asset_filenames.common %}
 <script type="text/javascript" src="{{ STATIC_URL }}build/{{ asset_filenames.common }}"></script>
+{% endif %}
 <script type="text/javascript" src="{{ STATIC_URL }}common.js?1"></script>
 {% block js %}
 {% endblock %}
