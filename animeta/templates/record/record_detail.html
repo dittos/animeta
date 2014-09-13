@@ -46,6 +46,6 @@ APP_DATA = {
     statusType: '{{ record.status_type.name }}'
 };
 </script>
-<script src="{{ STATIC_URL }}build/library.react.js?4"></script>
+<script src="{{ STATIC_URL }}build/{{ asset_filenames.library }}"></script>
 {% endif %}
 {% endblock %}

@@ -100,6 +100,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'animeta.context_processors.hijax',
     'animeta.context_processors.settings',
+    'animeta.context_processors.assets',
 )
 
 ROOT_URLCONF = 'animeta.urls'

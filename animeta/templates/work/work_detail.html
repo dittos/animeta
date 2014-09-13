@@ -54,5 +54,5 @@
 <script>
 var PreloadData = eval('({{ preload_data|escapejs }})');
 </script>
-<script type="text/javascript" src="{{ STATIC_URL }}build/work.react.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}build/{{ asset_filenames.work }}"></script>
 {% endblock %}
