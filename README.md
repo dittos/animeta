@@ -25,5 +25,9 @@ http://animeta.net/
 
 ## 개발 서버 시작
 
-    webpack --watch -p & # asset build
+    webpack --watch & # asset build
     python manage.py runserver
+
+## 배포용 어셋 빌드
+
+    NODE_ENV=production webpack

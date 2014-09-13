@@ -43,7 +43,13 @@ if (process.env.NODE_ENV == 'production') {
 
     function versionMapPlugin() {
         this.plugin('done', function(stats) {
-            var source = 'ASSET_FILENAMES = ' + JSON.stringify(stats.toJson().assetsByChunkName);
+            var assets = stats.toJson().assetsByChunkName;
+            for (var key in assets) {
+                if (assets.hasOwnProperty(key) && Array.isArray(assets[key])) {
+                    assets[key] = assets[key][0];
+                }
+            }
+            var source = 'ASSET_FILENAMES = ' + JSON.stringify(assets);
             fs.writeFileSync(path.join(__dirname, 'animeta/assets.py'), source);
         });
     }
