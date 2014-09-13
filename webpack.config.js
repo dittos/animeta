@@ -2,28 +2,8 @@ var fs = require('fs');
 var path = require('path');
 var webpack = require('webpack');
 
-var moduleReplacePlugin = new webpack.NormalModuleReplacementPlugin(
-    /ReactErrorUtils$/, __dirname + '/animeta/static/js/ReactErrorUtils.js'
-);
-
-var definePlugin = new webpack.DefinePlugin({
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-});
-
-var commonsPlugin = new webpack.optimize.CommonsChunkPlugin('common', 'common-[hash].js');
-
-function versionMapPlugin() {
-    this.plugin('done', function(stats) {
-        var source = 'ASSET_FILENAMES = ' + JSON.stringify(stats.toJson().assetsByChunkName);
-        fs.writeFileSync(path.join(__dirname, 'animeta/assets.py'), source);
-    });
-}
-
-module.exports = {
+module.exports = config = {
     plugins: [
-        moduleReplacePlugin,
-        definePlugin,
-        commonsPlugin,
         versionMapPlugin
     ],
     entry: {
@@ -45,3 +25,37 @@ module.exports = {
         ]
     }
 };
+
+if (process.env.NODE_ENV == 'production') {
+    console.log('* Production Build');
+
+    var moduleReplacePlugin = new webpack.NormalModuleReplacementPlugin(
+        /ReactErrorUtils$/, __dirname + '/animeta/static/js/ReactErrorUtils.js'
+    );
+
+    var definePlugin = new webpack.DefinePlugin({
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+    });
+
+    var uglifyPlugin = new webpack.optimize.UglifyJsPlugin();
+
+    var commonsPlugin = new webpack.optimize.CommonsChunkPlugin('common', 'common-[hash].js');
+
+    function versionMapPlugin() {
+        this.plugin('done', function(stats) {
+            var source = 'ASSET_FILENAMES = ' + JSON.stringify(stats.toJson().assetsByChunkName);
+            fs.writeFileSync(path.join(__dirname, 'animeta/assets.py'), source);
+        });
+    }
+
+    config.plugins = [
+        moduleReplacePlugin,
+        definePlugin,
+        uglifyPlugin,
+        commonsPlugin
+    ].concat(config.plugins);
+
+    config.devtool = 'source-map';
+} else {
+    console.log('* Development Build');
+}
