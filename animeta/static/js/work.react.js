@@ -28,7 +28,7 @@ function shorten(str, limit) {
 
 var VideoSearchResult = React.createClass({
     getInitialState() {
-        return {isLoading: true, result: []};
+        return {isLoading: true, hasMore: true, result: []};
     },
 
     componentDidMount() {
@@ -39,6 +39,7 @@ var VideoSearchResult = React.createClass({
         if (this.props.query != nextProps.query) {
             this.setState({
                 isLoading: true,
+                hasMore: true,
                 result: [],
                 page: 0
             }, this._loadMore);
@@ -55,10 +56,13 @@ var VideoSearchResult = React.createClass({
             q: this.props.query,
             pageno: page
         }).then(data => {
+            var result = this.state.result.concat(data.channel.item);
+            var totalCount = parseInt(data.channel.totalCount, 10);
             this.setState({
+                hasMore: result.length < totalCount,
                 page: page,
                 isLoading: false,
-                result: this.state.result.concat(data.channel.item)
+                result: result
             }, () => {
                 if (page > 1)
                     window.scrollBy(0, 10000);
@@ -90,7 +94,7 @@ var VideoSearchResult = React.createClass({
         var loadMore;
         if (this.state.isLoading) {
             loadMore = <div className="load-more loading">로드 중...</div>;
-        } else {
+        } else if (this.state.hasMore) {
             loadMore = <div className="load-more" onClick={this._loadMore}>검색 결과 더 보기...</div>;
         }
 
