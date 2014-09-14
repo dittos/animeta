@@ -53,43 +53,11 @@
     list-style: none;
 }
 
-.library-group-item-editing {
-    padding: 0.25em 0;
-
-    .view-record-detail {
-        border-radius: 3px;
-        border: 1px solid #ccc;
-        background-color: #f8f8f8;
-    }
-
-    .record-detail-actions {
-        clear: both;
-        display: block;
-        padding: 0.5em;
-        text-align: center;
-        border-top: 1px solid #ccc;
-        background-color: #fff;
-        color: #999;
-        a {
-            text-decoration: none;
-        }
-    }
-
-    .record-detail-header {
-        padding: 0.25em 0.5em;
-        margin-bottom: 0;
-    }
-    
-    .record-detail-update {
-        padding: 0.5em;
-    }
-}
-
 .library-group-item {
     padding: 0.25em 0;
     font-size: 1.1em;
 
-    & > div {
+    a {
         display: inline-block;
         padding: 0.25em 0.5em;
         text-decoration: none;
@@ -110,7 +78,7 @@
     }
 
     &.item-watching {
-        & > div {
+        a {
             color: #000;
             font-weight: bold;
             &:hover, &.active {

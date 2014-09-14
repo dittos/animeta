@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 
 var events = require('events');
+var parseUrl = require('url').parse;
 var React = require('react');
 var LayeredComponentMixin = require('react-components/js/layered-component-mixin.jsx');
 var TimeAgo = require('react-components/js/timeago.jsx');
@@ -180,7 +181,6 @@ var StatusInputView = React.createClass({
 
     _updateSuffix() {
         var input = this.refs.input.getDOMNode();
-        console.log(input.value);
         this.setState({showSuffix: input.value.match(/^(|.*\d)$/)});
     },
 
@@ -435,13 +435,20 @@ var LibraryItemView = React.createClass({
         var record = this.props.record;
         var content;
         content = (
-            <div onClick={this.props.onClick} className={this.props.isActive && 'active'}>
+            <a href={'/records/' + record.id + '/'} onClick={this.handleClick} className={this.props.isActive && 'active'}>
                 <span className="item-title">{record.title}</span>
                 <span className="item-status">{getStatusText(record)}</span>
-            </div>
+            </a>
         );
         return <li className={'library-group-item item-' + record.status_type}>{content}</li>;
     },
+
+    handleClick(e) {
+        if (e.button == 0) { // left click
+            e.preventDefault();
+            this.props.onClick();
+        }
+    }
 });
 
 var LibraryView = React.createClass({
@@ -450,9 +457,9 @@ var LibraryView = React.createClass({
     getInitialState() {
         return {
             records: this.props.initialRecords,
-            sortBy: 'date',
-            statusTypeFilter: null,
-            categoryFilter: null
+            sortBy: this.props.initialFilters.sort || 'date',
+            statusTypeFilter: this.props.initialFilters.type,
+            categoryFilter: this.props.initialFilters.category
         };
     },
 
@@ -477,12 +484,11 @@ var LibraryView = React.createClass({
                 if (event.record.hasOwnProperty(k))
                     record[k] = event.record[k];
             }
-            this.setState({
-                records: this.state.records,
-                activeItem: null
-            }, () => {
-                window.scrollTo(0, 0);
+            this.setState({records: this.state.records}, () => {
+                if (this.state.sortBy == 'date')
+                    window.scrollTo(0, 0);
             });
+            this.closeItem();
         });
     },
 
@@ -581,10 +587,14 @@ var LibraryView = React.createClass({
 
     handleItemClick(item) {
         this.setState({activeItem: item});
+        if ('pushState' in history)
+            history.pushState(null, '', '/records/' + item.id + '/');
     },
 
     closeItem() {
         this.setState({activeItem: null});
+        if ('pushState' in history)
+            history.pushState(null, '', '/users/' + this.props.user.name + '/');
     },
 
     renderLayer() {
@@ -604,17 +614,64 @@ var LibraryView = React.createClass({
     closeItemIfOutsideClicked(e) {
         if (e.target.className == 'modal-container')
             this.closeItem();
+    },
+
+    setActiveItemId(id) {
+        var item = this.state.records.filter(record => record.id == id)[0];
+        this.setState({activeItem: item});
     }
 });
+
+// Backward compat
+if (location.search)
+    location.href = location.pathname + '#' + location.search;
+
+var initialFilters = {};
+var initialActiveItemId;
+if (location.hash) {
+    var url = parseUrl(location.hash.substring(1), true);
+    var targetUrl = location.pathname;
+    initialFilters = url.query;
+    var match = url.pathname && url.pathname.match(/^\/records\/([0-9]+)\/$/);
+    if (match) {
+        initialActiveItemId = Number(match[1]);
+        targetUrl = '/records/' + initialActiveItemId + '/';
+    }
+    if ('replaceState' in history)
+        history.replaceState(null, '', targetUrl);
+    else
+        location.hash = '';
+}
 
 var user = PreloadData.owner;
 user.categoryList = PreloadData.categories;
 var canEdit = PreloadData.current_user && PreloadData.current_user.id == user.id;
-React.renderComponent(<LibraryView
+
+var root = React.renderComponent(<LibraryView
     initialRecords={PreloadData.records}
+    initialFilters={initialFilters}
     user={user}
     canEdit={canEdit} />,
 $('.library-container')[0]);
+
+if (initialActiveItemId) {
+    root.setActiveItemId(initialActiveItemId);
+}
+
+// URL 관리 전략
+// - pushState를 제대로 지원 안하는 브라우저에서는 URL을 건드리지 않고 상태만 변경.
+// - pushState를 지원하는 경우 URL을 건드린다.
+//   * 단, 개별 페이지로 링크가 필요한 경우에만.
+//   * 뒤로/앞으로 시에 이전 상태를 복구해야 한다.
+
+window.addEventListener('popstate', () => {
+    var params = location.pathname.match(/^\/records\/([0-9]+)\/$/);
+    var activeItemId;
+    if (params) {
+        activeItemId = params[1];
+    }
+    root.setActiveItemId(activeItemId);
+});
 
 $(document).ajaxError((event, jqXHR, settings, thrownError) => {
     if (jqXHR.responseText) {
