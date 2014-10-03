@@ -5,6 +5,7 @@ from table import models
 CURRENT_PERIOD = models.Period.parse('2014Q4')
 
 def index(request):
+    return redirect('table-period', period=CURRENT_PERIOD)
     data = models.load_data(CURRENT_PERIOD)
     data = models.annotate_statuses(data, request.user)
     return render(request, 'table/index.html', {
