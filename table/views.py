@@ -2,7 +2,7 @@ import json
 from django.shortcuts import render, redirect
 from table import models
 
-CURRENT_PERIOD = models.Period.parse('2014Q3')
+CURRENT_PERIOD = models.Period.parse('2014Q4')
 
 def index(request):
     data = models.load_data(CURRENT_PERIOD)
