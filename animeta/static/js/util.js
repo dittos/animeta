@@ -57,3 +57,15 @@ module.exports.debounce = function(fn, t) {
 module.exports.deepCopy = function(obj) {
     return $.extend(/*deep:*/ true, {}, obj);
 };
+
+module.exports.plusOne = function(val) {
+    var matches = val.match(/(\d+)[^\d]*$/);
+    if (!matches)
+        return val;
+    var add1 = (parseInt(matches[1], 10) + 1).toString();
+    var digits = matches[1].length;
+    if (add1.length < digits)
+        for (var i = 0; i < digits - add1.length; i++)
+            add1 = '0' + add1
+    return val.replace(/(\d+)([^\d]*)$/, add1 + '$2');
+};

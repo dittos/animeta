@@ -43,8 +43,9 @@ def _get_record(request, id):
     return record
 
 def update(request, id):
+    from user.views import library
     record = get_object_or_404(Record, id=id)
-    return redirect(record.user.get_absolute_url() + '#' + request.path)
+    return library(request, record.user.username)
 
 @login_required
 def delete(request, id):

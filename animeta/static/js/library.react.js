@@ -1,18 +1,14 @@
 /** @jsx React.DOM */
 
-var events = require('events');
-var parseUrl = require('url').parse;
 var React = require('react');
-var LayeredComponentMixin = require('react-components/js/layered-component-mixin.jsx');
 var TimeAgo = require('react-components/js/timeago.jsx');
 var moment = require('moment');
 moment.locale('ko');
-var AutoGrowInput = require('./AutoGrowInput');
-var PositionSticky = require('./PositionSticky');
+var {Routes, Route, DefaultRoute, Link, Navigation} = require('react-router');
+var StatusInputView = require('./StatusInputView');
 var util = require('./util');
+var RecordStore = require('./RecordStore');
 require('../less/library.less');
-
-var GlobalEvents = new events.EventEmitter();
 
 function getWorkURL(title) {
     return '/works/' + encodeURIComponent(title) + '/';
@@ -77,10 +73,7 @@ var CategoryEditView = React.createClass({
     handleChange(event) {
         var categoryId = event.target.value;
         $.post('/api/v2/records/' + this.props.recordId, {category_id: categoryId}).then(() => {
-            GlobalEvents.emit('category-edit', {
-                recordId: this.props.recordId,
-                newCategoryId: categoryId
-            });
+            RecordStore.updateCategory(this.props.recordId, categoryId);
         });
     }
 });
@@ -135,59 +128,9 @@ var HeaderView = React.createClass({
 
     handleTitleSave(title) {
         $.post('/api/v2/records/' + this.props.recordId, {title: title}).then(() => {
-            GlobalEvents.emit('title-edit', {
-                recordId: this.props.recordId,
-                newTitle: title
-            });
+            RecordStore.updateTitle(this.props.recordId, title);
             this.setState({isEditingTitle: false});
         });
-    }
-});
-
-function plusOne(val) {
-    var matches = val.match(/(\d+)[^\d]*$/);
-    if (!matches)
-        return val;
-    var add1 = (parseInt(matches[1], 10) + 1).toString();
-    var digits = matches[1].length;
-    if (add1.length < digits)
-        for (var i = 0; i < digits - add1.length; i++)
-            add1 = '0' + add1
-    return val.replace(/(\d+)([^\d]*)$/, add1 + '$2');
-}
-
-var StatusInputView = React.createClass({
-    getInitialState() {
-        return {showSuffix: true};
-    },
-
-    render() {
-        return <span>
-            {this.transferPropsTo(<AutoGrowInput
-                minSize={3} maxSize={10}
-                style={{textAlign: 'right'}}
-                onChange={this._updateSuffix}
-                ref="input" />)}
-            {this.state.showSuffix ? '화' : null}
-            <span className="plus-one" style={{cursor: 'pointer'}} onClick={this.handlePlusOne}>
-                <img src="/static/plus.gif" alt="+1" />
-            </span>
-        </span>;
-    },
-
-    componentDidMount() {
-        this._updateSuffix();
-    },
-
-    _updateSuffix() {
-        var input = this.refs.input.getDOMNode();
-        this.setState({showSuffix: input.value.match(/^(|.*\d)$/)});
-    },
-
-    handlePlusOne() {
-        var input = this.refs.input.getDOMNode();
-        var newValue = plusOne(input.value);
-        input.value = newValue;
     }
 });
 
@@ -209,7 +152,7 @@ var PostComposerView = React.createClass({
                 {' @ '}
                 {currentStatus}
                 <StatusInputView name="status"
-                    defaultValue={plusOne(this.props.currentStatus)} />
+                    defaultValue={util.plusOne(this.props.currentStatus)} />
             </div>
             <textarea name="comment" rows={3} cols={30} autoFocus />
             <div className="actions">
@@ -231,10 +174,7 @@ var PostComposerView = React.createClass({
         event.preventDefault();
         var data = $(this.getDOMNode()).serialize();
         $.post('/api/v2/records/' + this.props.recordId + '/posts', data).then(result => {
-            GlobalEvents.emit('post-create', {
-                record: result.record,
-                post: result.post
-            });
+            RecordStore.addPost(result.record, result.post);
             this.props.onSave(result.post);
         });
     }
@@ -255,23 +195,32 @@ var PostView = React.createClass({
     }
 });
 
-var RecordDetailView = React.createClass({
+var RecordDetail = React.createClass({
+    mixins: [Navigation],
+
     getInitialState() {
-        return {isLoading: true};
+        return {
+            record: RecordStore.get(this.props.params.recordId),
+            isLoading: true
+        };
     },
 
     componentDidMount() {
+        RecordStore.addChangeListener(this._onChange);
         this.loadPosts();
     },
 
-    componentDidUpdate(prevProps) {
-        if (this.props.record.id != prevProps.record.id)
-            this.loadPosts();
+    componentWillUnmount() {
+        RecordStore.removeChangeListener(this._onChange);
+    },
+
+    _onChange() {
+        this.setState({record: RecordStore.get(this.props.params.recordId)});
     },
 
     loadPosts() {
         this.setState({isLoading: true});
-        $.get('/api/v2/records/' + this.props.record.id + '/posts').then(result => {
+        $.get('/api/v2/records/' + this.state.record.id + '/posts').then(result => {
             if (this.isMounted())
                 this.setState({isLoading: false, posts: result.posts});
         });
@@ -282,21 +231,20 @@ var RecordDetailView = React.createClass({
         if (this.props.canEdit) {
             composer = (
                 <PostComposerView
-                    key={'post-composer-' + this.props.record.updated_at}
-                    recordId={this.props.record.id}
-                    currentStatus={this.props.record.status}
-                    initialStatusType={this.props.record.status_type}
+                    key={'post-composer-' + this.state.record.updated_at}
+                    recordId={this.state.record.id}
+                    currentStatus={this.state.record.status}
+                    initialStatusType={this.state.record.status_type}
                     connectedServices={PreloadData.current_user.connected_services}
                     onSave={this.handleSave} />
             );
         }
-        return <div className="view-record-detail modal">
-            {this.props.onClose && <span className="close" onClick={this.props.onClose}>&times;</span>}
+        return <div className="view-record-detail">
             <HeaderView
                 canEdit={this.props.canEdit}
-                recordId={this.props.record.id}
-                title={this.props.record.title}
-                categoryId={this.props.record.category_id}
+                recordId={this.state.record.id}
+                title={this.state.record.title}
+                categoryId={this.state.record.category_id}
                 categoryList={this.props.user.categoryList} />
             {composer}
             <div className="record-detail-posts">
@@ -307,7 +255,8 @@ var RecordDetailView = React.createClass({
     },
 
     handleSave(post) {
-        this.setState({posts: [post].concat(this.state.posts)});
+        // TODO: preserve sort mode
+        this.transitionTo('records');
     }
 });
 
@@ -435,82 +384,51 @@ var LibraryItemView = React.createClass({
         var record = this.props.record;
         var content;
         content = (
-            <a href={'/records/' + record.id + '/'} onClick={this.handleClick} className={this.props.isActive && 'active'}>
+            <Link to="record" params={{recordId: record.id}}>
                 <span className="item-title">{record.title}</span>
                 <span className="item-status">{getStatusText(record)}</span>
-            </a>
+            </Link>
         );
         return <li className={'library-group-item item-' + record.status_type}>{content}</li>;
-    },
-
-    handleClick(e) {
-        if (e.button == 0) { // left click
-            e.preventDefault();
-            this.props.onClick();
-        }
     }
 });
 
-var LibraryView = React.createClass({
-    mixins: [LayeredComponentMixin],
+var Library = React.createClass({
+    mixins: [Navigation],
 
     getInitialState() {
-        return {
-            records: this.props.initialRecords,
-            sortBy: this.props.initialFilters.sort || 'date',
-            statusTypeFilter: this.props.initialFilters.type,
-            categoryFilter: this.props.initialFilters.category
-        };
-    },
-
-    findRecord(id) {
-        return this.state.records.filter(record => record.id == id)[0];
+        return {records: RecordStore.getAll(), sortBy: 'date'};
     },
 
     componentDidMount() {
-        GlobalEvents.on('title-edit', event => {
-            var record = this.findRecord(event.recordId);
-            record.title = event.newTitle;
-            this.setState({records: this.state.records});
-        });
-        GlobalEvents.on('category-edit', event => {
-            var record = this.findRecord(event.recordId);
-            record.category_id = event.newCategoryId;
-            this.setState({records: this.state.records});
-        });
-        GlobalEvents.on('post-create', event => {
-            var record = this.findRecord(event.record.id);
-            for (var k in event.record) {
-                if (event.record.hasOwnProperty(k))
-                    record[k] = event.record[k];
-            }
-            this.setState({records: this.state.records}, () => {
-                if (this.state.sortBy == 'date')
-                    window.scrollTo(0, 0);
-            });
-            this.closeItem();
-        });
+        RecordStore.addChangeListener(this._onChange);
+    },
+
+    componentWillUnmount() {
+        RecordStore.removeChangeListener(this._onChange);
+    },
+
+    _onChange() {
+        this.setState({records: RecordStore.getAll()});
     },
 
     render() {
-        if (!this.state.records) {
-            return <div>로드 중...</div>;
-        }
         if (this.state.records.length == 0) {
             return this._renderEmpty();
         }
 
         var records = this.state.records;
-        if (this.state.statusTypeFilter) {
-            records = records.filter(record => record.status_type == this.state.statusTypeFilter);
+        if (this.props.query.type) {
+            records = records.filter(record => record.status_type == this.props.query.type);
         }
-        if (this.state.categoryFilter) {
-            records = records.filter(record => (record.category_id || 0) == this.state.categoryFilter);
+        if (this.props.query.category) {
+            records = records.filter(record => (record.category_id || 0) == this.props.query.category);
         }
         var groups;
-        if (this.state.sortBy == 'date') {
+        var sort = this.props.query.sort || 'date';
+        if (sort == 'date') {
             groups = groupRecordsByDate(records);
-        } else if (this.state.sortBy == 'title') {
+        } else if (sort == 'title') {
             groups = groupRecordsByTitle(records);
         }
         var header = <div className="library-header">
@@ -520,14 +438,14 @@ var LibraryView = React.createClass({
             </p>
             <p className="sort-by">
                 정렬:
-                <span onClick={() => this.setState({sortBy: 'date'})}
-                    className={'btn ' + (this.state.sortBy == 'date' && 'active')}>시간순</span>
-                <span onClick={() => this.setState({sortBy: 'title'})}
-                    className={'btn ' + (this.state.sortBy == 'title' && 'active')}>제목순</span>
+                <span onClick={() => this.updateQuery({sort: 'date'})}
+                    className={'btn ' + (sort == 'date' && 'active')}>시간순</span>
+                <span onClick={() => this.updateQuery({sort: 'title'})}
+                    className={'btn ' + (sort == 'title' && 'active')}>제목순</span>
             </p>
             <p>
                 <label>상태: </label>
-                <select value={this.state.statusTypeFilter} onChange={this.handleStatusTypeFilterChange}>
+                <select value={this.props.query.type} onChange={this.handleStatusTypeFilterChange}>
                     <option value="">전체 ({this.state.records.length})</option>
                 {['watching', 'finished', 'suspended', 'interested'].map(statusType => {
                     var recordCount = this.state.records.filter(record => record.status_type == statusType).length;
@@ -537,7 +455,7 @@ var LibraryView = React.createClass({
             </p>
             <p>
                 <label>분류: </label>
-                <select value={this.state.categoryFilter} onChange={this.handleCategoryFilterChange}>
+                <select value={this.props.query.category} onChange={this.handleCategoryFilterChange}>
                     <option value="">전체 ({this.state.records.length})</option>
                 {this.props.user.categoryList.map(category => {
                     var recordCount = this.state.records.filter(record => (record.category_id || 0) == category.id).length;
@@ -563,8 +481,6 @@ var LibraryView = React.createClass({
                 <h2 className="library-group-title">{group.key}</h2>
                 <ul className="library-group-items">
                     {group.items.map(record => <LibraryItemView
-                        onClick={() => this.handleItemClick(record)}
-                        isActive={this.state.activeItem == record}
                         key={record.id}
                         record={record} />)}
                 </ul>
@@ -584,101 +500,49 @@ var LibraryView = React.createClass({
         </div>;
     },
 
+    updateQuery(updates) {
+        var query = {};
+        if (this.props.query) {
+            for (var k in this.props.query) {
+                if (this.props.query.hasOwnProperty(k))
+                    query[k] = this.props.query[k];
+            }
+        }
+        for (var k in updates) {
+            if (updates.hasOwnProperty(k))
+                query[k] = updates[k];
+        }
+        this.transitionTo(this.props.name, {}, query);
+    },
+
     handleStatusTypeFilterChange(e) {
-        this.setState({statusTypeFilter: e.target.value});
+        this.updateQuery({type: e.target.value});
     },
 
     handleCategoryFilterChange(e) {
-        this.setState({categoryFilter: e.target.value});
-    },
-
-    handleItemClick(item) {
-        this.setState({activeItem: item});
-        if ('pushState' in history)
-            history.pushState(null, '', '/records/' + item.id + '/');
-    },
-
-    closeItem() {
-        this.setState({activeItem: null});
-        if ('pushState' in history)
-            history.pushState(null, '', '/users/' + this.props.user.name + '/');
-    },
-
-    renderLayer() {
-        if (!this.state.activeItem)
-            return <noscript />;
-
-        return <div className="modal-container"
-            onClick={this.closeItemIfOutsideClicked}>
-            <RecordDetailView
-                user={this.props.user}
-                record={this.state.activeItem}
-                canEdit={this.props.canEdit}
-                onClose={this.closeItem} />
-        </div>;
-    },
-
-    closeItemIfOutsideClicked(e) {
-        if (e.target.className == 'modal-container')
-            this.closeItem();
-    },
-
-    setActiveItemId(id) {
-        var item = this.state.records.filter(record => record.id == id)[0];
-        this.setState({activeItem: item});
+        this.updateQuery({category: e.target.value});
     }
 });
 
-// Backward compat
-if (location.search)
-    location.href = location.pathname + '#' + location.search;
-
-var initialFilters = {};
-var initialActiveItemId;
-if (location.hash) {
-    var url = parseUrl(location.hash.substring(1), true);
-    var targetUrl = location.pathname;
-    initialFilters = url.query;
-    var match = url.pathname && url.pathname.match(/^\/records\/([0-9]+)\/$/);
-    if (match) {
-        initialActiveItemId = Number(match[1]);
-        targetUrl = '/records/' + initialActiveItemId + '/';
+var App = React.createClass({
+    render() {
+        var user = PreloadData.owner;
+        user.categoryList = PreloadData.categories;
+        var canEdit = PreloadData.current_user && PreloadData.current_user.id == user.id;
+        return <this.props.activeRouteHandler user={user} canEdit={canEdit} />;
     }
-    if ('replaceState' in history)
-        history.replaceState(null, '', targetUrl);
-    else
-        location.hash = '';
-}
+});
 
-var user = PreloadData.owner;
-user.categoryList = PreloadData.categories;
-var canEdit = PreloadData.current_user && PreloadData.current_user.id == user.id;
+RecordStore.preload(PreloadData.records);
 
-var root = React.renderComponent(<LibraryView
-    initialRecords={PreloadData.records}
-    initialFilters={initialFilters}
-    user={user}
-    canEdit={canEdit} />,
+React.renderComponent(
+    <Routes location="history">
+        <Route path={'/users/' + PreloadData.owner.name + '/'} handler={App}>
+            <DefaultRoute name="records" handler={Library} />
+            <Route name="record" path="/records/:recordId/" handler={RecordDetail} addHandlerKey={true} />
+        </Route>
+    </Routes>,
 $('.library-container')[0]);
-
-if (initialActiveItemId) {
-    root.setActiveItemId(initialActiveItemId);
-}
-
-// URL 관리 전략
-// - pushState를 제대로 지원 안하는 브라우저에서는 URL을 건드리지 않고 상태만 변경.
-// - pushState를 지원하는 경우 URL을 건드린다.
-//   * 단, 개별 페이지로 링크가 필요한 경우에만.
-//   * 뒤로/앞으로 시에 이전 상태를 복구해야 한다.
-
-window.addEventListener('popstate', () => {
-    var params = location.pathname.match(/^\/records\/([0-9]+)\/$/);
-    var activeItemId;
-    if (params) {
-        activeItemId = params[1];
-    }
-    root.setActiveItemId(activeItemId);
-});
 
 $(document).ajaxError((event, jqXHR, settings, thrownError) => {
     if (jqXHR.responseText) {
