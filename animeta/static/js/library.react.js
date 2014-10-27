@@ -1,11 +1,11 @@
 /** @jsx React.DOM */
 
 var React = require('react');
-var TimeAgo = require('react-components/js/timeago.jsx');
 var moment = require('moment');
 moment.locale('ko');
 var {Routes, Route, DefaultRoute, Link, Navigation} = require('react-router');
 var StatusInputView = require('./StatusInputView');
+var TimeAgo = require('./TimeAgo');
 var util = require('./util');
 var RecordStore = require('./RecordStore');
 require('../less/library.less');
