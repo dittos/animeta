@@ -33,6 +33,7 @@
 .library-group {
     padding: 0.5em 0;
     border-top: 1px solid #ddd;
+    line-height: 1.6;
 }
 
 .library-toc a {
@@ -208,11 +209,15 @@
 .record-detail-posts .post-item {
     clear: both;
     margin: 16px 0;
+    line-height: 1.8;
 
     .progress {
-        float: left;
         font-weight: bold;
         margin-right: 8px;
+        display: inline-block;
+    }
+    .comment {
+        display: inline-block;
     }
     .meta {
         font-size: 12px;
@@ -225,11 +230,17 @@
         }
     }
     .btn-delete {
-        margin-left: 5px;
+        margin-left: 8px;
         color: #f00;
         text-decoration: none;
         &:hover {
             text-decoration: underline;
+        }
+    }
+
+    &.no-comment {
+        .meta {
+            display: inline-block;
         }
     }
 }

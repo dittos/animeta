@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 
-var React = require('react');
+var React = require('react/addons');
 var moment = require('moment');
 moment.locale('ko');
 var {Routes, Route, DefaultRoute, Link, Navigation} = require('react-router');
@@ -190,7 +190,7 @@ var PostView = React.createClass({
     render() {
         var post = this.props.post;
         return (
-            <div className="post-item">
+            <div className={React.addons.classSet({'post-item': true, 'no-comment': !post.comment})}>
                 <div className="progress">{getStatusText(post)}</div>
                 {post.comment && <div className="comment">{post.comment}</div>}
                 <div className="meta">
