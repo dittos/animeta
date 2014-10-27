@@ -73,7 +73,7 @@ def library(request, username=None):
     if username:
         user = get_object_or_404(User, username=username)
     else:
-        user = request.user
+        return redirect('user.views.library', username=request.user.username)
 
     return render(request, 'user/library.html', {
         'owner': user,
