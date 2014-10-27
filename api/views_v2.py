@@ -6,8 +6,9 @@ from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
 from django.views.generic import View
 from django.contrib.auth.models import User
-from connect import get_connected_services
 from record.models import Record, History, StatusTypes, Uncategorized
+from connect import get_connected_services, post_history
+from connect.models import FacebookSetting
 
 def serialize_datetime(dt):
     return int((time.mktime(dt.timetuple()) + dt.microsecond / 1000000.0) * 1000)
@@ -137,6 +138,23 @@ class RecordPostsView(BaseView):
             status_type=StatusTypes.from_name(request.POST['status_type']),
             comment=request.POST['comment'],
         )
+
+        services = []
+        if request.POST.get('publish_twitter') == 'on':
+            services.append('twitter')
+        if request.POST.get('publish_facebook') == 'on':
+            services.append('facebook')
+            token = request.POST.get('fb_token')
+            if token:
+                try:
+                    fb = FacebookSetting.objects.get(user=request.user)
+                except FacebookSetting.DoesNotExist:
+                    fb = FacebookSetting(user=request.user)
+                fb.key = token
+                fb.save()
+
+        post_history(history, services)
+
         return {
             'record': serialize_record(history.record),
             'post': serialize_post(history),
