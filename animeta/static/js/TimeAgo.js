@@ -13,7 +13,7 @@ var TimeAgo = React.createClass({
     },
 
     componentDidMount: function() {
-        var interval = this.props.time || 60000;
+        var interval = this.props.interval || 60000;
         this.setInterval(this.forceUpdate.bind(this), interval);
     }
 });
