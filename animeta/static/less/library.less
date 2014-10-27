@@ -98,39 +98,6 @@
     }
 }
 
-.modal-container {
-    position: fixed;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #000;
-    background-color: rgba(0, 0, 0, 0.8);
-
-    .modal {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 640px;
-        padding: 16px;
-        margin: 32px auto;
-        background-color: #fff;
-        overflow: auto;
-
-        .close {
-            position: absolute;
-            top: 0;
-            right: 0;
-            padding: 10px;
-            cursor: pointer;
-            font-size: 38px;
-            line-height: 1;
-        }
-    }
-}
-
 .record-detail-header {
     float: left;
     margin-bottom: 16px;
@@ -139,6 +106,14 @@
         float: left;
         margin: 0 1em 0 0;
         font-size: 1.4em;
+        a {
+            color: #000;
+            text-decoration: none;
+            &:hover {
+                color: #666;
+                border-bottom: 1px dashed #666;
+            }
+        }
     }
 
     .record-detail-toolbar {

@@ -92,7 +92,9 @@ var HeaderView = React.createClass({
                 onSave={this.handleTitleSave}
                 onCancel={() => this.setState({isEditingTitle: false})} />;
         } else {
-            titleEditor = <h1 className="record-detail-title">{this.props.title}</h1>;
+            titleEditor = <h1 className="record-detail-title">
+                <a href={getWorkURL(this.props.title)}>{this.props.title}</a>
+            </h1>;
             editTitleButton = (
                 <a href="#" className="btn btn-edit-title" onClick={this.handleTitleEditButtonClick}>
                     제목 수정
