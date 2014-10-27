@@ -527,11 +527,20 @@ var Library = React.createClass({
 });
 
 var App = React.createClass({
+    mixins: [Navigation],
+
     render() {
         var user = PreloadData.owner;
         user.categoryList = PreloadData.categories;
         var canEdit = PreloadData.current_user && PreloadData.current_user.id == user.id;
         return <this.props.activeRouteHandler user={user} canEdit={canEdit} />;
+    },
+
+    componentDidMount() {
+        $('#nav h1 a').on('click', event => {
+            event.preventDefault();
+            this.transitionTo('records');
+        });
     }
 });
 
