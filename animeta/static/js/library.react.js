@@ -18,6 +18,10 @@ function getPostURL(post) {
     return '/-' + post.id;
 }
 
+function getPostDeleteURL(user, post) {
+    return '/users/' + user.name + '/history/' + post.id + '/delete/';
+}
+
 var TitleEditView = React.createClass({
     componentDidMount() {
         var typeahead = initTypeahead(this.refs.titleInput.getDOMNode());
@@ -191,6 +195,7 @@ var PostView = React.createClass({
                 {post.comment && <div className="comment">{post.comment}</div>}
                 <div className="meta">
                     <a href={getPostURL(post)} className="time"><TimeAgo time={new Date(post.updated_at)} /></a>
+                    {this.props.canDelete && <a href={getPostDeleteURL(this.props.user, post)} className="btn-delete">지우기</a>}
                 </div>
             </div>
         );
@@ -251,7 +256,9 @@ var RecordDetail = React.createClass({
             {composer}
             <div className="record-detail-posts">
                 {!this.state.isLoading &&
-                    this.state.posts.map(post => <PostView post={post} key={post.id} />)}
+                    this.state.posts.map(post => <PostView post={post} key={post.id}
+                        canDelete={this.props.canEdit && this.state.posts.length > 1}
+                        user={this.props.user} />)}
             </div>
         </div>;
     },
