@@ -141,6 +141,14 @@ var HeaderView = React.createClass({
 });
 
 var PostComposerView = React.createClass({
+    getInitialState() {
+        return {
+            statusType: this.props.initialStatusType,
+            status: util.plusOne(this.props.currentStatus),
+            comment: ''
+        };
+    },
+
     render() {
         var currentStatus;
         if (this.props.currentStatus) {
@@ -149,7 +157,9 @@ var PostComposerView = React.createClass({
         return <form className="record-detail-update" method="post"
                 data-connected-services={this.props.connectedServices.join(' ')}>
             <div className="progress">
-                <select name="status_type" defaultValue={this.props.initialStatusType}>
+                <select name="status_type"
+                    value={this.state.statusType}
+                    onChange={this._onStatusTypeChange}>
                     <option value="watching">보는 중</option>
                     <option value="finished">완료</option>
                     <option value="suspended">중단</option>
@@ -158,9 +168,12 @@ var PostComposerView = React.createClass({
                 {' @ '}
                 {currentStatus}
                 <StatusInputView name="status"
-                    defaultValue={util.plusOne(this.props.currentStatus)} />
+                    value={this.state.status}
+                    onChange={this._onStatusChange} />
             </div>
-            <textarea name="comment" rows={3} cols={30} autoFocus />
+            <textarea name="comment" rows={3} cols={30} autoFocus
+                value={this.state.comment}
+                onChange={this._onCommentChange} />
             <div className="actions">
                 {'공유: '}
                 <input type="checkbox" id="id_publish_twitter" name="publish_twitter" />
@@ -183,6 +196,18 @@ var PostComposerView = React.createClass({
             RecordStore.addPost(result.record, result.post);
             this.props.onSave(result.post);
         });
+    },
+
+    _onStatusTypeChange(event) {
+        this.setState({statusType: event.target.value});
+    },
+
+    _onStatusChange(newValue) {
+        this.setState({status: newValue});
+    },
+
+    _onCommentChange(event) {
+        this.setState({comment: event.target.value});
     }
 });
 
