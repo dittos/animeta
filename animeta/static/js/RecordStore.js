@@ -2,6 +2,7 @@ var events = require('events');
 
 var _events = new events.EventEmitter;
 var _records = [];
+var _pendingPostCount = 0;
 
 exports.addChangeListener = function(listener) {
     _events.on('change', listener);
@@ -50,6 +51,7 @@ exports.addPendingPost = function(id, post) {
     record.status_type = post.status_type;
     record.updated_at = +(new Date);
     record.pendingPosts.push(context);
+    _pendingPostCount++;
     emitChange();
     return context;
 };
@@ -63,5 +65,10 @@ exports.resolvePendingPost = function(context, updatedRecord, post) {
     record.pendingPosts = record.pendingPosts.filter(c => c !== context);
     if (record.pendingPosts.length == 0)
         delete record.pendingPosts;
+    _pendingPostCount--;
     emitChange();
+};
+
+exports.hasPendingPosts = function() {
+    return _pendingPostCount > 0;
 };

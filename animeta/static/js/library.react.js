@@ -644,3 +644,9 @@ $(document).ajaxError((event, jqXHR, settings, thrownError) => {
     }
     alert('서버 오류로 요청에 실패했습니다.');
 });
+
+$(window).on('beforeunload', event => {
+    if (RecordStore.hasPendingPosts()) {
+        return '아직 저장 중인 기록이 있습니다.';
+    }
+});
