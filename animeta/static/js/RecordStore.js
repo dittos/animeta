@@ -38,11 +38,30 @@ exports.updateCategory = function(id, categoryId) {
     emitChange();
 };
 
-exports.addPost = function(updatedRecord, post) {
+exports.addPendingPost = function(id, post) {
+    var record = get(id);
+    if (!record.pendingPosts) {
+        record.pendingPosts = [];
+    }
+    var context = {
+        post: post
+    };
+    record.status = post.status;
+    record.status_type = post.status_type;
+    record.updated_at = +(new Date);
+    record.pendingPosts.push(context);
+    emitChange();
+    return context;
+};
+
+exports.resolvePendingPost = function(context, updatedRecord, post) {
     var record = get(updatedRecord.id);
     for (var k in updatedRecord) {
         if (updatedRecord.hasOwnProperty(k))
             record[k] = updatedRecord[k];
     }
+    record.pendingPosts = record.pendingPosts.filter(c => c !== context);
+    if (record.pendingPosts.length == 0)
+        delete record.pendingPosts;
     emitChange();
 };
