@@ -192,6 +192,9 @@ var PostComposerView = React.createClass({
 
     handleSubmit(event) {
         event.preventDefault();
+        // XXX: Just trigger the submit "handler" only to save publish settings.
+        // Should be replaced with explicit call later.
+        $(this.getDOMNode()).triggerHandler('submit');
         var pendingPostContext = RecordStore.addPendingPost(this.props.recordId, {
             status: this.state.status,
             status_type: this.state.statusType,
