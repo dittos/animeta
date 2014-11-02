@@ -557,7 +557,7 @@ var Library = React.createClass({
         return <div className="library">
             {header}
             {notice}
-            {this.state.sortBy == 'title' && <p className="library-toc">
+            {this.props.query.sort == 'title' && <p className="library-toc">
                 건너뛰기: {groups.map(group => <a href={'#group' + group.index}>{group.key}</a>)}
             </p>}
             {groups.map(group => <div className="library-group" key={group.key} id={'group' + group.index}>
