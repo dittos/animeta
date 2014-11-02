@@ -51,149 +51,12 @@ ol.chart, #charts ol { margin-left: 0.5em; padding: 0; list-style: none; }
 form.inline { margin-bottom: 0.5em; overflow: hidden; }
 form.inline h2 { width: 8em; float: left; }
 form.inline p { padding-left: 1em; display: inline; }
-.record-detail-header {
-    float: left;
-    margin-bottom: 1em;
-}
-.record-detail-header h1 {
-    float: left;
-    margin: 0;
-}
-.record-detail-header .title-form {
-    float: left;
-}
-.record-detail-header .title-form button,
-.record-detail-header .title-form input {
-    font-size: 1.1em;
-}
-.record-detail-header .btn {
-    float: left;
-    vertical-align: middle;
-    text-decoration: none;
-    padding: 3px 6px;
-    border-radius: 3px;
-    font-size: 0.9em;
-    border: 1px solid #ccc;
-}
-.record-detail-header .btn:hover {
-    background-color: #f4f4f4;
-}
-.record-detail-header .btn-edit-title {
-    margin-left: 2em;
-}
-.record-detail-header .btn-delete {
-    margin-left: 1em;
-    color: #f00;
-}
-.record-detail-header .category-form {
-    float: left;
-    margin-left: 1em;
-    position: relative;
-}
-.record-detail-header .category-form label {
-    color: #999;
-}
-.record-detail-header .category-form select {
-    position: absolute;
-    left: 0; top: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-}
-.record-detail-update {
-    clear: both;
-    padding: 1em 0;
-    margin-bottom: 1em;
-    border-bottom: 1px solid #ccc;
-}
-.record-detail-update .progress {
-    padding-bottom: 0.5em;
-}
-.record-detail-update .progress,
-.record-detail-update .progress input,
-.record-detail-update .progress select {
-    font-size: 16px;
-}
-.record-detail-update .progress-current {
-    color: #666;
-}
-.record-detail-update .plus-one {
-    margin-left: 0.25em;
-    text-decoration: none;
-    vertical-align: middle;
-    position: relative;
-}
-.record-detail-update .plus-one:active {
-    top: 1px;
-    left: 1px;
-}
-.record-detail-update textarea {
-    width: 30em;
-}
-.record-detail-update .actions {
-    padding-top: 0.5em;
-}
-.record-detail-update button {
-    background: #4bb000;
-    color: #fff;
-    border: 1px solid #357d00;
-    padding: 3px 5px;
-    font-size: 14px;
-    line-height: 1;
-    cursor: pointer;
-    margin-left: 1em;
-}
 
 /* Record Delete */
 #delete-record table { margin-bottom: 0.5em; }
 #delete-record th, #delete-record td { width: auto; padding: 0 0.5em 0.25em 0; }
 
 /* User Section */
-#nav a.add-record { color: #06c; font-weight: bolder; }
-#nav .feed { vertical-align: -25%; }
-#records .group { border-top: 1px solid #ddd; padding: 0.5em 0; }
-#records .group h2 { width: 8em; font-size: 1.1em; line-height: 1.6; margin: 0.5em 0; padding: 0; float: left; clear: left; color: #555; font-weight: normal; }
-#records ul { margin: 0 0 0 10em; padding: 0; list-style: none; }
-#records li { padding: 0.25em 0; font-size: 1.1em; }
-
-#records .item a {
-    display: inline-block;
-    padding: 0.25em 0.5em;
-    text-decoration: none;
-    color: #959595;
-}
-#records .item a:hover {
-    border-radius: 3px;
-    background: #999;
-    color: #fff;
-}
-#records .item.can-edit a:hover .item-status {
-    padding-right: 16px;
-    background: transparent url(edit.gif) right center no-repeat;
-    margin-right: 2px;
-}
-#records .item-status {
-    margin-left: 0.5em;
-    font-weight: bold;
-}
-#records .item-watching a {
-    color: #000;
-    font-weight: bold;
-}
-#records .item-watching a:hover {
-    background-color: #4bb000;
-}
-#records .item-watching .item-status {
-    color: #4bb000;
-}
-#records .item-watching a:hover .item-status {
-    color: #fff;
-}
-
-#sorting-type a { text-decoration: none; padding: 3px 7px; border-radius: 10px; color: #666; }
-#sorting-type a:hover { background-color: #999; color: #fff; }
-#sorting-type a.active:hover, #sorting-type .active { background-color: #666; color: #fff; }
 .work { color: #000; text-decoration: none; }
 a.work:hover { color: #666; border-bottom: 1px dashed #aaa; }
 .status { color: #fff; background-color: #b0b0b0; padding: 3px 4px; margin-left: 0.5em; border-radius: 5px; }
@@ -213,9 +76,6 @@ a.work:hover { color: #666; border-bottom: 1px dashed #aaa; }
 .history a.updated:hover { text-decoration: underline; }
 .history .delete { text-decoration: none; margin-left: 0.5em; color: #f00; font-size: 0.85em; }
 .history .delete:hover { text-decoration: underline; }
-#records { clear: both; }
-#library-header { margin: 0 0 1.5em 0; }
-#library-header p { display: inline; margin-right: 2em; }
 #categories { list-style: none; margin: 0 0 1em; padding: 0; border-bottom: 1px solid #ddd; overflow: hidden; }
 #categories.editing { border: 0; }
 #categories li { float: left; border: 1px solid #ddd; border-bottom: none; background-color: #f4f4f4; margin-left: 0.5em; padding: 0.25em 0.5em; cursor: pointer; color: #666; font-size: 0.9em; }
@@ -228,7 +88,6 @@ a.work:hover { color: #666; border-bottom: 1px dashed #aaa; }
 #pagination { padding-top: 1em; }
 #pagination .prev-page { margin-right: 1em; }
 #pagination .next-page { margin-left: 1em; }
-#records .updated { color: #ff8c00; font-size: 0.8em; }
 
 /* Record Import */
 #import ul { list-style: none; padding: 0; margin: 0 0 1em; width: 50em; overflow: hidden; }
@@ -310,10 +169,6 @@ a.work:hover { color: #666; border-bottom: 1px dashed #aaa; }
 #info { width: auto; float: none; }
 #timeline { float: none; width: auto; }
 #weekly-popular-works { margin-right: 0; padding-top: 0.5em; margin-top: 2em; }
-.column { width: auto; float: none; }
-#library-header p { display: block; margin-right: 0; }
-#records .group h2 { float: none; padding: 0 0.5em; }
-#records ul { margin: 0; }
 form table, form table input, form table select { font-size: 1em; }
 form th { width: auto !important; min-width: 0 !important; padding-left: 0 !important; }
 form.inline h2 { float: none; width: auto; }

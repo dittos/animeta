@@ -1,5 +1,6 @@
 from django.conf.urls import include, patterns, url
 from api.decorators import route_by_method
+from api import views_v2 as v2
 from api.views import *
 
 urlpatterns = patterns('api.views',
@@ -12,4 +13,12 @@ urlpatterns = patterns('api.views',
     (r'^v1/charts/(?P<type>.+)$', 'get_chart'),
     (r'^oauth/', include('oauth_provider.urls')),
     (r'^auth/sessions/', 'auth'),
+)
+
+urlpatterns += patterns('api.views_v2',
+    (r'^v2/me(?P<remainder>/.*)?$', v2.get_current_user),
+    (r'^v2/users/(?P<name>[A-Za-z0-9_-]+)$', v2.UserView.as_view()),
+    (r'^v2/users/(?P<name>[A-Za-z0-9_-]+)/records$', v2.UserRecordsView.as_view()),
+    (r'^v2/records/(?P<id>[0-9]+)/posts$', v2.RecordPostsView.as_view()),
+    (r'^v2/records/(?P<id>[0-9]+)$', v2.RecordView.as_view()),
 )
