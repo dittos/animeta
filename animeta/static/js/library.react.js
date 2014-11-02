@@ -636,14 +636,32 @@ function onPageTransition() {
     initialLoad = false;
 }
 
-React.renderComponent(
-    <Routes location="history" onChange={onPageTransition}>
-        <Route path={'/users/' + PreloadData.owner.name + '/'} handler={App}>
-            <DefaultRoute name="records" handler={Library} />
-            <Route name="record" path="/records/:recordId/" handler={RecordDetail} addHandlerKey={true} />
-        </Route>
-    </Routes>,
-$('.library-container')[0]);
+var supportsHistory = require('react-router/modules/utils/supportsHistory');
+
+function initRouter() {
+    var locationStrategy = 'history';
+    var libraryPath = '/users/' + PreloadData.owner.name + '/';
+    if (!supportsHistory()) {
+        if (location.pathname.match(/^\/records\//)) {
+            // /records/12345/ -> /users/owner/#/records/12345/
+            location.href = libraryPath + '#' + location.pathname;
+            return;
+        }
+        locationStrategy = 'hash';
+        libraryPath = '/';
+    }
+
+    React.renderComponent(
+        <Routes location={locationStrategy} onChange={onPageTransition}>
+            <Route path={libraryPath} handler={App}>
+                <DefaultRoute name="records" handler={Library} />
+                <Route name="record" path="/records/:recordId/" handler={RecordDetail} addHandlerKey={true} />
+            </Route>
+        </Routes>,
+    $('.library-container')[0]);
+}
+
+initRouter();
 
 $(document).ajaxError((event, jqXHR, settings, thrownError) => {
     if (jqXHR.responseText) {
