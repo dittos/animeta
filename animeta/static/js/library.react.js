@@ -612,7 +612,10 @@ var App = React.createClass({
         var user = PreloadData.owner;
         user.categoryList = PreloadData.categories;
         var canEdit = PreloadData.current_user && PreloadData.current_user.id == user.id;
-        return <this.props.activeRouteHandler user={user} canEdit={canEdit} />;
+        return this.props.activeRouteHandler({
+            user: user,
+            canEdit: canEdit
+        });
     },
 
     componentDidMount() {
@@ -649,7 +652,7 @@ function initRouter() {
         libraryPath = '/';
     }
 
-    React.renderComponent(
+    React.render(
         <Routes location={locationStrategy} onChange={onPageTransition}>
             <Route path={libraryPath} handler={App}>
                 <DefaultRoute name="records" handler={Library} />
