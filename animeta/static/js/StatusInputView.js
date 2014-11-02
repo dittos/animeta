@@ -1,5 +1,3 @@
-/** @jsx React.DOM */
-
 var React = require('react');
 var AutoGrowInput = require('./AutoGrowInput');
 var {plusOne} = require('./util');
