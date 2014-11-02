@@ -627,8 +627,17 @@ var App = React.createClass({
 
 RecordStore.preload(PreloadData.records);
 
+var initialLoad = true;
+
+function onPageTransition() {
+    if (!initialLoad) {
+        _gaq.push(['_trackPageview']);
+    }
+    initialLoad = false;
+}
+
 React.renderComponent(
-    <Routes location="history">
+    <Routes location="history" onChange={onPageTransition}>
         <Route path={'/users/' + PreloadData.owner.name + '/'} handler={App}>
             <DefaultRoute name="records" handler={Library} />
             <Route name="record" path="/records/:recordId/" handler={RecordDetail} addHandlerKey={true} />
