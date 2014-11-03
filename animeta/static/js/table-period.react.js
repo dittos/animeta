@@ -1,5 +1,3 @@
-/** @jsx React.DOM */
-
 var React = require('react');
 var util = require('./util');
 var BaseStore = require('./BaseStore');
@@ -306,4 +304,4 @@ var AppView = React.createClass({
     }
 });
 
-React.renderComponent(<AppView period={PERIOD} />, $('.anitable-container')[0]);
+React.render(<AppView period={PERIOD} />, $('.anitable-container')[0]);

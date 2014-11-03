@@ -1,5 +1,3 @@
-/** @jsx React.DOM */
-
 var React = require('react');
 
 var BLANK_IMG_URI = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
@@ -23,8 +21,12 @@ function invalidate() {
 
 var LazyImageView = blazy ? React.createClass({
     render: function() {
-        return this.transferPropsTo(<img src={BLANK_IMG_URI} data-src={this.props.src}
-            width={this.props.width} height={this.props.height} className="b-lazy" />);
+        var {src, className, ...props} = this.props;
+        className = 'b-lazy ' + (className || '');
+        return <img {...props}
+            src={BLANK_IMG_URI}
+            data-src={src}
+            className={className} />;
     },
 
     componentDidMount() {
@@ -34,6 +36,6 @@ var LazyImageView = blazy ? React.createClass({
     componentDidUpdate() {
         invalidate();
     }
-}) : React.DOM.img;
+}) : 'img';
 
 module.exports = LazyImageView;

@@ -1,10 +1,9 @@
-/** @jsx React.DOM */
-
+require('object.assign').shim();
 var React = require('react/addons');
 var moment = require('moment');
 moment.locale('ko');
 var {Routes, Route, DefaultRoute, Link, Navigation} = require('react-router');
-var StatusInputView = require('./StatusInputView');
+var StatusInput = require('./StatusInput');
 var TimeAgo = require('./TimeAgo');
 var util = require('./util');
 var RecordStore = require('./RecordStore');
@@ -168,7 +167,7 @@ var PostComposerView = React.createClass({
                 </select>
                 {' @ '}
                 {currentStatus}
-                <StatusInputView name="status"
+                <StatusInput name="status"
                     value={this.state.status}
                     onChange={this._onStatusChange} />
             </div>
@@ -614,7 +613,10 @@ var App = React.createClass({
         var user = PreloadData.owner;
         user.categoryList = PreloadData.categories;
         var canEdit = PreloadData.current_user && PreloadData.current_user.id == user.id;
-        return <this.props.activeRouteHandler user={user} canEdit={canEdit} />;
+        return this.props.activeRouteHandler({
+            user: user,
+            canEdit: canEdit
+        });
     },
 
     componentDidMount() {
@@ -651,7 +653,7 @@ function initRouter() {
         libraryPath = '/';
     }
 
-    React.renderComponent(
+    React.render(
         <Routes location={locationStrategy} onChange={onPageTransition}>
             <Route path={libraryPath} handler={App}>
                 <DefaultRoute name="records" handler={Library} />

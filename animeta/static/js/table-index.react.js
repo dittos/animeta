@@ -1,5 +1,3 @@
-/** @jsx React.DOM */
-
 var React = require('react');
 var util = require('./util');
 var PositionSticky = require('./PositionSticky');
@@ -182,4 +180,4 @@ var Schedule = React.createClass({
     }, SCROLL_DEBOUNCE)
 });
 
-React.renderComponent(Schedule(appData), $('.anitable-container')[0]);
+React.render(<Schedule {...appData} />, $('.anitable-container')[0]);

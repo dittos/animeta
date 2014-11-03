@@ -1,5 +1,3 @@
-/** @jsx React.DOM */
-
 var React = require('react');
 
 function fixTitle(title) {
@@ -136,4 +134,4 @@ var VideoSearch = React.createClass({
     }
 });
 
-React.renderComponent(<VideoSearch subQueries={['오프닝', '엔딩'].concat(PreloadData.episodes.map(ep => ep + '화'))} />, document.getElementById('videos'));
+React.render(<VideoSearch subQueries={['오프닝', '엔딩'].concat(PreloadData.episodes.map(ep => ep + '화'))} />, document.getElementById('videos'));
