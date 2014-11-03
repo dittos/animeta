@@ -36,6 +36,6 @@ var LazyImageView = blazy ? React.createClass({
     componentDidUpdate() {
         invalidate();
     }
-}) : React.DOM.img;
+}) : 'img';
 
 module.exports = LazyImageView;
