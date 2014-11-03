@@ -180,4 +180,4 @@ var Schedule = React.createClass({
     }, SCROLL_DEBOUNCE)
 });
 
-React.render(React.createElement(Schedule, appData), $('.anitable-container')[0]);
+React.render(<Schedule {...appData} />, $('.anitable-container')[0]);
