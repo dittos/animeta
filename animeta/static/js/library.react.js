@@ -469,6 +469,8 @@ var LibraryItemView = React.createClass({
             <Link to="record" params={{recordId: record.id}}>
                 <span className="item-title">{record.title}</span>
                 <span className="item-status">{getStatusText(record)}</span>
+                {record.has_newer_episode &&
+                    <span className="item-updated">up!</span>}
             </Link>
         );
         return <li className={'library-group-item item-' + record.status_type}>{content}</li>;

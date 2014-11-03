@@ -27,8 +27,8 @@ def serialize_category(category):
         'name': category.name,
     }
 
-def serialize_record(record):
-    return {
+def serialize_record(record, include_has_newer_episode=False):
+    data = {
         'id': record.id,
         'user_id': record.user_id,
         'work_id': record.work_id,
@@ -38,6 +38,9 @@ def serialize_record(record):
         'status_type': record.status_type.name,
         'updated_at': serialize_datetime(record.updated_at),
     }
+    if include_has_newer_episode and record.has_newer_episode():
+        data['has_newer_episode'] = True
+    return data
 
 def serialize_post(post):
     return {

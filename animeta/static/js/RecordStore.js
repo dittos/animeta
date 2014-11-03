@@ -50,6 +50,7 @@ exports.addPendingPost = function(id, post) {
     record.status = post.status;
     record.status_type = post.status_type;
     record.updated_at = +(new Date);
+    record.has_newer_episode = false;
     record.pendingPosts.push(context);
     _pendingPostCount++;
     emitChange();

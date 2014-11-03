@@ -81,8 +81,9 @@ def library(request, username=None):
             'owner': api_v2.serialize_user(user),
             'categories': map(api_v2.serialize_category, [Uncategorized(user)] + list(user.category_set.all())),
             'current_user': api_v2.serialize_user(request.user) if request.user.is_authenticated() else None,
-            'records': map(api_v2.serialize_record, user.record_set.all()),
-        })
+            'records': [api_v2.serialize_record(r, include_has_newer_episode=user == request.user)
+                for r in user.record_set.all()],
+        }, ensure_ascii=False, separators=(',', ':'))
     })
 
 def include_delete_flag(user):
