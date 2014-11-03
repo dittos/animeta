@@ -21,8 +21,12 @@ function invalidate() {
 
 var LazyImageView = blazy ? React.createClass({
     render: function() {
-        return this.transferPropsTo(<img src={BLANK_IMG_URI} data-src={this.props.src}
-            width={this.props.width} height={this.props.height} className="b-lazy" />);
+        var {src, className, ...props} = this.props;
+        className = 'b-lazy ' + (className || '');
+        return <img {...props}
+            src={BLANK_IMG_URI}
+            data-src={src}
+            className={className} />;
     },
 
     componentDidMount() {

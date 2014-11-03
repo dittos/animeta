@@ -1,8 +1,9 @@
+require('object.assign').shim();
 var React = require('react/addons');
 var moment = require('moment');
 moment.locale('ko');
 var {Routes, Route, DefaultRoute, Link, Navigation} = require('react-router');
-var StatusInputView = require('./StatusInputView');
+var StatusInput = require('./StatusInput');
 var TimeAgo = require('./TimeAgo');
 var util = require('./util');
 var RecordStore = require('./RecordStore');
@@ -166,7 +167,7 @@ var PostComposerView = React.createClass({
                 </select>
                 {' @ '}
                 {currentStatus}
-                <StatusInputView name="status"
+                <StatusInput name="status"
                     value={this.state.status}
                     onChange={this._onStatusChange} />
             </div>
