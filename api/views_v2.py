@@ -11,6 +11,8 @@ from connect import get_connected_services, post_history
 from connect.models import FacebookSetting
 
 def serialize_datetime(dt):
+    if dt is None:
+        return None
     return int((time.mktime(dt.timetuple()) + dt.microsecond / 1000000.0) * 1000)
 
 def serialize_user(user):
