@@ -73,3 +73,8 @@ exports.resolvePendingPost = function(context, updatedRecord, post) {
 exports.hasPendingPosts = function() {
     return _pendingPostCount > 0;
 };
+
+exports.add = function(record) {
+    _records.push(record);
+    emitChange();
+};

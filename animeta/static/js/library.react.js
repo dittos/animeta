@@ -608,6 +608,111 @@ var Library = React.createClass({
     }
 });
 
+var CategorySelect = React.createClass({
+    render() {
+        var {selectedId, categoryList, onChange, ...props} = this.props;
+        var name = '지정 안함';
+        if (selectedId) {
+            name = categoryList.filter(
+                category => category.id == selectedId
+            )[0].name;
+        }
+        return (
+            <select {...props}
+                value={selectedId}
+                onChange={this._onChange}>
+                <option value="">지정 안함</option>
+                {categoryList.filter(category => category.id).map(category =>
+                    <option value={category.id}>{category.name}</option>
+                )}
+            </select>
+        );
+    },
+
+    _onChange(event) {
+        if (this.props.onChange)
+            this.props.onChange(event.target.value);
+    }
+});
+
+var AddRecord = React.createClass({
+    mixins: [Navigation],
+
+    getInitialState() {
+        return {
+            selectedCategoryId: 0,
+            statusType: 'watching',
+            isRequesting: false
+        };
+    },
+
+    render() {
+        return <form className="record-add-form">
+            <table>
+                <tr>
+                    <th>작품 제목</th>
+                    <td><input name="work_title" ref="title"
+                        defaultValue={this.props.params.title} /></td>
+                </tr>
+                <tr>
+                    <th>감상 상태</th>
+                    <td>
+                        <select name="status_type"
+                            value={this.state.statusType}
+                            onChange={this._onStatusTypeChange}>
+                            <option value="watching">보는 중</option>
+                            <option value="finished">완료</option>
+                            <option value="suspended">중단</option>
+                            <option value="interested">볼 예정</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>분류</th>
+                    <td>
+                        <CategorySelect name="category_id"
+                            categoryList={this.props.user.categoryList}
+                            selectedId={this.selectedCategoryId}
+                            onChange={this._onCategoryChange} />
+                    </td>
+                </tr>
+            </table>
+            <button type="button"
+                disabled={this.state.isRequesting}
+                onClick={this._onSubmit}>
+                {this.state.isRequesting ? '추가하는 중...' : '작품 추가'}
+            </button>
+        </form>;
+    },
+
+    componentDidMount() {
+        initTypeahead(this.refs.title.getDOMNode());
+    },
+
+    _onCategoryChange(categoryId) {
+        this.setState({selectedCategoryId: categoryId});
+    },
+
+    _onStatusTypeChange(event) {
+        this.setState({statusType: event.target.value});
+    },
+
+    _onSubmit(event) {
+        event.preventDefault();
+        if (this.state.isRequesting)
+            return;
+        this.setState({isRequesting: true});
+        var data = $(this.getDOMNode()).serialize();
+        $.post('/api/v2/users/' + this.props.user.name + '/records', data).then(result => {
+            RecordStore.add(result.record);
+            this.transitionTo('records');
+        }).always(() => {
+            if (this.isMounted())
+                this.setState({isRequesting: false});
+        });
+    }
+});
+
 var App = React.createClass({
     mixins: [Navigation],
 
@@ -625,6 +730,10 @@ var App = React.createClass({
         $('#nav h1 a').on('click', event => {
             event.preventDefault();
             this.transitionTo('records');
+        });
+        $('#nav .add-record').on('click', event => {
+            event.preventDefault();
+            this.transitionTo('add-record');
         });
     }
 });
@@ -647,6 +756,7 @@ function initRouter() {
     var libraryPath = '/users/' + PreloadData.owner.name + '/';
     if (!supportsHistory()) {
         if (location.pathname.match(/^\/records\//)) {
+            // /records/add/ -> /users/owner/#/records/add/
             // /records/12345/ -> /users/owner/#/records/12345/
             location.href = libraryPath + '#' + location.pathname;
             return;
@@ -659,6 +769,7 @@ function initRouter() {
         <Routes location={locationStrategy} onChange={onPageTransition}>
             <Route path={libraryPath} handler={App}>
                 <DefaultRoute name="records" handler={Library} />
+                <Route name="add-record" path="/records/add/:title?/?" handler={AddRecord} />
                 <Route name="record" path="/records/:recordId/" handler={RecordDetail} addHandlerKey={true} />
             </Route>
         </Routes>,

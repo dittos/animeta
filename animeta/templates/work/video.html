@@ -11,23 +11,3 @@
     <!--> <![endif]-->
 </object>
 {% endblock %}
-
-{% block js %}
-<script type="text/javascript">
-$(function() {
-    $('#content').append('<div id="record-form-side"></div>')
-    $('.status a').click(function(event) {
-        event.preventDefault()
-        $('#record-form-side').load($(this).attr('href') + ' #add-record', null, function() {
-            $('#record-form-side form').submit(function(event) {
-                event.preventDefault()
-                $.post($(this).attr('action'), $(this).serialize(), function() {
-                    $('#record-form-side').text('기록 완료!')
-                    setTimeout(function() { $('#record-form-side').hide('normal') }, 5000)
-                })
-            })
-        })
-    })
-})
-</script>
-{% endblock %}

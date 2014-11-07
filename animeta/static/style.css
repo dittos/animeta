@@ -40,18 +40,6 @@ ol.chart, #charts ol { margin-left: 0.5em; padding: 0; list-style: none; }
 .remember th { padding-right: 0 !important; }
 #login_username, #login_password { width: 10em; }
 
-/* Record Form */
-.comment th { vertical-align: top; padding-top: 0.8em; }
-.comment .description, #connected-services .description { margin-left: 0; padding-top: 0.5em; display: block; }
-#id_status { text-align: right; }
-#add-record { width: 40em; float: left; }
-#add-record th, #add-record td { padding: 0.5em; }
-#connected-services th { vertical-align: top; }
-#history { clear: both; }
-form.inline { margin-bottom: 0.5em; overflow: hidden; }
-form.inline h2 { width: 8em; float: left; }
-form.inline p { padding-left: 1em; display: inline; }
-
 /* Record Delete */
 #delete-record table { margin-bottom: 0.5em; }
 #delete-record th, #delete-record td { width: auto; padding: 0 0.5em 0.25em 0; }

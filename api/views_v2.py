@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.views.generic import View
 from django.contrib.auth.models import User
 from record.models import Record, History, StatusTypes, Uncategorized
+from work.models import get_or_create_work
 from connect import get_connected_services, post_history
 from connect.models import FacebookSetting
 
@@ -95,6 +96,49 @@ class UserRecordsView(BaseView):
     def get(self, request, name):
         user = get_object_or_404(User, username=name)
         return map(serialize_record, user.record_set.all())
+
+    def post(self, request, name):
+        check_login(request.user)
+        if request.user.username != name:
+            raise HttpException(render_json({'message': 'Permission denied.'}, status=403))
+        title = request.POST.get('work_title')
+        if not title:
+            raise HttpException(render_json(
+                {'message': u'작품 제목을 입력하세요.'},
+                status=400 # 400 Bad Request
+            ))
+        work = get_or_create_work(title)
+        category_id = request.POST.get('category_id')
+        if category_id:
+            # TODO: Raise appropriate exception if not exist/no permission
+            category = request.user.category_set.get(id=category_id)
+        else:
+            category = None
+        record, created = Record.objects.get_or_create(
+            user=request.user,
+            work=work,
+            title=title,
+            category=category,
+        )
+        if not created:
+            raise HttpException(render_json(
+                {'message': u'이미 같은 작품이 "%s"로 등록되어 있습니다.' % record.title},
+                status=422 # 422 Unprocessable Entity
+            ))
+        history = History.objects.create(
+            user=request.user,
+            work=record.work,
+            status='',
+            status_type=StatusTypes.from_name(request.POST['status_type']),
+        )
+        # Sync fields
+        record.status = history.status
+        record.status_type = history.status_type
+        record.updated_at = history.updated_at
+        return {
+            'record': serialize_record(record),
+            'post': serialize_post(history),
+        }
 
 class RecordView(BaseView):
     def get(self, request, id):

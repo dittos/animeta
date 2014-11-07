@@ -9,32 +9,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from work.models import Work, get_or_create_work
 from .models import Record, History, Category, Uncategorized, StatusTypes
-from .forms import RecordAddForm, RecordUpdateForm, SimpleRecordFormSet
-
-def save(request, form_class, object, form_initial, template_name, extra_context = {}):
-    if request.method == 'POST':
-        form = form_class(object, request.POST)
-        if form.is_valid():
-            form.save()
-            if request.POST.get('next'):
-                # CSRF?
-                return redirect(request.POST['next'])
-            else:
-                return redirect(request.user)
-    else:
-        form = form_class(object, initial=form_initial)
-
-    extra_context.update({
-        'form': form,
-        'owner': request.user,
-    })
-    return render(request, template_name, extra_context)
+from .forms import SimpleRecordFormSet
 
 @login_required
 def add(request, title=''):
-    return save(request,
-        RecordAddForm, request.user, {'work_title': title},
-        template_name = 'record/record_form.html')
+    from user.views import library
+    return library(request, request.user.username)
 
 def _get_record(request, id):
     record = get_object_or_404(Record, id=id)
