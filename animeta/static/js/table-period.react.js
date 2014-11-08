@@ -1,3 +1,7 @@
+/* global PERIOD */
+/* global USERNAME */
+/* global APP_DATA */
+/* global Handlebars */
 var React = require('react');
 var util = require('./util');
 var BaseStore = require('./BaseStore');
@@ -17,8 +21,8 @@ var scheduleComparator = util.keyComparator((item) =>
 );
 
 var preferKRScheduleComparator = util.keyComparator((item) =>
-    nullslast(item.schedule.kr && item.schedule.kr.date
-        || item.schedule.jp && item.schedule.jp.date)
+    nullslast(item.schedule.kr && item.schedule.kr.date ||
+        item.schedule.jp && item.schedule.jp.date)
 );
 
 var recordCountComparator = util.keyComparator((item) => -item.record_count);
@@ -123,7 +127,7 @@ var HeaderView = React.createClass({
     }
 });
 
-SOURCE_TYPE_MAP = {
+var SOURCE_TYPE_MAP = {
     'manga': '만화 원작', 
     'original': '오리지널',
     'lightnovel': '라노베 원작',
@@ -133,7 +137,7 @@ SOURCE_TYPE_MAP = {
     'novel': '소설 원작'
 };
 
-WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+var WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
 function getDate(value) {
     var weekday = WEEKDAYS[value.getDay()];
@@ -179,7 +183,6 @@ var ItemView = React.createClass({
             return;
         }
 
-        var self = this;
         var record = this.props.item.record;
         if (record) {
             window.open('/records/' + record.id + '/');

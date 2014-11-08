@@ -64,7 +64,7 @@ exports.resolvePendingPost = function(context, updatedRecord, post) {
             record[k] = updatedRecord[k];
     }
     record.pendingPosts = record.pendingPosts.filter(c => c !== context);
-    if (record.pendingPosts.length == 0)
+    if (record.pendingPosts.length === 0)
         delete record.pendingPosts;
     _pendingPostCount--;
     emitChange();

@@ -1,3 +1,6 @@
+/* global PERIOD */
+/* global USERNAME */
+/* global APP_DATA */
 var React = require('react');
 var util = require('./util');
 var PositionSticky = require('./PositionSticky');
@@ -20,7 +23,7 @@ function getWorkURL(item) {
     return '/works/' + encodeURIComponent(item.title) + '/';
 }
 
-WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+var WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
 var Nav = React.createClass({
     render() {
@@ -174,7 +177,7 @@ var Schedule = React.createClass({
                 return;
             }
         }
-        if (this.state.focusedIndex != 0) {
+        if (this.state.focusedIndex !== 0) {
             this.setState({focusedIndex: 0});
         }
     }, SCROLL_DEBOUNCE)

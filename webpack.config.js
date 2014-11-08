@@ -62,8 +62,28 @@ if (process.env.NODE_ENV == 'production') {
     ].concat(config.plugins);
 
     config.output.filename = '[name]-[hash].js';
-
-    config.devtool = 'source-map';
 } else {
     console.log('* Development Build');
+
+    config.devtool = 'source-map';
+    config.module.postLoaders = [
+        {
+            test: /\.js$/,
+            exclude: /node_modules/,
+            loader: 'jshint'
+        }
+    ];
+    config.jshint = {
+        browser: true,
+        es3: true,
+        undef: true,
+        //unused: true,
+        predef: ['$', '_gaq', 'alert'],
+
+        // Warnings
+        "-W058": false, // new A;
+
+        // Relaxing options
+        eqnull: true
+    };
 }

@@ -10,7 +10,7 @@ module.exports.keyComparator = function(keyFunc) {
     };
 };
 
-module.exports.zerofill = zerofill = function(n) {
+var zerofill = module.exports.zerofill = function(n) {
     n = String(n);
     if (n.length == 1)
         n = '0' + n;
@@ -66,7 +66,7 @@ module.exports.plusOne = function(val) {
     var digits = matches[1].length;
     if (add1.length < digits)
         for (var i = 0; i < digits - add1.length; i++)
-            add1 = '0' + add1
+            add1 = '0' + add1;
     return val.replace(/(\d+)([^\d]*)$/, add1 + '$2');
 };
 
@@ -83,9 +83,9 @@ exports.STATUS_TYPE_TEXT = {
 
 exports.getStatusText = function(record) {
     var status = getStatusDisplay(record);
-    if (record.status_type != 'watching' || status == '') {
+    if (record.status_type != 'watching' || status === '') {
         var statusTypeText = exports.STATUS_TYPE_TEXT[record.status_type];
-        if (status != '') {
+        if (status !== '') {
             status += ' (' + statusTypeText + ')';
         } else {
             status = statusTypeText;

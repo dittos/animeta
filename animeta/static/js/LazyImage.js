@@ -1,3 +1,4 @@
+/* global Blazy */
 var React = require('react');
 
 var BLANK_IMG_URI = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
@@ -11,10 +12,10 @@ if (!/i(Phone|Pad|Pod)|Android|Safari/.test(navigator.userAgent)) {
 
 var invalidations = null;
 function invalidate() {
-    if (!this.invalidation) {
-        this.invalidation = setTimeout(() => {
+    if (!invalidations) {
+        invalidations = setTimeout(() => {
             blazy.revalidate();
-            this.invalidation = null;
+            invalidations = null;
         }, 0);
     }
 }

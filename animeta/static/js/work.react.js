@@ -1,3 +1,4 @@
+/* global PreloadData */
 var React = require('react');
 
 function fixTitle(title) {
@@ -74,7 +75,7 @@ var VideoSearchResult = React.createClass({
         var rows = [];
         var currentRow = [];
         for (var i = 0; i < this.state.result.length; i++) {
-            if (i > 0 && i % 3 == 0) {
+            if (i > 0 && i % 3 === 0) {
                 rows.push(<tr>{currentRow}</tr>);
                 currentRow = [];
             }
