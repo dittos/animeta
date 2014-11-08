@@ -1,7 +1,4 @@
-/* global PERIOD */
-/* global USERNAME */
-/* global APP_DATA */
-/* global Handlebars */
+/* global PreloadData */
 var React = require('react');
 var util = require('./util');
 var BaseStore = require('./BaseStore');
@@ -37,7 +34,7 @@ class ScheduleStore extends BaseStore {
     constructor(initialData) {
         super();
         this._items = initialData.items;
-        this._ordering = window.localStorage['animeta.table.' + PERIOD + '.ordering'] || 'schedule';
+        this._ordering = window.localStorage['animeta.table.' + PreloadData.period + '.ordering'] || 'schedule';
         this._containsKRSchedule = initialData.contains_kr_schedule;
         this._sort();
     }
@@ -52,7 +49,7 @@ class ScheduleStore extends BaseStore {
 
     setOrdering(ordering) {
         this._ordering = ordering;
-        window.localStorage['animeta.table.' + PERIOD + '.ordering'] = ordering;
+        window.localStorage['animeta.table.' + PreloadData.period + '.ordering'] = ordering;
         this._sort();
         this.emitChange();
     }
@@ -82,7 +79,7 @@ class ScheduleStore extends BaseStore {
     }
 }
 
-var scheduleStore = new ScheduleStore(APP_DATA);
+var scheduleStore = new ScheduleStore(PreloadData.schedule);
 
 function formatPeriod(period) {
     var parts = period.split('Q');
@@ -177,7 +174,7 @@ var ItemView = React.createClass({
     },
 
     handleFavButtonClick() {
-        if (!USERNAME) {
+        if (!PreloadData.username) {
             alert('로그인 후 관심 등록할 수 있습니다.');
             location.href = getLoginURL();
             return;
@@ -217,7 +214,7 @@ var ItemView = React.createClass({
     },
 
     statics: {
-        template: Handlebars.compile($('#template-item-info').html())
+        template: require('!handlebars!./table-period-item.hbs')
     }
 });
 
@@ -269,7 +266,7 @@ var AppView = React.createClass({
 
     componentDidMount() {
         scheduleStore.addChangeListener(this._onChange);
-        if (!USERNAME) {
+        if (!PreloadData.username) {
             this.refs.notification.show([
                 '관심 등록은 로그인 후 가능합니다. ',
                 <a href={getLoginURL()} className="btn btn-login">로그인</a>
@@ -307,4 +304,4 @@ var AppView = React.createClass({
     }
 });
 
-React.render(<AppView period={PERIOD} />, $('.anitable-container')[0]);
+React.render(<AppView period={PreloadData.period} />, $('.anitable-container')[0]);

@@ -29,9 +29,11 @@
 
 {% block js %}
 <script>
-var PERIOD = '{{ period }}';
-var USERNAME = '{{ user.username }}';
-var APP_DATA = {{ data|safe }};
+var PreloadData = {
+    period: '{{ period }}',
+    username: '{{ user.username }}',
+    schedule: {{ data|safe }}
+};
 </script>
 <script src="//cdn.jsdelivr.net/blazy/1.2.0/blazy.min.js"></script>
 <script src="{{ STATIC_URL }}build/{{ asset_filenames.table_index }}"></script>

@@ -1,6 +1,4 @@
-/* global PERIOD */
-/* global USERNAME */
-/* global APP_DATA */
+/* global PreloadData */
 var React = require('react');
 var util = require('./util');
 var PositionSticky = require('./PositionSticky');
@@ -13,9 +11,9 @@ var appData = getInitialData();
 
 function getInitialData() {
     return {
-        period: PERIOD,
-        currentUserName: USERNAME,
-        items: APP_DATA.items
+        period: PreloadData.period,
+        currentUserName: PreloadData.username,
+        items: PreloadData.schedule.items
     };
 }
 
