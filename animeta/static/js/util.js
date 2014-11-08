@@ -69,3 +69,27 @@ module.exports.plusOne = function(val) {
             add1 = '0' + add1
     return val.replace(/(\d+)([^\d]*)$/, add1 + '$2');
 };
+
+function getStatusDisplay(record) {
+    return record.status.trim().replace(/([0-9]+)$/, '$1화');
+}
+
+exports.STATUS_TYPE_TEXT = {
+    watching: '보는 중',
+    finished: '완료',
+    interested: '볼 예정',
+    suspended: '중단'
+};
+
+exports.getStatusText = function(record) {
+    var status = getStatusDisplay(record);
+    if (record.status_type != 'watching' || status == '') {
+        var statusTypeText = exports.STATUS_TYPE_TEXT[record.status_type];
+        if (status != '') {
+            status += ' (' + statusTypeText + ')';
+        } else {
+            status = statusTypeText;
+        }
+    }
+    return status;
+};
