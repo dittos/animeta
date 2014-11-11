@@ -1,6 +1,5 @@
 /* global PreloadData */
 /* global initTypeahead */
-/* global initServiceToggles */
 var React = require('react/addons');
 var {Link, Navigation} = require('react-router');
 var StatusInput = require('./StatusInput');
@@ -144,7 +143,8 @@ var PostComposerView = React.createClass({
         return {
             statusType: this.props.initialStatusType,
             status: util.plusOne(this.props.currentStatus),
-            comment: ''
+            comment: '',
+            publishTwitter: localStorage.getItem('publishTwitter') === 'true'
         };
     },
 
@@ -153,8 +153,7 @@ var PostComposerView = React.createClass({
         if (this.props.currentStatus) {
             currentStatus = <span className="progress-current">{this.props.currentStatus} &rarr; </span>;
         }
-        return <form className="record-detail-update" method="post"
-                data-connected-services={this.props.connectedServices.join(' ')}>
+        return <form className="record-detail-update" method="post">
             <div className="progress">
                 <select name="status_type"
                     value={this.state.statusType}
@@ -174,25 +173,20 @@ var PostComposerView = React.createClass({
                 value={this.state.comment}
                 onChange={this._onCommentChange} />
             <div className="actions">
-                {'공유: '}
-                <input type="checkbox" id="id_publish_twitter" name="publish_twitter" />
-                <label htmlFor="id_publish_twitter">트위터</label>
-                <input type="checkbox" id="id_publish_facebook" name="publish_facebook" />
-                <label htmlFor="id_publish_facebook">페이스북</label>
+                <label>
+                    <input type="checkbox" name="publish_twitter"
+                        checked={this._isTwitterConnected() && this.state.publishTwitter}
+                        onChange={this._onPublishTwitterChange} />
+                    {' 트위터에 공유'}
+                </label>
                 <button type="button" onClick={this.handleSubmit}>기록 추가</button>
             </div>
         </form>;
     },
 
-    componentDidMount() {
-        initServiceToggles($(this.getDOMNode()));
-    },
-
     handleSubmit(event) {
         event.preventDefault();
-        // XXX: Just trigger the submit "handler" only to save publish settings.
-        // Should be replaced with explicit call later.
-        $(this.getDOMNode()).triggerHandler('submit');
+        localStorage.setItem('publishTwitter', this.state.publishTwitter);
         var pendingPostContext = RecordStore.addPendingPost(this.props.recordId, {
             status: this.state.status,
             status_type: this.state.statusType,
@@ -217,6 +211,28 @@ var PostComposerView = React.createClass({
 
     _onCommentChange(event) {
         this.setState({comment: event.target.value});
+    },
+
+    _onPublishTwitterChange(event) {
+        if (!this._isTwitterConnected()) {
+            window.onTwitterConnect = ok => {
+                if (ok) {
+                    this.props.onConnectedServicesChange(
+                        this.props.connectedServices.concat(['twitter'])
+                    );
+                    this.setState({publishTwitter: true});
+                } else {
+                    alert('연동 실패. 잠시 후 다시 시도해주세요.');
+                }
+            };
+            window.open('/connect/twitter/?popup=true');
+        } else {
+            this.setState({publishTwitter: event.target.checked});
+        }
+    },
+
+    _isTwitterConnected() {
+        return $.inArray('twitter', this.props.connectedServices) !== -1;
     }
 });
 
@@ -244,7 +260,9 @@ var RecordDetail = React.createClass({
     getInitialState() {
         return {
             record: RecordStore.get(this.props.params.recordId),
-            isLoading: true
+            isLoading: true,
+            connectedServices: this.props.canEdit &&
+                PreloadData.current_user.connected_services
         };
     },
 
@@ -285,7 +303,8 @@ var RecordDetail = React.createClass({
                     recordId={this.state.record.id}
                     currentStatus={this.state.record.status}
                     initialStatusType={this.state.record.status_type}
-                    connectedServices={PreloadData.current_user.connected_services}
+                    connectedServices={this.state.connectedServices}
+                    onConnectedServicesChange={this._onConnectedServicesChange}
                     onSave={this.handleSave} />
             );
         }
@@ -338,6 +357,11 @@ var RecordDetail = React.createClass({
     handleSave(post) {
         // TODO: preserve sort mode
         this.transitionTo('records');
+    },
+
+    _onConnectedServicesChange(services) {
+        PreloadData.current_user.connected_services = services;
+        this.setState({connectedServices: services});
     }
 });
 

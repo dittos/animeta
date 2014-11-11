@@ -9,7 +9,6 @@ from django.contrib.auth.models import User
 from record.models import Record, History, StatusTypes, Uncategorized
 from work.models import get_or_create_work
 from connect import get_connected_services, post_history
-from connect.models import FacebookSetting
 
 def serialize_datetime(dt):
     if dt is None:
@@ -191,16 +190,6 @@ class RecordPostsView(BaseView):
         services = []
         if request.POST.get('publish_twitter') == 'on':
             services.append('twitter')
-        if request.POST.get('publish_facebook') == 'on':
-            services.append('facebook')
-            token = request.POST.get('fb_token')
-            if token:
-                try:
-                    fb = FacebookSetting.objects.get(user=request.user)
-                except FacebookSetting.DoesNotExist:
-                    fb = FacebookSetting(user=request.user)
-                fb.key = token
-                fb.save()
 
         post_history(history, services)
 
