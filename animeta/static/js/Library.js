@@ -168,7 +168,7 @@ var Library = React.createClass({
             </p>
             <p>
                 <label>상태: </label>
-                <select value={this.props.query.type} onChange={this.handleStatusTypeFilterChange}>
+                <select value={this.props.query.type} onChange={this._onStatusTypeFilterChange}>
                     <option value="">전체 ({this.state.records.length})</option>
                 {['watching', 'finished', 'suspended', 'interested'].map(statusType => {
                     var recordCount = this.state.records.filter(record => record.status_type == statusType).length;
@@ -178,7 +178,7 @@ var Library = React.createClass({
             </p>
             <p>
                 <label>분류: </label>
-                <select value={this.props.query.category} onChange={this.handleCategoryFilterChange}>
+                <select value={this.props.query.category} onChange={this._onCategoryFilterChange}>
                     <option value="">전체 ({this.state.records.length})</option>
                 {this.props.user.categoryList.map(category => {
                     var recordCount = this.state.records.filter(record => (record.category_id || 0) == category.id).length;
@@ -239,11 +239,11 @@ var Library = React.createClass({
         this.transitionTo(this.props.name, {}, query);
     },
 
-    handleStatusTypeFilterChange(e) {
+    _onStatusTypeFilterChange(e) {
         this.updateQuery({type: e.target.value});
     },
 
-    handleCategoryFilterChange(e) {
+    _onCategoryFilterChange(e) {
         this.updateQuery({category: e.target.value});
     }
 });

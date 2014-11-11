@@ -25,7 +25,7 @@ var TitleEditView = React.createClass({
         var typeahead = initTypeahead(this.refs.titleInput.getDOMNode());
         typeahead.on('keypress', event => {
             if (event.keyCode == 13) {
-                this.handleSave();
+                this._onSave();
             }
         });
     },
@@ -34,17 +34,17 @@ var TitleEditView = React.createClass({
         return (
             <div className="title-form">
                 <input ref="titleInput" defaultValue={this.props.originalTitle} />
-                <button onClick={this.handleSave}>저장</button>
-                {' '}<a href="#" onClick={this.handleCancel}>취소</a>
+                <button onClick={this._onSave}>저장</button>
+                {' '}<a href="#" onClick={this._onCancel}>취소</a>
             </div>
         );
     },
 
-    handleSave() {
+    _onSave() {
         this.props.onSave(this.refs.titleInput.getDOMNode().value);
     },
 
-    handleCancel(event) {
+    _onCancel(event) {
         event.preventDefault();
         this.props.onCancel();
     }
@@ -62,7 +62,7 @@ var CategoryEditView = React.createClass({
             <span className="category-form btn">
                 <label>분류: </label>
                 {name} ▼
-                <select value={this.props.selectedId} onChange={this.handleChange}>
+                <select value={this.props.selectedId} onChange={this._onChange}>
                     <option value="">지정 안함</option>
                     {this.props.categoryList.filter(category => category.id).map(category =>
                         <option value={category.id}>{category.name}</option>
@@ -72,7 +72,7 @@ var CategoryEditView = React.createClass({
         );
     },
 
-    handleChange(event) {
+    _onChange(event) {
         var categoryId = event.target.value;
         $.post('/api/v2/records/' + this.props.recordId, {category_id: categoryId}).then(() => {
             RecordStore.updateCategory(this.props.recordId, categoryId);
@@ -91,14 +91,14 @@ var HeaderView = React.createClass({
             titleEditor = <TitleEditView
                 recordId={this.props.recordId}
                 originalTitle={this.props.title}
-                onSave={this.handleTitleSave}
+                onSave={this._onTitleSave}
                 onCancel={() => this.setState({isEditingTitle: false})} />;
         } else {
             titleEditor = <h1 className="record-detail-title">
                 <a href={getWorkURL(this.props.title)}>{this.props.title}</a>
             </h1>;
             editTitleButton = (
-                <a href="#" className="btn btn-edit-title" onClick={this.handleTitleEditButtonClick}>
+                <a href="#" className="btn btn-edit-title" onClick={this._onTitleEditButtonClick}>
                     제목 수정
                 </a>
             );
@@ -125,12 +125,12 @@ var HeaderView = React.createClass({
         );
     },
 
-    handleTitleEditButtonClick(event) {
+    _onTitleEditButtonClick(event) {
         event.preventDefault();
         this.setState({isEditingTitle: true});
     },
 
-    handleTitleSave(title) {
+    _onTitleSave(title) {
         $.post('/api/v2/records/' + this.props.recordId, {title: title}).then(() => {
             RecordStore.updateTitle(this.props.recordId, title);
             this.setState({isEditingTitle: false});
@@ -207,7 +207,7 @@ var RecordDetail = React.createClass({
                     initialStatusType={this.state.record.status_type}
                     connectedServices={this.state.connectedServices}
                     onConnectedServicesChange={this._onConnectedServicesChange}
-                    onSave={this.handleSave} />
+                    onSave={this._onSave} />
             );
         }
         var posts = [];
@@ -256,7 +256,7 @@ var RecordDetail = React.createClass({
         </div>;
     },
 
-    handleSave(post) {
+    _onSave(post) {
         // TODO: preserve sort mode
         var pendingPostContext = RecordStore.addPendingPost(this.state.record.id, post);
         // TODO: handle failure case
