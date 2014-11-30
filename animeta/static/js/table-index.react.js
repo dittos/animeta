@@ -114,7 +114,7 @@ var Schedule = React.createClass({
     getInitialState() {
         return {
             focusedIndex: new Date().getDay(),
-            preferKR: window.localStorage['animeta.table.preferKR']
+            preferKR: window.localStorage['animeta.table.preferKR'] === 'true'
         };
     },
 
