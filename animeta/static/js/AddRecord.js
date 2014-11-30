@@ -67,7 +67,7 @@ var AddRecord = React.createClass({
                     <td>
                         <CategorySelect name="category_id"
                             categoryList={this.props.user.categoryList}
-                            selectedId={this.selectedCategoryId}
+                            selectedId={this.state.selectedCategoryId}
                             onChange={this._onCategoryChange} />
                     </td>
                 </tr>
