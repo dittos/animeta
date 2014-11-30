@@ -211,15 +211,20 @@ def sync_record(sender, instance, **kwargs):
 post_save.connect(sync_record, sender=History)
 post_delete.connect(sync_record, sender=History)
 
-def get_episodes(work):
-    q = (work.history_set.exclude(comment='')
+def get_episodes(work, include_without_comment=False):
+    q = list(work.history_set.exclude(comment='')
             .order_by('status').values('status')
             .annotate(models.Count('status')))
-    result = []
+    if include_without_comment:
+        q2 = (work.history_set.filter(comment='')
+                .order_by('status').values('status')
+                .annotate(models.Count('status')))
+        q += [row for row in q2 if row['status__count'] >= 2]
+    result = set()
     for row in q:
         try:
             episode = int(row['status'])
         except ValueError:
             continue
-        result.append(episode)
-    return sorted(result)
+        result.add(episode)
+    return sorted(list(result))

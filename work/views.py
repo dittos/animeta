@@ -49,7 +49,7 @@ def detail(request, title):
         'comments': comments,
         'preload_data': json.dumps({
             'work': {'title': work.title},
-            'episodes': episodes,
+            'episodes': get_episodes(work, include_without_comment=True),
             'daum_api_key': settings.DAUM_API_KEY,
         })
     })
