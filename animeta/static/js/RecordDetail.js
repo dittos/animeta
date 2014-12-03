@@ -260,6 +260,7 @@ var RecordDetail = React.createClass({
         // TODO: preserve sort mode
         var pendingPostContext = RecordStore.addPendingPost(this.state.record.id, post);
         // TODO: handle failure case
+        post.publish_twitter = post.publish_twitter ? 'on' : 'off';
         $.post('/api/v2/records/' + this.state.record.id + '/posts', post).then(result => {
             RecordStore.resolvePendingPost(pendingPostContext, result.record, result.post);
             PostStore.addRecordPost(this.state.record.id, result.post);
