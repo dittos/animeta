@@ -1,7 +1,8 @@
 /* global PreloadData */
 /* global initTypeahead */
 var React = require('react/addons');
-var {Link, Navigation} = require('react-router');
+var Router = require('react-router');
+var {Link} = Router;
 var TimeAgo = require('./TimeAgo');
 var PostComposer = require('./PostComposer');
 var util = require('./util');
@@ -157,11 +158,11 @@ var PostView = React.createClass({
 });
 
 var RecordDetail = React.createClass({
-    mixins: [Navigation],
+    mixins: [Router.Navigation, Router.State],
 
     getInitialState() {
         return {
-            record: RecordStore.get(this.props.params.recordId),
+            record: RecordStore.get(this.getParams().recordId),
             isLoading: true,
             connectedServices: this.props.canEdit &&
                 PreloadData.current_user.connected_services
@@ -181,8 +182,8 @@ var RecordDetail = React.createClass({
 
     _onChange() {
         this.setState({
-            record: RecordStore.get(this.props.params.recordId),
-            posts: PostStore.findByRecordId(this.props.params.recordId)
+            record: RecordStore.get(this.getParams().recordId),
+            posts: PostStore.findByRecordId(this.getParams().recordId)
         });
     },
 

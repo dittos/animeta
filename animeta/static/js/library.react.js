@@ -1,21 +1,22 @@
 /* global PreloadData */
 require('object.assign').shim();
 var React = require('react/addons');
-var {Routes, Route, DefaultRoute, Navigation} = require('react-router');
+var Router = require('react-router');
 var RecordStore = require('./RecordStore');
 require('../less/library.less');
 
 var App = React.createClass({
-    mixins: [Navigation],
+    mixins: [Router.Navigation, Router.State],
 
     render() {
         var user = PreloadData.owner;
         user.categoryList = PreloadData.categories;
         var canEdit = PreloadData.current_user && PreloadData.current_user.id == user.id;
-        return this.props.activeRouteHandler({
-            user: user,
-            canEdit: canEdit
-        });
+        var key = this.getParams().recordId;
+        return <Router.RouteHandler
+            user={user}
+            canEdit={canEdit}
+            key={key} />;
     },
 
     componentDidMount() {
@@ -44,7 +45,7 @@ function onPageTransition() {
 var supportsHistory = require('react-router/modules/utils/supportsHistory');
 
 function initRouter() {
-    var locationStrategy = 'history';
+    var locationStrategy = Router.HistoryLocation;
     var libraryPath = '/users/' + PreloadData.owner.name + '/';
     if (!supportsHistory()) {
         if (location.pathname.match(/^\/records\//)) {
@@ -53,19 +54,22 @@ function initRouter() {
             location.href = libraryPath + '#' + location.pathname;
             return;
         }
-        locationStrategy = 'hash';
+        locationStrategy = Router.HashLocation;
         libraryPath = '/';
     }
 
-    React.render(
-        <Routes location={locationStrategy} onChange={onPageTransition}>
-            <Route path={libraryPath} handler={App}>
-                <DefaultRoute name="records" handler={require('./Library')} />
-                <Route name="add-record" path="/records/add/:title?/?" handler={require('./AddRecord')} />
-                <Route name="record" path="/records/:recordId/" handler={require('./RecordDetail')} addHandlerKey={true} />
-            </Route>
-        </Routes>,
-    $('.library-container')[0]);
+    var {Route, DefaultRoute} = Router;
+    var routes = (
+        <Route path={libraryPath} handler={App}>
+            <DefaultRoute name="records" handler={require('./Library')} />
+            <Route name="add-record" path="/records/add/:title?/?" handler={require('./AddRecord')} />
+            <Route name="record" path="/records/:recordId/" handler={require('./RecordDetail')} />
+        </Route>
+    );
+    Router.run(routes, locationStrategy, (Handler) => {
+        onPageTransition();
+        React.render(<Handler />, $('.library-container')[0]);
+    });
 }
 
 initRouter();

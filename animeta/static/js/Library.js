@@ -1,7 +1,8 @@
 var React = require('react/addons');
 var moment = require('moment');
 moment.locale('ko');
-var {Link, Navigation} = require('react-router');
+var Router = require('react-router');
+var {Link} = Router;
 var util = require('./util');
 var RecordStore = require('./RecordStore');
 
@@ -117,7 +118,7 @@ var LibraryItemView = React.createClass({
 });
 
 var Library = React.createClass({
-    mixins: [Navigation],
+    mixins: [Router.Navigation, Router.State],
 
     getInitialState() {
         return {records: RecordStore.getAll(), sortBy: 'date'};
@@ -140,15 +141,16 @@ var Library = React.createClass({
             return this._renderEmpty();
         }
 
+        var query = this.getQuery();
         var records = this.state.records;
-        if (this.props.query.type) {
-            records = records.filter(record => record.status_type == this.props.query.type);
+        if (query.type) {
+            records = records.filter(record => record.status_type == query.type);
         }
-        if (this.props.query.category) {
-            records = records.filter(record => (record.category_id || 0) == this.props.query.category);
+        if (query.category) {
+            records = records.filter(record => (record.category_id || 0) == query.category);
         }
         var groups;
-        var sort = this.props.query.sort || 'date';
+        var sort = query.sort || 'date';
         if (sort == 'date') {
             groups = groupRecordsByDate(records);
         } else if (sort == 'title') {
@@ -168,7 +170,7 @@ var Library = React.createClass({
             </p>
             <p>
                 <label>상태: </label>
-                <select value={this.props.query.type} onChange={this._onStatusTypeFilterChange}>
+                <select value={query.type} onChange={this._onStatusTypeFilterChange}>
                     <option value="">전체 ({this.state.records.length})</option>
                 {['watching', 'finished', 'suspended', 'interested'].map(statusType => {
                     var recordCount = this.state.records.filter(record => record.status_type == statusType).length;
@@ -178,7 +180,7 @@ var Library = React.createClass({
             </p>
             <p>
                 <label>분류: </label>
-                <select value={this.props.query.category} onChange={this._onCategoryFilterChange}>
+                <select value={query.category} onChange={this._onCategoryFilterChange}>
                     <option value="">전체 ({this.state.records.length})</option>
                 {this.props.user.categoryList.map(category => {
                     var recordCount = this.state.records.filter(record => (record.category_id || 0) == category.id).length;
@@ -197,7 +199,7 @@ var Library = React.createClass({
         return <div className="library">
             {header}
             {notice}
-            {this.props.query.sort == 'title' && <p className="library-toc">
+            {query.sort == 'title' && <p className="library-toc">
                 건너뛰기: {groups.map(group => <a href={'#group' + group.index}>{group.key}</a>)}
             </p>}
             {groups.map(group => <div className="library-group" key={group.key} id={'group' + group.index}>
@@ -224,19 +226,20 @@ var Library = React.createClass({
     },
 
     updateQuery(updates) {
+        var requestQuery = this.getQuery();
         var query = {};
         var k;
-        if (this.props.query) {
-            for (k in this.props.query) {
-                if (this.props.query.hasOwnProperty(k))
-                    query[k] = this.props.query[k];
+        if (requestQuery) {
+            for (k in requestQuery) {
+                if (requestQuery.hasOwnProperty(k))
+                    query[k] = requestQuery[k];
             }
         }
         for (k in updates) {
             if (updates.hasOwnProperty(k))
                 query[k] = updates[k];
         }
-        this.transitionTo(this.props.name, {}, query);
+        this.transitionTo('records', {}, query);
     },
 
     _onStatusTypeFilterChange(e) {

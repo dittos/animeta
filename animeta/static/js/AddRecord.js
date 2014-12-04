@@ -1,6 +1,6 @@
 /* global initTypeahead */
 var React = require('react/addons');
-var {Navigation} = require('react-router');
+var Router = require('react-router');
 var RecordStore = require('./RecordStore');
 
 var CategorySelect = React.createClass({
@@ -31,7 +31,7 @@ var CategorySelect = React.createClass({
 });
 
 var AddRecord = React.createClass({
-    mixins: [Navigation],
+    mixins: [Router.Navigation, Router.State],
 
     getInitialState() {
         return {
@@ -47,7 +47,7 @@ var AddRecord = React.createClass({
                 <tr>
                     <th>작품 제목</th>
                     <td><input name="work_title" ref="title"
-                        defaultValue={this.props.params.title} /></td>
+                        defaultValue={this.getParams().title} /></td>
                 </tr>
                 <tr>
                     <th>감상 상태</th>
