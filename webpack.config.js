@@ -65,7 +65,7 @@ if (process.env.NODE_ENV == 'production') {
 } else {
     console.log('* Development Build');
 
-    config.devtool = 'source-map';
+    config.devtool = 'eval';
     config.module.postLoaders = [
         {
             test: /\.js$/,
