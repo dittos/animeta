@@ -134,5 +134,5 @@ def annotate_statuses(items, user):
         else:
             item['record_count'] = work.index.record_count
         if 'kr' in item.get('schedule', {}):
-            data['contains_kr_schedule'] = True
+            data['contains_kr_schedule'] = bool(item['schedule']['kr']['date'])
     return data
