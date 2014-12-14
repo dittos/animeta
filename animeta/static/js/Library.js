@@ -191,12 +191,12 @@ var Library = React.createClass({
             </p>
         </div>;
         var notice;
-        var enableNotice = false;
+        var enableNotice = true;
         if (enableNotice && this.props.canEdit) {
             notice = (
                 <div className="notice notice-animetable">
-                    10월 신작을 클릭 한번으로 관심 등록!{' '}
-                    <a href={'/table/2014Q4/?utm_source=self&utm_medium=link&utm_campaign=library'}>2014년 10월 신작 보러가기</a>
+                    2015년 1월 신작을 클릭 한번으로 관심 등록!{' '}
+                    <a href={'/table/2015Q1/?utm_source=self&utm_medium=link&utm_campaign=library'}>2015년 1월 신작 보러가기</a>
                 </div>
             );
         }

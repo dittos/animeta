@@ -15,6 +15,7 @@
 {% block nav %}
 <h1><a href="{% url 'table-index' %}">시간표</a></h1>
 <p>
+    <a href="{% url 'table-period' period='2015Q1' %}">2015년 1월 신작</a>
     <a href="{% url 'table-period' period='2014Q4' %}">2014년 10월 신작</a>
     <a href="{% url 'table-period' period='2014Q3' %}">2014년 7월 신작</a>
     <a href="{% url 'table-period' period='2014Q2' %}">2014년 4월 신작</a>
