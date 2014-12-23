@@ -117,12 +117,61 @@ var LibraryItemView = React.createClass({
     }
 });
 
+var LibraryHeader = React.createClass({
+    mixins: [Router.Navigation, Router.State],
+    render() {
+        return <div className="library-header">
+            <p>
+                작품이 {this.props.count}개 등록되어 있습니다.
+                {this.props.count != this.props.filteredCount &&
+                    ' (' + this.props.filteredCount + '개 표시중)'}
+            </p>
+            <p className="sort-by">
+                정렬:
+                <span onClick={() => this._updateQuery({sort: 'date'})}
+                    className={'btn ' + (this.props.sortBy == 'date' && 'active')}>시간순</span>
+                <span onClick={() => this._updateQuery({sort: 'title'})}
+                    className={'btn ' + (this.props.sortBy == 'title' && 'active')}>제목순</span>
+            </p>
+            <p>
+                <label>상태: </label>
+                <select value={this.props.statusTypeFilter}
+                    onChange={this._onStatusTypeFilterChange}>
+                    <option value="">전체 ({this.props.count})</option>
+                {['watching', 'finished', 'suspended', 'interested'].map(statusType => {
+                    return <option value={statusType}>{util.STATUS_TYPE_TEXT[statusType]} ({this.props.statusTypeStats[statusType] || 0})</option>;
+                })}
+                </select>
+            </p>
+            <p>
+                <label>분류: </label>
+                <select value={this.props.categoryFilter}
+                    onChange={this._onCategoryFilterChange}>
+                    <option value="">전체 ({this.props.count})</option>
+                {this.props.categoryList.map(category => {
+                    return <option value={category.id}>{category.name} ({this.props.categoryStats[category.id]})</option>;
+                })}
+                </select>
+                {' '}{this.props.canEdit && <a href="/records/category/">관리</a>}
+            </p>
+        </div>;
+    },
+
+    _updateQuery(updates) {
+        this.transitionTo('records', {}, {...this.getQuery(), ...updates});
+    },
+
+    _onStatusTypeFilterChange(e) {
+        this._updateQuery({type: e.target.value});
+    },
+
+    _onCategoryFilterChange(e) {
+        this._updateQuery({category: e.target.value});
+    }
+});
+
 var Library = React.createClass({
     mixins: [Router.Navigation, Router.State],
-
-    getInitialState() {
-        return {records: RecordStore.getAll(), sortBy: 'date'};
-    },
 
     componentDidMount() {
         RecordStore.addChangeListener(this._onChange);
@@ -133,77 +182,39 @@ var Library = React.createClass({
     },
 
     _onChange() {
-        this.setState({records: RecordStore.getAll()});
+        this.forceUpdate();
     },
 
     render() {
-        if (this.state.records.length === 0) {
+        var count = RecordStore.getCount();
+        if (count === 0) {
             return this._renderEmpty();
         }
 
-        var query = this.getQuery();
-        var records = this.state.records;
-        if (query.type) {
-            records = records.filter(record => record.status_type == query.type);
-        }
-        if (query.category) {
-            records = records.filter(record => (record.category_id || 0) == query.category);
-        }
+        var {type, category, sort} = this.getQuery();
+        if (!sort) sort = 'date';
+        var records = RecordStore.query(type, category, sort);
+        var categoryStats = RecordStore.getCategoryStats();
+        var statusTypeStats = RecordStore.getStatusTypeStats();
         var groups;
-        var sort = query.sort || 'date';
         if (sort == 'date') {
             groups = groupRecordsByDate(records);
         } else if (sort == 'title') {
             groups = groupRecordsByTitle(records);
         }
-        var header = <div className="library-header">
-            <p>
-                작품이 {this.state.records.length}개 등록되어 있습니다.
-                {this.state.records.length != records.length && ' (' + records.length + '개 표시중)'}
-            </p>
-            <p className="sort-by">
-                정렬:
-                <span onClick={() => this.updateQuery({sort: 'date'})}
-                    className={'btn ' + (sort == 'date' && 'active')}>시간순</span>
-                <span onClick={() => this.updateQuery({sort: 'title'})}
-                    className={'btn ' + (sort == 'title' && 'active')}>제목순</span>
-            </p>
-            <p>
-                <label>상태: </label>
-                <select value={query.type} onChange={this._onStatusTypeFilterChange}>
-                    <option value="">전체 ({this.state.records.length})</option>
-                {['watching', 'finished', 'suspended', 'interested'].map(statusType => {
-                    var recordCount = this.state.records.filter(record => record.status_type == statusType).length;
-                    return <option value={statusType}>{util.STATUS_TYPE_TEXT[statusType]} ({recordCount})</option>;
-                })}
-                </select>
-            </p>
-            <p>
-                <label>분류: </label>
-                <select value={query.category} onChange={this._onCategoryFilterChange}>
-                    <option value="">전체 ({this.state.records.length})</option>
-                {this.props.user.categoryList.map(category => {
-                    var recordCount = this.state.records.filter(record => (record.category_id || 0) == category.id).length;
-                    return <option value={category.id}>{category.name} ({recordCount})</option>;
-                })}
-                </select>
-                {' '}{this.props.canEdit && <a href="/records/category/">관리</a>}
-            </p>
-        </div>;
-        var notice;
-        var enableNotice = true;
-        if (enableNotice && this.props.canEdit) {
-            notice = (
-                <div className="notice notice-animetable">
-                    2015년 1월 신작을 클릭 한번으로 관심 등록!{' '}
-                    <a href={'/table/2015Q1/?utm_source=self&utm_medium=link&utm_campaign=library'}>2015년 1월 신작 보러가기</a>
-                </div>
-            );
-        }
         return <div className="library">
-            {header}
-            {notice}
-            {query.sort == 'title' && <p className="library-toc">
+            <LibraryHeader
+                count={count}
+                filteredCount={records.length}
+                sortBy={sort}
+                statusTypeFilter={type}
+                statusTypeStats={statusTypeStats}
+                categoryFilter={category}
+                categoryList={this.props.user.categoryList}
+                categoryStats={categoryStats}
+                canEdit={this.props.canEdit} />
+            {this._renderNotice()}
+            {sort == 'title' && <p className="library-toc">
                 건너뛰기: {groups.map(group => <a href={'#group' + group.index}>{group.key}</a>)}
             </p>}
             {groups.map(group => <div className="library-group" key={group.key} id={'group' + group.index}>
@@ -229,29 +240,15 @@ var Library = React.createClass({
         </div>;
     },
 
-    updateQuery(updates) {
-        var requestQuery = this.getQuery();
-        var query = {};
-        var k;
-        if (requestQuery) {
-            for (k in requestQuery) {
-                if (requestQuery.hasOwnProperty(k))
-                    query[k] = requestQuery[k];
-            }
+    _renderNotice() {
+        var enableNotice = true;
+        if (enableNotice && this.props.canEdit) {
+            return <div className="notice notice-animetable">
+                2015년 1월 신작을 클릭 한번으로 관심 등록!{' '}
+                <a href={'/table/2015Q1/?utm_source=self&utm_medium=link&utm_campaign=library'}>2015년 1월 신작 보러가기</a>
+            </div>;
         }
-        for (k in updates) {
-            if (updates.hasOwnProperty(k))
-                query[k] = updates[k];
-        }
-        this.transitionTo('records', {}, query);
-    },
-
-    _onStatusTypeFilterChange(e) {
-        this.updateQuery({type: e.target.value});
-    },
-
-    _onCategoryFilterChange(e) {
-        this.updateQuery({category: e.target.value});
+        return null;
     }
 });
 

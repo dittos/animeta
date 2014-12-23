@@ -1,7 +1,8 @@
 var events = require('events');
+var _ = require('lodash');
 
 var _events = new events.EventEmitter;
-var _records = [];
+var _records = {};
 var _pendingPostCount = 0;
 
 exports.addChangeListener = function(listener) {
@@ -17,30 +18,57 @@ function emitChange() {
 }
 
 exports.preload = function(records) {
-    _records = records;
+    records.forEach(record => {
+        _records[record.id] = record;
+    });
     emitChange();
 };
 
-exports.getAll = function() {
-    return _records;
+exports.getCount = function() {
+    return _.size(_records);
 };
 
-var get = exports.get = function(id) {
-    return _records.filter(record => record.id == id)[0];
+exports.getCategoryStats = function() {
+    return _.countBy(_records, record => record.category_id || 0);
+};
+
+exports.getStatusTypeStats = function() {
+    return _.countBy(_records, 'status_type');
+};
+
+exports.query = function(statusType, categoryId, sortBy) {
+    var chain = _(_records);
+    if (statusType) {
+        chain = chain.filter(record => record.status_type == statusType);
+    }
+    if (categoryId === 0 || categoryId) {
+        chain = chain.filter(record => (record.category_id || 0) == categoryId);
+    }
+    chain = chain.values();
+    if (sortBy == 'date') {
+        chain = chain.sortBy('created_at').reverse();
+    } else if (sortBy == 'title') {
+        chain = chain.sortBy('title');
+    }
+    return chain.value();
+};
+
+exports.get = function(id) {
+    return _records[id];
 };
 
 exports.updateTitle = function(id, title) {
-    get(id).title = title;
+    _records[id].title = title;
     emitChange();
 };
 
 exports.updateCategory = function(id, categoryId) {
-    get(id).category_id = categoryId;
+    _records[id].category_id = categoryId;
     emitChange();
 };
 
 exports.addPendingPost = function(id, post) {
-    var record = get(id);
+    var record = _records[id];
     if (!record.pendingPosts) {
         record.pendingPosts = [];
     }
@@ -58,7 +86,7 @@ exports.addPendingPost = function(id, post) {
 };
 
 exports.resolvePendingPost = function(context, updatedRecord, post) {
-    var record = get(updatedRecord.id);
+    var record = _records[updatedRecord.id];
     for (var k in updatedRecord) {
         if (updatedRecord.hasOwnProperty(k))
             record[k] = updatedRecord[k];
@@ -75,6 +103,6 @@ exports.hasPendingPosts = function() {
 };
 
 exports.add = function(record) {
-    _records.push(record);
+    _records[record.id] = record;
     emitChange();
 };

@@ -24,10 +24,16 @@
     "test": "jest"
   },
   "jest": {
-    "testPathDirs": ["<rootDir>/animeta/static/js"],
+    "testPathDirs": [
+      "<rootDir>/animeta/static/js"
+    ],
     "scriptPreprocessor": "<rootDir>/preprocessor.js",
     "unmockedModulePathPatterns": [
-      "<rootDir>/node_modules/react"
+      "<rootDir>/node_modules/react",
+      "<rootDir>/node_modules/lodash"
     ]
+  },
+  "dependencies": {
+    "lodash": "^2.4.1"
   }
 }
