@@ -76,11 +76,5 @@ def list_users(request, title):
     })
 
 def video(request, title, provider, id):
-    work = _get_work(title)
-
-    return render(request, "work/video.html", {
-        'work': work,
-        'record': _get_record(request, work),
-        'records': work.record_set,
-        'video_id': id
-    })
+    assert provider == 'tvpot'
+    return redirect('http://tvpot.daum.net/v/' + id)

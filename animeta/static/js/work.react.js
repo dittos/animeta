@@ -6,13 +6,6 @@ function fixTitle(title) {
     return $('<span />').html(title.replace(/&lt;(\/?b)&gt;/g, "<$1>")).text();
 }
 
-function getVideoURL(item) {
-    if (item.player_url)
-        return 'videos/tvpot/' + item.player_url.split('?vid=')[1] + '/';
-    else
-        return item.link;
-}
-
 function formatDate(t) {
     // YYYYMMDDHHMMSS
     var d = new Date(parseInt(t.substr(0,4), 10), parseInt(t.substr(4,2), 10) - 1, parseInt(t.substr(6,2), 10));
@@ -81,7 +74,7 @@ var VideoSearchResult = React.createClass({
             }
             var item = this.state.result[i];
             currentRow.push(<td>
-                <a href={getVideoURL(item)} target="_blank">
+                <a href={item.link} target="_blank">
                     <div className="thumbnail"><img src={item.thumbnail} /></div>
                     <span className="title" dangerouslySetInnerHTML={{__html: shorten(fixTitle(item.title), 30)}} />
                 </a>
