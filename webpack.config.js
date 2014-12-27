@@ -7,10 +7,10 @@ module.exports = config = {
         versionMapPlugin
     ],
     entry: {
-        table_index: './animeta/static/js/table-index.react.js',
-        table_period: './animeta/static/js/table-period.react.js',
-        library: './animeta/static/js/library.react.js',
-        work: './animeta/static/js/work.react.js'
+        table_index: './frontend/js/table-index.react.js',
+        table_period: './frontend/js/table-period.react.js',
+        library: './frontend/js/library.react.js',
+        work: './frontend/js/work.react.js'
     },
     output: {
         path: 'animeta/static/build',
@@ -21,7 +21,7 @@ module.exports = config = {
         loaders: [
             { test: /\.js[x]?$/, loader: 'jsx-loader?harmony' },
             { test: /\.less$/, loader: 'style!css!autoprefixer!less' },
-            { test: /\.png$/, loader: 'file' }
+            { test: /\.(png|gif)$/, loader: 'url' }
         ]
     }
 };
@@ -30,7 +30,7 @@ if (process.env.NODE_ENV == 'production') {
     console.log('* Production Build');
 
     var moduleReplacePlugin = new webpack.NormalModuleReplacementPlugin(
-        /ReactErrorUtils$/, __dirname + '/animeta/static/js/ReactErrorUtils.js'
+        /ReactErrorUtils$/, __dirname + '/frontend/js/ReactErrorUtils.js'
     );
 
     var definePlugin = new webpack.DefinePlugin({

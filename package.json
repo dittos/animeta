@@ -1,6 +1,13 @@
 {
   "name": "animeta",
   "version": "0.0.1",
+  "dependencies": {
+    "moment": "^2.8.2",
+    "object.assign": "^1.0.1",
+    "react": "^0.12.0",
+    "react-router": "^0.11.4",
+    "lodash": "^2.4.1"
+  },
   "devDependencies": {
     "autoprefixer-loader": "^1.0.0",
     "css-loader": "^0.7.0",
@@ -12,12 +19,9 @@
     "jshint-loader": "^0.8.0",
     "jsx-loader": "^0.12.0",
     "less-loader": "^0.7.7",
-    "moment": "^2.8.2",
-    "object.assign": "^1.0.1",
-    "react": "^0.12.0",
-    "react-router": "^0.11.4",
     "react-tools": "^0.12.1",
     "style-loader": "^0.6.4",
+    "url-loader": "^0.5.5",
     "webpack": "^1.3.3-beta2"
   },
   "scripts": {
@@ -25,15 +29,12 @@
   },
   "jest": {
     "testPathDirs": [
-      "<rootDir>/animeta/static/js"
+      "<rootDir>/frontend/js"
     ],
     "scriptPreprocessor": "<rootDir>/preprocessor.js",
     "unmockedModulePathPatterns": [
       "<rootDir>/node_modules/react",
       "<rootDir>/node_modules/lodash"
     ]
-  },
-  "dependencies": {
-    "lodash": "^2.4.1"
   }
 }
