@@ -54,8 +54,9 @@ var PostComposer = React.createClass({
         this.props.onSave({
             status: this.state.status,
             status_type: this.state.statusType,
-            comment: this.state.comment,
-            publish_twitter: this.state.publishTwitter
+            comment: this.state.comment
+        }, {
+            twitter: this.state.publishTwitter
         });
     },
 

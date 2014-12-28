@@ -3,6 +3,7 @@ require('object.assign').shim();
 var React = require('react/addons');
 var Router = require('react-router');
 var RecordStore = require('./RecordStore');
+var PostStore = require('./PostStore');
 require('../less/library.less');
 
 var App = React.createClass({
@@ -87,7 +88,7 @@ $(document).ajaxError((event, jqXHR) => {
 });
 
 $(window).on('beforeunload', () => {
-    if (RecordStore.hasPendingPosts()) {
+    if (PostStore.hasPendingPosts()) {
         return '아직 저장 중인 기록이 있습니다.';
     }
 });

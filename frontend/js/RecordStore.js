@@ -3,7 +3,6 @@ var _ = require('lodash');
 
 var _events = new events.EventEmitter;
 var _records = {};
-var _pendingPostCount = 0;
 
 exports.addChangeListener = function(listener) {
     _events.on('change', listener);
@@ -67,39 +66,18 @@ exports.updateCategory = function(id, categoryId) {
     emitChange();
 };
 
-exports.addPendingPost = function(id, post) {
+exports.createPendingPost = function(id, post) {
     var record = _records[id];
-    if (!record.pendingPosts) {
-        record.pendingPosts = [];
-    }
-    var context = {
-        post: post
-    };
     record.status = post.status;
     record.status_type = post.status_type;
     record.updated_at = +(new Date);
     record.has_newer_episode = false;
-    record.pendingPosts.push(context);
-    _pendingPostCount++;
     emitChange();
-    return context;
 };
 
 exports.resolvePendingPost = function(context, updatedRecord, post) {
-    var record = _records[updatedRecord.id];
-    for (var k in updatedRecord) {
-        if (updatedRecord.hasOwnProperty(k))
-            record[k] = updatedRecord[k];
-    }
-    record.pendingPosts = record.pendingPosts.filter(c => c !== context);
-    if (record.pendingPosts.length === 0)
-        delete record.pendingPosts;
-    _pendingPostCount--;
+    _records[updatedRecord.id] = updatedRecord;
     emitChange();
-};
-
-exports.hasPendingPosts = function() {
-    return _pendingPostCount > 0;
 };
 
 exports.add = function(record) {

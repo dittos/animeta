@@ -6,6 +6,8 @@ var {Link} = Router;
 var TimeAgo = require('./TimeAgo');
 var PostComposer = require('./PostComposer');
 var util = require('./util');
+var RecordActions = require('./RecordActions');
+var PostActions = require('./PostActions');
 var RecordStore = require('./RecordStore');
 var PostStore = require('./PostStore');
 
@@ -75,9 +77,7 @@ var CategoryEditView = React.createClass({
 
     _onChange(event) {
         var categoryId = event.target.value;
-        $.post('/api/v2/records/' + this.props.recordId, {category_id: categoryId}).then(() => {
-            RecordStore.updateCategory(this.props.recordId, categoryId);
-        });
+        RecordActions.updateCategory(this.props.recordId, categoryId);
     }
 });
 
@@ -132,9 +132,10 @@ var HeaderView = React.createClass({
     },
 
     _onTitleSave(title) {
-        $.post('/api/v2/records/' + this.props.recordId, {title: title}).then(() => {
-            RecordStore.updateTitle(this.props.recordId, title);
-            this.setState({isEditingTitle: false});
+        RecordActions.updateTitle(this.props.recordId, title).then(() => {
+            if (this.isMounted()) {
+                this.setState({isEditingTitle: false});
+            }
         });
     }
 });
@@ -157,13 +158,19 @@ var PostView = React.createClass({
     }
 });
 
+function getStoreState(recordID) {
+    return {
+        record: RecordStore.get(recordID),
+        posts: PostStore.findByRecordId(recordID)
+    };
+}
+
 var RecordDetail = React.createClass({
     mixins: [Router.Navigation, Router.State],
 
     getInitialState() {
         return {
-            record: RecordStore.get(this.getParams().recordId),
-            isLoading: true,
+            ...getStoreState(this.getParams().recordId),
             connectedServices: this.props.canEdit &&
                 PreloadData.current_user.connected_services
         };
@@ -181,17 +188,13 @@ var RecordDetail = React.createClass({
     },
 
     _onChange() {
-        this.setState({
-            record: RecordStore.get(this.getParams().recordId),
-            posts: PostStore.findByRecordId(this.getParams().recordId)
-        });
+        this.setState(getStoreState(this.getParams().recordId));
     },
 
     loadPosts() {
         this.setState({isLoading: true});
-        $.get('/api/v2/records/' + this.state.record.id + '/posts').then(result => {
+        PostActions.fetchRecordPosts(this.state.record.id).then(() => {
             if (this.isMounted()) {
-                PostStore.loadRecordPosts(this.state.record.id, result.posts);
                 this.setState({isLoading: false});
             }
         });
@@ -211,38 +214,6 @@ var RecordDetail = React.createClass({
                     onSave={this._onSave} />
             );
         }
-        var posts = [];
-        if (this.state.record.pendingPosts) {
-            var i = 0;
-            this.state.record.pendingPosts.forEach(pendingPost => {
-                var post = pendingPost.post;
-                var saved = false;
-                if (!this.state.isLoading) {
-                    this.state.posts.forEach(savedPost => {
-                        if (savedPost.status == post.status &&
-                            savedPost.status_type == post.status_type &&
-                            savedPost.comment == post.comment) {
-                            saved = true;
-                        }
-                    });
-                }
-                if (!saved) {
-                    posts.push(<PostView post={post} key={--i}
-                        canDelete={false}
-                        isPending={true} />);
-                }
-            });
-        }
-        if (!this.state.isLoading) {
-            var canDelete = this.props.canEdit && this.state.posts.length > 1;
-            this.state.posts.forEach(post => {
-                posts.push(
-                    <PostView post={post} key={post.id}
-                        canDelete={canDelete}
-                        user={this.props.user} />
-                );
-            });
-        }
         return <div className="view-record-detail">
             <HeaderView
                 canEdit={this.props.canEdit}
@@ -252,20 +223,21 @@ var RecordDetail = React.createClass({
                 categoryList={this.props.user.categoryList} />
             {composer}
             <div className="record-detail-posts">
-                {posts}
+                {this.state.posts.map(post => {
+                    var canDelete = post.id && this.props.canEdit && this.state.posts.length > 1;
+                    return <PostView post={post}
+                        key={post.tempID || post.id}
+                        canDelete={canDelete}
+                        isPending={!post.id}
+                        user={this.props.user} />;
+                })}
             </div>
         </div>;
     },
 
-    _onSave(post) {
+    _onSave(post, publishOptions) {
+        PostActions.createPost(this.state.record.id, post, publishOptions);
         // TODO: preserve sort mode
-        var pendingPostContext = RecordStore.addPendingPost(this.state.record.id, post);
-        // TODO: handle failure case
-        post.publish_twitter = post.publish_twitter ? 'on' : 'off';
-        $.post('/api/v2/records/' + this.state.record.id + '/posts', post).then(result => {
-            RecordStore.resolvePendingPost(pendingPostContext, result.record, result.post);
-            PostStore.addRecordPost(this.state.record.id, result.post);
-        });
         this.transitionTo('records');
     },
 

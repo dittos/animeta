@@ -94,27 +94,21 @@ describe('RecordStore', function() {
         expect(RecordStore.get(123).category_id).toBe(999);
     });
 
-    it('stores pending posts', function() {
+    it('updates record when pending post is created', function() {
         var RecordStore = newStore();
-        var origRecord = JSON.parse(JSON.stringify(RecordStore.get(123)));
-        expect(RecordStore.hasPendingPosts()).toBeFalsy();
 
-        var context = RecordStore.addPendingPost(123, {
+        var context = 12345;
+        RecordStore.createPendingPost(123, {
             status: 'changed',
             status_type: 'finished',
             comment: 'comment'
-        });
+        }, context);
         var pendingRecord = RecordStore.get(123);
         expect(pendingRecord.status).toBe('changed');
         expect(pendingRecord.status_type).toBe('finished');
         expect(pendingRecord.has_newer_episode).toBeFalsy();
-        expect(pendingRecord.pendingPosts.length).toBe(1);
-        var pendingPost = pendingRecord.pendingPosts[0];
-        expect(pendingPost.post.status).toBe('changed');
-        expect(pendingPost.post.status_type).toBe('finished');
-        expect(pendingPost.post.comment).toBe('comment');
-        expect(RecordStore.hasPendingPosts()).toBeTruthy();
 
+        var newUpdatedAt = Date.now() + 1000;
         RecordStore.resolvePendingPost(context, {
             id: 123,
             user_id: 456,
@@ -123,17 +117,16 @@ describe('RecordStore', function() {
             status_type: 'finished',
             status: 'changed',
             title: 'blah blah',
-            updated_at: Date.now(),
+            updated_at: newUpdatedAt,
         }, {
             id: 456,
             user_id: 456,
             work_id: 789,
             status_type: 'finished',
             status: 'changed',
-            created_at: Date.now()
+            created_at: newUpdatedAt
         });
-        expect(RecordStore.hasPendingPosts()).toBeFalsy();
-        expect(RecordStore.get(123).pendingPosts).toBeUndefined();
+        expect(RecordStore.get(123).updated_at).toBe(newUpdatedAt);
     });
 
     it('stores new record', function() {
