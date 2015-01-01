@@ -44,9 +44,9 @@ var Nav = React.createClass({
                     {tabs}
                 </div>
                 <div className="schedule-nav-country">
-                    <img src="/static/flag-jp.png" className={!this.props.preferKR ? 'active' : ''}
+                    <img src={require('../img/flag-jp.png')} className={!this.props.preferKR ? 'active' : ''}
                         onClick={() => this.props.onCountrySelect('JP')} />{' '}
-                    <img src="/static/flag-kr.png" className={this.props.preferKR ? 'active' : ''}
+                    <img src={require('../img/flag-kr.png')} className={this.props.preferKR ? 'active' : ''}
                         onClick={() => this.props.onCountrySelect('KR')} />
                 </div>
             </div>
