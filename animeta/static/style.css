@@ -47,7 +47,7 @@ ol.chart, #charts ol { margin-left: 0.5em; padding: 0; list-style: none; }
 /* User Section */
 .work { color: #000; text-decoration: none; }
 a.work:hover { color: #666; border-bottom: 1px dashed #aaa; }
-.status { color: #fff; background-color: #b0b0b0; padding: 3px 4px; margin-left: 0.5em; border-radius: 5px; }
+.status { color: #fff; background-color: #b0b0b0; padding: 3px 5px; margin-left: 0.5em; border-radius: 3px; font-weight: bold; }
 .status a { text-decoration: none; color: #fff !important; }
 .status a:hover { padding-right: 16px; background: transparent url(edit.gif) right center no-repeat; margin-right: 2px; }
 .status.watching { background-color: #4bb000; }
