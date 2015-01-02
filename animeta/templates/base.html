@@ -9,12 +9,11 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}style.css?3" type="text/css" />
     {% endblock %}
 
-    <link rel="icon" type="image/x-icon" href="{{ STATIC_URL }}favicon.ico" />
-
     <link rel="apple-touch-icon-precomposed" sizes="120x120" href="{{ STATIC_URL }}apple-touch-icon-120x.png"><!-- iPhone @2x -->
     <link rel="apple-touch-icon-precomposed" sizes="152x152" href="{{ STATIC_URL }}apple-touch-icon-152x.png"><!-- iPad @2x -->
     <link rel="apple-touch-icon-precomposed" sizes="180x180" href="{{ STATIC_URL }}apple-touch-icon-180x.png"><!-- iPhone @3x -->
-    <link rel="icon" sizes="196x196" href="touch-icon-192x.png"><!-- Android -->
+    <link rel="icon" sizes="196x196" href="{{ STATIC_URL }}touch-icon-192x.png"><!-- Android -->
+    <link rel="shortcut icon" href="{{ STATIC_URL }}favicon.ico" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, target-densitydpi=medium-dpi" />
     <meta name="apple-mobile-web-app-capable" content="no" />
@@ -30,6 +29,9 @@
     </script>
 </head>
 <body>
+<script>
+if (!document.createElementNS || !document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect)document.body.className+=' no-svg';
+</script>
 <div class="header">
 <div class="header-inner">
     <h1 class="logo"><a href="/">animeta</a></h1>

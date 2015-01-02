@@ -13,7 +13,7 @@ select,
 optgroup,
 option,
 button {
-  font-family: Malgun Gothic, sans-serif;
+  font-family: "Helvetica Neue", "HiraKakuProN-W3", "Hiragino Sans GB W3", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
 }
 a {
   color: #4bb000;
@@ -31,13 +31,29 @@ a img {
   width: 960px;
   margin: 0 auto;
 }
+.header h1:hover,
 .header a:hover {
   position: relative;
   left: 1px;
   top: 1px;
 }
-.header .logo {
+.header h1.logo {
   float: left;
+  display: block;
+  margin: 0;
+  padding: 0;
+  width: 139px;
+  height: 27px;
+  background-image: url('../animeta.svg');
+  background-size: 139px 27px;
+  overflow: hidden;
+}
+.header h1.logo a {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-indent: -9999px;
+  overflow: hidden;
 }
 .header .global-search {
   float: left;
@@ -67,6 +83,9 @@ a img {
 }
 .header .menu-account li:last-child {
   margin-right: 0;
+}
+.no-svg .header h1.logo {
+  background-image: url(../animeta.gif);
 }
 .global-search {
   width: 200px;
