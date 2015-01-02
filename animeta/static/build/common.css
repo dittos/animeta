@@ -266,8 +266,12 @@ a img {
   .header {
     text-align: center;
   }
-  .header .logo {
+  .header h1.logo {
     float: none;
+    width: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-bottom: 10px;
   }
   .header .global-search {
     float: none;
