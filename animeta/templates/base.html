@@ -8,8 +8,15 @@
     {% block stylesheets %}
     <link rel="stylesheet" href="{{ STATIC_URL }}style.css?3" type="text/css" />
     {% endblock %}
-    <link rel="apple-touch-icon" href="{{ STATIC_URL }}icon@2x.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi" />
+
+    <link rel="icon" type="image/x-icon" href="{{ STATIC_URL }}favicon.ico" />
+
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="{{ STATIC_URL }}apple-touch-icon-120x.png"><!-- iPhone @2x -->
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="{{ STATIC_URL }}apple-touch-icon-152x.png"><!-- iPad @2x -->
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="{{ STATIC_URL }}apple-touch-icon-180x.png"><!-- iPhone @3x -->
+    <link rel="icon" sizes="196x196" href="touch-icon-192x.png"><!-- Android -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, target-densitydpi=medium-dpi" />
     <meta name="apple-mobile-web-app-capable" content="no" />
     <meta name="google-site-verification" content="dhlhxHlQ_wDcoxu7hcyfWoXOyD79pPryal6fVLUxLeg" />
     {% block head-extra %}{% endblock %}
@@ -25,7 +32,7 @@
 <body>
 <div class="header">
 <div class="header-inner">
-    <div class="logo"><a href="/"><img src="{{ STATIC_URL }}animeta.gif" alt="animeta" /></a></div>
+    <h1 class="logo"><a href="/">animeta</a></h1>
 
 {% block menu %}
     <div class="global-search">

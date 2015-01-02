@@ -11,7 +11,10 @@ body {
 }
 
 body, input, textarea, select, optgroup, option, button {
-	font-family: Malgun Gothic, sans-serif;
+	font-family: "Helvetica Neue",
+        "HiraKakuProN-W3","Hiragino Sans GB W3",
+        "Apple SD Gothic Neo","NanumBarunGothic","Malgun Gothic",
+        sans-serif;
 }
 
 a {
@@ -39,8 +42,24 @@ a img {
         top: 1px;
     }
 
-    .logo {
+    h1.logo {
         float: left;
+        display: block;
+        margin: 0;
+        padding: 0;
+        width: 139px;
+        height: 27px;
+        background-image: url('../animeta.svg');
+        background-size: 139px 27px;
+        overflow: hidden;
+
+        a {
+            display: block;
+            width: 100%;
+            height: 100%;
+            text-indent: -9999px;
+            overflow: hidden;
+        }
     }
 
     .global-search {
