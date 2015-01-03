@@ -1,10 +1,10 @@
 from django.conf.urls import patterns, url
-from user.views import HistoryListView, HistoryFeedView
+from user.views import HistoryFeedView
 from record.views import HistoryDetailView
 
 urlpatterns = patterns('user.views',
     (r'^$', 'library'),
-    url(r'^history/$', HistoryListView.as_view(), name='user-history'),
+    url(r'^history/$', 'history_compat', name='user-history'),
     url(r'^feed/$', HistoryFeedView.as_view(), name='user-history-feed'),
 )
 

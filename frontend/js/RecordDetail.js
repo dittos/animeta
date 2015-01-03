@@ -11,18 +11,6 @@ var PostActions = require('./PostActions');
 var RecordStore = require('./RecordStore');
 var PostStore = require('./PostStore');
 
-function getWorkURL(title) {
-    return '/works/' + encodeURIComponent(title) + '/';
-}
-
-function getPostURL(post) {
-    return '/-' + post.id;
-}
-
-function getPostDeleteURL(user, post) {
-    return '/users/' + user.name + '/history/' + post.id + '/delete/';
-}
-
 var TitleEditView = React.createClass({
     componentDidMount() {
         var typeahead = initTypeahead(this.refs.titleInput.getDOMNode());
@@ -96,7 +84,7 @@ var HeaderView = React.createClass({
                 onCancel={() => this.setState({isEditingTitle: false})} />;
         } else {
             titleEditor = <h1 className="record-detail-title">
-                <a href={getWorkURL(this.props.title)}>{this.props.title}</a>
+                <a href={util.getWorkURL(this.props.title)}>{this.props.title}</a>
             </h1>;
             editTitleButton = (
                 <a href="#" className="btn btn-edit-title" onClick={this._onTitleEditButtonClick}>
@@ -149,9 +137,9 @@ var PostView = React.createClass({
                 {post.comment && <div className="comment">{post.comment}</div>}
                 <div className="meta">
                     {!this.props.isPending ?
-                        <a href={getPostURL(post)} className="time"><TimeAgo time={new Date(post.updated_at)} /></a>
+                        <a href={util.getPostURL(post)} className="time"><TimeAgo time={new Date(post.updated_at)} /></a>
                         : '저장 중...'}
-                    {this.props.canDelete && <a href={getPostDeleteURL(this.props.user, post)} className="btn-delete">지우기</a>}
+                    {this.props.canDelete && <a href={util.getPostDeleteURL(this.props.user, post)} className="btn-delete">지우기</a>}
                 </div>
             </div>
         );

@@ -278,6 +278,76 @@
     }
 }
 
+.library-history {
+    .library-history-group {
+        border-top: 1px solid #ddd;
+        padding: 1em 0;
+        margin-bottom: 2em;
+    }
+    .library-history-group-title {
+        margin-bottom: 1em;
+        font-size: 1.1em;
+        color: #555;
+    }
+    .load-more {
+        .mixin-btn-submit;
+        padding: 0.5em;
+        text-align: center;
+        &.loading {
+            background-color: #999;
+        }
+    }
+}
+
+.library-history .post-item {
+    clear: both;
+    line-height: 1.8;
+    margin-top: 2em;
+
+    .title {
+        font-weight: bold;
+        text-decoration: none;
+        color: #000;
+        margin-right: 8px;
+        &:hover {
+            color: #4bb000;
+            border-bottom: 1px dashed #aaa;
+        }
+    }
+    .progress {
+        font-weight: bold;
+        margin-right: 8px;
+        display: inline;
+        color: #4bb000;
+        &.progress-suspended, &.progress-finished {
+            color: #999;
+        }
+    }
+    .meta {
+        font-size: 12px;
+        display: inline;
+    }
+    .comment {
+        padding-top: 0.5em;
+        line-height: 1.6;
+    }
+    .time {
+        color: #666;
+        text-decoration: none;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+    .btn-delete {
+        margin-left: 8px;
+        color: #f00;
+        text-decoration: none;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
 @media (max-width: 960px) {
     .library-header p {
         display: block;

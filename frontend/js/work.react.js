@@ -89,7 +89,7 @@ var VideoSearchResult = React.createClass({
         if (this.state.isLoading) {
             loadMore = <div className="load-more loading">로드 중...</div>;
         } else if (this.state.hasMore) {
-            loadMore = <div className="load-more" onClick={this._loadMore}>검색 결과 더 보기...</div>;
+            loadMore = <div className="load-more" onClick={this._loadMore}>검색 결과 더 보기</div>;
         }
 
         return <div>

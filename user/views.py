@@ -92,20 +92,8 @@ def include_delete_flag(user):
             history.can_delete = history.deletable_by(user)
     return _callback
 
-class HistoryListView(ListView):
-    template_name = 'user/history.html'
-    paginate_by = 8
-
-    def get_queryset(self):
-        self.user = get_object_or_404(User, username=self.kwargs['username'])
-        return self.user.history_set.select_related('work', 'user') \
-                .transform(include_records) \
-                .transform(include_delete_flag(self.request.user))
-
-    def get_context_data(self, **kwargs):
-        context = super(HistoryListView, self).get_context_data(**kwargs)
-        context['owner'] = self.user
-        return context
+def history_compat(request, username):
+    return library(request, username)
 
 class HistoryFeedView(ListView):
     template_name = 'user/history.atom'

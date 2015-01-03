@@ -93,3 +93,15 @@ exports.getStatusText = function(record) {
     }
     return status;
 };
+
+exports.getWorkURL = function(title) {
+    return '/works/' + encodeURIComponent(title) + '/';
+};
+
+exports.getPostURL = function(post) {
+    return '/-' + post.id;
+};
+
+exports.getPostDeleteURL = function(user, post) {
+    return '/users/' + user.name + '/history/' + post.id + '/delete/';
+};

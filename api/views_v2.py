@@ -44,8 +44,8 @@ def serialize_record(record, include_has_newer_episode=False):
         data['has_newer_episode'] = True
     return data
 
-def serialize_post(post):
-    return {
+def serialize_post(post, include_record=False):
+    data = {
         'id': post.id,
         'record_id': post.record.id,
         'status': post.status,
@@ -53,6 +53,9 @@ def serialize_post(post):
         'comment': post.comment,
         'updated_at': serialize_datetime(post.updated_at),
     }
+    if include_record:
+        data['record'] = serialize_record(post.record)
+    return data
 
 def render_json(obj, **kwargs):
     return HttpResponse(json.dumps(obj), content_type='application/json', **kwargs)
@@ -138,6 +141,16 @@ class UserRecordsView(BaseView):
             'record': serialize_record(record),
             'post': serialize_post(history),
         }
+
+class UserPostsView(BaseView):
+    def get(self, request, name):
+        user = get_object_or_404(User, username=name)
+        queryset = user.history_set.order_by('-id')
+        if 'before_id' in request.GET:
+            queryset = queryset.filter(id__lt=request.GET['before_id'])
+        count = min(int(request.GET.get('count', 32)), 128)
+        return [serialize_post(post, include_record=True)
+            for post in queryset[:count]]
 
 class RecordView(BaseView):
     def get(self, request, id):

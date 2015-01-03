@@ -21,13 +21,9 @@ var App = React.createClass({
     },
 
     componentDidMount() {
-        $('#nav h1 a').on('click', event => {
+        $('#nav').on('click', 'a[data-route]', event => {
             event.preventDefault();
-            this.transitionTo('records');
-        });
-        $('#nav .add-record').on('click', event => {
-            event.preventDefault();
-            this.transitionTo('add-record');
+            this.transitionTo(event.target.getAttribute('data-route'));
         });
     }
 });
@@ -65,6 +61,7 @@ function initRouter() {
             <DefaultRoute name="records" handler={require('./Library')} />
             <Route name="add-record" path="/records/add/:title?/?" handler={require('./AddRecord')} />
             <Route name="record" path="/records/:recordId/" handler={require('./RecordDetail')} />
+            <Route name="history" path={libraryPath + "history/"} handler={require('./LibraryHistory')} />
         </Route>
     );
     Router.run(routes, locationStrategy, (Handler) => {
