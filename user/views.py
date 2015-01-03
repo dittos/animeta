@@ -86,12 +86,6 @@ def library(request, username=None):
         }, ensure_ascii=False, separators=(',', ':'))
     })
 
-def include_delete_flag(user):
-    def _callback(qs):
-        for history in qs:
-            history.can_delete = history.deletable_by(user)
-    return _callback
-
 def history_compat(request, username):
     return library(request, username)
 
