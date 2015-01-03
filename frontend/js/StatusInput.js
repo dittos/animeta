@@ -10,7 +10,7 @@ var StatusInputView = React.createClass({
     },
 
     render() {
-        var {style, onChange, value, ...props} = this.props;
+        var {style, value, ...props} = this.props;
         var showSuffix = value.match(/^(|.*\d)$/);
         var width = Math.max(this.props.minSize, Math.min(this.props.maxSize, value.length)) + 'em';
         style = {...style, width, textAlign: 'right'};

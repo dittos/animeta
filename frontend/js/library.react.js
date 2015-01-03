@@ -2,7 +2,7 @@
 require('object.assign').shim();
 var React = require('react/addons');
 var Router = require('react-router');
-var RecordStore = require('./RecordStore');
+var RecordActions = require('./RecordActions');
 var PostStore = require('./PostStore');
 require('../less/library.less');
 
@@ -28,8 +28,6 @@ var App = React.createClass({
     }
 });
 
-RecordStore.preload(PreloadData.records);
-
 var initialLoad = true;
 
 function onPageTransition() {
@@ -41,7 +39,7 @@ function onPageTransition() {
 
 var supportsHistory = require('react-router/modules/utils/supportsHistory');
 
-function initRouter() {
+function runApp() {
     var locationStrategy = Router.HistoryLocation;
     var libraryPath = '/users/' + PreloadData.owner.name + '/';
     if (!supportsHistory()) {
@@ -64,13 +62,14 @@ function initRouter() {
             <Route name="history" path={libraryPath + "history/"} handler={require('./LibraryHistory')} />
         </Route>
     );
+    RecordActions.loadRecords(PreloadData.records);
     Router.run(routes, locationStrategy, (Handler) => {
         onPageTransition();
         React.render(<Handler />, $('.library-container')[0]);
     });
 }
 
-initRouter();
+runApp();
 
 $(document).ajaxError((event, jqXHR) => {
     if (jqXHR.responseText) {

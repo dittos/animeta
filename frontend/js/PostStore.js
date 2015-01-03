@@ -1,4 +1,5 @@
 var events = require('events');
+var Dispatcher = require('./Dispatcher');
 
 var _events = new events.EventEmitter;
 var _posts = {};
@@ -36,29 +37,37 @@ exports.findByRecordId = function(recordId) {
     return pendingPosts.concat(posts);
 };
 
-exports.loadRecordPosts = function(recordId, posts) {
-    _posts[recordId] = posts;
-    emitChange();
-};
-
-exports.createPendingPost = function(recordId, post, context) {
-    if (!_pendingPosts[recordId])
-        _pendingPosts[recordId] = [];
-    _pendingPosts[recordId].unshift({...post, tempID: context});
-    _pendingPostCount++;
-    emitChange();
-};
-
-exports.resolvePendingPost = function(context, updatedRecord, post) {
-    var recordId = updatedRecord.id;
-    _pendingPosts[recordId] = _pendingPosts[recordId].filter(
-        post => post.tempID != context
-    );
-    _pendingPostCount--;
-    _posts[recordId].unshift(post);
-    emitChange();
-};
-
 exports.hasPendingPosts = function() {
     return _pendingPostCount > 0;
 };
+
+var actions = {
+    loadRecordPosts({recordID, posts}) {
+        _posts[recordID] = posts;
+        emitChange();
+    },
+
+    createPendingPost({recordID, post, context}) {
+        if (!_pendingPosts[recordID])
+            _pendingPosts[recordID] = [];
+        _pendingPosts[recordID].unshift({...post, tempID: context});
+        _pendingPostCount++;
+        emitChange();
+    },
+
+    resolvePendingPost({context, updatedRecord, post}) {
+        var recordID = updatedRecord.id;
+        _pendingPosts[recordID] = _pendingPosts[recordID].filter(
+            post => post.tempID != context
+        );
+        _pendingPostCount--;
+        _posts[recordID].unshift(post);
+        emitChange();
+    }
+};
+
+exports.dispatchToken = Dispatcher.register(payload => {
+    var action = actions[payload.type];
+    if (action)
+        action(payload);
+});

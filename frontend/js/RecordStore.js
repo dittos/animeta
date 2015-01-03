@@ -1,5 +1,6 @@
 var events = require('events');
 var _ = require('lodash');
+var Dispatcher = require('./Dispatcher');
 
 var _events = new events.EventEmitter;
 var _records = {};
@@ -15,13 +16,6 @@ exports.removeChangeListener = function(listener) {
 function emitChange() {
     _events.emit('change');
 }
-
-exports.preload = function(records) {
-    records.forEach(record => {
-        _records[record.id] = record;
-    });
-    emitChange();
-};
 
 exports.getCount = function() {
     return _.size(_records);
@@ -56,31 +50,41 @@ exports.get = function(id) {
     return _records[id];
 };
 
-exports.updateTitle = function(id, title) {
-    _records[id].title = title;
-    emitChange();
+var actions = {
+    loadRecords({records}) {
+        records.forEach(record => {
+            _records[record.id] = record;
+        });
+        emitChange();
+    },
+    updateRecordTitle({recordID, title}) {
+        _records[recordID].title = title;
+        emitChange();
+    },
+    updateRecordCategory({recordID, categoryID}) {
+        _records[recordID].category_id = categoryID;
+        emitChange();
+    },
+    createPendingPost({recordID, post}) {
+        var record = _records[recordID];
+        record.status = post.status;
+        record.status_type = post.status_type;
+        record.updated_at = +(new Date);
+        record.has_newer_episode = false;
+        emitChange();
+    },
+    resolvePendingPost({updatedRecord}) {
+        _records[updatedRecord.id] = updatedRecord;
+        emitChange();
+    },
+    addRecord({record}) {
+        _records[record.id] = record;
+        emitChange();
+    }
 };
 
-exports.updateCategory = function(id, categoryId) {
-    _records[id].category_id = categoryId;
-    emitChange();
-};
-
-exports.createPendingPost = function(id, post) {
-    var record = _records[id];
-    record.status = post.status;
-    record.status_type = post.status_type;
-    record.updated_at = +(new Date);
-    record.has_newer_episode = false;
-    emitChange();
-};
-
-exports.resolvePendingPost = function(context, updatedRecord, post) {
-    _records[updatedRecord.id] = updatedRecord;
-    emitChange();
-};
-
-exports.add = function(record) {
-    _records[record.id] = record;
-    emitChange();
-};
+exports.dispatchToken = Dispatcher.register(payload => {
+    var action = actions[payload.type];
+    if (action)
+        action(payload);
+});

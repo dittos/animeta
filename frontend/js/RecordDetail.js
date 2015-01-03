@@ -2,7 +2,6 @@
 /* global initTypeahead */
 var React = require('react/addons');
 var Router = require('react-router');
-var {Link} = Router;
 var TimeAgo = require('./TimeAgo');
 var PostComposer = require('./PostComposer');
 var util = require('./util');

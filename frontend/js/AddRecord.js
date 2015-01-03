@@ -1,11 +1,11 @@
 /* global initTypeahead */
 var React = require('react/addons');
 var Router = require('react-router');
-var RecordStore = require('./RecordStore');
+var RecordActions = require('./RecordActions');
 
 var CategorySelect = React.createClass({
     render() {
-        var {selectedId, categoryList, onChange, ...props} = this.props;
+        var {selectedId, categoryList, ...props} = this.props;
         var name = '지정 안함';
         if (selectedId) {
             name = categoryList.filter(
@@ -98,8 +98,7 @@ var AddRecord = React.createClass({
             return;
         this.setState({isRequesting: true});
         var data = $(this.getDOMNode()).serialize();
-        $.post('/api/v2/users/' + this.props.user.name + '/records', data).then(result => {
-            RecordStore.add(result.record);
+        RecordActions.addRecord(this.props.user.name, data).then(() => {
             this.transitionTo('records');
         }).always(() => {
             if (this.isMounted())

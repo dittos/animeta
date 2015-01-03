@@ -77,7 +77,7 @@ if (process.env.NODE_ENV == 'production') {
         browser: true,
         es3: true,
         undef: true,
-        //unused: true,
+        unused: true,
         predef: ['$', '_gaq', 'alert'],
 
         // Warnings
