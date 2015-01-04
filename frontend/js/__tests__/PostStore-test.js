@@ -151,4 +151,20 @@ describe('PostStore', function() {
         callback({type: 'deleteRecord', recordID: 123});
         expect(PostStore.findByRecordId(123).length).toBe(0);
     });
+
+    it('deletes post', function() {
+        callback({
+            type: 'loadRecordPosts',
+            recordID: 123,
+            posts: [{id: 456}, {id: 789}]
+        });
+        callback({
+            type: 'deletePost',
+            updatedRecord: {id: 123},
+            postID: 456
+        });
+        var posts = PostStore.findByRecordId(123);
+        expect(posts.length).toBe(1);
+        expect(posts[0].id).toBe(789);
+    });
 });

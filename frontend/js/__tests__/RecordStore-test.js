@@ -187,4 +187,15 @@ describe('RecordStore', function() {
         callback({type: 'deleteRecord', recordID: 123});
         expect(RecordStore.get(123)).toBeUndefined();
     });
+
+    it('updates record on post delete', function() {
+        callback({
+            type: 'deletePost',
+            updatedRecord: {
+                id: 123,
+                status: 'prev'
+            }
+        });
+        expect(RecordStore.get(123).status).toBe('prev');
+    });
 });

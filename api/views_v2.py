@@ -281,3 +281,17 @@ class RecordPostsView(BaseView):
             'record': serialize_record(history.record),
             'post': serialize_post(history),
         }
+
+class PostView(BaseView):
+    def delete(self, request, id):
+        history = get_object_or_404(History, id=id)
+        check_record_owner(request.user, history.record)
+        if history.record.history_set.count() == 1:
+            raise HttpException(render_json(
+                {'message': u'등록된 작품마다 최소 1개의 기록이 필요합니다.'},
+                status=422 # 422 Unprocessable Entity
+            ))
+        history.delete()
+        return {
+            'record': serialize_record(history.record)
+        }

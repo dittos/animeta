@@ -1,5 +1,6 @@
 /* global PreloadData */
 /* global initTypeahead */
+/* global confirm */
 var React = require('react/addons');
 var Router = require('react-router');
 var TimeAgo = require('./TimeAgo');
@@ -139,10 +140,15 @@ var PostView = React.createClass({
                     {!this.props.isPending ?
                         <a href={util.getPostURL(post)} className="time"><TimeAgo time={new Date(post.updated_at)} /></a>
                         : '저장 중...'}
-                    {this.props.canDelete && <a href={util.getPostDeleteURL(this.props.user, post)} className="btn-delete">지우기</a>}
+                    {this.props.canDelete &&
+                        <span className="btn-delete" onClick={this._onDelete}>지우기</span>}
                 </div>
             </div>
         );
+    },
+    _onDelete() {
+        if (confirm('삭제 후에는 복구할 수 없습니다.\n기록을 정말로 삭제하시겠습니까?'))
+            PostActions.deletePost(this.props.post.id);
     }
 });
 

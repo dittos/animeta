@@ -3,7 +3,7 @@
 {% load status %}
 
 {% block content %}
-{% include "history.html" with show_work=1 show_delete=can_delete %}
+{% include "history.html" with show_work=1 %}
 
 {% if object_list %}
 <div id="context">

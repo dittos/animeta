@@ -80,19 +80,3 @@ class HistoryDetailView(ListView):
             'can_delete': self.history.deletable_by(self.request.user),
         })
         return context
-
-@login_required
-def delete_history(request, username, id):
-    user = get_object_or_404(User, username=username)
-    history = get_object_or_404(user.history_set, id=id)
-    if request.user != history.user:
-        raise Exception('Access denied')
-    
-    if history.record.history_set.count() == 1:
-        raise Exception() # XXX
-
-    if request.method == 'POST':
-        history.delete()
-        return redirect(request.user)
-    else:
-        return render(request, 'record/history_confirm_delete.html', {'history': history, 'owner': request.user})

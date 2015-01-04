@@ -32,7 +32,21 @@ function createPost(recordID, post, publishOptions) {
     });
 }
 
+function deletePost(postID) {
+    return $.ajax({
+        url: '/api/v2/posts/' + postID,
+        type: 'DELETE'
+    }).then(result => {
+        Dispatcher.dispatch({
+            type: 'deletePost',
+            postID: postID,
+            updatedRecord: result.record
+        });
+    });
+}
+
 module.exports = {
     fetchRecordPosts,
-    createPost
+    createPost,
+    deletePost
 };

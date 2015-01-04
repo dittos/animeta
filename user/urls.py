@@ -10,5 +10,4 @@ urlpatterns = patterns('user.views',
 
 urlpatterns += patterns('',
     url(r'^history/(?P<id>\d+)/$', HistoryDetailView.as_view(), name='history-detail'),
-    (r'^history/(?P<id>\d+)/delete/$', 'record.views.delete_history'),
 )

@@ -24,4 +24,5 @@ urlpatterns += patterns('api.views_v2',
     (r'^v2/users/(?P<name>[A-Za-z0-9_-]+)/records$', v2.UserRecordsView.as_view()),
     (r'^v2/records/(?P<id>[0-9]+)/posts$', v2.RecordPostsView.as_view()),
     (r'^v2/records/(?P<id>[0-9]+)$', v2.RecordView.as_view()),
+    (r'^v2/posts/(?P<id>[0-9]+)$', v2.PostView.as_view()),
 )

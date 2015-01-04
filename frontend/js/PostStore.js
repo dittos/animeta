@@ -69,6 +69,12 @@ var actions = {
         delete _posts[recordID];
         delete _pendingPosts[recordID];
         emitChange();
+    },
+
+    deletePost({updatedRecord, postID}) {
+        var recordID = updatedRecord.id;
+        _posts[recordID] = _posts[recordID].filter(post => post.id != postID);
+        emitChange();
     }
 };
 

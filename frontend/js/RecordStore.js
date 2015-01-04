@@ -91,6 +91,10 @@ var actions = {
                 record.category_id = 0;
         });
         emitChange();
+    },
+    deletePost({updatedRecord}) {
+        _records[updatedRecord.id] = updatedRecord;
+        emitChange();
     }
 };
 
