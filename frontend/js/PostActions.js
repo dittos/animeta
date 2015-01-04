@@ -25,6 +25,7 @@ function createPost(recordID, post, publishOptions) {
     }).then(result => {
         Dispatcher.dispatch({
             type: 'resolvePendingPost',
+            context: context,
             updatedRecord: result.record,
             post: result.post
         });
