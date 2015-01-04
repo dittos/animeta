@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 import user.views
 from chart.views import TimelineView
+from record.views import HistoryDetailView
 
 urlpatterns = patterns('',
     (r'^$', 'chart.views.main'),
@@ -24,7 +25,7 @@ urlpatterns = patterns('',
 
     (r'^titles/(?P<remainder>.*)/$', 'work.views.old_url'), # compat
     (r'^(?P<username>[A-Za-z0-9]+)$', 'user.views.shortcut'),
-    (r'^-(?P<id>[0-9]+)$', 'record.views.shortcut'),
+    url(r'^-(?P<id>[0-9]+)$', HistoryDetailView.as_view(), name='history-detail'),
 
     (r'^search/$', 'search.views.search'),
     (r'^search/suggest/$', 'search.views.suggest'),

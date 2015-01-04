@@ -8,7 +8,7 @@
 {% endif %}
 {% status_text of history %}
 {% if history.updated_at %}
-    <a href="{% url "history-detail" history.user.username history.id %}" class="updated" title="{{ history.updated_at }}">{{ history.updated_at|timesince }} 전</a>
+    <a href="{% url "history-detail" history.id %}" class="updated" title="{{ history.updated_at }}">{{ history.updated_at|timesince }} 전</a>
 {% endif %}
 {% if show_user %}
     <a href="{% url "user.views.library" history.user %}" class="user">{{ history.user.username }}</a>

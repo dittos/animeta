@@ -233,7 +233,7 @@ var Library = React.createClass({
     _renderEmpty() {
         var help;
         if (this.props.canEdit) {
-            help = <p>위에 있는 <a href="/records/add/" className="add-record">기록 추가</a>를 눌러 감상 기록을 등록할 수 있습니다. 아니면, <a href="/records/import/">한꺼번에 기록을 여러개 추가</a>하세요.</p>;
+            help = <p>위에 있는 <Link to="add-record" className="add-record">작품 추가</Link>를 눌러 감상 기록을 등록할 수 있습니다.</p>;
         }
 
         return <div>

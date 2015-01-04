@@ -1,10 +1,9 @@
-{% extends "user/base.html" %}
+{% extends base %}
+
+{% block title %}{{ owner.username }} 사용자 - 애니메타{% endblock %} 
 
 {% block stylesheets %}
-{% endblock %}
-
-{% block content %}
-<div class="library-container"></div>
+<!-- exclude style.css -->
 {% endblock %}
 
 {% block js %}

@@ -2,6 +2,7 @@
 require('object.assign').shim();
 var React = require('react/addons');
 var Router = require('react-router');
+var {Link} = Router;
 var RecordActions = require('./RecordActions');
 var CategoryActions = require('./CategoryActions');
 var PostStore = require('./PostStore');
@@ -14,17 +15,22 @@ var App = React.createClass({
         var user = PreloadData.owner;
         var canEdit = PreloadData.current_user && PreloadData.current_user.id == user.id;
         var key = this.getParams().recordId;
-        return <Router.RouteHandler
-            user={user}
-            canEdit={canEdit}
-            key={key} />;
-    },
-
-    componentDidMount() {
-        $('#nav').on('click', 'a[data-route]', event => {
-            event.preventDefault();
-            this.transitionTo(event.target.getAttribute('data-route'));
-        });
+        return <div>
+            <div className="nav-user">
+                <h1><Link to="records">{user.name} 사용자</Link></h1>
+                <p>
+                    <Link to="records">작품 목록</Link>
+                    <Link to="history">기록 내역</Link>
+                    {canEdit && <Link to="add-record" className="add-record">작품 추가</Link>}
+                </p>
+            </div>
+            <div className="user-content">
+                <Router.RouteHandler
+                    user={user}
+                    canEdit={canEdit}
+                    key={key} />
+            </div>
+        </div>;
     }
 });
 
@@ -43,10 +49,16 @@ function runApp() {
     var locationStrategy = Router.HistoryLocation;
     var libraryPath = '/users/' + PreloadData.owner.name + '/';
     if (!supportsHistory()) {
-        if (location.pathname.match(/^\/records\//)) {
+        // TODO: handle URL coming from hash location
+        // in history supported environment.
+        var path = location.pathname;
+        if (path != libraryPath) {
             // /records/add/ -> /users/owner/#/records/add/
             // /records/12345/ -> /users/owner/#/records/12345/
-            location.href = libraryPath + '#' + location.pathname;
+            // /users/owner/history/ -> /users/owner/#/history/
+            if (path.indexOf(libraryPath) === 0)
+                path = path.substring(libraryPath.length);
+            location.href = libraryPath + '#' + path;
             return;
         }
         locationStrategy = Router.HashLocation;
@@ -68,7 +80,7 @@ function runApp() {
     CategoryActions.loadCategories(PreloadData.categories);
     Router.run(routes, locationStrategy, (Handler) => {
         onPageTransition();
-        React.render(<Handler />, $('.library-container')[0]);
+        React.render(<Handler />, document.getElementById('content'));
     });
 }
 

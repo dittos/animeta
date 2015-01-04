@@ -9,12 +9,9 @@ from django.contrib.auth.views import login as login_view
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Count
-from chart.models import weekly, PopularWorksChart
 from connect import get_connected_services
-from record.models import StatusTypes, include_records
+from record.models import History
 from api import views_v2 as api_v2
-import datetime
 import json
 
 @csrf_protect
@@ -87,6 +84,10 @@ def library(request, username=None):
 
 def history_compat(request, username):
     return library(request, username)
+
+def history_detail_compat(request, username, id):
+    get_object_or_404(History, user__username=username, id=id)
+    return redirect('history-detail', id=id)
 
 class HistoryFeedView(ListView):
     template_name = 'user/history.atom'
