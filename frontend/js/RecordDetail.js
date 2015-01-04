@@ -9,6 +9,7 @@ var RecordActions = require('./RecordActions');
 var PostActions = require('./PostActions');
 var RecordStore = require('./RecordStore');
 var PostStore = require('./PostStore');
+var CategoryStore = require('./CategoryStore');
 
 var TitleEditView = React.createClass({
     componentDidMount() {
@@ -54,7 +55,7 @@ var CategoryEditView = React.createClass({
                 {name} ▼
                 <select value={this.props.selectedId} onChange={this._onChange}>
                     <option value="">지정 안함</option>
-                    {this.props.categoryList.filter(category => category.id).map(category =>
+                    {this.props.categoryList.map(category =>
                         <option value={category.id}>{category.name}</option>
                     )}
                 </select>
@@ -207,7 +208,7 @@ var RecordDetail = React.createClass({
                 recordId={this.state.record.id}
                 title={this.state.record.title}
                 categoryId={this.state.record.category_id}
-                categoryList={this.props.user.categoryList} />
+                categoryList={CategoryStore.getAll()} />
             {composer}
             <div className="record-detail-posts">
                 {this.state.posts.map(post => {

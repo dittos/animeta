@@ -177,4 +177,9 @@ describe('RecordStore', function() {
         expect(stats.watching).toBe(1);
         expect(stats.suspended).toBe(1);
     });
+
+    it('unsets category id on category remove', function() {
+        callback({type: 'removeCategory', categoryID: 123});
+        expect(RecordStore.get(123).category_id).toBeFalsy();
+    });
 });

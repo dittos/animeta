@@ -57,47 +57,9 @@ def add_many(request):
          'addition_log': addition_log})
 
 @login_required
-def delete_category(request, id):
-    category = Category.objects.get(user=request.user, id=id)
-    request.user.record_set.filter(category=category).update(category=None)
-    category.delete()
-    return redirect('/records/category/')
-
-@login_required
-def rename_category(request, id):
-    category = Category.objects.get(user=request.user, id=id)
-    if request.method == 'POST':
-        category.name = request.POST['name']
-        category.save()
-        return redirect('/records/category/')
-    else:
-        return render(request, 'record/rename_category.html',
-            {'category': category})
-
-@login_required
-def add_category(request):
-    if request.method == 'POST':
-        name = request.POST['name']
-        records = request.POST.getlist('record[]')
-        if name.strip() != '':
-            category = Category.objects.create(user=request.user, name=name)
-            for record_id in records:
-                record = Record.objects.get(id=record_id, user=request.user)
-                record.category = category
-                record.save()
-            return redirect('/records/category/')
-
-@login_required
 def category(request):
-    return render(request, 'record/manage_category.html',
-        {'categories': request.user.category_set.all(),
-         'uncategorized': Uncategorized(request.user)})
-
-@login_required
-def reorder_category(request):
-    for position, id in enumerate(request.POST.getlist('order[]')):
-        request.user.category_set.filter(id=int(id)).update(position=position)
-    return HttpResponse("true")
+    from user.views import library
+    return library(request, request.user.username)
 
 def shortcut(request, id):
     history = get_object_or_404(History, id=id)

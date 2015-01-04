@@ -3,10 +3,10 @@ import time
 import json
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, QueryDict
 from django.views.generic import View
 from django.contrib.auth.models import User
-from record.models import Record, History, StatusTypes, Uncategorized
+from record.models import Record, History, StatusTypes, Uncategorized, Category
 from work.models import get_or_create_work
 from connect import get_connected_services, post_history
 
@@ -93,6 +93,71 @@ class UserView(BaseView):
             'user': serialize_user(user),
             'categories': map(serialize_category, categories),
         }
+
+class UserCategoriesView(BaseView):
+    def post(self, request, name):
+        check_login(request.user)
+        if request.user.username != name:
+            raise HttpException(render_json({'message': 'Permission denied.'}, status=403))
+        category_name = request.POST.get('name')
+        if not category_name:
+            raise HttpException(render_json(
+                {'message': u'분류 이름을 입력하세요.'},
+                status=400 # 400 Bad Request
+            ))
+        category = Category.objects.create(
+            user=request.user,
+            name=category_name
+        )
+        record_ids = request.POST.getlist('record_ids[]')
+        Record.objects.filter(user=request.user, id__in=record_ids) \
+            .update(category=category)
+        return serialize_category(category)
+
+    def put(self, request, name):
+        check_login(request.user)
+        if request.user.username != name:
+            raise HttpException(render_json({'message': 'Permission denied.'}, status=403))
+        # Django doesn't parse request body in PUT request
+        # See: http://stackoverflow.com/a/22294734
+        params = QueryDict(request.body)
+        ids = params.getlist('ids[]')
+        category_ids = [c.id for c in request.user.category_set.all()]
+        if len(ids) != len(category_ids) and \
+            set(ids) != set(category_ids):
+            raise HttpException(render_json(
+                {'message': u'분류 정보가 최신이 아닙니다. 새로고침 후 다시 시도해주세요.'},
+                status=409 # 409 Conflict
+            ))
+        for position, id in enumerate(ids):
+            request.user.category_set.filter(id=int(id)) \
+                .update(position=position)
+        return map(serialize_category, request.user.category_set.all())
+
+class CategoryView(BaseView):
+    def delete(self, request, id):
+        category = get_object_or_404(Category, id=id)
+        check_login(request.user)
+        if request.user.id != category.user_id:
+            raise HttpException(render_json({'message': 'Permission denied.'}, status=403))
+        category.record_set.update(category=None)
+        category.delete()
+        return {'ok': True}
+
+    def post(self, request, id):
+        category = get_object_or_404(Category, id=id)
+        check_login(request.user)
+        if request.user.id != category.user_id:
+            raise HttpException(render_json({'message': 'Permission denied.'}, status=403))
+        category_name = request.POST.get('name')
+        if not category_name:
+            raise HttpException(render_json(
+                {'message': u'분류 이름을 입력하세요.'},
+                status=400 # 400 Bad Request
+            ))
+        category.name = category_name
+        category.save()
+        return serialize_category(category)
 
 class UserRecordsView(BaseView):
     def get(self, request, name):

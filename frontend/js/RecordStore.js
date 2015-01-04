@@ -80,6 +80,13 @@ var actions = {
     addRecord({record}) {
         _records[record.id] = record;
         emitChange();
+    },
+    removeCategory({categoryID}) {
+        _.each(_records, record => {
+            if (record.category_id == categoryID)
+                record.category_id = 0;
+        });
+        emitChange();
     }
 };
 

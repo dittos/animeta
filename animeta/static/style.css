@@ -64,15 +64,6 @@ a.work:hover { color: #666; border-bottom: 1px dashed #aaa; }
 .history a.updated:hover { text-decoration: underline; }
 .history .delete { text-decoration: none; margin-left: 0.5em; color: #f00; font-size: 0.85em; }
 .history .delete:hover { text-decoration: underline; }
-#categories { list-style: none; margin: 0 0 1em; padding: 0; border-bottom: 1px solid #ddd; overflow: hidden; }
-#categories.editing { border: 0; }
-#categories li { float: left; border: 1px solid #ddd; border-bottom: none; background-color: #f4f4f4; margin-left: 0.5em; padding: 0.25em 0.5em; cursor: pointer; color: #666; font-size: 0.9em; }
-#categories.editing li { border-bottom: 1px solid #ddd; cursor: default; font-size: 1.2em; clear: left; margin: 0 0 1em; }
-#categories li.current { font-weight: bold; }
-#categories.editing a, .rename { font-size: 0.7em; margin-left: 1em; color: #06c; text-decoration: underline; }
-#categories a { color: #000; text-decoration: none; }
-#categories li.add { border: 0; background-color: transparent; }
-#categories .items { font-size: 0.8em; color: #000; }
 #pagination { padding-top: 1em; }
 #pagination .prev-page { margin-right: 1em; }
 #pagination .next-page { margin-left: 1em; }

@@ -278,6 +278,41 @@
     }
 }
 
+.manage-category {
+    h2 {
+        margin: 0 0 20px;
+        font-size: 18px;
+    }
+    .sort {
+        margin-bottom: 30px;
+    }
+    .btn-add, .btn-sort {
+        .mixin-btn-submit;
+    }
+    .category-item {
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        background-color: #f4f4f4;
+        margin-bottom: 10px;
+        padding: 5px 8px;
+        .name {
+            font-weight: bold;
+        }
+        .btn {
+            font-size: 0.9em;
+            color: #06c;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    }
+    &.sorting .category-item {
+        cursor: move;
+        span {
+            user-select: none;
+        }
+    }
+}
+
 .library-history {
     .library-history-group {
         border-top: 1px solid #ddd;

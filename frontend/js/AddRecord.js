@@ -2,6 +2,7 @@
 var React = require('react/addons');
 var Router = require('react-router');
 var RecordActions = require('./RecordActions');
+var CategoryStore = require('./CategoryStore');
 
 var CategorySelect = React.createClass({
     render() {
@@ -17,7 +18,7 @@ var CategorySelect = React.createClass({
                 value={selectedId}
                 onChange={this._onChange}>
                 <option value="">지정 안함</option>
-                {categoryList.filter(category => category.id).map(category =>
+                {categoryList.map(category =>
                     <option value={category.id}>{category.name}</option>
                 )}
             </select>
@@ -66,7 +67,7 @@ var AddRecord = React.createClass({
                     <th>분류</th>
                     <td>
                         <CategorySelect name="category_id"
-                            categoryList={this.props.user.categoryList}
+                            categoryList={CategoryStore.getAll()}
                             selectedId={this.state.selectedCategoryId}
                             onChange={this._onCategoryChange} />
                     </td>

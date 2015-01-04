@@ -3,6 +3,7 @@ require('object.assign').shim();
 var React = require('react/addons');
 var Router = require('react-router');
 var RecordActions = require('./RecordActions');
+var CategoryActions = require('./CategoryActions');
 var PostStore = require('./PostStore');
 require('../less/library.less');
 
@@ -11,7 +12,6 @@ var App = React.createClass({
 
     render() {
         var user = PreloadData.owner;
-        user.categoryList = PreloadData.categories;
         var canEdit = PreloadData.current_user && PreloadData.current_user.id == user.id;
         var key = this.getParams().recordId;
         return <Router.RouteHandler
@@ -58,11 +58,13 @@ function runApp() {
         <Route path={libraryPath} handler={App}>
             <DefaultRoute name="records" handler={require('./Library')} />
             <Route name="add-record" path="/records/add/:title?/?" handler={require('./AddRecord')} />
+            <Route name="manage-category" path="/records/category/" handler={require('./ManageCategory')} />
             <Route name="record" path="/records/:recordId/" handler={require('./RecordDetail')} />
             <Route name="history" path={libraryPath + "history/"} handler={require('./LibraryHistory')} />
         </Route>
     );
     RecordActions.loadRecords(PreloadData.records);
+    CategoryActions.loadCategories(PreloadData.categories);
     Router.run(routes, locationStrategy, (Handler) => {
         onPageTransition();
         React.render(<Handler />, $('.library-container')[0]);

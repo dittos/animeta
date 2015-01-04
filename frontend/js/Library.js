@@ -5,6 +5,7 @@ var Router = require('react-router');
 var {Link} = Router;
 var util = require('./util');
 var RecordStore = require('./RecordStore');
+var CategoryStore = require('./CategoryStore');
 
 function getDateHeader(record) {
     var date = moment(record.updated_at).startOf('day');
@@ -148,11 +149,11 @@ var LibraryHeader = React.createClass({
                 <select value={this.props.categoryFilter}
                     onChange={this._onCategoryFilterChange}>
                     <option value="">전체 ({this.props.count})</option>
-                {this.props.categoryList.map(category => {
-                    return <option value={category.id}>{category.name} ({this.props.categoryStats[category.id]})</option>;
+                {[{id: 0, name: '미분류'}].concat(this.props.categoryList).map(category => {
+                    return <option value={category.id}>{category.name} ({this.props.categoryStats[category.id] || 0})</option>;
                 })}
                 </select>
-                {' '}{this.props.canEdit && <a href="/records/category/">관리</a>}
+                {' '}{this.props.canEdit && <Link to="manage-category">관리</Link>}
             </p>
         </div>;
     },
@@ -202,6 +203,7 @@ var Library = React.createClass({
         } else if (sort == 'title') {
             groups = groupRecordsByTitle(records);
         }
+        var categoryList = CategoryStore.getAll();
         return <div className="library">
             <LibraryHeader
                 count={count}
@@ -210,7 +212,7 @@ var Library = React.createClass({
                 statusTypeFilter={type}
                 statusTypeStats={statusTypeStats}
                 categoryFilter={category}
-                categoryList={this.props.user.categoryList}
+                categoryList={categoryList}
                 categoryStats={categoryStats}
                 canEdit={this.props.canEdit} />
             {this._renderNotice()}

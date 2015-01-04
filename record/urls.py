@@ -7,8 +7,4 @@ urlpatterns = patterns('record.views',
     url(r'^(\d+)/$', 'update', name='record-detail'),
     (r'^(\d+)/delete/$', 'delete'),
     (r'^category/$', 'category'),
-    (r'^category/reorder/$', 'reorder_category'),
-    (r'^category/add/$', 'add_category'),
-    (r'^category/(\d+)/delete/$', 'delete_category'),
-    (r'^category/(\d+)/rename/$', 'rename_category'),
 )
