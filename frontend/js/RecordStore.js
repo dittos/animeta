@@ -81,6 +81,10 @@ var actions = {
         _records[record.id] = record;
         emitChange();
     },
+    deleteRecord({recordID}) {
+        delete _records[recordID];
+        emitChange();
+    },
     removeCategory({categoryID}) {
         _.each(_records, record => {
             if (record.category_id == categoryID)

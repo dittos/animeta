@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from work.models import Work, get_or_create_work
-from .models import Record, History, Category, Uncategorized, StatusTypes
+from .models import Record, History, Category, StatusTypes
 from .forms import SimpleRecordFormSet
 
 @login_required
@@ -29,12 +29,9 @@ def update(request, id):
 
 @login_required
 def delete(request, id):
-    record = _get_record(request, id)
-    if request.method == 'POST':
-        record.delete()
-        return redirect(request.user)
-    else:
-        return render(request, 'record/record_confirm_delete.html', {'record': record, 'owner': request.user})
+    from user.views import library
+    record = get_object_or_404(Record, id=id)
+    return library(request, record.user.username)
 
 @login_required
 def add_many(request):

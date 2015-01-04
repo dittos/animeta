@@ -59,6 +59,7 @@ function runApp() {
             <DefaultRoute name="records" handler={require('./Library')} />
             <Route name="add-record" path="/records/add/:title?/?" handler={require('./AddRecord')} />
             <Route name="manage-category" path="/records/category/" handler={require('./ManageCategory')} />
+            <Route name="delete-record" path="/records/:recordId/delete/" handler={require('./DeleteRecord')} />
             <Route name="record" path="/records/:recordId/" handler={require('./RecordDetail')} />
             <Route name="history" path={libraryPath + "history/"} handler={require('./LibraryHistory')} />
         </Route>

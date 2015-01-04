@@ -97,7 +97,7 @@ var HeaderView = React.createClass({
             toolbar = (
                 <div className="record-detail-toolbar">
                     {editTitleButton}
-                    <a href={`/records/${this.props.recordId}/delete/`} className="btn btn-delete">삭제</a>
+                    <Router.Link to="delete-record" params={{recordId: this.props.recordId}} className="btn btn-delete">삭제</Router.Link>
                     <CategoryEditView
                         recordId={this.props.recordId}
                         categoryList={this.props.categoryList}

@@ -123,4 +123,32 @@ describe('PostStore', function() {
         expect(posts[0].id).toBe(999);
         expect(posts[1].id).toBe(456);
     });
+
+    it('deletes posts on record delete', function() {
+        callback({
+            type: 'loadRecordPosts',
+            recordID: 123,
+            posts: [
+                {
+                    id: 456,
+                    status: 'status',
+                    status_type: 'finished',
+                    comment: ''
+                }
+            ]
+        });
+        var context = 12345;
+        callback({
+            type: 'createPendingPost',
+            recordID: 123,
+            post: {
+                status: 'changed',
+                status_type: 'finished',
+                comment: 'comment'
+            },
+            context: context
+        });
+        callback({type: 'deleteRecord', recordID: 123});
+        expect(PostStore.findByRecordId(123).length).toBe(0);
+    });
 });

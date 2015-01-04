@@ -246,6 +246,12 @@ class RecordView(BaseView):
 
         return serialize_record(record)
 
+    def delete(self, request, id):
+        record = get_object_or_404(Record, id=id)
+        check_record_owner(request.user, record)
+        record.delete()
+        return {'ok': True}
+
 class RecordPostsView(BaseView):
     def get(self, request, id):
         record = get_object_or_404(Record, id=id)

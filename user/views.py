@@ -12,8 +12,7 @@ from django.contrib import messages
 from django.db.models import Count
 from chart.models import weekly, PopularWorksChart
 from connect import get_connected_services
-from record.models import Uncategorized, StatusTypes, include_records
-from record.templatetags.indexing import group_records
+from record.models import StatusTypes, include_records
 from api import views_v2 as api_v2
 import datetime
 import json

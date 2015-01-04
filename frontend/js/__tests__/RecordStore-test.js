@@ -182,4 +182,9 @@ describe('RecordStore', function() {
         callback({type: 'removeCategory', categoryID: 123});
         expect(RecordStore.get(123).category_id).toBeFalsy();
     });
+
+    it('deletes record', function() {
+        callback({type: 'deleteRecord', recordID: 123});
+        expect(RecordStore.get(123)).toBeUndefined();
+    });
 });

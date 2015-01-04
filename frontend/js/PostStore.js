@@ -63,6 +63,12 @@ var actions = {
         _pendingPostCount--;
         _posts[recordID].unshift(post);
         emitChange();
+    },
+
+    deleteRecord({recordID}) {
+        delete _posts[recordID];
+        delete _pendingPosts[recordID];
+        emitChange();
     }
 };
 

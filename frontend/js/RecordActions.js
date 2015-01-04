@@ -16,8 +16,12 @@ function addRecord(userName, record) {
     });
 }
 
+function getRecordEndpoint(recordID) {
+    return '/api/v2/records/' + recordID;
+}
+
 function updateRecord(recordID, updates) {
-    return $.post('/api/v2/records/' + recordID, updates);
+    return $.post(getRecordEndpoint(recordID), updates);
 }
 
 function updateCategory(recordID, categoryID) {
@@ -38,9 +42,22 @@ function updateTitle(recordID, title) {
     });
 }
 
+function deleteRecord(recordID) {
+    return $.ajax({
+        url: getRecordEndpoint(recordID),
+        type: 'DELETE'
+    }).then(() => {
+        Dispatcher.dispatch({
+            type: 'deleteRecord',
+            recordID
+        });
+    });
+}
+
 module.exports = {
     loadRecords,
     addRecord,
     updateCategory,
-    updateTitle
+    updateTitle,
+    deleteRecord
 };

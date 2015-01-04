@@ -1,7 +1,0 @@
-{% extends base %}
-
-{% block content %}
-<form method="post" action="/records/category/{{ category.id }}/rename/">
-<input type="text" name="name" value="{{ category.name }}" size="12" /> <input type="submit" value="변경" /> <a href="/records/category/">취소</a>
-</form>
-{% endblock %}
