@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from connect import get_connected_services
 from record.models import History
-from api import views_v2 as api_v2
+from api import serializers
 import json
 
 @csrf_protect
@@ -74,9 +74,9 @@ def library(request, username=None):
     return render(request, 'user/library.html', {
         'owner': user,
         'preload_data': json.dumps({
-            'owner': api_v2.serialize_user(user),
-            'current_user': api_v2.serialize_user(request.user) if request.user.is_authenticated() else None,
-            'records': [api_v2.serialize_record(r, include_has_newer_episode=user == request.user)
+            'owner': serializers.serialize_user(user),
+            'current_user': serializers.serialize_user(request.user) if request.user.is_authenticated() else None,
+            'records': [serializers.serialize_record(r, include_has_newer_episode=user == request.user)
                 for r in user.record_set.all()],
         }, ensure_ascii=False, separators=(',', ':'))
     })

@@ -9,3 +9,5 @@ node_modules
 animeta/static/build/*.js
 animeta/static/build/*.png
 animeta/assets.py
+.coverage
+htmlcov
