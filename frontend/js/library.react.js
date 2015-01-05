@@ -77,7 +77,7 @@ function runApp() {
         </Route>
     );
     RecordActions.loadRecords(PreloadData.records);
-    CategoryActions.loadCategories(PreloadData.categories);
+    CategoryActions.loadCategories(PreloadData.owner.categories);
     Router.run(routes, locationStrategy, (Handler) => {
         onPageTransition();
         React.render(<Handler />, document.getElementById('content'));

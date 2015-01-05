@@ -75,7 +75,6 @@ def library(request, username=None):
         'owner': user,
         'preload_data': json.dumps({
             'owner': api_v2.serialize_user(user),
-            'categories': map(api_v2.serialize_category, user.category_set.all()),
             'current_user': api_v2.serialize_user(request.user) if request.user.is_authenticated() else None,
             'records': [api_v2.serialize_record(r, include_has_newer_episode=user == request.user)
                 for r in user.record_set.all()],

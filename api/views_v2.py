@@ -15,13 +15,15 @@ def serialize_datetime(dt):
         return None
     return int((time.mktime(dt.timetuple()) + dt.microsecond / 1000000.0) * 1000)
 
-def serialize_user(user):
-    return {
+def serialize_user(user, include_categories=True):
+    data = {
         'id': user.id,
         'name': user.username,
         'date_joined': serialize_datetime(user.date_joined),
         'connected_services': get_connected_services(user),
     }
+    data['categories'] = map(serialize_category, user.category_set.all())
+    return data
 
 def serialize_category(category):
     return {
@@ -87,12 +89,7 @@ def get_current_user(request, remainder):
 class UserView(BaseView):
     def get(self, request, name):
         user = get_object_or_404(User, username=name)
-        uncategorized = Uncategorized(user)
-        categories = [uncategorized] + list(user.category_set.all())
-        return {
-            'user': serialize_user(user),
-            'categories': map(serialize_category, categories),
-        }
+        return serialize_user(user)
 
 class UserCategoriesView(BaseView):
     def post(self, request, name):
