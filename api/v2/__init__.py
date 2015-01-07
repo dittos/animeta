@@ -3,8 +3,12 @@ import json
 from django.http import HttpResponse
 from django.views.generic import View
 
-def render_json(obj, **kwargs):
-    return HttpResponse(json.dumps(obj), content_type='application/json', **kwargs)
+class JsonResponse(HttpResponse):
+    def __init__(self, obj, **kwargs):
+        kwargs.setdefault('content_type', 'application/json')
+        self.obj = obj # For testing
+        data = json.dumps(obj, separators=(',', ':'))
+        super(JsonResponse, self).__init__(data, **kwargs)
 
 class HttpException(Exception):
     def __init__(self, response):
@@ -13,7 +17,7 @@ class HttpException(Exception):
 class BaseView(View):
     def dispatch(self, request, *args, **kwargs):
         try:
-            return render_json(super(BaseView, self).dispatch(request, *args, **kwargs))
+            return JsonResponse(super(BaseView, self).dispatch(request, *args, **kwargs))
         except HttpException as e:
             return e.response
 
@@ -22,4 +26,4 @@ class BaseView(View):
             self.raise_error('Login required.', status=401)
 
     def raise_error(self, message, status):
-        raise HttpException(render_json(message, status=status))
+        raise HttpException(JsonResponse(message, status=status))

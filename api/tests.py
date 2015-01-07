@@ -1,41 +1,61 @@
 import uuid
-import json
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from record.models import Record, History
 from work.models import Work
 from api.serializers import serialize_datetime
 
-def new_user():
-    return User.objects.create_user(
-        uuid.uuid4().hex[:10],
-        password='secret'
-    )
+class TestContext(Client):
+    def __init__(self):
+        super(TestContext, self).__init__()
+        self.username = uuid.uuid4().hex[:10]
+        password = 'secret'
+        self.user = User.objects.create_user(
+            self.username,
+            password=password
+        )
+        self.login(username=self.username, password=password)
 
-def new_record(user):
-    work = Work.objects.create(title=uuid.uuid4().hex)
-    return Record.objects.create(
-        user=user,
-        work=work
-    )
+    @property
+    def user_path(self):
+        return '/api/v2/users/%s' % self.username
 
-def new_post(record, status, status_type):
-    return History.objects.create(
-        user=record.user,
-        work=record.work,
-        status=status,
-        status_type=status_type
-    )
+    def new_record(self, **kwargs):
+        data = {
+            'work_title': uuid.uuid4().hex,
+            'status_type': 'watching',
+        }
+        data.update(kwargs)
+        response = self.post(self.user_path + '/records', data)
+        return response.obj['record']
+
+    def new_post(self, record_id, **kwargs):
+        data = {
+            'status': uuid.uuid4().hex[:10],
+            'status_type': 'watching',
+            'comment': '',
+        }
+        data.update(kwargs)
+        response = self.post('/api/v2/records/%s/posts' % record_id, data)
+        return response.obj['post']
+
+    def new_category(self, **kwargs):
+        data = {
+            'name': uuid.uuid4().hex[:30],
+        }
+        data.update(kwargs)
+        response = self.post(self.user_path + '/categories', data)
+        return response.obj
 
 class UserViewTest(TestCase):
     def test_get(self):
-        user = new_user()
-        response = self.client.get('/api/v2/users/' + user.username)
+        context = TestContext()
+        response = self.client.get(context.user_path)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(json.loads(response.content), {
-            'id': user.id,
-            'name': user.username,
-            'date_joined': serialize_datetime(user.date_joined),
+        self.assertEqual(response.obj, {
+            'id': context.user.id,
+            'name': context.user.username,
+            'date_joined': serialize_datetime(context.user.date_joined),
             'connected_services': [],
             'categories': []
         })
@@ -43,244 +63,362 @@ class UserViewTest(TestCase):
 class UserCategoriesViewTest(TestCase):
     def test_create(self):
         name = uuid.uuid4().hex[:30]
-        user = new_user()
+        context = TestContext()
+        path = context.user_path + '/categories'
 
-        response = self.client.post(
-            '/api/v2/users/' + user.username + '/categories',
-            {'name': name}
-        )
+        # Unauthorized
+        response = self.client.post(path, {'name': name})
         self.assertEqual(response.status_code, 401)
 
-        user2 = new_user()
-        self.client.login(username=user2.username, password='secret')
-        response = self.client.post(
-            '/api/v2/users/' + user.username + '/categories',
-            {'name': name}
-        )
+        # Other user
+        context2 = TestContext()
+        response = context2.post(path, {'name': name})
         self.assertEqual(response.status_code, 403)
 
-        self.client.login(username=user.username, password='secret')
-        
-        response = self.client.post(
-            '/api/v2/users/' + user.username + '/categories',
-            {'name': ''}
-        )
+        # Empty name
+        response = context.post(path, {'name': ''})
         self.assertEqual(response.status_code, 400)
 
-        response = self.client.post(
-            '/api/v2/users/' + user.username + '/categories',
-            {'name': name}
-        )
+        # Normal case
+        response = context.post(path, {'name': name})
         self.assertEqual(response.status_code, 200)
-        category = json.loads(response.content)
+        category = response.obj
         self.assertTrue('id' in category)
         self.assertEqual(category['name'], name)
 
-        response = self.client.get('/api/v2/users/' + user.username)
+        response = context.get(context.user_path)
         self.assertEqual(response.status_code, 200)
-        user = json.loads(response.content)
-        self.assertEqual(user['categories'], [category])
+        self.assertEqual(response.obj['categories'], [category])
 
     def test_reorder(self):
-        user = new_user()
+        context = TestContext()
+        path = context.user_path + '/categories'
 
-        response = self.client.put(
-            '/api/v2/users/' + user.username + '/categories'
-        )
+        # Unauthorized
+        response = self.client.put(path)
         self.assertEqual(response.status_code, 401)
 
-        user2 = new_user()
-        self.client.login(username=user2.username, password='secret')
-        response = self.client.put(
-            '/api/v2/users/' + user.username + '/categories'
-        )
+        # Other user
+        context2 = TestContext()
+        response = context2.put(path)
+        self.assertEqual(response.status_code, 403)
 
-        self.client.login(username=user.username, password='secret')
-
+        # Create some categories
         categories = []
         for x in range(2):
-            name = uuid.uuid4().hex[:30]
-            response = self.client.post(
-                '/api/v2/users/' + user.username + '/categories',
-                {'name': name}
-            )
-            categories.append(json.loads(response.content))
+            categories.append(context.new_category())
 
-        response = self.client.put('/api/v2/users/' + user.username + '/categories', data='ids[]=%d&ids[]=%d' % (categories[1]['id'], categories[0]['id']))
+        # Try swapping order
+        response = context.put(path, data='ids[]=%s&ids[]=%s' % (categories[1]['id'], categories[0]['id']))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(json.loads(response.content), [categories[1], categories[0]])
+        self.assertEqual(response.obj, [categories[1], categories[0]])
 
-        response = self.client.put('/api/v2/users/' + user.username + '/categories', data='ids[]=%d' % categories[1]['id'])
+        response = context.get(context.user_path)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.obj['categories'], [categories[1], categories[0]])
+
+        # Try specifing partial order (should fail)
+        response = context.put(path, data='ids[]=%s' % categories[1]['id'])
         self.assertEqual(response.status_code, 409)
 
-        response = self.client.put('/api/v2/users/' + user.username + '/categories', data='ids[]=blag')
+        # Try specifing other ID (should fail)
+        response = context.put(path, data='ids[]=blag')
         self.assertEqual(response.status_code, 409)
-
-        response = self.client.get('/api/v2/users/' + user.username)
-        self.assertEqual(response.status_code, 200)
-        user = json.loads(response.content)
-        self.assertEqual(user['categories'], [categories[1], categories[0]])
 
 class CategoryViewTest(TestCase):
     def test_delete(self):
-        user = new_user()
-        # TODO: unauthorized
-        # TODO: other user's category
+        context = TestContext()
         
-        self.client.login(username=user.username, password='secret')
-        name = uuid.uuid4().hex[:30]
-        response = self.client.post(
-            '/api/v2/users/' + user.username + '/categories',
-            {'name': name}
-        )
-        category = json.loads(response.content)
+        # Create a category and add a record in the category
+        category = context.new_category()
+        record = context.new_record(category_id=category['id'])
+        path = '/api/v2/categories/%s' % category['id']
 
-        response = self.client.delete(
-            '/api/v2/categories/%d' % category['id']
-        )
+        # Unauthorized
+        response = self.client.delete(path)
+        self.assertEqual(response.status_code, 401)
+
+        # Other user
+        context2 = TestContext()
+        response = context2.delete(path)
+        self.assertEqual(response.status_code, 403)
+
+        # Normal case
+        response = context.delete(path)
         self.assertEqual(response.status_code, 200)
         
-        response = self.client.get('/api/v2/users/' + user.username)
-        user = json.loads(response.content)
-        self.assertEqual(user['categories'], [])
-        # TODO: check record category unset
+        # Should disappear from categories
+        response = context.get(context.user_path)
+        self.assertEqual(response.obj['categories'], [])
+
+        # Should unset record's category
+        response = context.get('/api/v2/records/%s' % record['id'])
+        self.assertEqual(response.obj['category_id'], None)
 
     def test_edit_name(self):
-        user = new_user()
-        # TODO: unauthorized
-        # TODO: other user's category
-        
-        self.client.login(username=user.username, password='secret')
-        name = uuid.uuid4().hex[:30]
-        response = self.client.post(
-            '/api/v2/users/' + user.username + '/categories',
-            {'name': name}
-        )
-        category = json.loads(response.content)
+        context = TestContext()
 
-        # TODO: empty name
+        # Create a category to edit name
+        category = context.new_category()
+        path = '/api/v2/categories/%s' % category['id']
         name2 = uuid.uuid4().hex[:30]
-        response = self.client.post(
-            '/api/v2/categories/%d' % category['id'],
-            {'name': name2}
-        )
+
+        # Unauthorized
+        response = self.client.post(path, {'name': name2})
+        self.assertEqual(response.status_code, 401)
+
+        # Other user
+        context2 = TestContext()
+        response = context2.post(path, {'name': name2})
+        self.assertEqual(response.status_code, 403)
+
+        # Normal case
+        response = context.post(path, {'name': name2})
         self.assertEqual(response.status_code, 200)
         category['name'] = name2
-        self.assertEqual(json.loads(response.content), category)
+        self.assertEqual(response.obj, category)
         
-        response = self.client.get('/api/v2/users/' + user.username)
-        user = json.loads(response.content)
-        self.assertEqual(user['categories'], [category])
+        response = context.get(context.user_path)
+        self.assertEqual(response.obj['categories'], [category])
+
+        # Should not accept empty name
+        response = context.post(path, {'name': ''})
+        self.assertEqual(response.status_code, 400)
 
 class PostViewTest(TestCase):
     def test_delete(self):
-        user = new_user()
-        record = new_record(user)
-        post1 = new_post(record, 'a', 'watching')
-        post2 = new_post(record, 'b', 'finished')
+        context = TestContext()
+        record = context.new_record(status_type='watching')
+        post1 = context.new_post(record['id'], status='a', status_type='watching')
+        post2 = context.new_post(record['id'], status='b', status_type='finished')
+        path = '/api/v2/posts/%s' % post2['id']
 
-        self.client.login(username=user.username, password='secret')
-        response = self.client.delete('/api/v2/posts/%d' % post2.id)
+        # Unauthorized
+        response = self.client.delete(path)
+        self.assertEqual(response.status_code, 401)
+
+        # Other user
+        context2 = TestContext()
+        response = context2.delete(path)
+        self.assertEqual(response.status_code, 403)
+
+        # Normal case
+        response = context.delete(path)
         self.assertEqual(response.status_code, 200)
-        result = json.loads(response.content)
-        self.assertEqual(result['record']['status'], post1.status)
-        self.assertEqual(result['record']['status_type'], post1.status_type)
-        # TODO: check post deleted from record
+        updated_record = response.obj['record']
+        self.assertEqual(updated_record['status'], post1['status'])
+        self.assertEqual(updated_record['status_type'], post1['status_type'])
 
-        response = self.client.delete('/api/v2/posts/%d' % post1.id)
+        # The post should be removed from record
+        response = context.get('/api/v2/records/%s/posts' % record['id'])
+        post_ids = [str(post['id']) for post in response.obj['posts']]
+        self.assertTrue(str(post2['id']) not in post_ids)
+
+        # The post should be removed from user posts
+        response = context.get(context.user_path + '/posts')
+        post_ids = [str(post['id']) for post in response.obj]
+        self.assertTrue(str(post2['id']) not in post_ids)
+
+        # Should not allow deleting the last one post of a record
+        context.delete('/api/v2/posts/%s' % post1['id'])
+        response = context.delete('/api/v2/posts/%s' % post_ids[-1])
         self.assertEqual(response.status_code, 422)
 
 class UserPostsViewTest(TestCase):
     def test_get(self):
-        user = new_user()
-        record = new_record(user)
-        post1 = new_post(record, 'a', 'watching')
-        post2 = new_post(record, 'b', 'finished')
+        context = TestContext()
+        record = context.new_record()
+        post1 = context.new_post(record['id'])
+        post2 = context.new_post(record['id'])
+        record = self.client.get('/api/v2/records/%s' % record['id']).obj
 
-        response = self.client.get('/api/v2/users/' + user.username + '/posts')
+        response = self.client.get(context.user_path + '/posts')
         self.assertEqual(response.status_code, 200)
-        result = json.loads(response.content)
+        self.assertEqual(len(response.obj), 3)
+        post1['record'] = post2['record'] = record
+        self.assertEqual(response.obj[0], post2)
+        self.assertEqual(response.obj[1], post1)
+
+        response = self.client.get(context.user_path + '/posts', {'before_id': post2['id']})
+        self.assertEqual(response.status_code, 200)
+        result = response.obj
         self.assertEqual(len(result), 2)
-        # TODO: check content
-
-        response = self.client.get('/api/v2/users/' + user.username + '/posts', {'before_id': post2.id})
-        self.assertEqual(response.status_code, 200)
-        result = json.loads(response.content)
-        self.assertEqual(len(result), 1)
-        # TODO: check content
+        self.assertEqual(result[0]['id'], post1['id'])
 
 class UserRecordsViewTest(TestCase):
     def test_get(self):
-        user = new_user()
-        record1 = new_record(user)
-        new_post(record1, 'A', 'finished')
-        record2 = new_record(user)
-        new_post(record2, 'B', 'watching')
+        context = TestContext()
+        record1 = context.new_record()
+        record2 = context.new_record()
 
-        self.client.login(username=user.username, password='secret')
-        response = self.client.get('/api/v2/users/' + user.username + '/records')
+        response = self.client.get(context.user_path + '/records')
         self.assertEqual(response.status_code, 200)
-        # TODO: check content
+        self.assertEqual(len(response.obj), 2)
+        self.assertEqual(response.obj[0], record2)
+        self.assertEqual(response.obj[1], record1)
 
     def test_post(self):
-        user = new_user()
-        self.client.login(username=user.username, password='secret')
-        response = self.client.post('/api/v2/users/' + user.username + '/records', {
+        context = TestContext()
+        path = context.user_path + '/records'
+        data = {
             'work_title': uuid.uuid4().hex,
             'status_type': 'watching'
-        })
+        }
+
+        # Unauthorized
+        response = self.client.post(path, data)
+        self.assertEqual(response.status_code, 401)
+
+        # Other user
+        context2 = TestContext()
+        response = context2.post(path, data)
+        self.assertEqual(response.status_code, 403)
+
+        # Fails without title
+        response = context.post(path, {'work_title': ''})
+        self.assertEqual(response.status_code, 400)
+
+        # Normal case
+        response = context.post(path, data)
         self.assertEqual(response.status_code, 200)
-        # TODO: check content
+        record = response.obj['record']
+        post = response.obj['post']
+
+        self.assertTrue('id' in record)
+        self.assertEqual(record['user_id'], context.user.id)
+        self.assertEqual(record['category_id'], None)
+        self.assertEqual(record['title'], data['work_title'])
+        self.assertEqual(record['status'], '')
+        self.assertEqual(record['status_type'], data['status_type'])
+        self.assertTrue('updated_at' in record)
+
+        self.assertTrue('id' in post)
+        self.assertEqual(post['record_id'], record['id'])
+        self.assertEqual(post['status'], '')
+        self.assertEqual(post['status_type'], data['status_type'])
+        self.assertEqual(post['comment'], '')
+        self.assertTrue('updated_at' in post)
+
+        # Adding a record with already existing title is not allowed
+        response = context.post(path, data)
+        self.assertEqual(response.status_code, 422)
 
 class RecordViewTest(TestCase):
     def test_get(self):
-        user = new_user()
-        record = new_record(user)
+        context = TestContext()
+        record = context.new_record()
 
-        response = self.client.get('/api/v2/records/%d' % record.id)
+        response = self.client.get('/api/v2/records/%s' % record['id'])
         self.assertEqual(response.status_code, 200)
-        # TODO: check content
+        self.assertEqual(response.obj, record)
 
     def test_edit(self):
-        user = new_user()
-        record = new_record(user)
-
-        self.client.login(username=user.username, password='secret')
-        response = self.client.post('/api/v2/records/%d' % record.id, {
+        context = TestContext()
+        category = context.new_category()
+        record = context.new_record()
+        path = '/api/v2/records/%s' % record['id']
+        data = {
             'title': uuid.uuid4().hex,
-            'category_id': ''
-        })
+            'category_id': category['id']
+        }
+
+        # Unauthorized
+        response = self.client.post(path, data)
+        self.assertEqual(response.status_code, 401)
+
+        # Other user
+        context2 = TestContext()
+        response = context2.post(path, data)
+        self.assertEqual(response.status_code, 403)
+
+        # Normal case
+        response = context.post(path, data)
         self.assertEqual(response.status_code, 200)
-        # TODO: check content
+        self.assertEqual(response.obj['title'], data['title'])
+        self.assertEqual(response.obj['category_id'], data['category_id'])
+
+        # Update to already existing record title is not allowed
+        record2 = context.new_record()
+        response = context.post(path, {'title': record2['title']})
+        self.assertEqual(response.status_code, 422)
+
+        # Updating without category field should not unset category
+        response = context.post(path, {})
+        self.assertEqual(response.obj['category_id'], category['id'])
+
+        # Updating with null category field should unset category
+        response = context.post(path, {'category_id': ''})
+        self.assertEqual(response.obj['category_id'], None)
 
     def test_delete(self):
-        user = new_user()
-        record = new_record(user)
+        context = TestContext()
+        record = context.new_record()
+        path = '/api/v2/records/%s' % record['id']
 
-        self.client.login(username=user.username, password='secret')
-        response = self.client.delete('/api/v2/records/%d' % record.id)
+        # Unauthorized
+        response = self.client.delete(path)
+        self.assertEqual(response.status_code, 401)
+
+        # Other user
+        context2 = TestContext()
+        response = context2.delete(path)
+        self.assertEqual(response.status_code, 403)
+
+        # Normal case
+        response = context.delete(path)
         self.assertEqual(response.status_code, 200)
 
 class RecordPostsViewTest(TestCase):
     def test_get(self):
-        user = new_user()
-        record = new_record(user)
-        post = new_post(record, 'a', 'watching')
+        context = TestContext()
+        record = context.new_record()
+        post = context.new_post(record['id'])
 
-        response = self.client.get('/api/v2/records/%d/posts' % record.id)
+        response = self.client.get('/api/v2/records/%s/posts' % record['id'])
         self.assertEqual(response.status_code, 200)
-        # TODO: check content
+        posts = response.obj['posts']
+        self.assertEqual(len(posts), 2)
+        self.assertEqual(posts[0], post)
+        self.assertEqual(posts[1]['record_id'], record['id'])
 
     def test_add(self):
-        user = new_user()
-        record = new_record(user)
-        new_post(record, 'a', 'watching')
-
-        self.client.login(username=user.username, password='secret')
-        response = self.client.post('/api/v2/records/%d/posts' % record.id, {
+        context = TestContext()
+        record = context.new_record()
+        path = '/api/v2/records/%s/posts' % record['id']
+        data = {
             'status': 'b',
             'status_type': 'finished',
-            'comment': '',
-        })
+            'comment': 'hello',
+        }
+
+        # Unauthorized
+        response = self.client.post(path, data)
+        self.assertEqual(response.status_code, 401)
+
+        # Other user
+        context2 = TestContext()
+        response = context2.post(path, data)
+        self.assertEqual(response.status_code, 403)
+
+        # Normal case
+        response = context.post(path, data)
         self.assertEqual(response.status_code, 200)
-        # TODO: check content
+        updated_record = response.obj['record']
+        post = response.obj['post']
+
+        self.assertTrue('id' in updated_record)
+        self.assertEqual(updated_record['user_id'], context.user.id)
+        self.assertEqual(updated_record['category_id'], record['category_id'])
+        self.assertEqual(updated_record['title'], record['title'])
+        self.assertEqual(updated_record['status'], data['status'])
+        self.assertEqual(updated_record['status_type'], data['status_type'])
+        self.assertNotEqual(updated_record['updated_at'], record['updated_at'])
+
+        self.assertTrue('id' in post)
+        self.assertEqual(post['record_id'], record['id'])
+        self.assertEqual(post['status'], data['status'])
+        self.assertEqual(post['status_type'], data['status_type'])
+        self.assertEqual(post['comment'], data['comment'])
+        self.assertTrue('updated_at' in post)
+
+        # TODO: publish_twitter
