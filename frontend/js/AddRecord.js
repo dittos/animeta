@@ -45,7 +45,7 @@ var AddRecord = React.createClass({
     render() {
         // XXX: decode one more time due to react-router bug
         // https://github.com/rackt/react-router/issues/650
-        var defaultTitle = decodeURIComponent(this.getParams().title);
+        var defaultTitle = decodeURIComponent(this.getParams().title || '');
         return <form className="record-add-form">
             <table>
                 <tr>
