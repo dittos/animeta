@@ -77,6 +77,12 @@
 <hr>
 <h1>최근 추가 작품</h1>
 
+{% if only_orphans %}
+<p><a href="?">Show all</a></p>
+{% else %}
+<p><a href="?orphans=1">Show orphans only</a></p>
+{% endif %}
+
 <ul>
 {% for work in recent_works %}
     <li>
@@ -90,9 +96,9 @@
 
 <p>
 {% if prev_offset %}
-    <a href="?offset={{ prev_offset }}">Prev</a> |
+    <a href="?offset={{ prev_offset }}{% if only_orphans %}&orphans=1{% endif %}">Prev</a> |
 {% endif %}
-    <a href="?offset={{ next_offset }}">Next</a>
+    <a href="?offset={{ next_offset }}{% if only_orphans %}&orphans=1{% endif %}">Next</a>
 </p>
 
 {% endif %}
