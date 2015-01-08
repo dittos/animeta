@@ -64,8 +64,12 @@ def test_is_staff(user):
 
 @user_passes_test(test_is_staff)
 def index(request):
+    offset = int(request.GET.get('offset', 0))
+    limit = 50
     return render(request, 'moderation/index.html', {
-        'recent_works': Work.objects.order_by('-id')[:20]
+        'recent_works': Work.objects.order_by('-id')[offset:offset+limit],
+        'prev_offset': offset - limit if offset > 0 else None,
+        'next_offset': offset + limit,
     })
 
 @user_passes_test(test_is_staff)
@@ -73,6 +77,13 @@ def create_work(request):
     title = request.POST['title'].strip()
     work = get_or_create_work(title)
     return redirect('moderation.views.work_detail', work_id=work.id)
+
+@user_passes_test(test_is_staff)
+def delete_work(request, work_id):
+    work = Work.objects.get(pk=work_id)
+    assert work.index.record_count == 0
+    work.delete()
+    return redirect(request.GET['return_url'])
 
 @user_passes_test(test_is_staff)
 def work_detail(request, work_id):

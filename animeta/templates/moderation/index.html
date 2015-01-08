@@ -79,9 +79,21 @@
 
 <ul>
 {% for work in recent_works %}
-    <li><a href="{% url 'moderation.views.work_detail' work_id=work.id %}">{{ work.title }}</a> ({{ work.index.record_count }}명 기록)</li>
+    <li>
+        <a href="{% url 'moderation.views.work_detail' work_id=work.id %}">{{ work.title }}</a> ({{ work.index.record_count }}명 기록)
+        {% if work.index.record_count == 0 %}
+            <a href="{% url 'moderation.views.delete_work' work_id=work.id %}?return_url={{ request.get_full_path|urlencode }}">Delete</a>
+        {% endif %}
+    </li>
 {% endfor %}
 </ul>
+
+<p>
+{% if prev_offset %}
+    <a href="?offset={{ prev_offset }}">Prev</a> |
+{% endif %}
+    <a href="?offset={{ next_offset }}">Next</a>
+</p>
 
 {% endif %}
 
