@@ -7,14 +7,16 @@ def serialize_datetime(dt):
         return None
     return int((time.mktime(dt.timetuple()) + dt.microsecond / 1000000.0) * 1000)
 
-def serialize_user(user, include_categories=True):
+def serialize_user(user, viewer=None, include_categories=True):
     data = {
         'id': user.id,
         'name': user.username,
         'date_joined': serialize_datetime(user.date_joined),
     }
-    data['connected_services'] = get_connected_services(user)
-    data['categories'] = map(serialize_category, user.category_set.all())
+    if viewer == user:
+        data['connected_services'] = get_connected_services(user)
+    if include_categories:
+        data['categories'] = map(serialize_category, user.category_set.all())
     return data
 
 def serialize_category(category):

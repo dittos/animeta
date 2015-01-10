@@ -56,7 +56,6 @@ class UserViewTest(TestCase):
             'id': context.user.id,
             'name': context.user.username,
             'date_joined': serialize_datetime(context.user.date_joined),
-            'connected_services': [],
             'categories': []
         })
 

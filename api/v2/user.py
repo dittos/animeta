@@ -7,4 +7,4 @@ from api.serializers import serialize_user
 class UserView(BaseView):
     def get(self, request, name):
         user = get_object_or_404(User, username=name)
-        return serialize_user(user)
+        return serialize_user(user, request.user)

@@ -74,8 +74,8 @@ def library(request, username=None):
     return render(request, 'user/library.html', {
         'owner': user,
         'preload_data': json.dumps({
-            'owner': serializers.serialize_user(user),
-            'current_user': serializers.serialize_user(request.user) if request.user.is_authenticated() else None,
+            'owner': serializers.serialize_user(user, request.user),
+            'current_user': serializers.serialize_user(request.user, request.user) if request.user.is_authenticated() else None,
             'records': [serializers.serialize_record(r, include_has_newer_episode=user == request.user)
                 for r in user.record_set.all()],
         }, ensure_ascii=False, separators=(',', ':'))
