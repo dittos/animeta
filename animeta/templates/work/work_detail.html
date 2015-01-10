@@ -41,7 +41,7 @@
 <p class="episodes">
     <span class="active">최신</span>
 {% for episode in episodes %}
-    &middot; <a href="{% url 'work.views.episode_detail' title=work.title ep=episode %}">{{ episode }}화</a>
+    &middot; <a href="{% url 'work.views.episode_detail' title=work.title ep=episode.number %}">{{ episode.number }}화</a>
 {% endfor %}
 </p>
 {% for history in comments %}

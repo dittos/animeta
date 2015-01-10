@@ -3,8 +3,10 @@
 {% block content %}
 <p class="episodes">
 {% for episode in episodes %}
-    <a href="{% url 'work.views.episode_detail' title=work.title ep=episode %}"{% if episode == current_episode %} class="active"{% endif %}>{{ episode }}화</a>
+{% if episode.post_count > 0 %}
+    <a href="{% url 'work.views.episode_detail' title=work.title ep=episode.number %}"{% if episode.number == current_episode %} class="active"{% endif %}>{{ episode.number }}화</a>
     {% if not forloop.last %}&middot;{% endif %}
+{% endif %}
 {% endfor %}
 </p>
 

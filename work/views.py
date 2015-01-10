@@ -42,14 +42,14 @@ def detail(request, title):
     episodes = get_episodes(work)
     return render(request, "work/work_detail.html", {
         'work': work,
-        'episodes': episodes,
+        'episodes': filter(lambda ep: ep.get('post_count', 0) > 0, episodes),
         'record': _get_record(request, work),
         'records': work.record_set,
         'alt_titles': alt_titles,
         'comments': comments,
         'preload_data': json.dumps({
             'work': {'title': work.title},
-            'episodes': get_episodes(work, include_without_comment=True),
+            'episodes': episodes,
             'daum_api_key': settings.DAUM_API_KEY,
         })
     })
