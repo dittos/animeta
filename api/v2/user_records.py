@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import get_object_or_404
+from django.db import transaction
 from django.contrib.auth.models import User
 from api.v2 import BaseView
 from api.serializers import serialize_record, serialize_post
@@ -11,6 +12,7 @@ class UserRecordsView(BaseView):
         user = get_object_or_404(User, username=name)
         return map(serialize_record, user.record_set.all())
 
+    @transaction.atomic
     def post(self, request, name):
         self.check_login()
         if request.user.username != name:
@@ -26,15 +28,17 @@ class UserRecordsView(BaseView):
             category = request.user.category_set.get(id=category_id)
         else:
             category = None
-        record, created = Record.objects.get_or_create(
-            user=request.user,
-            work=work,
-            title=title,
-            category=category,
-        )
-        if not created:
+        try:
+            record = Record.objects.get(user=request.user, work=work)
             self.raise_error(u'이미 같은 작품이 "%s"로 등록되어 있습니다.' % record.title,
                 status=422) # 422 Unprocessable Entity
+        except Record.DoesNotExist:
+            record = Record.objects.create(
+                user=request.user,
+                work=work,
+                title=title,
+                category=category,
+            )
         history = History.objects.create(
             user=request.user,
             work=record.work,
