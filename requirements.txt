@@ -1,5 +1,4 @@
-Django==1.6.5
-South==0.7.6
+Django==1.7.2
 hg+https://bitbucket.org/ditto/django-oauth-provider#egg=django-oauth
 git+git://github.com/jbalogh/django-queryset-transform.git#egg=django-queryset-transform
 httplib2==0.8

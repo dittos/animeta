@@ -86,8 +86,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.middleware.transaction.TransactionMiddleware',
 )
+
+ATOMIC_REQUESTS = True
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
@@ -112,7 +113,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    ROOT_PATH + '/templates'
+    ROOT_PATH + '/templates',
 )
 
 INSTALLED_APPS = (
@@ -121,7 +122,6 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
     'django.contrib.messages',
-    'south',
     'oauth_provider',
 
     'work',
@@ -138,3 +138,4 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/library/'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'

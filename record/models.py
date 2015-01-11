@@ -3,9 +3,11 @@ import string
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import pre_save, post_save, post_delete
+from django.utils.deconstruct import deconstructible
 from queryset_transform import TransformManager
 from work.models import Work, get_or_create_work
 
+@deconstructible
 class StatusType(object):
     def __init__(self, id, text):
         self.id = id
