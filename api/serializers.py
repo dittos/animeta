@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import time
 from connect import get_connected_services
+from work.models import TitleMapping
+from record.models import get_episodes, Record
+from search.models import WorkIndex
 
 def serialize_datetime(dt):
     if dt is None:
@@ -40,7 +43,7 @@ def serialize_record(record, include_has_newer_episode=False):
         data['has_newer_episode'] = True
     return data
 
-def serialize_post(post, include_record=False):
+def serialize_post(post, include_record=False, include_user=False):
     data = {
         'id': post.id,
         'record_id': post.record.id,
@@ -51,4 +54,28 @@ def serialize_post(post, include_record=False):
     }
     if include_record:
         data['record'] = serialize_record(post.record)
+    if include_user:
+        data['user'] = serialize_user(post.user, include_categories=False)
+    return data
+
+def serialize_work(work, viewer=None):
+    alt_titles = list(TitleMapping.objects.filter(work=work) \
+            .exclude(title=work.title).values_list('title', flat=True))
+    episodes = get_episodes(work)
+    data = {
+        'id': work.id,
+        'title': work.title,
+        'alt_titles': alt_titles,
+        'episodes': episodes,
+    }
+    try:
+        data['record_count'] = work.index.record_count
+        data['rank'] = work.index.rank
+    except WorkIndex.DoesNotExist:
+        data['record_count'] = work.record_set.count()
+    if viewer and viewer.is_authenticated():
+        try:
+            data['record'] = serialize_record(viewer.record_set.get(work=work))
+        except Record.DoesNotExist:
+            pass
     return data

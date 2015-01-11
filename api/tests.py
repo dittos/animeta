@@ -1,9 +1,10 @@
 import uuid
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
+from api.serializers import serialize_datetime
 from record.models import Record, History
 from work.models import Work
-from api.serializers import serialize_datetime
+from search import indexer
 
 class TestContext(Client):
     def __init__(self):
@@ -421,3 +422,89 @@ class RecordPostsViewTest(TestCase):
         self.assertTrue('updated_at' in post)
 
         # TODO: publish_twitter
+
+class WorkViewTest(TestCase):
+    def test_get(self):
+        context = TestContext()
+        title = 'Fate/stay night'
+        alt_title = 'Fate stay night'
+        record = context.new_record(work_title=title)
+        path = '/api/v2/works/%s' % record['work_id']
+        post = context.new_post(record['id'], status=u'1', comment=u'comment')
+        for x in range(3):
+            context2 = TestContext()
+            record2 = context2.new_record(work_title=alt_title)
+            post2 = context.new_post(record['id'], status=u'2', comment='')
+
+        # Get by ID
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+        work = response.obj
+        expected = {
+            'id': record['work_id'],
+            'title': u'Fate/stay night',
+            'episodes': [
+                {'number': 1, 'post_count': 1},
+                {'number': 2}
+            ],
+            'alt_titles': [u'Fate stay night'],
+            'record_count': 4,
+        }
+        self.assertEqual(work, expected)
+
+        # Should have rank after indexing
+        indexer.run()
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+        work = response.obj
+        expected['rank'] = 1
+        self.assertEqual(work, expected)
+
+        # Should have record if logged in
+        response = context.get(path)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.obj['record']['id'], record['id'])
+
+        # If logged in and no record should not have record field
+        context3 = TestContext()
+        response = context3.get(path)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('record' not in response.obj)
+
+        # Lookup by title
+        response = self.client.get('/api/v2/works/_/%s' % title)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.obj, work)
+        response = self.client.get('/api/v2/works/_/%s' % alt_title)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.obj, work)
+
+class WorkPostsViewTest(TestCase):
+    def test_get(self):
+        context = TestContext()
+        record = context.new_record()
+        post1 = context.new_post(record['id'], status=u'1', comment=u'a')
+        post2 = context.new_post(record['id'], status=u'2', comment=u'b')
+
+        path = '/api/v2/works/%d/posts' % record['work_id']
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.obj), 2)
+        for key in ('id', 'status', 'status_type', 'updated_at', 'comment'):
+            self.assertEqual(response.obj[0][key], post2[key])
+            self.assertEqual(response.obj[1][key], post1[key])
+        for post in response.obj:
+            self.assertEqual(post['user']['id'], context.user.id)
+            self.assertEqual(post['user']['name'], context.user.username)
+
+        response = self.client.get(path, {'before_id': post2['id']})
+        self.assertEqual(response.status_code, 200)
+        result = response.obj
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]['id'], post1['id'])
+
+        response = self.client.get(path, {'episode': '2'})
+        self.assertEqual(response.status_code, 200)
+        result = response.obj
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]['id'], post2['id'])
