@@ -64,6 +64,7 @@
 <br>
 <h2>병합</h2>
 <form method="post" action="{% url 'moderation.views.merge_work' work_id=work.id %}" onsubmit="return checkConflicts(this)">
+    선택한 작품을 현재 작품에 병합합니다.<br>
     <input type="hidden" name="other_id" class="merge-work-other-id">
     <input class="work-title-merge"> <span class="merge-work-other-id-preview"></span>
     <label><input type="checkbox" name="force" value="1"> 강제로</label>
@@ -71,6 +72,13 @@
 </form>
 <div class="merge-conflicts">
 </div>
+
+<br>
+<h2>Metadata</h2>
+<form method="post" action="{% url 'moderation.views.edit_metadata' work_id=work.id %}">
+<textarea name="metadata" rows="10" cols="50">{{work.raw_metadata}}</textarea><br>
+<button type="submit">Save</button>
+</form>
 
 {% else %}
 

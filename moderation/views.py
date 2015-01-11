@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import yaml
 from django.db import models, transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
@@ -86,7 +87,7 @@ def create_work(request):
 @user_passes_test(test_is_staff)
 def delete_work(request, work_id):
     work = Work.objects.get(pk=work_id)
-    assert work.index.record_count == 0
+    assert work.record_set.count() == 0
     work.delete()
     return redirect(request.GET['return_url'])
 
@@ -155,3 +156,12 @@ def delete_mapping(request, mapping_id):
     if mapping.record_count == 0:
         mapping.delete()
     return redirect('moderation.views.work_detail', work_id=mapping.work.id)
+
+@user_passes_test(test_is_staff)
+def edit_metadata(request, work_id):
+    work = Work.objects.get(pk=work_id)
+    # Verify yaml
+    yaml.load(request.POST['metadata'])
+    work.raw_metadata = request.POST['metadata']
+    work.save()
+    return redirect('moderation.views.work_detail', work_id=work.id)

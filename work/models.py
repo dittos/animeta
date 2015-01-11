@@ -3,13 +3,21 @@ from django.core.cache import cache
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
+import yaml
 
 class Work(models.Model):
     title = models.CharField(max_length=100, unique=True)
+    raw_metadata = models.TextField(null=True)
 
     @property
     def popularity(self):
         return self.record_set.count()
+
+    @property
+    def metadata(self):
+        if not self.raw_metadata:
+            return None
+        return yaml.load(self.raw_metadata)
 
     def __unicode__(self):
         return self.title

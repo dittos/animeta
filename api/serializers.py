@@ -4,6 +4,7 @@ from connect import get_connected_services
 from work.models import TitleMapping
 from record.models import get_episodes, Record
 from search.models import WorkIndex
+from table.models import item_json, Period
 
 def serialize_datetime(dt):
     if dt is None:
@@ -78,4 +79,8 @@ def serialize_work(work, viewer=None):
             data['record'] = serialize_record(viewer.record_set.get(work=work))
         except Record.DoesNotExist:
             pass
+    metadata = work.metadata
+    if metadata:
+        period = Period.parse(metadata['periods'][0])
+        data['metadata'] = item_json(metadata, period)
     return data
