@@ -139,3 +139,8 @@ LOGIN_REDIRECT_URL = '/library/'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+# Support AbstractUser.get_absolute_url
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda o: '/users/%s/' % o.username,
+}
