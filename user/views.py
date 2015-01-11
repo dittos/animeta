@@ -102,5 +102,5 @@ class HistoryFeedView(ListView):
         return context
 
     def render_to_response(self, context, **response_kwargs):
-        response_kwargs['mimetype'] = 'application/atom+xml'
+        response_kwargs['content_type'] = 'application/atom+xml'
         return super(HistoryFeedView, self).render_to_response(context, **response_kwargs)

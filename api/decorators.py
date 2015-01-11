@@ -38,7 +38,7 @@ def api_response(view):
             else:
                 mime = 'application/json'
             writefunc = lambda d, s: _json_writefunc(d, s, cb)
-        response = HttpResponse(mimetype=mime, status=result.get('error_code', 422) if 'error' in result else 200)
+        response = HttpResponse(content_type=mime, status=result.get('error_code', 422) if 'error' in result else 200)
         writefunc(result, response)
         return response
     return wrapper
