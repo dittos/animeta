@@ -26,4 +26,4 @@ class BaseView(View):
             self.raise_error('Login required.', status=401)
 
     def raise_error(self, message, status):
-        raise HttpException(JsonResponse(message, status=status))
+        raise HttpException(JsonResponse({'message': message}, status=status))
