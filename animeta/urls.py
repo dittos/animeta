@@ -16,7 +16,7 @@ urlpatterns = patterns('',
     (r'^api/', include('api.urls')),
 
     (r'^library/', login_required(user.views.library)),
-    (r'^users/(?P<username>[A-Za-z0-9_]+)/', include('user.urls')),
+    (r'^users/(?P<username>[\w.@+-]+)/', include('user.urls')),
     (r'^records/', include('record.urls')),
     (r'^works/', include('work.urls')),
     (r'^charts/', include('chart.urls')),
@@ -24,7 +24,7 @@ urlpatterns = patterns('',
     (r'^moderation/', include('moderation.urls')),
 
     (r'^titles/(?P<remainder>.*)/$', 'work.views.old_url'), # compat
-    (r'^(?P<username>[A-Za-z0-9]+)$', 'user.views.shortcut'),
+    (r'^(?P<username>[\w.@+-]+)$', 'user.views.shortcut'),
     url(r'^-(?P<id>[0-9]+)$', HistoryDetailView.as_view(), name='history-detail'),
 
     (r'^search/$', 'search.views.search'),
