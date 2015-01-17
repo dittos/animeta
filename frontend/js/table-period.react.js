@@ -124,16 +124,6 @@ var HeaderView = React.createClass({
     }
 });
 
-var SOURCE_TYPE_MAP = {
-    'manga': '만화 원작', 
-    'original': '오리지널',
-    'lightnovel': '라노베 원작',
-    'game': '게임 원작',
-    '4koma': '4컷 만화 원작',
-    'visualnovel': '비주얼 노벨 원작',
-    'novel': '소설 원작'
-};
-
 var WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
 function getDate(value) {
@@ -193,7 +183,7 @@ var ItemView = React.createClass({
         if (context.studios)
             context.studios = context.studios.join(', ');
         if (context.source)
-            context.source = SOURCE_TYPE_MAP[context.source];
+            context.source = util.SOURCE_TYPE_MAP[context.source];
         if (!context.schedule.jp)
             context.schedule.jp = {};
         ['jp', 'kr'].forEach((country) => {

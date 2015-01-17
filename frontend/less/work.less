@@ -1,0 +1,307 @@
+@color-main: #4bb000;
+@z-overlay: 1000;
+
+.mixin-load-more {
+    position: relative;
+    cursor: pointer;
+    color: #999;
+    font-size: 0.8em;
+    background: #fff;
+    padding-top: 8px;
+    text-align: center;
+    &:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 4px;
+        border-radius: 50%;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        z-index: -1;
+    }
+    &:hover {
+        color: #666;
+    }
+}
+
+body {
+    margin: 0;
+	font-family: "Helvetica Neue",
+        "HiraKakuProN-W3","Hiragino Sans GB W3",
+        "Apple SD Gothic Neo","Malgun Gothic",
+        sans-serif;
+}
+
+.header {
+    .header-inner {
+        padding: 16px 0;
+        position: relative; // this is needed by .menu-user
+    }
+
+    .logo {
+        a {
+            display: block;
+            width: 122px;
+            height: 24px;
+            text-indent: -9999px;
+            background-image: url('../img/animeta.svg');
+            background-size: 122px 24px;
+            background-repeat: no-repeat;
+            overflow: hidden;
+        }
+    }
+
+    .account {
+        line-height: 24px;
+    }
+
+    .btn {
+        display: inline-block;
+        line-height: 1;
+        border: 1px solid #666;
+        padding: 8px - 1px 16px - 1px;
+        border-radius: 5px;
+        color: #444;
+        text-decoration: none;
+        font-size: 13px;
+        margin-left: 8px;
+    }
+
+    .btn-signup {
+        border-color: @color-main;
+        background: @color-main;
+        color: #fff;
+    }
+
+    .btn-user {
+        .fa-user { margin-right: 5px; }
+        .fa-caret-down { margin-left: 10px; }
+    }
+
+    .menu-user {
+        position: absolute;
+        z-index: @z-overlay;
+        right: 0;
+        margin-top: 8px;
+        margin-right: 0 !important; // XXX: kill grid margin
+        background-color: #fff;
+        border: 1px solid #ddd;
+
+        a {
+            line-height: 1;
+            padding: 10px;
+            display: block;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            &:hover {
+                background-color: #f4f4f4;
+            }
+        }
+    }
+}
+.no-svg .logo a {
+    background-image: url('../img/animeta.gif');
+}
+
+.work-header {
+    background-color: #333;
+    color: #fff;
+    padding: 24px 0;
+    font-size: 14px;
+
+    .title {
+        margin: 0;
+        font-size: 2em;
+    }
+
+    .stats {
+        color: #ccc;
+        margin: 8px 0 16px;
+
+        .stat {
+            margin-right: 16px;
+            i {
+                margin-right: 4px;
+            }
+        }
+    }
+
+    .btn-status {
+        display: inline-block;
+        cursor: pointer;
+        padding: 8px 16px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        background: @color-main;
+        color: #fff;
+        i {
+            margin-right: 10px;
+        }
+        .episode {
+            font-weight: normal;
+            font-size: 0.9em;
+            margin-left: 4px;
+        }
+    }
+}
+
+.work-sidebar {
+    height: 0; // Do not block other elements
+    padding-top: 24px;
+
+    .poster {
+        width: 100%;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+        background: #fff;
+    }
+    .poster-empty {
+        line-height: 300px;
+        height: 300px;
+        text-transform: uppercase;
+        text-align: center;
+        color: #ccc;
+        font-size: 0.8em;
+        border: 1px solid #ddd;
+    }
+    p {
+        font-size: 0.9em;
+    }
+    .links {
+        p {
+            margin: 0;
+            line-height: 1.6;
+            font-size: 0.8em;
+        }
+        a {
+            color: #333;
+            text-decoration: none;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}
+
+.work-content {
+    .episodes {
+        padding: 16px 0;
+
+        a {
+            margin-right: 16px;
+            text-decoration: none;
+            color: #666;
+            white-space: nowrap;
+            &.recent, &.has-post {
+                font-weight: bold;
+            }
+            &:hover {
+                color: #999;
+            }
+            &.active, &.active:hover {
+                color: @color-main;
+            }
+        }
+    }
+
+    .section {
+        padding-top: 16px;
+        padding-bottom: 8px;
+    }
+
+    .section-title {
+        font-weight: normal;
+        font-size: 1.2em;
+        margin: 0;
+        i {
+            margin-right: 4px;
+        }
+    }
+
+    .section-video {
+        overflow: hidden;
+        .section-title {
+            margin-bottom: 16px;
+        }
+        .video-row {
+            clear: both;
+        }
+        .video-item {
+            width: 130px;
+            vertical-align: top;
+            padding: 0 10px 10px 0;
+            float: left;
+
+            a {
+                text-decoration: none;
+                color: #666;
+                &:hover {
+                    color: #999;
+                }
+            }
+        }
+        .date, .title { display: block; }
+        .thumbnail {
+            width: 128px;
+            min-height: 70px;
+            img { width: 100%; }
+        }
+        .title { font-size: 0.75em; }
+        .date { font-size: 0.7em; padding-top: 4px; }
+        .load-more {
+            clear: both;
+            .mixin-load-more;
+        }
+    }
+
+    .section-post {
+        clear: both;
+        .section-title {
+            margin-bottom: 8px;
+        }
+        .post-item {
+            font-size: 14px;
+            clear: both;
+            line-height: 1.8;
+            padding: 8px 0;
+            border-bottom: 1px solid #e8e8e8;
+
+            .meta {
+                .user {
+                    font-weight: bold;
+                    color: @color-main;
+                    text-decoration: none;
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+                .separator {
+                    margin: 0 8px;
+                    color: #999;
+                }
+                .episode {
+                    font-weight: bold;
+                    color: #666;
+                }
+                .time {
+                    margin-left: 16px;
+                    font-size: 12px;
+                    color: #666;
+                    text-decoration: none;
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+            .comment {
+                padding-top: 4px;
+                line-height: 1.6;
+            }
+        }
+        .load-more {
+            .mixin-load-more;
+        }
+    }
+}

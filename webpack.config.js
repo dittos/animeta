@@ -21,7 +21,8 @@ module.exports = config = {
         loaders: [
             { test: /\.js[x]?$/, loader: 'jsx-loader?harmony' },
             { test: /\.less$/, loader: 'style!css!autoprefixer!less' },
-            { test: /\.(png|gif)$/, loader: 'url' }
+            { test: /\.(png|gif|svg)$/, loader: 'url' },
+            { test: /\.(eot|woff|ttf|otf)$/, loader: 'file' }
         ]
     }
 };

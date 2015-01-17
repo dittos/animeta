@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from work.models import Work, TitleMapping
 from record.models import Record, History, get_episodes
+from api import serializers
 
 def old_url(request, remainder):
     return redirect('work.views.detail', title=remainder)
@@ -30,41 +31,18 @@ def _get_work(title):
 
 def detail(request, title):
     work = _get_work(title)
-
-    N = 6
-    history = work.history_set.all().select_related('user')
-    comments = list(history.exclude(comment='')[:N])
-    if len(comments) < N:
-        comments += list(history.filter(comment='')[:N-len(comments)])
-
-    alt_titles = TitleMapping.objects.filter(work=work) \
-            .exclude(title=work.title).values_list('title', flat=True)
-    episodes = get_episodes(work)
     return render(request, "work/work_detail.html", {
-        'work': work,
-        'episodes': filter(lambda ep: ep.get('post_count', 0) > 0, episodes),
-        'record': _get_record(request, work),
-        'records': work.record_set,
-        'alt_titles': alt_titles,
-        'comments': comments,
+        'title': title,
         'preload_data': json.dumps({
-            'work': {'title': work.title},
-            'episodes': episodes,
+            'title': title,
+            'current_user': serializers.serialize_user(request.user, request.user) if request.user.is_authenticated() else None,
             'daum_api_key': settings.DAUM_API_KEY,
         })
     })
 
 def episode_detail(request, title, ep):
     ep = int(ep)
-    work = _get_work(title)
-    history_list = work.history_set.filter(status=str(ep)).exclude(comment='').order_by('-id')
-    return render(request, 'work/episode.html', {
-        'work': work,
-        'current_episode': ep,
-        'episodes': get_episodes(work),
-        'record': _get_record(request, work),
-        'history_list': history_list,
-    })
+    return detail(request, title)
 
 def list_users(request, title):
     work = _get_work(title)
