@@ -32,11 +32,21 @@ function shorten(str, limit) {
 
 var VideoSearchResult = React.createClass({
     getInitialState() {
-        return {isLoading: true, hasMore: true, result: []};
+        return {
+            itemsPerRow: 5,
+            isLoading: true,
+            hasMore: true,
+            result: []
+        };
     },
 
     componentDidMount() {
-        this._loadMore();
+        $(window).on('resize', this._onResize);
+        this._relayout(() => this._loadMore());
+    },
+
+    componentWillUnmount() {
+        $(window).off('resize', this._onResize);
     },
 
     componentWillReceiveProps(nextProps) {
@@ -56,7 +66,7 @@ var VideoSearchResult = React.createClass({
         $.getJSON('http://apis.daum.net/search/vclip?callback=?', {
             apikey: PreloadData.daum_api_key,
             output: 'json',
-            result: 5,
+            result: this.state.itemsPerRow * 2,
             q: this.props.query,
             pageno: page
         }).then(data => {
@@ -67,11 +77,6 @@ var VideoSearchResult = React.createClass({
                 page: page,
                 isLoading: false,
                 result: result
-            }, () => {
-                if (page > 1) {
-                    var $el = $(this.getDOMNode());
-                    window.scrollTo(0, $el.offset().top + $el.height() - $(window).height() + 100);
-                }
             });
         });
     },
@@ -82,13 +87,17 @@ var VideoSearchResult = React.createClass({
 
         var rows = [];
         var currentRow = [];
-        for (var i = 0; i < this.state.result.length; i++) {
-            if (i > 0 && i % 5 === 0) {
+        var limit = this.state.result.length;
+        if (this.state.page === 1)
+            limit = Math.min(limit, this.state.itemsPerRow);
+        for (var i = 0; i < limit; i++) {
+            if (i > 0 && i % this.state.itemsPerRow === 0) {
                 rows.push(<div className="video-row">{currentRow}</div>);
                 currentRow = [];
             }
             var item = this.state.result[i];
-            currentRow.push(<div className="video-item">
+            currentRow.push(<div className="video-item"
+                style={{width: (100 / this.state.itemsPerRow) + '%'}}>
                 <a href={item.link} target="_blank">
                     <div className="thumbnail"><img src={item.thumbnail} /></div>
                     <span className="title" dangerouslySetInnerHTML={{__html: shorten(fixTitle(item.title), 30)}} />
@@ -112,6 +121,20 @@ var VideoSearchResult = React.createClass({
             {rows}
             {loadMore}
         </div>;
+    },
+
+    _onResize() {
+        this._relayout();
+    },
+
+    _relayout(cb) {
+        var width = $(document).width();
+        if (width <= 768)
+            this.setState({itemsPerRow: 3}, cb);
+        else if (width <= 960)
+            this.setState({itemsPerRow: 4}, cb);
+        else
+            this.setState({itemsPerRow: 5}, cb);
     }
 });
 
