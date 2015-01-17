@@ -22,7 +22,7 @@ var Stack = React.createClass({
     render() {
         return <div style={{position: 'relative'}}>
             {React.Children.map(this.props.children, child =>
-                React.addons.cloneWithProps(child, {
+                child && React.addons.cloneWithProps(child, {
                     style: {
                         ...child.props.style,
                         position: 'absolute',

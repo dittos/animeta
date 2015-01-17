@@ -167,6 +167,21 @@ var StatusButton = React.createClass({
     }
 });
 
+var WeeklyChart = React.createClass({
+    render() {
+        return <div className="weekly-chart">
+            <h3 className="section-title">주간 인기 작품</h3>
+            {PreloadData.chart.map(item =>
+                <a href={util.getWorkURL(item.object.title)}
+                    className="chart-item"
+                    style={getCoverImageStyle(item.object)}>
+                    <span className="rank">{item.rank}위</span>
+                    {item.object.title}
+                </a>)}
+        </div>;
+    }
+});
+
 var Sidebar = React.createClass({
     render() {
         var metadata = this.props.metadata;
@@ -188,10 +203,12 @@ var Sidebar = React.createClass({
                 {metadata.links.ann &&
                     <p><i className="fa fa-globe" /> <a href={metadata.links.ann} target="_blank">AnimeNewsNetwork (영문)</a></p>}
                 </div>
+                <WeeklyChart />
             </div>;
         } else {
             return <div className="work-sidebar">
                 <div className="poster poster-empty">No Image</div>
+                <WeeklyChart />
             </div>;
         }
     }
@@ -203,15 +220,31 @@ var modernGradientSupported = (() => {
     return ('' + el.style.backgroundImage).indexOf('gradient') > -1;
 })();
 
+function getCoverImageStyle(work) {
+    if (work.metadata && work.metadata.image_url) {
+        return {
+            background: (!modernGradientSupported ? '-webkit-' : '') + 'linear-gradient(rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0) 100%),' +
+                'url(' + work.metadata.image_url + ') 0 40% no-repeat',
+            backgroundSize: 'cover'
+        };
+    }
+    return {};
+}
+
 var WorkRoute = React.createClass({
     mixins: [Router.State],
     getInitialState() {
-        return {work: null};
+        return {work: null, showSidebar: true};
     },
     componentDidMount() {
+        this._relayout();
+        $(window).on('resize', this._relayout);
         $.get('/api/v2/works/_/' + encodeURIComponent(this.props.title)).then(work => {
             this.setState({work: work});
         });
+    },
+    componentWillUnmount() {
+        $(window).off('resize', this._relayout);
     },
     render() {
         if (!this.state.work) {
@@ -223,7 +256,7 @@ var WorkRoute = React.createClass({
         return <Layout.Stack>
             <div>
                 <div className="work-header"
-                    style={work.metadata && work.metadata.image_url && {'background': (!modernGradientSupported ? '-webkit-' : '') + 'linear-gradient(rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.65) 50%, rgba(0, 0, 0, 0) 100%), url('+work.metadata.image_url+') 0 40% no-repeat', backgroundSize: 'cover'}}>
+                    style={getCoverImageStyle(work)}>
                     <Grid.Row>
                         <Grid.Column size={9}>
                             <h1 className="title">{work.title}</h1>
@@ -253,15 +286,23 @@ var WorkRoute = React.createClass({
                         <Router.RouteHandler
                             work={this.state.work}
                             key={this.getParams().episode} />
+                        {!this.state.showSidebar && <WeeklyChart />}
                     </Grid.Column>
                 </Grid.Row>
             </div>
-            <Grid.Row>
-                <Grid.Column pull="right" size={3}>
-                    <Sidebar metadata={work.metadata} />
-                </Grid.Column>
-            </Grid.Row>
+            {this.state.showSidebar &&
+                <Grid.Row>
+                    <Grid.Column pull="right" size={3}>
+                        <Sidebar metadata={work.metadata} />
+                    </Grid.Column>
+                </Grid.Row>}
         </Layout.Stack>;
+    },
+    _relayout() {
+        var width = $(document).width();
+        var nextState = {showSidebar: width > 480};
+        if (this.state.showSidebar != nextState.showSidebar)
+            this.setState(nextState);
     }
 });
 

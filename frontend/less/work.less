@@ -4,7 +4,7 @@
 .mixin-load-more {
     position: relative;
     cursor: pointer;
-    color: #999;
+    color: #666;
     font-size: 0.8em;
     background: #fff;
     padding-top: 8px;
@@ -21,7 +21,7 @@
         z-index: -1;
     }
     &:hover {
-        color: #666;
+        color: #999;
     }
 }
 
@@ -237,7 +237,36 @@ body {
     }
 }
 
+.weekly-chart {
+    padding-top: 32px;
+
+    .section-title {
+        font-weight: normal;
+        font-size: 1.2em;
+        margin: 0;
+        padding-bottom: 8px;
+    }
+
+    .chart-item {
+        display: block;
+        height: 100px;
+        color: #fff;
+        padding: 8px;
+        margin-top: 8px;
+        text-decoration: none;
+        font-size: 14px;
+        text-shadow: 0 1px 0 #000;
+        .rank {
+            color: #ccc;
+            font-size: 0.9em;
+            margin-right: 8px;
+        }
+    }
+}
+
 .work-content {
+    padding-bottom: 32px;
+
     .episodes {
         padding: 16px 0;
 
@@ -384,13 +413,12 @@ body {
     .work-header {
         text-align: center;
         padding: 40px 0;
-        .title {
+        .title, .stats {
             text-shadow: 0 1px 0 #000;
         }
     }
 
-    .global-search,
-    .work-sidebar {
+    .global-search {
         display: none;
     }
 }

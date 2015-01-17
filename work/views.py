@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from work.models import Work, TitleMapping
 from record.models import Record, History, get_episodes
+from chart.models import weekly, PopularWorksChart
 from api import serializers
 
 def old_url(request, remainder):
@@ -29,6 +30,14 @@ def _get_record(request, work):
 def _get_work(title):
     return get_object_or_404(TitleMapping, title=title).work
 
+def _get_chart():
+    def _serialize(item):
+        item['object'] = serializers.serialize_work(item['object'])
+        return item
+    w = weekly()
+    chart = PopularWorksChart(w, 5)
+    return map(_serialize, chart)
+
 def detail(request, title):
     work = _get_work(title)
     return render(request, "work/work_detail.html", {
@@ -37,6 +46,7 @@ def detail(request, title):
             'title': title,
             'current_user': serializers.serialize_user(request.user, request.user) if request.user.is_authenticated() else None,
             'daum_api_key': settings.DAUM_API_KEY,
+            'chart': _get_chart(),
         })
     })
 
