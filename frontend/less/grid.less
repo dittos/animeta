@@ -1,0 +1,15 @@
+@grid-spacing: 10;
+@grid-width: 60;
+@grid-columns: 12;
+
+.grid-row {
+    margin-left: auto;
+    margin-right: auto;
+    width: (@grid-spacing * 2 + @grid-width) * @grid-columns;
+}
+
+.grid-column (@size) {
+    margin-left: @grid-spacing;
+    margin-right: @grid-spacing;
+    width: (@grid-spacing * 2 + @grid-width) * @size - @grid-spacing * 2;
+}

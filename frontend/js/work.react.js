@@ -174,6 +174,12 @@ var Sidebar = React.createClass({
     }
 });
 
+var modernGradientSupported = (() => {
+    var el = document.createElement('div');
+    el.style.cssText = 'background-image: linear-gradient(white,white);';
+    return ('' + el.style.backgroundImage).indexOf('gradient') > -1;
+})();
+
 var WorkRoute = React.createClass({
     mixins: [Router.State],
     getInitialState() {
@@ -193,23 +199,29 @@ var WorkRoute = React.createClass({
         var work = this.state.work;
         return <Layout.Stack>
             <div>
-                <Layout.CenteredFullWidth className="work-header">
-                    <h1 className="title">{work.title}</h1>
-                    <div className="stats">
-                        {work.rank &&
-                            <span className="stat stat-rank">
-                                <i className="fa fa-bar-chart" />
-                                전체 {work.rank}위
-                            </span>}
-                        <span className="stat stat-users">
-                            <i className="fa fa-user" />
-                            {work.record_count}명이 기록 남김
-                        </span>
-                    </div>
-                    <StatusButton work={work} />
-                </Layout.CenteredFullWidth>
+                <div className="work-header"
+                    style={work.metadata && work.metadata.image_url && {'background': (!modernGradientSupported ? '-webkit-' : '') + 'linear-gradient(rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.65) 50%, rgba(0, 0, 0, 0) 100%), url('+work.metadata.image_url+') 0 40% no-repeat', backgroundSize: 'cover'}}>
+                    <Grid.Row>
+                        <Grid.Column size={9}>
+                            <h1 className="title">{work.title}</h1>
+                            <div className="stats">
+                                {work.rank &&
+                                    <span className="stat stat-rank">
+                                        <i className="fa fa-bar-chart" />
+                                        전체 {work.rank}위
+                                    </span>}
+                                <span className="stat stat-users">
+                                    <i className="fa fa-user" />
+                                    {work.record_count}명이 기록 남김
+                                </span>
+                            </div>
+                            <StatusButton work={work} />
+                        </Grid.Column>
+                    </Grid.Row>
+                </div>
                 <Grid.Row>
-                    <Grid.Column size={9} className="work-content">
+                    <Grid.Column size={9}
+                        className="work-content">
                         <div className="episodes">
                             <Router.Link to="work-index" className="recent">최신</Router.Link>
                             {work.episodes.map(ep =>
@@ -236,8 +248,10 @@ var Post = React.createClass({
         return <div className={React.addons.classSet({'post-item': true})}>
             <div className="meta">
                 <a href={'/users/' + post.user.name + '/'} className="user">{post.user.name}</a>
-                <i className="fa fa-caret-right separator" />
-                <span className="episode">{util.getStatusDisplay(post)}</span>
+                {post.status &&
+                    <i className="fa fa-caret-right separator" />}
+                {post.status &&
+                    <span className="episode">{util.getStatusDisplay(post)}</span>}
                 <a href={util.getPostURL(post)} className="time"><TimeAgo time={new Date(post.updated_at)} /></a>
             </div>
             <div className="comment">

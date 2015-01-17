@@ -16,12 +16,12 @@ var DropdownUserMenu = React.createClass({
         $(document).off('click', this._onClose);
     },
     render() {
-        return <Grid.Column size={2} className="menu-user"
+        return <div className="menu-user"
             onClick={e => e.stopPropagation()}>
             <a href="/library/">기록 관리</a>
             <a href="/settings/">설정</a>
             <a href="/logout/">로그아웃</a>
-        </Grid.Column>;
+        </div>;
     },
     _onClose() {
         this.props.onClose();
