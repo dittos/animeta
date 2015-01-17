@@ -40,6 +40,7 @@ body {
     }
 
     .logo {
+        float: left;
         a {
             display: block;
             width: 122px;
@@ -50,6 +51,11 @@ body {
             background-repeat: no-repeat;
             overflow: hidden;
         }
+    }
+
+    .global-search {
+        float: left;
+        margin-left: 20px;
     }
 
     .account {
@@ -103,6 +109,51 @@ body {
 }
 .no-svg .logo a {
     background-image: url('../img/animeta.gif');
+}
+
+.global-search {
+    width: 200px;
+    font-size: 14px;
+
+    .twitter-typeahead {
+        width: 100%;
+    }
+
+    .tt-hint, .tt-input {
+        padding: 5px;
+        border: 1px solid #bbb;
+        width: 100%;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+}
+
+.tt-dropdown-menu {
+    display: block;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    max-height: 300px;
+    width: 300px;
+    overflow-y: auto;
+    margin-top: -1px;
+}
+
+.tt-suggestion {
+    display: block;
+    padding: 5px !important;
+    cursor: pointer;
+
+    .count {
+        font-size: 11px;
+        color: #999;
+        white-space: nowrap;
+        display: inline-block;
+    }
+
+    &.tt-cursor {
+        background-color: #f4f4f4;
+    }
 }
 
 .work-header {
