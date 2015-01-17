@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var $ = require('jquery');
 var _jQuery = global.jQuery;
 global.jQuery = $;
@@ -50,17 +51,7 @@ function cachingSource(source, maxSize) {
     };
 }
 
-function debouncingSource(source, rate) {
-    var timer = null;
-    return function(q, cb) {
-        if (timer) clearTimeout(timer);
-        timer = setTimeout(function() {
-            source(q, cb);
-        }, rate);
-    };
-}
-
-var searchSource = cachingSource(debouncingSource(function (q, cb) {
+var searchSource = cachingSource(_.throttle(function (q, cb) {
     $.getJSON('/search/', {q: q}, cb);
 }, 200), 20);
 
