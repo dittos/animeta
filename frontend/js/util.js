@@ -74,6 +74,8 @@ function getStatusDisplay(record) {
     return record.status.trim().replace(/([0-9]+)$/, '$1화');
 }
 
+exports.getStatusDisplay = getStatusDisplay;
+
 exports.STATUS_TYPE_TEXT = {
     watching: '보는 중',
     finished: '완료',
@@ -104,4 +106,14 @@ exports.getPostURL = function(post) {
 
 exports.getPostDeleteURL = function(user, post) {
     return '/users/' + user.name + '/history/' + post.id + '/delete/';
+};
+
+exports.SOURCE_TYPE_MAP = {
+    'manga': '만화 원작', 
+    'original': '오리지널 작품',
+    'lightnovel': '라노베 원작',
+    'game': '게임 원작',
+    '4koma': '4컷 만화 원작',
+    'visualnovel': '비주얼 노벨 원작',
+    'novel': '소설 원작'
 };

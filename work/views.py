@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 import json
 import urllib
+import requests
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
+from django.core.urlresolvers import reverse
 from django.views.generic import ListView
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from work.models import Work, TitleMapping
 from record.models import Record, History, get_episodes
+from chart.models import weekly, PopularWorksChart
+from api import serializers
 
 def old_url(request, remainder):
     return redirect('work.views.detail', title=remainder)
@@ -28,43 +32,39 @@ def _get_record(request, work):
 def _get_work(title):
     return get_object_or_404(TitleMapping, title=title).work
 
+def _get_chart():
+    def _serialize(item):
+        item['object'] = serializers.serialize_work(item['object'])
+        return item
+    w = weekly()
+    chart = PopularWorksChart(w, 5)
+    return map(_serialize, chart)
+
 def detail(request, title):
     work = _get_work(title)
-
-    N = 6
-    history = work.history_set.all().select_related('user')
-    comments = list(history.exclude(comment='')[:N])
-    if len(comments) < N:
-        comments += list(history.filter(comment='')[:N-len(comments)])
-
-    alt_titles = TitleMapping.objects.filter(work=work) \
-            .exclude(title=work.title).values_list('title', flat=True)
-    episodes = get_episodes(work)
+    preload_data = json.dumps({
+        'title': title,
+        'work': serializers.serialize_work(work, request.user),
+        'current_user': serializers.serialize_user(request.user, request.user) if request.user.is_authenticated() else None,
+        'daum_api_key': settings.DAUM_API_KEY,
+        'chart': _get_chart(),
+    })
+    try:
+        resp = requests.post(settings.RENDER_BACKEND_URL,
+            data=preload_data,
+            timeout=settings.RENDER_BACKEND_TIMEOUT)
+        html = resp.content
+    except Exception as e:
+        html = '<!-- Render server not responding: %s -->' % e
     return render(request, "work/work_detail.html", {
-        'work': work,
-        'episodes': filter(lambda ep: ep.get('post_count', 0) > 0, episodes),
-        'record': _get_record(request, work),
-        'records': work.record_set,
-        'alt_titles': alt_titles,
-        'comments': comments,
-        'preload_data': json.dumps({
-            'work': {'title': work.title},
-            'episodes': episodes,
-            'daum_api_key': settings.DAUM_API_KEY,
-        })
+        'title': title,
+        'preload_data': preload_data,
+        'html': html,
     })
 
 def episode_detail(request, title, ep):
     ep = int(ep)
-    work = _get_work(title)
-    history_list = work.history_set.filter(status=str(ep)).exclude(comment='').order_by('-id')
-    return render(request, 'work/episode.html', {
-        'work': work,
-        'current_episode': ep,
-        'episodes': get_episodes(work),
-        'record': _get_record(request, work),
-        'history_list': history_list,
-    })
+    return redirect(reverse('work.views.detail', kwargs={'title': title}) + '#/ep/%s/' % ep)
 
 def list_users(request, title):
     work = _get_work(title)

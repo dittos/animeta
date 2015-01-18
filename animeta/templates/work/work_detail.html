@@ -1,58 +1,51 @@
-{% extends "work/base.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }} - 애니메타</title>
 
-{% load status %}
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="{{ STATIC_URL }}apple-touch-icon-120x.png"><!-- iPhone @2x -->
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="{{ STATIC_URL }}apple-touch-icon-152x.png"><!-- iPad @2x -->
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="{{ STATIC_URL }}apple-touch-icon-180x.png"><!-- iPhone @3x -->
+    <link rel="icon" sizes="196x196" href="{{ STATIC_URL }}touch-icon-192x.png"><!-- Android -->
+    <link rel="shortcut icon" href="{{ STATIC_URL }}favicon.ico">
 
-{% block head-extra %}
-    <meta property="og:title" content="{{ work.title }}" />
-    <meta property="og:type" content="tv_show" />
-    <meta property="og:url" content="http://animeta.net{% url "work.views.detail" work.title %}" />
-    <meta property="og:image" content="http://animeta.net/static/animeta.gif" />
-    <meta property="og:site_name" content="animeta" />
-    <meta property="og:description" content="" />
-    <meta property="fb:app_id" content="153413084690553" />
-{% endblock %}
-
-{% block nav %}
-{{ block.super }}
-<div id="facebook-like"><div class="fb-like" data-send="false" data-layout="button_count" data-width="100" data-show-faces="false" data-font="segoe ui"></div></div>
-{% endblock %}
-
-{% block content %}
-<div id="info">
-<dl>
-    <dt>인기도</dt>
-    <dd>전체 {{ work.index.rank }}위, {{ work.index.record_count }}명이 기록 남김. <a href="{% url "work.views.list_users" work.title %}">자세히 보기 &rarr;</a></dd>
-
-{% if alt_titles %}
-    <dt>다른 제목</dt>
-    <dd>
-        {% for title in alt_titles %}{% if not forloop.first %}, {% endif %}{{ title }}{% endfor %}
-    </dd>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, target-densitydpi=medium-dpi">
+    <meta name="apple-mobile-web-app-capable" content="no">
+    <meta name="google-site-verification" content="dhlhxHlQ_wDcoxu7hcyfWoXOyD79pPryal6fVLUxLeg">
+    <meta property="og:title" content="{{ title }}">
+    <meta property="og:type" content="tv_show">
+    <meta property="og:url" content="http://animeta.net{% url "work.views.detail" title %}">
+    <meta property="og:site_name" content="animeta">
+    <meta property="og:description" content="">
+    <meta property="fb:app_id" content="153413084690553">
+    <script type="text/javascript">
+    var _gaq = [['_setAccount', 'UA-7500828-2'], ['_trackPageview']];
+    (function() {
+     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+</head>
+<body>
+<script>
+if (!document.createElementNS || !document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect)document.body.className+=' no-svg';
+</script>
+<div id="app">{{ html|safe }}</div>
+<script src="{{ STATIC_URL }}raven.min.js"></script>
+{% if not settings.DEBUG %}
+<script>
+Raven.config('http://fb3fd1fc77c94c4799d9fc7228260818@sentry.sapzil.org/3', {
+    //whitelistUrls: [/example\.com/]
+}).install();
+</script>
 {% endif %}
-</dl>
-
-<h2><a href="http://tvpot.daum.net/search/#service=clip&amp;q={{ work.title|urlencode }}">동영상</a></h2>
-<div id="videos">
-</div>
-</div>
-
-<div id="comments">
-<h2>기록</h2>
-<p class="episodes">
-    <span class="active">최신</span>
-{% for episode in episodes %}
-    &middot; <a href="{% url 'work.views.episode_detail' title=work.title ep=episode.number %}">{{ episode.number }}화</a>
-{% endfor %}
-</p>
-{% for history in comments %}
-    {% include "history.html" with show_user=1 %}
-{% endfor %}
-</div>
-{% endblock %}
-
-{% block js %}
 <script>
 var PreloadData = eval('({{ preload_data|escapejs }})');
 </script>
+<script src="//cdn.jsdelivr.net/es5.shim/2.1.0/es5-shim.min.js"></script>
+<script src="//cdn.jsdelivr.net/es5.shim/2.1.0/es5-sham.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}build/{{ asset_filenames.work }}"></script>
-{% endblock %}
+</body>
+</html>
