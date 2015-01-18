@@ -130,7 +130,7 @@ var VideoSearchResult = React.createClass({
     },
 
     _relayout(cb) {
-        var width = $(document).width();
+        var width = $(window).width();
         if (width <= 768)
             this.setState({itemsPerRow: 3}, cb);
         else if (width <= 960)
@@ -298,7 +298,7 @@ var WorkRoute = React.createClass({
         </Layout.Stack>;
     },
     _relayout() {
-        var width = $(document).width();
+        var width = $(window).width();
         var nextState = {showSidebar: width > 480};
         if (this.state.showSidebar != nextState.showSidebar)
             this.setState(nextState);

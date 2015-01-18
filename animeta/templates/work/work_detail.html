@@ -46,6 +46,9 @@ var PreloadData = eval('({{ preload_data|escapejs }})');
 </script>
 <script src="//cdn.jsdelivr.net/es5.shim/2.1.0/es5-shim.min.js"></script>
 <script src="//cdn.jsdelivr.net/es5.shim/2.1.0/es5-sham.min.js"></script>
+{% if asset_filenames.common %}
+<script type="text/javascript" src="{{ STATIC_URL }}build/{{ asset_filenames.common }}"></script>
+{% endif %}
 <script type="text/javascript" src="{{ STATIC_URL }}build/{{ asset_filenames.work }}"></script>
 </body>
 </html>
