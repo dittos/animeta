@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var webpack = require('webpack');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var clientDefinePlugin = new webpack.DefinePlugin({
     'process.env.CLIENT': JSON.stringify(true),
@@ -9,7 +10,8 @@ var clientDefinePlugin = new webpack.DefinePlugin({
 module.exports = config = {
     plugins: [
         versionMapPlugin,
-        clientDefinePlugin
+        clientDefinePlugin,
+        new ExtractTextPlugin('[name]-[hash].css')
     ],
     entry: {
         table_index: './frontend/js/table-index.react.js',
@@ -26,8 +28,8 @@ module.exports = config = {
         loaders: [
             { test: /\.js[x]?$/, loader: 'jsx-loader?harmony' },
             { test: /\.less$/, loader: 'style!css!autoprefixer!less' },
-            { test: /\.(png|gif|svg)$/, loader: 'url' },
-            { test: /\.(eot|woff|ttf|otf)$/, loader: 'file' }
+            { test: /\.less\?extract$/, loader: ExtractTextPlugin.extract('style', 'css!autoprefixer!less') },
+            { test: /\.(png|gif|svg)$/, loader: 'url' }
         ]
     }
 };
@@ -52,7 +54,8 @@ if (process.env.NODE_ENV == 'production') {
             var assets = stats.toJson().assetsByChunkName;
             for (var key in assets) {
                 if (assets.hasOwnProperty(key) && Array.isArray(assets[key])) {
-                    assets[key] = assets[key][0];
+                    if (assets[key].length === 1)
+                        assets[key] = assets[key][0];
                 }
             }
             var source = 'ASSET_FILENAMES = ' + JSON.stringify(assets);

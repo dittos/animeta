@@ -11,7 +11,7 @@ var Layout = require('./Layout');
 var GlobalHeader = require('./GlobalHeader');
 var util = require('./util');
 if (process.env.CLIENT) {
-    require('../less/work.less');
+    require('../less/work.less?extract');
 }
 
 function fixTitle(title) {
