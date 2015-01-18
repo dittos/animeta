@@ -4,6 +4,7 @@ import urllib
 import requests
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
+from django.core.urlresolvers import reverse
 from django.views.generic import ListView
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -63,7 +64,7 @@ def detail(request, title):
 
 def episode_detail(request, title, ep):
     ep = int(ep)
-    return detail(request, title)
+    return redirect(reverse('work.views.detail', kwargs={'title': title}) + '#/ep/%s/' % ep)
 
 def list_users(request, title):
     work = _get_work(title)

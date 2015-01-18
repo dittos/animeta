@@ -381,19 +381,20 @@ var routes = <Route handler={App}>
 </Route>;
 
 if (process.env.CLIENT) {
-    var basePath = '/works/' + encodeURIComponent(PreloadData.title) + '/';
-    var path = location.pathname;
-    if (path != basePath) {
-        // /works/blahblah/ep/3/ -> /works/blahblah/#/ep/3/
-        if (path.indexOf(basePath) === 0)
-            path = path.substring(workPath.length);
-        location.href = basePath + '#' + path;
-    } else {
-        Router.run(routes, Router.HashLocation, (Handler) => {
-            React.render(<Handler PreloadData={global.PreloadData} />,
-                document.getElementById('app'));
-        });
+    var initialLoad = true;
+
+    function onPageTransition() {
+        if (!initialLoad) {
+            _gaq.push(['_trackPageview']);
+        }
+        initialLoad = false;
     }
+
+    Router.run(routes, Router.HashLocation, (Handler) => {
+        onPageTransition();
+        React.render(<Handler PreloadData={global.PreloadData} />,
+            document.getElementById('app'));
+    });
 } else {
     module.exports = routes;
 }
