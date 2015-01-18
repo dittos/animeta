@@ -67,6 +67,7 @@ if (process.env.NODE_ENV == 'production') {
         commonsPlugin
     ].concat(config.plugins);
 
+    config.devtool = 'source-map';
     config.output.filename = '[name]-[hash].js';
 } else {
     console.log('* Development Build');
