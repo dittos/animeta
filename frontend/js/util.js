@@ -54,10 +54,6 @@ module.exports.debounce = function(fn, t) {
     };
 };
 
-module.exports.deepCopy = function(obj) {
-    return $.extend(/*deep:*/ true, {}, obj);
-};
-
 module.exports.plusOne = function(val) {
     var matches = val.match(/(\d+)[^\d]*$/);
     if (!matches)

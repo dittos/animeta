@@ -1,3 +1,4 @@
+@import "base.less";
 @page-width: 962px;
 @header-height: 60px;
 @grid-spacing: 10px;
@@ -12,30 +13,14 @@
     }
 }
 
-// Override default styles {
-
-#content {
-    width: auto;
-    padding: 0;
-}
-
-#nav {
-    display: none;
-}
-
-.footer {
-    margin-bottom: 100px;
-}
-
-// }
-
-.anitable-container {
+.table-container {
     color: #444;
     font-size: 14px;
     line-height: 1;
     max-width: @page-width;
     margin: 20px auto;
     padding: 0 @grid-spacing;
+    padding-bottom: 100px;
 
     a {
         color: #666;

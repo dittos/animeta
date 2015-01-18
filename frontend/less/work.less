@@ -1,5 +1,4 @@
-@color-main: #4bb000;
-@z-overlay: 1000;
+@import "base.less";
 
 .mixin-load-more {
     position: relative;
@@ -22,138 +21,6 @@
     }
     &:hover {
         color: #999;
-    }
-}
-
-body {
-    margin: 0;
-	font-family: "Helvetica Neue",
-        "HiraKakuProN-W3","Hiragino Sans GB W3",
-        "Apple SD Gothic Neo","Malgun Gothic",
-        sans-serif;
-}
-
-.header {
-    .header-inner {
-        padding: 16px 0;
-        position: relative; // this is needed by .menu-user
-    }
-
-    .logo {
-        float: left;
-        a {
-            display: block;
-            width: 122px;
-            height: 24px;
-            text-indent: -9999px;
-            background-image: url('../img/animeta.svg');
-            background-size: 122px 24px;
-            background-repeat: no-repeat;
-            overflow: hidden;
-        }
-    }
-
-    .global-search {
-        float: left;
-        margin-left: 20px;
-    }
-
-    .account {
-        line-height: 24px;
-    }
-
-    .btn {
-        display: inline-block;
-        line-height: 1;
-        border: 1px solid #666;
-        padding: 8px - 1px 16px - 1px;
-        border-radius: 5px;
-        color: #444;
-        text-decoration: none;
-        font-size: 13px;
-        margin-left: 8px;
-    }
-
-    .btn-signup {
-        border-color: @color-main;
-        background: @color-main;
-        color: #fff;
-    }
-
-    .btn-user {
-        .fa-user { margin-right: 5px; }
-        .fa-caret-down { margin-left: 10px; }
-    }
-
-    .menu-user {
-        position: absolute;
-        z-index: @z-overlay;
-        right: 0;
-        margin-top: 8px;
-        margin-right: 0 !important; // XXX: kill grid margin
-        background-color: #fff;
-        border: 1px solid #ccc;
-        width: 140px;
-
-        a {
-            line-height: 1;
-            padding: 10px;
-            display: block;
-            color: #666;
-            text-decoration: none;
-            font-size: 14px;
-            &:hover {
-                background-color: #f4f4f4;
-            }
-        }
-    }
-}
-.no-svg .logo a {
-    background-image: url('../img/animeta.gif');
-}
-
-.global-search {
-    width: 200px;
-    font-size: 14px;
-
-    .twitter-typeahead {
-        width: 100%;
-    }
-
-    .tt-hint, .tt-input {
-        padding: 5px;
-        border: 1px solid #bbb;
-        width: 100%;
-        -moz-box-sizing: border-box;
-        -webkit-box-sizing: border-box;
-        box-sizing: border-box;
-    }
-}
-
-.tt-dropdown-menu {
-    display: block;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    max-height: 300px;
-    width: 300px;
-    overflow-y: auto;
-    margin-top: -1px;
-}
-
-.tt-suggestion {
-    display: block;
-    padding: 5px !important;
-    cursor: pointer;
-
-    .count {
-        font-size: 11px;
-        color: #999;
-        white-space: nowrap;
-        display: inline-block;
-    }
-
-    &.tt-cursor {
-        background-color: #f4f4f4;
     }
 }
 
@@ -390,29 +257,7 @@ body {
     }
 }
 
-// Grids
-
-@grid-spacing: 10px;
-@grid-width: 60px;
-@grid-columns: 12;
-
-.grid-column (@size) {
-    padding-left: @grid-spacing;
-    padding-right: @grid-spacing;
-    box-sizing: border-box;
-    width: percentage(@size / @grid-columns);
-}
-
-.generate-columns(@prefix, @n, @i: 1) when (@i =< @n) {
-    .grid-@{prefix}-@{i} {
-        .grid-column(@i);
-    }
-    .generate-columns(@prefix, @n, (@i + 1));
-}
-
 @media (max-width: 480px) {
-    .generate-columns(column-sm, 12);
-
     .work-header {
         text-align: center;
         padding: 40px 0;
@@ -421,32 +266,14 @@ body {
         }
     }
 
-    .work-sidebar,
-    .global-search {
+    .work-sidebar {
         display: none;
     }
 }
 
 @media (min-width: 481px) {
-    .generate-columns(column, 12);
-
     .work-header {
         // Suppress background image
         background: #333 !important;
-    }
-}
-
-@media (min-width: 481px) and (max-width: 999px) {
-    .grid-row {
-        margin-left: 10px;
-        margin-right: 10px;
-    }
-}
-
-@media (min-width: 980px) {
-    .grid-row {
-        margin-left: auto;
-        margin-right: auto;
-        width: (@grid-spacing * 2 + @grid-width) * @grid-columns;
     }
 }

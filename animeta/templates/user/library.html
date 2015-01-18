@@ -1,14 +1,7 @@
-{% extends base %}
+{% extends 'base_js.html' %}
 
 {% block title %}{{ owner.username }} 사용자 - 애니메타{% endblock %} 
 
-{% block stylesheets %}
-<!-- exclude style.css -->
-{% endblock %}
-
 {% block js %}
-<script>
-var PreloadData = eval('({{ preload_data|escapejs }})');
-</script>
 <script src="{{ STATIC_URL }}build/{{ asset_filenames.library.js }}"></script>
 {% endblock %}

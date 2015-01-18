@@ -1,4 +1,5 @@
 /* global PreloadData */
+var $ = require('jquery');
 require('object.assign').shim();
 var React = require('react/addons');
 var Router = require('react-router');
@@ -6,6 +7,8 @@ var {Link} = Router;
 var RecordActions = require('./RecordActions');
 var CategoryActions = require('./CategoryActions');
 var PostStore = require('./PostStore');
+var Layout = require('./Layout');
+var GlobalHeader = require('./GlobalHeader');
 require('../less/library.less');
 
 var App = React.createClass({
@@ -16,20 +19,23 @@ var App = React.createClass({
         var canEdit = PreloadData.current_user && PreloadData.current_user.id == user.id;
         var key = this.getParams().recordId;
         return <div>
-            <div className="nav-user">
-                <h1><Link to="records">{user.name} 사용자</Link></h1>
-                <p>
-                    <Link to="records">작품 목록</Link>
-                    <Link to="history">기록 내역</Link>
-                    {canEdit && <Link to="add-record" className="add-record">작품 추가</Link>}
-                </p>
-            </div>
-            <div className="user-content">
-                <Router.RouteHandler
-                    user={user}
-                    canEdit={canEdit}
-                    key={key} />
-            </div>
+            <GlobalHeader currentUser={PreloadData.current_user} />
+            <Layout.CenteredFullWidth className="user-container">
+                <div className="nav-user">
+                    <h1><Link to="records">{user.name} 사용자</Link></h1>
+                    <p>
+                        <Link to="records">작품 목록</Link>
+                        <Link to="history">기록 내역</Link>
+                        {canEdit && <Link to="add-record" className="add-record">작품 추가</Link>}
+                    </p>
+                </div>
+                <div className="user-content">
+                    <Router.RouteHandler
+                        user={user}
+                        canEdit={canEdit}
+                        key={key} />
+                </div>
+            </Layout.CenteredFullWidth>
         </div>;
     }
 });
@@ -80,7 +86,7 @@ function runApp() {
     CategoryActions.loadCategories(PreloadData.owner.categories);
     Router.run(routes, locationStrategy, (Handler) => {
         onPageTransition();
-        React.render(<Handler />, document.getElementById('content'));
+        React.render(<Handler />, document.getElementById('app'));
     });
 }
 

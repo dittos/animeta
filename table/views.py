@@ -1,23 +1,26 @@
 import json
 from django.shortcuts import render, redirect
 from table import models
+from search.models import WorkPeriodIndex
+from api import serializers
 
 CURRENT_PERIOD = models.Period.parse('2014Q4')
 
 def index(request):
-    return redirect('table-period', period=CURRENT_PERIOD)
-    data = models.load_data(CURRENT_PERIOD)
-    data = models.annotate_statuses(data, request.user)
-    return render(request, 'table/index.html', {
-        'period': CURRENT_PERIOD,
-        'data': json.dumps(data),
-    })
+    return _render(request, 'table/index.html', CURRENT_PERIOD)
 
 def get_period(request, period):
     period = models.Period.parse(period)
-    data = models.load_data(period)
-    data = models.annotate_statuses(data, request.user)
-    return render(request, 'table/period.html', {
+    return _render(request, 'table/period.html', period)
+
+def _render(request, template_name, period):
+    indexes = WorkPeriodIndex.objects.filter(period=str(period)).all()
+    data = [serializers.serialize_work(index.work, request.user) for index in indexes]
+    return render(request, template_name, {
         'period': period,
-        'data': json.dumps(data),
+        'preload_data': json.dumps({
+            'period': str(period),
+            'current_user': serializers.serialize_user(request.user, request.user) if request.user.is_authenticated() else None,
+            'schedule': data
+        }),
     })

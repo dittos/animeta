@@ -11,7 +11,7 @@ module.exports = config = {
     plugins: [
         versionMapPlugin,
         clientDefinePlugin,
-        new ExtractTextPlugin('[name]-[hash].css')
+        new ExtractTextPlugin('[name]-[contenthash].css')
     ],
     entry: {
         table_index: './frontend/js/table-index.react.js',
@@ -94,7 +94,7 @@ if (process.env.NODE_ENV == 'production') {
         es3: true,
         undef: true,
         unused: true,
-        predef: ['$', '_gaq', 'alert'],
+        predef: ['_gaq', 'alert'],
 
         // Warnings
         "-W058": false, // new A;

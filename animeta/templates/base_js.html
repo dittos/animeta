@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}애니메타{% endblock %}</title>
+
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="{{ STATIC_URL }}apple-touch-icon-120x.png"><!-- iPhone @2x -->
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="{{ STATIC_URL }}apple-touch-icon-152x.png"><!-- iPad @2x -->
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="{{ STATIC_URL }}apple-touch-icon-180x.png"><!-- iPhone @3x -->
+    <link rel="icon" sizes="196x196" href="{{ STATIC_URL }}touch-icon-192x.png"><!-- Android -->
+    <link rel="shortcut icon" href="{{ STATIC_URL }}favicon.ico">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, target-densitydpi=medium-dpi">
+    <meta name="apple-mobile-web-app-capable" content="no">
+    <meta name="google-site-verification" content="dhlhxHlQ_wDcoxu7hcyfWoXOyD79pPryal6fVLUxLeg">
+    <script type="text/javascript">
+    var _gaq = [['_setAccount', 'UA-7500828-2'], ['_trackPageview']];
+    (function() {
+     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    {% block head-extra %}{% endblock %}
+</head>
+<body>
+<script>
+if (!document.createElementNS || !document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect)document.body.className+=' no-svg';
+</script>
+<div id="app">{{ html|safe }}</div>
+<script src="{{ STATIC_URL }}raven.min.js"></script>
+{% if not settings.DEBUG %}
+<script>
+Raven.config('http://fb3fd1fc77c94c4799d9fc7228260818@sentry.sapzil.org/3', {
+    //whitelistUrls: [/example\.com/]
+}).install();
+</script>
+{% endif %}
+<script>
+var PreloadData = eval('({{ preload_data|escapejs }})');
+</script>
+<script src="//cdn.jsdelivr.net/es5.shim/2.1.0/es5-shim.min.js"></script>
+<script src="//cdn.jsdelivr.net/es5.shim/2.1.0/es5-sham.min.js"></script>
+{% if asset_filenames.common %}
+<script type="text/javascript" src="{{ STATIC_URL }}build/{{ asset_filenames.common.js }}"></script>
+{% endif %}
+{% block js %}{% endblock %}
+</body>
+</html>

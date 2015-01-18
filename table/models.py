@@ -112,27 +112,3 @@ def next_schedule(date):
     while date + thres < datetime.datetime.now():
         date = date + 7 * day
     return date
-
-def annotate_statuses(items, user):
-    data = {'items': items, 'contains_kr_schedule': False}
-    for item in items:
-        work = TitleMapping.objects.get(title=item['title']).work
-        item['work_id'] = work.id
-        item['record'] = None
-        if user.is_authenticated():
-            try:
-                record = user.record_set.get(work=work)
-                item['record'] = {
-                    'id': record.id,
-                    'status': record.status,
-                    'status_type': record.status_type.name,
-                }
-            except Record.DoesNotExist:
-                pass
-        if item['record']:
-            item['record_count'] = work.record_set.count()
-        else:
-            item['record_count'] = work.index.record_count
-        if 'kr' in item.get('schedule', {}):
-            data['contains_kr_schedule'] = bool(item['schedule']['kr']['date'])
-    return data

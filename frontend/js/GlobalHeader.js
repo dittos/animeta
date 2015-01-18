@@ -8,7 +8,6 @@ if (process.env.CLIENT) {
 }
 var React = require('react');
 var Layout = require('./Layout');
-var Grid = require('./Grid');
 
 var DropdownUserMenu = React.createClass({
     componentDidMount() {
@@ -100,7 +99,10 @@ var Search = React.createClass({
 
 var GlobalHeader = React.createClass({
     getInitialState() {
-        return {showMenu: false};
+        return {
+            showMenu: false,
+            showUserMenu: false
+        };
     },
     render() {
         return <Layout.CenteredFullWidth className="header">
@@ -111,10 +113,20 @@ var GlobalHeader = React.createClass({
     },
     _renderLeft() {
         return <div>
+            <div className={'menu-toggle ' + (this.state.showMenu ? 'active' : '')}
+                onClick={this._toggleMenu}>
+                <i className="fa fa-bars" />
+            </div>
             <div className="logo">
                 <a href="/">animeta</a>
             </div>
             <Search />
+            <div className="menu-global"
+                style={this.state.showMenu ? {display: 'block'} : {}}>
+                <a href="/timeline/">최근 감상평</a>
+                <a href="/charts/works/weekly/">순위</a>
+                <a href="/table/">시간표</a>
+            </div>
         </div>;
     },
     _renderRight() {
@@ -122,14 +134,14 @@ var GlobalHeader = React.createClass({
         if (user) {
             return <div className="account">
                 <a href="/library/" className="btn btn-user"
-                    onClick={this._toggleMenu}>
+                    onClick={this._toggleUserMenu}>
                     <i className="fa fa-user" />
                     {user.name}
                     <i className="fa fa-caret-down" />
                 </a>
-                {this.state.showMenu &&
+                {this.state.showUserMenu &&
                     <DropdownUserMenu
-                        onClose={() => this.setState({showMenu: false})} />}
+                        onClose={() => this.setState({showUserMenu: false})} />}
             </div>;
         } else {
             return <div className="account">
@@ -138,8 +150,11 @@ var GlobalHeader = React.createClass({
             </div>;
         }
     },
-    _toggleMenu(event) {
+    _toggleUserMenu(event) {
         event.preventDefault();
+        this.setState({showUserMenu: !this.state.showUserMenu});
+    },
+    _toggleMenu() {
         this.setState({showMenu: !this.state.showMenu});
     }
 });

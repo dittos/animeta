@@ -13,6 +13,10 @@ class WorkTitleIndex(models.Model):
     key = models.CharField(max_length=255, db_index=True)
     work = models.ForeignKey(WorkIndex)
 
+class WorkPeriodIndex(models.Model):
+    period = models.CharField(max_length=6, db_index=True)
+    work = models.ForeignKey(Work)
+
 FIRSTS = u'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ'
 MIDDLES = (u'ㅏ', u'ㅐ', u'ㅑ', u'ㅒ', u'ㅓ', u'ㅔ', u'ㅕ', u'ㅖ', u'ㅗ', u'ㅗㅏ', u'ㅗㅐ', u'ㅗㅣ', u'ㅛ', u'ㅜ', u'ㅜㅓ', u'ㅜㅔ', u'ㅜㅣ', u'ㅠ', u'ㅡ', u'ㅡㅣ', u'ㅣ')
 LASTS = (u'', u'ㄱ', u'ㄲ', u'ㄱㅅ', u'ㄴ', u'ㄴㅈ', u'ㄴㅎ', u'ㄷ', u'ㄹ', u'ㄹㄱ', u'ㄹㅁ', u'ㄹㅂ', u'ㄹㅅ', u'ㄹㅌ', u'ㄹㅍ', u'ㄹㅎ', u'ㅁ', u'ㅂ', u'ㅂㅅ', u'ㅅ', u'ㅆ', u'ㅇ', u'ㅈ', u'ㅊ', u'ㅋ', u'ㅌ', u'ㅍ', u'ㅎ')

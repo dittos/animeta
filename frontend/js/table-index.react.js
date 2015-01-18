@@ -1,21 +1,16 @@
 /* global PreloadData */
+require('object.assign').shim();
+var _ = require('lodash');
+var $ = require('jquery');
 var React = require('react');
 var util = require('./util');
+var Layout = require('./Layout');
+var GlobalHeader = require('./GlobalHeader');
 var PositionSticky = require('./PositionSticky');
 var LazyImageView = require('./LazyImage');
 require('../less/table-index.less');
 
 var SCROLL_DEBOUNCE = 20;
-
-var appData = getInitialData();
-
-function getInitialData() {
-    return {
-        period: PreloadData.period,
-        currentUserName: PreloadData.username,
-        items: PreloadData.schedule.items
-    };
-}
 
 function getWorkURL(item) {
     return '/works/' + encodeURIComponent(item.title) + '/';
@@ -73,7 +68,7 @@ var Item = React.createClass({
         }
         return (
             <div className="schedule-item">
-                <div className="item-poster"><LazyImageView src={item.image_url} /></div>
+                <div className="item-poster"><LazyImageView src={item.metadata.image_url} /></div>
                 <div className="item-schedule">
                     <span className="item-schedule-time">
                         {WEEKDAYS[item.schedule.date.getDay()]}{' '}
@@ -95,8 +90,8 @@ function groupItemsByWeekday(items, preferKR) {
         groups.push({index: i, title: WEEKDAYS[i], items: []});
     }
     items.forEach(item => {
-        item = util.deepCopy(item);
-        item.schedule = item.schedule[preferKR ? 'kr' : 'jp'];
+        item = _.cloneDeep(item);
+        item.schedule = item.metadata.schedule[preferKR ? 'kr' : 'jp'];
         if (item.schedule && item.schedule.date) {
             var date = new Date(item.schedule.date);
             item.schedule.date = date;
@@ -124,21 +119,24 @@ var Schedule = React.createClass({
     },
 
     render() {
-        var groups = groupItemsByWeekday(this.props.items, this.state.preferKR);
+        var groups = groupItemsByWeekday(this.props.schedule, this.state.preferKR);
         var i = this.state.focusedIndex;
         return (
-            <div className="schedule-container">
-                <PositionSticky ref="nav">
-                    <Nav focusedIndex={i} onDaySelect={this.handleDaySelect}
-                        preferKR={this.state.preferKR} onCountrySelect={this.handleCountrySelect} />
-                </PositionSticky>
-                <div className="schedule-content" ref="content">
-                {groups.map(group => 
-                    <div className="schedule-day" ref={'group' + group.index}>
-                        {group.items.map(item => <Item key={item.id} item={item} />)}
+            <div>
+                <GlobalHeader currentUser={PreloadData.current_user} />
+                <Layout.CenteredFullWidth className="schedule-container">
+                    <PositionSticky ref="nav">
+                        <Nav focusedIndex={i} onDaySelect={this.handleDaySelect}
+                            preferKR={this.state.preferKR} onCountrySelect={this.handleCountrySelect} />
+                    </PositionSticky>
+                    <div className="schedule-content" ref="content">
+                    {groups.map(group => 
+                        <div className="schedule-day" ref={'group' + group.index}>
+                            {group.items.map(item => <Item key={item.id} item={item} />)}
+                        </div>
+                    )}
                     </div>
-                )}
-                </div>
+                </Layout.CenteredFullWidth>
             </div>
         );
     },
@@ -181,4 +179,5 @@ var Schedule = React.createClass({
     }, SCROLL_DEBOUNCE)
 });
 
-React.render(<Schedule {...appData} />, $('.anitable-container')[0]);
+React.render(<Schedule {...PreloadData} />,
+    document.getElementById('app'));

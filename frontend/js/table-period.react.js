@@ -1,7 +1,10 @@
 /* global PreloadData */
+require('object.assign').shim();
+var _ = require('lodash');
+var $ = require('jquery');
 var React = require('react');
 var util = require('./util');
-var BaseStore = require('./BaseStore');
+var GlobalHeader = require('./GlobalHeader');
 var LazyImageView = require('./LazyImage');
 require('../less/table-period.less');
 
@@ -14,12 +17,12 @@ function nullslast(val) {
 }
 
 var scheduleComparator = util.keyComparator((item) => 
-    nullslast(item.schedule.jp && item.schedule.jp.date)
+    nullslast(item.metadata.schedule.jp && item.metadata.schedule.jp.date)
 );
 
 var preferKRScheduleComparator = util.keyComparator((item) =>
-    nullslast(item.schedule.kr && item.schedule.kr.date ||
-        item.schedule.jp && item.schedule.jp.date)
+    nullslast(item.metadata.schedule.kr && item.metadata.schedule.kr.date ||
+        item.metadata.schedule.jp && item.metadata.schedule.jp.date)
 );
 
 var recordCountComparator = util.keyComparator((item) => -item.record_count);
@@ -30,37 +33,49 @@ var comparatorMap = {
     'recordCount': recordCountComparator
 };
 
-class ScheduleStore extends BaseStore {
-    constructor(initialData) {
-        super();
-        this._items = initialData.items;
+var scheduleStore = {
+    addChangeListener(callback) {
+        this._listeners.push(callback);
+    },
+
+    removeChangeListener(callback) {
+        this._listeners = this._listeners.filter(cb => cb != callback);
+    },
+
+    emitChange(data) {
+        this._listeners.forEach(callback => callback(data));
+    },
+
+    initialize(initialData) {
+        this._listeners = [];
+        this._items = initialData;
         this._ordering = window.localStorage['animeta.table.' + PreloadData.period + '.ordering'] || 'schedule';
-        this._containsKRSchedule = initialData.contains_kr_schedule;
+        this._containsKRSchedule = _.some(initialData, i => i.metadata.schedule.kr && i.metadata.schedule.kr.date);
         this._sort();
-    }
+    },
 
     getAllItems() {
         return this._items;
-    }
+    },
 
     getOrdering() {
         return this._ordering;
-    }
+    },
 
     setOrdering(ordering) {
         this._ordering = ordering;
         window.localStorage['animeta.table.' + PreloadData.period + '.ordering'] = ordering;
         this._sort();
         this.emitChange();
-    }
+    },
 
     _sort() {
         this._items.sort(comparatorMap[this._ordering]);
-    }
+    },
 
     containsKRSchedule() {
         return this._containsKRSchedule;
-    }
+    },
 
     favoriteItem(item) {
         return $.post('/api/v1/records', {
@@ -77,9 +92,8 @@ class ScheduleStore extends BaseStore {
             });
         });
     }
-}
-
-var scheduleStore = new ScheduleStore(PreloadData.schedule);
+};
+scheduleStore.initialize(PreloadData.schedule);
 
 function formatPeriod(period) {
     var parts = period.split('Q');
@@ -150,7 +164,7 @@ var ItemView = React.createClass({
             <div className="item">
                 <div className="item-inner">
                     <div className="item-poster-wrap">
-                        <LazyImageView src={item.image_url} width={233} height={318} className="item-poster" />
+                        <LazyImageView src={item.metadata.image_url} width={233} height={318} className="item-poster" />
                     </div>
                     <div dangerouslySetInnerHTML={{__html: ItemView.template(this.getTemplateContext())}} />
                     <div className="item-actions">
@@ -164,7 +178,7 @@ var ItemView = React.createClass({
     },
 
     handleFavButtonClick() {
-        if (!PreloadData.username) {
+        if (!PreloadData.current_user) {
             alert('로그인 후 관심 등록할 수 있습니다.');
             location.href = getLoginURL();
             return;
@@ -179,7 +193,7 @@ var ItemView = React.createClass({
     },
 
     getTemplateContext() {
-        var context = util.deepCopy(this.props.item);
+        var context = _.cloneDeep(this.props.item.metadata);
         if (context.studios)
             context.studios = context.studios.join(', ');
         if (context.source)
@@ -256,7 +270,7 @@ var AppView = React.createClass({
 
     componentDidMount() {
         scheduleStore.addChangeListener(this._onChange);
-        if (!PreloadData.username) {
+        if (!PreloadData.current_user) {
             this.refs.notification.show([
                 '관심 등록은 로그인 후 가능합니다. ',
                 <a href={getLoginURL()} className="btn btn-login">로그인</a>
@@ -271,16 +285,18 @@ var AppView = React.createClass({
     render() {
         return (
             <div>
-                <HeaderView period={this.props.period}
-                    ordering={this.state.ordering}
-                    excludeKR={this.state.excludeKR} />
+                <GlobalHeader currentUser={PreloadData.current_user} />
+                <div className="table-container">
+                    <HeaderView period={this.props.period}
+                        ordering={this.state.ordering}
+                        excludeKR={this.state.excludeKR} />
 
-                <div className="items">
-                {this.state.items.map((item) =>
-                    <ItemView item={item} key={item.id} />
-                )}
+                    <div className="items">
+                    {this.state.items.map((item) =>
+                        <ItemView item={item} key={item.id} />
+                    )}
+                    </div>
                 </div>
-
                 <NotificationView ref="notification" />
             </div>
         );
@@ -294,4 +310,5 @@ var AppView = React.createClass({
     }
 });
 
-React.render(<AppView period={PreloadData.period} />, $('.anitable-container')[0]);
+React.render(<AppView period={PreloadData.period} />,
+    document.getElementById('app'));

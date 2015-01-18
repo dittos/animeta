@@ -1,4 +1,5 @@
 /* global initTypeahead */
+var $ = require('jquery');
 var React = require('react/addons');
 var Router = require('react-router');
 var RecordActions = require('./RecordActions');

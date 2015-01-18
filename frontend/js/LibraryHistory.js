@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var React = require('react/addons');
 var TimeAgo = require('./TimeAgo');
 var util = require('./util');

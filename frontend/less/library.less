@@ -1,8 +1,25 @@
-@page-width: 960px;
-@color-main: #4bb000;
+@import "base.less";
 
-#nav { display: none; }
-#content { padding-top: 0.5em; }
+.user-container {
+    padding: 16px 0;
+    font-size: 14px;
+
+    a {
+        color: @color-main;
+    }
+}
+
+.notice-animetable {
+    font-size: 1.1em;
+    border-top: 1px solid #7a0;
+    padding: 1em 0;
+
+    a {
+        font-weight: bold;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+}
 
 .nav-user {
     overflow: hidden;
