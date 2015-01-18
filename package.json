@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "dependencies": {
     "flux": "^2.0.1",
-    "font-awesome": "^4.2.0",
     "jquery": "^1.11.2",
     "lodash": "^2.4.1",
     "moment": "^2.8.2",

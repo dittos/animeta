@@ -12,7 +12,6 @@ var GlobalHeader = require('./GlobalHeader');
 var util = require('./util');
 if (process.env.CLIENT) {
     require('../less/work.less');
-    require('style!css!font-awesome/css/font-awesome.css');
 }
 
 function fixTitle(title) {

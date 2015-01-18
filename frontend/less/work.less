@@ -276,6 +276,8 @@ body {
             text-decoration: none;
             color: #666;
             white-space: nowrap;
+            // Added for nowrap (see http://stackoverflow.com/questions/21198456/text-doesnt-wrap-properly-between-elements-having-white-space-nowrap)
+            display: inline-block;
             &.recent, &.has-post {
                 font-weight: bold;
             }
