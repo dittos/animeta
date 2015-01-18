@@ -1,9 +1,11 @@
 var _ = require('lodash');
 var $ = require('jquery');
-var _jQuery = global.jQuery;
-global.jQuery = $;
-require('typeahead.js');
-global.jQuery = _jQuery;
+if (process.env.CLIENT) {
+    var _jQuery = global.jQuery;
+    global.jQuery = $;
+    require('typeahead.js');
+    global.jQuery = _jQuery;
+}
 var React = require('react');
 var Layout = require('./Layout');
 var Grid = require('./Grid');

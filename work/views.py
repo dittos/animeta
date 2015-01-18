@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import urllib
+import requests
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import ListView
@@ -40,14 +41,24 @@ def _get_chart():
 
 def detail(request, title):
     work = _get_work(title)
+    preload_data = json.dumps({
+        'title': title,
+        'work': serializers.serialize_work(work, request.user),
+        'current_user': serializers.serialize_user(request.user, request.user) if request.user.is_authenticated() else None,
+        'daum_api_key': settings.DAUM_API_KEY,
+        'chart': _get_chart(),
+    })
+    try:
+        resp = requests.post(settings.RENDER_BACKEND_URL,
+            data=preload_data,
+            timeout=settings.RENDER_BACKEND_TIMEOUT)
+        html = resp.content
+    except Exception as e:
+        html = '<!-- Render server not responding: %s -->' % e
     return render(request, "work/work_detail.html", {
         'title': title,
-        'preload_data': json.dumps({
-            'title': title,
-            'current_user': serializers.serialize_user(request.user, request.user) if request.user.is_authenticated() else None,
-            'daum_api_key': settings.DAUM_API_KEY,
-            'chart': _get_chart(),
-        })
+        'preload_data': preload_data,
+        'html': html,
     })
 
 def episode_detail(request, title, ep):

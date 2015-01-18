@@ -7,6 +7,7 @@
     "jquery": "^1.11.2",
     "lodash": "^2.4.1",
     "moment": "^2.8.2",
+    "node-jsx": "^0.12.4",
     "object.assign": "^1.0.1",
     "react": "^0.12.0",
     "react-router": "^0.11.6",

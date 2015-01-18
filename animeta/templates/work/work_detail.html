@@ -8,6 +8,7 @@
 <script>
 if (!document.createElementNS || !document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect)document.body.className+=' no-svg';
 </script>
+<div id="app">{{ html|safe }}</div>
 <script>
 var PreloadData = eval('({{ preload_data|escapejs }})');
 </script>

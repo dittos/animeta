@@ -2,9 +2,14 @@ var fs = require('fs');
 var path = require('path');
 var webpack = require('webpack');
 
+var clientDefinePlugin = new webpack.DefinePlugin({
+    'process.env.CLIENT': JSON.stringify(true),
+});
+
 module.exports = config = {
     plugins: [
-        versionMapPlugin
+        versionMapPlugin,
+        clientDefinePlugin
     ],
     entry: {
         table_index: './frontend/js/table-index.react.js',

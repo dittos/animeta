@@ -10,8 +10,10 @@ var Grid = require('./Grid');
 var Layout = require('./Layout');
 var GlobalHeader = require('./GlobalHeader');
 var util = require('./util');
-require('../less/work.less');
-require('style!css!font-awesome/css/font-awesome.css');
+if (process.env.CLIENT) {
+    require('../less/work.less');
+    require('style!css!font-awesome/css/font-awesome.css');
+}
 
 function fixTitle(title) {
     // &lt;b&gt;...&lt;b&gt; -> <b>...</b>
@@ -141,8 +143,9 @@ var VideoSearchResult = React.createClass({
 var App = React.createClass({
     render() {
         return <div>
-            <GlobalHeader currentUser={PreloadData.current_user} />
-            <Router.RouteHandler title={PreloadData.title} />
+            <GlobalHeader currentUser={this.props.PreloadData.current_user} />
+            <Router.RouteHandler work={this.props.PreloadData.work}
+                chart={this.props.PreloadData.chart} />
         </div>;
     }
 });
@@ -171,7 +174,7 @@ var WeeklyChart = React.createClass({
     render() {
         return <div className="weekly-chart">
             <h3 className="section-title">주간 인기 작품</h3>
-            {PreloadData.chart.map(item =>
+            {this.props.data.map(item =>
                 <a href={util.getWorkURL(item.object.title)}
                     className="chart-item"
                     style={getCoverImageStyle(item.object)}>
@@ -203,18 +206,20 @@ var Sidebar = React.createClass({
                 {metadata.links.ann &&
                     <p><i className="fa fa-globe" /> <a href={metadata.links.ann} target="_blank">AnimeNewsNetwork (영문)</a></p>}
                 </div>
-                <WeeklyChart />
+                <WeeklyChart data={this.props.chart} />
             </div>;
         } else {
             return <div className="work-sidebar">
                 <div className="poster poster-empty">No Image</div>
-                <WeeklyChart />
+                <WeeklyChart data={this.props.chart} />
             </div>;
         }
     }
 });
 
 var modernGradientSupported = (() => {
+    if (!process.env.CLIENT)
+        return true;
     var el = document.createElement('div');
     el.style.cssText = 'background-image: linear-gradient(white,white);';
     return ('' + el.style.backgroundImage).indexOf('gradient') > -1;
@@ -234,25 +239,17 @@ function getCoverImageStyle(work) {
 var WorkRoute = React.createClass({
     mixins: [Router.State],
     getInitialState() {
-        return {work: null, showSidebar: true};
+        return {showSidebar: true};
     },
     componentDidMount() {
         this._relayout();
         $(window).on('resize', this._relayout);
-        $.get('/api/v2/works/_/' + encodeURIComponent(this.props.title)).then(work => {
-            this.setState({work: work});
-        });
     },
     componentWillUnmount() {
         $(window).off('resize', this._relayout);
     },
     render() {
-        if (!this.state.work) {
-            return <div>
-                <h1>{this.props.title}</h1>
-            </div>;
-        }
-        var work = this.state.work;
+        var work = this.props.work;
         return <Layout.Stack>
             <div>
                 <div className="work-header"
@@ -284,16 +281,18 @@ var WorkRoute = React.createClass({
                                 <Router.Link to="work-episode" params={{episode: ep.number}} className={ep.post_count > 0 ? 'has-post' : ''}>{ep.number}화</Router.Link>)}
                         </div>
                         <Router.RouteHandler
-                            work={this.state.work}
+                            work={work}
                             key={this.getParams().episode} />
-                        {!this.state.showSidebar && <WeeklyChart />}
+                        {!this.state.showSidebar &&
+                            <WeeklyChart data={this.props.chart} />}
                     </Grid.Column>
                 </Grid.Row>
             </div>
             {this.state.showSidebar &&
                 <Grid.Row>
                     <Grid.Column pull="right" size={3}>
-                        <Sidebar metadata={work.metadata} />
+                        <Sidebar metadata={work.metadata}
+                            chart={this.props.chart} />
                     </Grid.Column>
                 </Grid.Row>}
         </Layout.Stack>;
@@ -373,25 +372,28 @@ var WorkIndexRoute = React.createClass({
     }
 });
 
-var workPath = '/works/' + encodeURIComponent(PreloadData.title) + '/';
-var path = location.pathname;
-if (path != workPath) {
-    // /works/blahblah/ep/3/ -> /works/blahblah/#/ep/3/
-    if (path.indexOf(workPath) === 0)
-        path = path.substring(workPath.length);
-    location.href = workPath + '#' + path;
-}
-
 var {Route, DefaultRoute} = Router;
-var workPath = '/';
-var routes = (
-    <Route handler={App}>
-        <Route handler={WorkRoute} path={workPath}>
-            <DefaultRoute name="work-index" handler={WorkIndexRoute} />
-            <Route name="work-episode" handler={WorkIndexRoute} path={workPath + 'ep/:episode/'} />
-        </Route>
+var routes = <Route handler={App}>
+    <Route handler={WorkRoute} path="/">
+        <DefaultRoute name="work-index" handler={WorkIndexRoute} />
+        <Route name="work-episode" handler={WorkIndexRoute} path="/ep/:episode/" />
     </Route>
-);
-Router.run(routes, Router.HashLocation, (Handler) => {
-    React.render(<Handler />, document.body);
-});
+</Route>;
+
+if (process.env.CLIENT) {
+    var basePath = '/works/' + encodeURIComponent(PreloadData.title) + '/';
+    var path = location.pathname;
+    if (path != basePath) {
+        // /works/blahblah/ep/3/ -> /works/blahblah/#/ep/3/
+        if (path.indexOf(basePath) === 0)
+            path = path.substring(workPath.length);
+        location.href = basePath + '#' + path;
+    } else {
+        Router.run(routes, Router.HashLocation, (Handler) => {
+            React.render(<Handler PreloadData={global.PreloadData} />,
+                document.getElementById('app'));
+        });
+    }
+} else {
+    module.exports = routes;
+}
