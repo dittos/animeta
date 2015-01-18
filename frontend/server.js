@@ -37,4 +37,4 @@ http.createServer(function(req, res) {
             res.end();
         });
     });
-}).listen(process.env.PORT);
+}).listen(process.env.PORT, '127.0.0.1');
