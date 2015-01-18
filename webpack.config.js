@@ -34,6 +34,26 @@ module.exports = config = {
     }
 };
 
+function versionMapPlugin() {
+    this.plugin('done', function(stats) {
+        var assets = stats.toJson().assetsByChunkName;
+        Object.keys(assets).forEach(function (key) {
+            if (!Array.isArray(assets[key]))
+                assets[key] = [assets[key]];
+            var value = {};
+            assets[key].forEach(function (name) {
+                var ext = name.split('.').pop();
+                if (ext == 'map')
+                    return;
+                value[ext] = name;
+            });
+            assets[key] = value;
+        });
+        var source = 'ASSET_FILENAMES = ' + JSON.stringify(assets);
+        fs.writeFileSync(path.join(__dirname, 'animeta/assets.py'), source);
+    });
+}
+
 if (process.env.NODE_ENV == 'production') {
     console.log('* Production Build');
 
@@ -48,20 +68,6 @@ if (process.env.NODE_ENV == 'production') {
     var uglifyPlugin = new webpack.optimize.UglifyJsPlugin();
 
     var commonsPlugin = new webpack.optimize.CommonsChunkPlugin('common', 'common-[hash].js');
-
-    function versionMapPlugin() {
-        this.plugin('done', function(stats) {
-            var assets = stats.toJson().assetsByChunkName;
-            for (var key in assets) {
-                if (assets.hasOwnProperty(key) && Array.isArray(assets[key])) {
-                    if (assets[key].length === 1)
-                        assets[key] = assets[key][0];
-                }
-            }
-            var source = 'ASSET_FILENAMES = ' + JSON.stringify(assets);
-            fs.writeFileSync(path.join(__dirname, 'animeta/assets.py'), source);
-        });
-    }
 
     config.plugins = [
         moduleReplacePlugin,

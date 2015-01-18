@@ -27,7 +27,7 @@
      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
     })();
     </script>
-    <link href="{{ STATIC_URL }}build/{{ asset_filenames.work.1 }}" rel="stylesheet">
+    <link href="{{ STATIC_URL }}build/{{ asset_filenames.work.css }}" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body>
@@ -49,8 +49,8 @@ var PreloadData = eval('({{ preload_data|escapejs }})');
 <script src="//cdn.jsdelivr.net/es5.shim/2.1.0/es5-shim.min.js"></script>
 <script src="//cdn.jsdelivr.net/es5.shim/2.1.0/es5-sham.min.js"></script>
 {% if asset_filenames.common %}
-<script type="text/javascript" src="{{ STATIC_URL }}build/{{ asset_filenames.common }}"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}build/{{ asset_filenames.common.js }}"></script>
 {% endif %}
-<script type="text/javascript" src="{{ STATIC_URL }}build/{{ asset_filenames.work.0 }}"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}build/{{ asset_filenames.work.js }}"></script>
 </body>
 </html>
