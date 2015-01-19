@@ -16,6 +16,7 @@ def add_ranks(objects):
 @transaction.atomic
 def run():
     WorkIndex.objects.all().delete()
+    WorkPeriodIndex.objects.all().delete()
 
     objects = []
     period_objects = []
