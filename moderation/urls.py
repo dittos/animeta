@@ -1,5 +1,4 @@
 from django.conf.urls import patterns
-from moderation.views import MergeDashboardView
 
 urlpatterns = patterns('moderation.views',
     (r'^$', 'index'),
@@ -11,5 +10,4 @@ urlpatterns = patterns('moderation.views',
     (r'^works/(?P<work_id>\d+)/mappings/$', 'add_mapping'),
     (r'^mappings/(?P<mapping_id>\d+)/set_primary_title/$', 'set_primary_title'),
     (r'^mappings/(?P<mapping_id>\d+)/delete/$', 'delete_mapping'),
-    (r'^merge/$', MergeDashboardView.as_view()),
 )

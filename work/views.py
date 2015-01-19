@@ -1,33 +1,16 @@
 # -*- coding: utf-8 -*-
 import json
-import urllib
 import requests
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
 from django.core.urlresolvers import reverse
-from django.views.generic import ListView
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
 from work.models import Work, TitleMapping
-from record.models import Record, History, get_episodes
 from chart.models import weekly, PopularWorksChart
 from api import serializers
 
 def old_url(request, remainder):
     return redirect('work.views.detail', title=remainder)
-
-def merge_dashboard(request):
-    return redirect('/moderation/merge/')
-
-def _get_record(request, work):
-    if request.user.is_authenticated():
-        try:
-            record = request.user.record_set.get(work=work)
-        except:
-            record = None
-    else:
-        record = None
-    return record
 
 def _get_work(title):
     return get_object_or_404(TitleMapping, title=title).work
@@ -56,7 +39,7 @@ def detail(request, title):
         html = resp.content
     except Exception as e:
         html = '<!-- Render server not responding: %s -->' % e
-    return render(request, "work/work_detail.html", {
+    return render(request, "work.html", {
         'title': title,
         'preload_data': preload_data,
         'html': html,
@@ -67,13 +50,7 @@ def episode_detail(request, title, ep):
     return redirect(reverse('work.views.detail', kwargs={'title': title}) + '#/ep/%s/' % ep)
 
 def list_users(request, title):
-    work = _get_work(title)
-    return render(request, "work/users.html", {
-        'work': work,
-        'record': _get_record(request, work),
-        'records': work.record_set.select_related('user') \
-                .order_by('status_type', 'user__username')
-    })
+    return redirect(reverse('work.views.detail', kwargs={'title': title}))
 
 def video(request, title, provider, id):
     assert provider == 'tvpot'

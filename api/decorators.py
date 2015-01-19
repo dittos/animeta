@@ -4,7 +4,7 @@ import plistlib
 import functools
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
-from oauth_provider.decorators import oauth_required
+from django.contrib.auth.decorators import login_required
 from .models import get_user_from_token
 
 def fallback_encode_json(obj):
@@ -58,9 +58,5 @@ def api_auth_required(view):
             if not user:
                 return HttpResponse('Invalid session token.', status=403)
             request.user = user
-
-        if request.user.is_authenticated():
-            return view(request, *args, **kwargs)
-        else:
-            return oauth_required(view)(request, *args, **kwargs)
+        return login_required(view)(request, *args, **kwargs)
     return _inner

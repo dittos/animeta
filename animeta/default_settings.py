@@ -122,7 +122,6 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
     'django.contrib.messages',
-    'oauth_provider',
 
     'work',
     'record',

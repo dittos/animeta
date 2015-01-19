@@ -65,15 +65,3 @@ $('.global-search input').typeahead({highlight: true, hint: false}, {
         });
     }
 });
-
-function initTypeahead(selector) {
-    return $(selector).typeahead(null, {
-        source: cachingSource(debouncingSource(function (q, cb) {
-            $.getJSON('/search/suggest/', {q: q}, cb);
-        }, 200), 20),
-        displayKey: 'title',
-        templates: typeaheadTemplates
-    });
-}
-
-initTypeahead('.autocomplete');
