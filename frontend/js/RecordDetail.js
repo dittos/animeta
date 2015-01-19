@@ -1,5 +1,4 @@
 /* global PreloadData */
-/* global initTypeahead */
 /* global confirm */
 var React = require('react/addons');
 var Router = require('react-router');
@@ -11,10 +10,11 @@ var PostActions = require('./PostActions');
 var RecordStore = require('./RecordStore');
 var PostStore = require('./PostStore');
 var CategoryStore = require('./CategoryStore');
+var Typeahead = require('./Typeahead');
 
 var TitleEditView = React.createClass({
     componentDidMount() {
-        var typeahead = initTypeahead(this.refs.titleInput.getDOMNode());
+        var typeahead = Typeahead.initSuggest(this.refs.titleInput.getDOMNode());
         typeahead.on('keypress', event => {
             if (event.keyCode == 13) {
                 this._onSave();

@@ -1,13 +1,7 @@
-var _ = require('lodash');
 var $ = require('jquery');
-if (process.env.CLIENT) {
-    var _jQuery = global.jQuery;
-    global.jQuery = $;
-    require('typeahead.js');
-    global.jQuery = _jQuery;
-}
 var React = require('react');
 var Layout = require('./Layout');
+var Typeahead = require('./Typeahead');
 
 var DropdownUserMenu = React.createClass({
     componentDidMount() {
@@ -33,53 +27,20 @@ function openWork(title) {
     location.href = '/works/' + encodeURIComponent(title) + '/';
 }
 
-function cachingSource(source, maxSize) {
-    var cache = [];
-    return function(q, cb) {
-        for (var i = cache.length - 1; i >= 0; i--) {
-            if (cache[i][0] == q) {
-                cb(cache[i][1]);
-                return;
-            }
-        }
-        source(q, function(data) {
-            cache.push([q, data]);
-            if (cache.length >= maxSize) {
-                cache.shift();
-            }
-            cb(data);
-        });
-    };
-}
-
-var searchSource = cachingSource(_.throttle(function (q, cb) {
-    $.getJSON('/search/', {q: q}, cb);
-}, 200), 20);
-
-var typeaheadTemplates = {
-    suggestion: function(item) {
-        return React.renderToStaticMarkup(<div>
-            <span className="title">{item.title}</span>
-            {' '}
-            <span className="count">{item.n}명 기록</span>
-        </div>);
-    }
-};
-
 var Search = React.createClass({
     componentDidMount() {
-        $(this.refs.input.getDOMNode())
-            .typeahead({highlight: true, hint: false}, {
-                source: searchSource,
+        Typeahead.init(this.refs.input.getDOMNode(),
+            {highlight: true, hint: false}, {
+                source: Typeahead.searchSource,
                 displayKey: 'title',
-                templates: typeaheadTemplates
+                templates: Typeahead.templates
             }).on('typeahead:selected', function(event, item) {
                 openWork(item.title);
             }).on('keypress', function(event) {
                 if (event.keyCode == 13) {
                     var self = this;
                     var q = self.value;
-                    searchSource(q, function(data) {
+                    Typeahead.searchSource(q, function(data) {
                         if (q != self.value || data.length === 0)
                             return;
                         if (data.filter(function(item) { return item.title == q; }).length == 1)
