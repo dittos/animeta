@@ -373,22 +373,22 @@ var WorkIndexRoute = React.createClass({
 
 var {Route, DefaultRoute} = Router;
 var routes = <Route handler={App}>
-    <Route handler={WorkRoute} path="/">
+    <Route handler={WorkRoute} path="/" ignoreScrollBehavior>
         <DefaultRoute name="work-index" handler={WorkIndexRoute} />
         <Route name="work-episode" handler={WorkIndexRoute} path="/ep/:episode/" />
     </Route>
 </Route>;
 
-if (process.env.CLIENT) {
-    var initialLoad = true;
+var initialLoad = true;
 
-    function onPageTransition() {
-        if (!initialLoad) {
-            _gaq.push(['_trackPageview']);
-        }
-        initialLoad = false;
+function onPageTransition() {
+    if (!initialLoad) {
+        _gaq.push(['_trackPageview']);
     }
+    initialLoad = false;
+}
 
+if (process.env.CLIENT) {
     Router.run(routes, Router.HashLocation, (Handler) => {
         onPageTransition();
         React.render(<Handler PreloadData={global.PreloadData} />,
