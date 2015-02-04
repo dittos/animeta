@@ -6,6 +6,7 @@ from api.v2.user_records import UserRecordsView
 from api.v2.user_posts import UserPostsView
 from api.v2.category import CategoryView
 from api.v2.post import PostView
+from api.v2.posts import PostsView
 from api.v2.record_view import RecordView
 from api.v2.record_posts import RecordPostsView
 from api.v2.work_view import WorkView
@@ -30,6 +31,7 @@ urlpatterns += patterns('api.v2',
     (r'^v2/users/(?P<name>[\w.@+-]+)/posts$', UserPostsView.as_view()),
     (r'^v2/records/(?P<id>[0-9]+)$', RecordView.as_view()),
     (r'^v2/records/(?P<id>[0-9]+)/posts$', RecordPostsView.as_view()),
+    (r'^v2/posts$', PostsView.as_view()),
     (r'^v2/posts/(?P<id>[0-9]+)$', PostView.as_view()),
     (r'^v2/categories/(?P<id>[0-9]+)$', CategoryView.as_view()),
     (r'^v2/works/(?P<id>[0-9]+)$', WorkView.as_view()),

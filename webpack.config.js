@@ -17,7 +17,8 @@ module.exports = config = {
         table_index: './frontend/js/table-index.react.js',
         table_period: './frontend/js/table-period.react.js',
         library: './frontend/js/library.react.js',
-        work: './frontend/js/work.react.js'
+        work: './frontend/js/work.react.js',
+        index: './frontend/js/index.react.js'
     },
     output: {
         path: 'animeta/static/build',

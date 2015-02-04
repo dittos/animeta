@@ -2,12 +2,11 @@ from django.conf.urls import patterns, include, url
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 import user.views
-from chart.views import TimelineView
 from record.views import HistoryDetailView
 
 urlpatterns = patterns('',
-    (r'^$', 'chart.views.main'),
-    (r'^timeline/$', TimelineView.as_view()),
+    (r'^$', 'animeta.views.index'),
+    (r'^timeline/$', 'animeta.views.redirect_to_index'),
     (r'^login/', 'user.views.login'),
     (r'^logout/', 'django.contrib.auth.views.logout', {'next_page': '/'}),
     (r'^signup/', 'user.views.signup'),

@@ -10,6 +10,7 @@ var Grid = require('./Grid');
 var Layout = require('./Layout');
 var GlobalHeader = require('./GlobalHeader');
 var util = require('./util');
+var WeeklyChart = require('./WeeklyChart');
 if (process.env.CLIENT) {
     require('../less/work.less?extract');
 }
@@ -166,21 +167,6 @@ var StatusButton = React.createClass({
                 작품 추가
             </a>;
         }
-    }
-});
-
-var WeeklyChart = React.createClass({
-    render() {
-        return <div className="weekly-chart">
-            <h3 className="section-title">주간 인기 작품</h3>
-            {this.props.data.map(item =>
-                <a href={util.getWorkURL(item.object.title)}
-                    className="chart-item"
-                    style={getCoverImageStyle(item.object)}>
-                    <span className="rank">{item.rank}위</span>
-                    {item.object.title}
-                </a>)}
-        </div>;
     }
 });
 

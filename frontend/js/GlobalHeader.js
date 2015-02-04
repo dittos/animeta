@@ -84,7 +84,7 @@ var GlobalHeader = React.createClass({
             <Search />
             <div className="menu-global"
                 style={this.state.showMenu ? {display: 'block'} : {}}>
-                <a href="/timeline/">최근 감상평</a>
+                <a href="/">홈</a>
                 <a href="/charts/works/weekly/">순위</a>
                 <a href="/table/">시간표</a>
             </div>

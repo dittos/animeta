@@ -508,3 +508,37 @@ class WorkPostsViewTest(TestCase):
         result = response.obj
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]['id'], post2['id'])
+
+class PostsViewTest(TestCase):
+    def test_get(self):
+        context = TestContext()
+        record_a = context.new_record(work_title='a')
+        post_a = context.new_post(record_a['id'], comment='!')
+        record_b = context.new_record(work_title='b')
+        post_b = context.new_post(record_b['id'], comment='!')
+
+        context2 = TestContext()
+        record_a2 = context2.new_record(work_title='a')
+        post_a2 = context2.new_post(record_a2['id'], comment='!')
+
+        path = '/api/v2/posts'
+
+        response = self.client.get(path, {'count': 2})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.obj), 2)
+        self.assertEqual(response.obj[0]['id'], post_a2['id'])
+        self.assertEqual(response.obj[1]['id'], post_b['id'])
+
+        # Test before_id
+        response = self.client.get(path, {'before_id': post_b['id']})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.obj), 1)
+        self.assertEqual(response.obj[0]['id'], post_a['id'])
+
+        # Test min_record_count
+        indexer.run() # We need index to use this feature
+        response = self.client.get(path, {'min_record_count': 2})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.obj), 2)
+        self.assertEqual(response.obj[0]['id'], post_a2['id'])
+        self.assertEqual(response.obj[1]['id'], post_a['id'])
