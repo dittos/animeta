@@ -1,3 +1,4 @@
+require('object.assign').shim();
 var $ = require('jquery');
 var React = require('react');
 var moment = require('moment');
