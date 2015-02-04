@@ -33,7 +33,7 @@ def detail(request, title):
         'chart': _get_chart(),
     })
     try:
-        resp = requests.post(settings.RENDER_BACKEND_URL,
+        resp = requests.post(settings.RENDER_BACKEND_URL + 'work',
             data=preload_data,
             timeout=settings.RENDER_BACKEND_TIMEOUT)
         html = resp.content

@@ -1,4 +1,6 @@
 import json
+import requests
+from django.conf import settings
 from django.shortcuts import render, redirect
 from chart.models import weekly, compare_charts, PopularWorksChart
 from record.models import History
@@ -23,12 +25,21 @@ def _get_timeline():
                 .exclude(comment='')[:10]]
 
 def index(request):
-    return render(request, 'index.html', {
-        'preload_data': json.dumps({
-            'current_user': serializers.serialize_user(request.user, request.user) if request.user.is_authenticated() else None,
-            'chart': _get_chart(),
-            'posts': _get_timeline()
-        })
+    preload_data = json.dumps({
+        'current_user': serializers.serialize_user(request.user, request.user) if request.user.is_authenticated() else None,
+        'chart': _get_chart(),
+        'posts': _get_timeline(),
+    })
+    try:
+        resp = requests.post(settings.RENDER_BACKEND_URL + 'index',
+            data=preload_data,
+            timeout=settings.RENDER_BACKEND_TIMEOUT)
+        html = resp.content
+    except Exception as e:
+        html = '<!-- Render server not responding: %s -->' % e
+    return render(request, "index.html", {
+        'preload_data': preload_data,
+        'html': html,
     })
 
 def redirect_to_index(request):

@@ -2,12 +2,18 @@ require('node-jsx').install({harmony: true});
 
 var React = require('react');
 var Router = require('react-router');
-var routes = require('./js/work.react.js');
+var workRoutes = require('./js/work.react.js');
+var IndexApp = require('./js/index.react.js');
 var http = require('http');
 
-function render(path, preloadData, next) {
+var renderers = {
+    '/work': renderWork,
+    '/index': renderIndex
+};
+
+function renderWork(path, preloadData, next) {
     var router = Router.create({
-        routes: routes,
+        routes: workRoutes,
         location: path
     });
 
@@ -24,14 +30,21 @@ function render(path, preloadData, next) {
     });
 }
 
+function renderIndex(path, preloadData, next) {
+    next(React.renderToString(React.createElement(IndexApp, {
+        PreloadData: preloadData
+    })));
+}
+
 http.createServer(function(req, res) {
     var buf = '';
     req.on('data', function(data) {
         buf += data;
     });
     req.on('end', function() {
+        var view = req.url;
         var preloadData = JSON.parse(buf);
-        render('/', preloadData, function(html) {
+        renderers[view]('/', preloadData, function(html) {
             res.writeHead(200, {'Content-Type': 'text/html'});
             res.write(html);
             res.end();

@@ -105,5 +105,9 @@ var App = React.createClass({
     }
 });
 
-React.render(<App PreloadData={global.PreloadData} />,
-    document.getElementById('app'));
+if (process.env.CLIENT) {
+    React.render(<App PreloadData={global.PreloadData} />,
+        document.getElementById('app'));
+} else {
+    module.exports = App;
+}
