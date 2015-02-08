@@ -154,10 +154,7 @@ body, input, textarea, select, optgroup, option, button {
 }
 
 .dialog {
-    position: relative;
-    top: 50%;
     margin: 0 auto;
-    transform: translateY(-50%); // fuck IE8
     width: 320px;
     max-width: 100%;
     box-sizing: border-box;
@@ -334,6 +331,10 @@ body, input, textarea, select, optgroup, option, button {
         left: 0;
         top: 30px + 16px;
     }
+
+    .dialog {
+        margin-top: 20px;
+    }
 }
 
 @media (min-width: 481px) {
@@ -355,6 +356,13 @@ body, input, textarea, select, optgroup, option, button {
                 color: @color-main;
             }
         }
+    }
+
+    .dialog {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%); // fuck IE8
     }
 }
 
