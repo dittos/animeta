@@ -10,15 +10,15 @@ var clientDefinePlugin = new webpack.DefinePlugin({
 module.exports = config = {
     plugins: [
         versionMapPlugin,
-        clientDefinePlugin,
-        new ExtractTextPlugin('[name]-[contenthash].css')
+        clientDefinePlugin
     ],
     entry: {
         table_index: './frontend/js/table-index.react.js',
         table_period: './frontend/js/table-period.react.js',
         library: './frontend/js/library.react.js',
         work: './frontend/js/work.react.js',
-        index: './frontend/js/index.react.js'
+        index: './frontend/js/index.react.js',
+        common: './frontend/js/common.js'
     },
     output: {
         path: 'animeta/static/build',
@@ -74,7 +74,8 @@ if (process.env.NODE_ENV == 'production') {
         moduleReplacePlugin,
         definePlugin,
         uglifyPlugin,
-        commonsPlugin
+        commonsPlugin,
+        new ExtractTextPlugin('[name]-[contenthash].css')
     ].concat(config.plugins);
 
     config.devtool = 'source-map';
@@ -82,6 +83,12 @@ if (process.env.NODE_ENV == 'production') {
 } else {
     console.log('* Development Build');
 
+    var commonsPlugin = new webpack.optimize.CommonsChunkPlugin('common', 'common.js');
+
+    config.plugins = [
+        commonsPlugin,
+        new ExtractTextPlugin('[name].css')
+    ].concat(config.plugins);
     config.devtool = 'eval';
     config.module.postLoaders = [
         {

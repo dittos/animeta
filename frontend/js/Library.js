@@ -1,6 +1,5 @@
 var React = require('react/addons');
 var moment = require('moment');
-moment.locale('ko');
 var Router = require('react-router');
 var {Link} = Router;
 var util = require('./util');

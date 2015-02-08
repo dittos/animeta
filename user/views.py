@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from django.shortcuts import get_object_or_404, render, redirect
-from django.views.decorators.csrf import csrf_protect
 from django.views.generic import ListView, TemplateView
 from django.contrib.auth import login as _login
 from django.contrib.auth.models import User
@@ -14,7 +13,6 @@ from record.models import History
 from api import serializers
 import json
 
-@csrf_protect
 def login(request):
     if request.POST.has_key('remember'):
         request.session.set_expiry(3600 * 24 * 14)
@@ -22,7 +20,6 @@ def login(request):
         request.session.set_expiry(0)
     return login_view(request)
 
-@csrf_protect
 def signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)

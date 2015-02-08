@@ -30,6 +30,7 @@
     <td class="connection">
         {% if "twitter" in services %}
             <form method="post" action="/connect/twitter/disconnect/">
+                {% csrf_token %}
                 <input type="submit" value="연결 끊기" />
             </form>
         {% else %}

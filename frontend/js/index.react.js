@@ -1,8 +1,5 @@
-require('object.assign').shim();
 var $ = require('jquery');
 var React = require('react');
-var moment = require('moment');
-moment.locale('ko');
 var GlobalHeader = require('./GlobalHeader');
 var Grid = require('./Grid');
 var TimeAgo = require('./TimeAgo');

@@ -1,6 +1,5 @@
 /* global PreloadData */
 var $ = require('jquery');
-require('object.assign').shim();
 var React = require('react/addons');
 var Router = require('react-router');
 var {Link} = Router;

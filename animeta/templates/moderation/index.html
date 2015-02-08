@@ -8,6 +8,7 @@
 
 <h1>작품 추가</h1>
 <form method="post" action="{% url 'moderation.views.create_work' %}">
+{% csrf_token %}
 <input name="title"> <button type="submit">추가</button>
 </form>
 
@@ -58,12 +59,14 @@
 </table>
 
 <form method="post" action="{% url 'moderation.views.add_mapping' work_id=work.id %}">
+{% csrf_token %}
     <input type="text" name="title"> <button type="submit">제목 추가</button>
 </form>
 
 <br>
 <h2>병합</h2>
 <form method="post" action="{% url 'moderation.views.merge_work' work_id=work.id %}" onsubmit="return checkConflicts(this)">
+{% csrf_token %}
     선택한 작품을 현재 작품에 병합합니다.<br>
     <input type="hidden" name="other_id" class="merge-work-other-id">
     <input class="work-title-merge"> <span class="merge-work-other-id-preview"></span>
@@ -76,6 +79,7 @@
 <br>
 <h2>Metadata</h2>
 <form method="post" action="{% url 'moderation.views.edit_metadata' work_id=work.id %}">
+{% csrf_token %}
 <textarea name="metadata" rows="10" cols="50">{{work.raw_metadata}}</textarea><br>
 <button type="submit">Save</button>
 </form>

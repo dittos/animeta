@@ -1,4 +1,5 @@
 var $ = require('jquery');
+var cookie = require('cookie');
 var React = require('react');
 var Layout = require('./Layout');
 var Typeahead = require('./Typeahead');
@@ -58,6 +59,42 @@ var Search = React.createClass({
     }
 });
 
+var LoginDialog = React.createClass({
+    getInitialState() {
+        return {csrfToken: cookie.parse(document.cookie).csrftoken};
+    },
+    render() {
+        return <div className="dialog-backdrop">
+            <div className="dialog dialog-login">
+                <div className="dialog-header">
+                    <button className="dialog-close" onClick={this.props.onClose}><i className="fa fa-lg fa-times-circle" /></button>
+                    <h2 className="dialog-title">로그인</h2>
+                </div>
+                <form method="post" action="/login/">
+                    <input type="hidden" name="csrfmiddlewaretoken" value={this.state.csrfToken} />
+                    <div className="login-row-group">
+                    <div className="login-row">
+                        <label>아이디</label>
+                        <input name="username" maxLength="30" autoFocus />
+                    </div>
+                    <div className="login-row">
+                        <label>암호</label>
+                        <input type="password" name="password" id="login_password" />
+                    </div>
+                    </div>
+                    <button type="submit" className="btn-login">로그인</button>
+                    <div className="login-check-row">
+                        <label>
+                            <input type="checkbox" name="remember" value="1" />
+                            2주 동안 자동 로그인
+                        </label>
+                    </div>
+                </form>
+            </div>
+        </div>;
+    }
+});
+
 var GlobalHeader = React.createClass({
     getInitialState() {
         return {
@@ -106,7 +143,7 @@ var GlobalHeader = React.createClass({
             </div>;
         } else {
             return <div className="account">
-                <a href="/login/" className="btn btn-login">로그인</a>
+                <a href="/login/" className="btn btn-login" onClick={this._openLogin}>로그인</a>
                 <a href="/signup/" className="btn btn-signup">회원 가입</a>
             </div>;
         }
@@ -117,6 +154,23 @@ var GlobalHeader = React.createClass({
     },
     _toggleMenu() {
         this.setState({showMenu: !this.state.showMenu});
+    },
+    _openLogin(e) {
+        if (e) e.preventDefault();
+        var container = document.getElementById('dialog-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'dialog-container';
+            document.body.appendChild(container);
+        }
+        React.render(<LoginDialog onClose={this._closeLogin} />, container);
+    },
+    _closeLogin() {
+        var container = document.getElementById('dialog-container');
+        if (!container)
+            return;
+        React.unmountComponentAtNode(container);
+        document.body.removeChild(container);
     }
 });
 

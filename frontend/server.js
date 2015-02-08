@@ -1,4 +1,6 @@
 require('node-jsx').install({harmony: true});
+require('object.assign').shim();
+require('moment').locale('ko');
 
 var React = require('react');
 var Router = require('react-router');

@@ -141,6 +141,127 @@ body, input, textarea, select, optgroup, option, button {
     }
 }
 
+// Dialogs
+
+.dialog-backdrop {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: #fff;
+    background: rgba(255, 255, 255, 0.75);
+}
+
+.dialog {
+    position: relative;
+    top: 50%;
+    margin: 0 auto;
+    transform: translateY(-50%); // fuck IE8
+    width: 320px;
+    max-width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid @color-main;
+}
+
+.dialog-login {
+    padding: 20px;
+
+    .dialog-header {
+        margin-bottom: 16px;
+    }
+
+    .dialog-close {
+        float: right;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        height: 24px;
+        padding: 0;
+        color: #666;
+    }
+
+    .dialog-title {
+        font-size: 20px;
+        font-weight: normal;
+        margin: 0;
+    }
+
+    .login-row-group {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-bottom: 16px;
+    }
+
+    .login-row {
+        position: relative;
+        height: 60px;
+
+        &:first-child {
+            border-bottom: 1px solid #ddd;
+        }
+
+        label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            padding: 10px;
+            color: #666;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        input {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            padding: 30px 10px 10px;
+            line-height: 20px;
+            font-size: 14px;
+            width: 100%;
+            border: none;
+            background: #fff;
+            box-sizing: border-box;
+            &:focus {
+                background: #f4f4f4;
+            }
+        }
+    }
+
+    .login-check-row {
+        height: 40px;
+        line-height: 40px;
+        font-size: 14px;
+
+        input {
+            padding: 0;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+    }
+
+    .btn-login {
+        float: right;
+        display: block;
+        background: @color-main;
+        border: none;
+        border-radius: 5px;
+        height: 40px;
+        padding: 0 20px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+}
+
 // Mixins
 
 .mixin-load-more {

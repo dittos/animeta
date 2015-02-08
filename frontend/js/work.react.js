@@ -1,10 +1,8 @@
 /* global PreloadData */
-require('object.assign').shim();
 var $ = require('jquery');
 var React = require('react/addons');
 var Router = require('react-router');
 var moment = require('moment');
-moment.locale('ko');
 var TimeAgo = require('./TimeAgo');
 var Grid = require('./Grid');
 var Layout = require('./Layout');

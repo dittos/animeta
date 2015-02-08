@@ -1,5 +1,4 @@
 /* global PreloadData */
-require('object.assign').shim();
 var _ = require('lodash');
 var $ = require('jquery');
 var React = require('react');
