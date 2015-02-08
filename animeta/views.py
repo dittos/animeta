@@ -29,7 +29,7 @@ def index(request):
         'current_user': serializers.serialize_user(request.user, request.user) if request.user.is_authenticated() else None,
         'chart': _get_chart(),
         'posts': _get_timeline(),
-    })
+    }, ensure_ascii=False, separators=(',', ':'))
     try:
         resp = requests.post(settings.RENDER_BACKEND_URL + 'index',
             data=preload_data,

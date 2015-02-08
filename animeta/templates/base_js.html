@@ -37,8 +37,9 @@ Raven.config('http://fb3fd1fc77c94c4799d9fc7228260818@sentry.sapzil.org/3', {
 }).install();
 </script>
 {% endif %}
+{% load json %}
 <script>
-var PreloadData = eval('({{ preload_data|escapejs }})');
+var PreloadData = {{ preload_data|escapejson }};
 </script>
 <script src="//cdn.jsdelivr.net/es5.shim/2.1.0/es5-shim.min.js"></script>
 <script src="//cdn.jsdelivr.net/es5.shim/2.1.0/es5-sham.min.js"></script>
