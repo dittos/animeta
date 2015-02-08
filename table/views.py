@@ -18,9 +18,9 @@ def _render(request, template_name, period):
     data = [serializers.serialize_work(index.work, request.user) for index in indexes]
     return render(request, template_name, {
         'period': period,
-        'preload_data': json.dumps({
+        'preload_data': {
             'period': str(period),
             'current_user': serializers.serialize_user(request.user, request.user) if request.user.is_authenticated() else None,
             'schedule': data
-        }),
+        },
     })

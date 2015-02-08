@@ -25,14 +25,14 @@ def _get_timeline():
                 .exclude(comment='')[:10]]
 
 def index(request):
-    preload_data = json.dumps({
+    preload_data = {
         'current_user': serializers.serialize_user(request.user, request.user) if request.user.is_authenticated() else None,
         'chart': _get_chart(),
         'posts': _get_timeline(),
-    }, ensure_ascii=False, separators=(',', ':'))
+    }
     try:
         resp = requests.post(settings.RENDER_BACKEND_URL + 'index',
-            data=preload_data,
+            json=preload_data,
             timeout=settings.RENDER_BACKEND_TIMEOUT)
         html = resp.content
     except Exception as e:

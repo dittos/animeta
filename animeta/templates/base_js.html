@@ -37,7 +37,7 @@ Raven.config('http://fb3fd1fc77c94c4799d9fc7228260818@sentry.sapzil.org/3', {
 }).install();
 </script>
 {% endif %}
-{% load json %}
+{% load escapejson %}
 <script>
 var PreloadData = {{ preload_data|escapejson }};
 </script>

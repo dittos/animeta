@@ -25,16 +25,16 @@ def _get_chart():
 
 def detail(request, title):
     work = _get_work(title)
-    preload_data = json.dumps({
+    preload_data = {
         'title': title,
         'work': serializers.serialize_work(work, request.user),
         'current_user': serializers.serialize_user(request.user, request.user) if request.user.is_authenticated() else None,
         'daum_api_key': settings.DAUM_API_KEY,
         'chart': _get_chart(),
-    }, ensure_ascii=False, separators=(',', ':'))
+    }
     try:
         resp = requests.post(settings.RENDER_BACKEND_URL + 'work',
-            data=preload_data,
+            json=preload_data,
             timeout=settings.RENDER_BACKEND_TIMEOUT)
         html = resp.content
     except Exception as e:
