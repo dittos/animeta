@@ -90,6 +90,26 @@ body, input, textarea, select, optgroup, option, button {
         .mixin-dropdown;
         right: 0;
     }
+
+    .menu-feedback {
+        position: fixed;
+        bottom: 8px;
+        right: 10px;
+        z-index: @z-overlay;
+        a {
+            float: right;
+            padding: 8px 10px;
+            text-decoration: none;
+            color: #444;
+            font-size: 13px;
+            border-radius: 5px;
+            background: #f4f4f4;
+            border: 1px solid #aaa;
+            &:hover {
+                border-color: #333;
+            }
+        }
+    }
 }
 
 .no-svg .logo a {

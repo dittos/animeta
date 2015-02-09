@@ -125,6 +125,9 @@ var GlobalHeader = React.createClass({
                 <a href="/charts/works/weekly/">순위</a>
                 <a href="/table/">시간표</a>
             </div>
+            <div className="menu-feedback">
+                <a href="/support/"><i className="fa fa-bullhorn" />{' '}버그 제보 / 건의</a>
+            </div>
         </div>;
     },
     _renderRight() {
