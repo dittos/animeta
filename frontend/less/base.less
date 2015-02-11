@@ -1,5 +1,6 @@
 @color-main: #4bb000;
 @z-overlay: 1000;
+@z-modal: 2000;
 
 body, input, textarea, select, optgroup, option, button {
     margin: 0;
@@ -171,6 +172,7 @@ body, input, textarea, select, optgroup, option, button {
     bottom: 0;
     background: #fff;
     background: rgba(255, 255, 255, 0.75);
+    z-index: @z-modal;
 }
 
 .dialog {
