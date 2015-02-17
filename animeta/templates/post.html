@@ -1,0 +1,11 @@
+{% extends 'base_js.html' %}
+
+{% block title %}{{ title }} - 애니메타{% endblock %}
+
+{% block head-extra %}
+    <link href="{{ STATIC_URL }}build/{{ asset_filenames.work.css }}" rel="stylesheet">
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="{{ STATIC_URL }}build/{{ asset_filenames.post.js }}"></script>
+{% endblock %}

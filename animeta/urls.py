@@ -23,7 +23,7 @@ urlpatterns = patterns('',
     (r'^moderation/', include('moderation.urls')),
 
     (r'^titles/(?P<remainder>.*)/$', 'work.views.old_url'), # compat
-    url(r'^-(?P<id>[0-9]+)/?$', HistoryDetailView.as_view(), name='history-detail'),
+    url(r'^-(?P<id>[0-9]+)/?$', 'work.views.post_detail', name='history-detail'),
     (r'^(?P<username>[\w.@+-]+)$', 'user.views.shortcut'),
 
     (r'^search/$', 'search.views.search'),

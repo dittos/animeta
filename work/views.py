@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from work.models import Work, TitleMapping
 from chart.models import weekly, PopularWorksChart
+from record.models import History
 from api import serializers
 
 def old_url(request, remainder):
@@ -23,6 +24,16 @@ def _get_chart():
     chart = PopularWorksChart(w, 5)
     return map(_serialize, chart)
 
+def _call_backend(path, preload_data):
+    try:
+        resp = requests.post(settings.RENDER_BACKEND_URL + path,
+            json=preload_data,
+            timeout=settings.RENDER_BACKEND_TIMEOUT)
+        html = resp.content
+    except Exception as e:
+        html = '<!-- Render server not responding: %s -->' % e
+    return html
+
 def detail(request, title):
     work = _get_work(title)
     preload_data = {
@@ -32,17 +43,10 @@ def detail(request, title):
         'daum_api_key': settings.DAUM_API_KEY,
         'chart': _get_chart(),
     }
-    try:
-        resp = requests.post(settings.RENDER_BACKEND_URL + 'work',
-            json=preload_data,
-            timeout=settings.RENDER_BACKEND_TIMEOUT)
-        html = resp.content
-    except Exception as e:
-        html = '<!-- Render server not responding: %s -->' % e
     return render(request, "work.html", {
         'title': title,
         'preload_data': preload_data,
-        'html': html,
+        'html': _call_backend('work', preload_data),
     })
 
 def episode_detail(request, title, ep):
@@ -55,3 +59,18 @@ def list_users(request, title):
 def video(request, title, provider, id):
     assert provider == 'tvpot'
     return redirect('http://tvpot.daum.net/v/' + id)
+
+def post_detail(request, id):
+    post = get_object_or_404(History, id=id)
+    preload_data = {
+        'post': serializers.serialize_post(post, include_user=True),
+        'work': serializers.serialize_work(post.work),
+        'current_user': serializers.serialize_user(request.user, request.user) if request.user.is_authenticated() else None,
+        'daum_api_key': settings.DAUM_API_KEY,
+        'chart': _get_chart(),
+    }
+    return render(request, 'post.html', {
+        'title': post.record.title,
+        'preload_data': preload_data,
+        'html': _call_backend('post', preload_data),
+    })

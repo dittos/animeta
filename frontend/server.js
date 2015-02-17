@@ -6,11 +6,13 @@ var React = require('react');
 var Router = require('react-router');
 var workRoutes = require('./js/work.react.js');
 var IndexApp = require('./js/index.react.js');
+var PostApp = require('./js/post.react.js');
 var http = require('http');
 
 var renderers = {
     '/work': renderWork,
-    '/index': renderIndex
+    '/index': createSimpleRenderer(IndexApp),
+    '/post': createSimpleRenderer(PostApp),
 };
 
 function renderWork(path, preloadData, next) {
@@ -32,10 +34,12 @@ function renderWork(path, preloadData, next) {
     });
 }
 
-function renderIndex(path, preloadData, next) {
-    next(React.renderToString(React.createElement(IndexApp, {
-        PreloadData: preloadData
-    })));
+function createSimpleRenderer(cls) {
+    return function(path, preloadData, next) {
+        next(React.renderToString(React.createElement(cls, {
+            PreloadData: preloadData
+        })));
+    };
 }
 
 http.createServer(function(req, res) {
