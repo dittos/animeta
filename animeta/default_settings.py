@@ -100,7 +100,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.core.context_processors.csrf',
     'django.contrib.messages.context_processors.messages',
-    'animeta.context_processors.hijax',
     'animeta.context_processors.settings',
     'animeta.context_processors.assets',
 )

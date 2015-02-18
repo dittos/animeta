@@ -1,4 +1,4 @@
-{% extends base %}
+{% extends "base.html" %}
 
 {% block nav %}
 <h1><a href="/settings/">설정</a></h1>
@@ -17,31 +17,15 @@
 </table>
 </form>
 
-<h2>외부 서비스 연동</h2>
-<table id="services">
-<tr>
-    <th>서비스 이름</th>
-    <th>설명</th>
-    <th>연동 상태</th>
-</tr>
-<tr>
-    <td class="name">트위터</td>
-    <td class="description">기록을 남기면 트윗이 함께 올라갑니다.</td>
-    <td class="connection">
-        {% if "twitter" in services %}
-            <form method="post" action="/connect/twitter/disconnect/">
-                {% csrf_token %}
-                <input type="submit" value="연결 끊기" />
-            </form>
-        {% else %}
-            <a href="/connect/twitter/">연결하기</a>
-        {% endif %}
-    </td>
-</tr>
-<tr>
-    <td class="name">블로그 위젯</td>
-    <td class="description">블로그에 애니메타 기록을 중계해보세요!</td>
-    <td class="connection"><a href="/connect/widget/">설치 방법</a></td>
-</tr>
-</table>
+<h2>트위터 연동</h2>
+{% if "twitter" in services %}
+<form method="post" action="/connect/twitter/disconnect/">
+    {% csrf_token %}
+    <input type="submit" value="연결 끊기" />
+</form>
+{% else %}
+<form action="/connect/twitter/">
+    <input type="submit" value="연결하기" />
+</form>
+{% endif %}
 {% endblock %}
