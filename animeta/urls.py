@@ -2,7 +2,6 @@ from django.conf.urls import patterns, include, url
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 import user.views
-from record.views import HistoryDetailView
 
 urlpatterns = patterns('',
     (r'^$', 'animeta.views.index'),

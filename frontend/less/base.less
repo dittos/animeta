@@ -209,6 +209,15 @@ body, input, textarea, select, optgroup, option, button {
         margin: 0;
     }
 
+    .login-errors {
+        background-color: #ffa;
+        border: 1px solid #deb200;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 16px;
+        font-size: 13px;
+    }
+
     .login-row-group {
         border: 1px solid #ddd;
         border-radius: 5px;
@@ -218,7 +227,7 @@ body, input, textarea, select, optgroup, option, button {
 
     .login-row {
         position: relative;
-        height: 60px;
+        height: 70px;
 
         &:first-child {
             border-bottom: 1px solid #ddd;
@@ -231,8 +240,9 @@ body, input, textarea, select, optgroup, option, button {
             z-index: 2;
             padding: 10px;
             color: #666;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: bold;
+            pointer-events: none;
         }
 
         input {
@@ -241,15 +251,15 @@ body, input, textarea, select, optgroup, option, button {
             right: 0;
             top: 0;
             bottom: 0;
-            padding: 30px 10px 10px;
-            line-height: 20px;
-            font-size: 14px;
+            padding: 35px 10px 10px;
+            line-height: 25px;
+            font-size: 18px;
             width: 100%;
             border: none;
             background: #fff;
             box-sizing: border-box;
             &:focus {
-                background: #f4f4f4;
+                background: #f8f8f8;
             }
         }
     }
@@ -278,6 +288,10 @@ body, input, textarea, select, optgroup, option, button {
         font-size: 14px;
         font-weight: bold;
         cursor: pointer;
+
+        &:disabled {
+            background: #999;
+        }
     }
 }
 

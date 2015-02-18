@@ -1,0 +1,7 @@
+{% extends "base_js.html" %}
+
+{% block title %}회원 가입 - {{ block.super }}{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="{{ STATIC_URL }}build/{{ asset_filenames.signup.js }}"></script>
+{% endblock %}

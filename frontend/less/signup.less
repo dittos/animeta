@@ -1,0 +1,119 @@
+@import "base.less";
+
+// TODO: extract common things with login dialog
+
+.signup-form {
+    padding: 20px 10px;
+    margin: 0 auto;
+    width: 320px;
+    max-width: 100%;
+    box-sizing: border-box;
+
+    .signup-header {
+        margin-bottom: 16px;
+    }
+
+    .signup-title {
+        font-size: 20px;
+        font-weight: normal;
+        text-align: center;
+        margin: 0;
+    }
+
+    .signup-errors {
+        background-color: #ffa;
+        border: 1px solid #deb200;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 16px;
+        font-size: 13px;
+    }
+
+    .signup-row-group {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-bottom: 16px;
+    }
+
+    .signup-row {
+        position: relative;
+        height: 70px;
+        border-bottom: 1px solid #ddd;
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        .signup-hint {
+            position: absolute;
+            top: 0;
+            right: 0;
+            z-index: 2;
+            padding: 10px;
+            color: #999;
+            font-size: 12px;
+            pointer-events: none;
+        }
+
+        label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            padding: 10px;
+            color: #666;
+            font-size: 12px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        input {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            padding: 35px 10px 10px;
+            line-height: 25px;
+            font-size: 18px;
+            width: 100%;
+            border: none;
+            background: #fff;
+            box-sizing: border-box;
+            &:focus {
+                background: #f8f8f8;
+            }
+        }
+    }
+
+    .signup-check-row {
+        height: 40px;
+        line-height: 40px;
+        font-size: 14px;
+
+        input {
+            padding: 0;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+    }
+
+    .btn-signup {
+        display: block;
+        background: @color-main;
+        border: none;
+        border-radius: 5px;
+        height: 40px;
+        padding: 0;
+        color: #fff;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 100%;
+
+        &:disabled {
+            background: #999;
+        }
+    }
+}

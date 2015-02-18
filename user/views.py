@@ -2,10 +2,8 @@
 
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import ListView, TemplateView
-from django.contrib.auth import login as _login
 from django.contrib.auth.models import User
-from django.contrib.auth.views import login as login_view
-from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from connect import get_connected_services
@@ -14,25 +12,10 @@ from api import serializers
 import json
 
 def login(request):
-    if request.POST.has_key('remember'):
-        request.session.set_expiry(3600 * 24 * 14)
-    else:
-        request.session.set_expiry(0)
-    return login_view(request)
+    return render(request, 'login.html')
 
 def signup(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            user.backend = 'django.contrib.auth.backends.ModelBackend'
-            _login(request, user)
-            request.session.set_expiry(0)
-            return redirect(user)
-    else:
-        form = UserCreationForm()
-
-    return render(request, 'registration/signup.html', {'form': form})
+    return render(request, 'signup.html')
 
 class SettingsView(TemplateView):
     template_name = 'user/settings.html'

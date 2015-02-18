@@ -1,5 +1,7 @@
 from django.conf.urls import include, patterns, url
 from api.decorators import route_by_method
+from api.v2.auth import AuthView
+from api.v2.accounts import AccountsView
 from api.v2.user import UserView
 from api.v2.user_categories import UserCategoriesView
 from api.v2.user_records import UserRecordsView
@@ -25,6 +27,8 @@ urlpatterns = patterns('api.views',
 )
 
 urlpatterns += patterns('api.v2',
+    (r'^v2/auth$', AuthView.as_view()),
+    (r'^v2/accounts$', AccountsView.as_view()),
     (r'^v2/users/(?P<name>[\w.@+-]+)$', UserView.as_view()),
     (r'^v2/users/(?P<name>[\w.@+-]+)/categories$', UserCategoriesView.as_view()),
     (r'^v2/users/(?P<name>[\w.@+-]+)/records$', UserRecordsView.as_view()),

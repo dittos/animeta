@@ -11,10 +11,12 @@ class TestContext(Client):
         super(TestContext, self).__init__()
         self.username = uuid.uuid4().hex[:10]
         password = 'secret'
-        self.user = User.objects.create_user(
-            self.username,
-            password=password
-        )
+        response = self.post('/api/v2/accounts', {
+            'username': self.username,
+            'password1': password,
+            'password2': password
+        })
+        self.user = response.obj['user']
         self.login(username=self.username, password=password)
 
     @property
@@ -48,17 +50,78 @@ class TestContext(Client):
         response = self.post(self.user_path + '/categories', data)
         return response.obj
 
+class AuthViewTest(TestCase):
+    def test_post(self):
+        response = Client().post('/api/v2/accounts', {
+            'username': 'ditto',
+            'password1': 'a',
+            'password2': 'a',
+        })
+        self.assertTrue(response.obj['ok'])
+
+        response = self.client.post('/api/v2/auth', {
+            'username': 'ditto',
+            'password': 'wrong',
+        })
+        self.assertFalse(response.obj['ok'])
+
+        response = self.client.get('/api/v2/auth')
+        self.assertFalse(response.obj['ok'])
+
+        response = self.client.post('/api/v2/auth', {
+            'username': 'ditto',
+            'password': 'a',
+        })
+        self.assertTrue(response.obj['ok'])
+
+        response = self.client.get('/api/v2/auth')
+        self.assertTrue(response.obj['ok'])
+
+class AccountsViewTest(TestCase):
+    def test_post(self):
+        response = self.client.post('/api/v2/accounts')
+        self.assertFalse(response.obj['ok'])
+
+        response = self.client.post('/api/v2/accounts', {
+            'username': '',
+        })
+        self.assertFalse(response.obj['ok'])
+
+        response = self.client.post('/api/v2/accounts', {
+            'username': 'a' * 31,
+        })
+        self.assertFalse(response.obj['ok'])
+
+        response = self.client.post('/api/v2/accounts', {
+            'username': 'a/b',
+        })
+        self.assertFalse(response.obj['ok'])
+
+        response = self.client.post('/api/v2/accounts', {
+            'username': 'ditto',
+            'password1': 'a',
+            'password2': 'a',
+        })
+        self.assertTrue(response.obj['ok'])
+
+        # Logged in automatically
+        response = self.client.get('/api/v2/auth')
+        self.assertTrue(response.obj['ok'])
+
+        response = self.client.post('/api/v2/accounts', {
+            'username': 'ditto',
+            'password1': 'a',
+            'password2': 'a',
+        })
+        self.assertFalse(response.obj['ok'])
+        self.assertTrue('username' in response.obj['errors'])
+
 class UserViewTest(TestCase):
     def test_get(self):
         context = TestContext()
         response = self.client.get(context.user_path)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.obj, {
-            'id': context.user.id,
-            'name': context.user.username,
-            'date_joined': serialize_datetime(context.user.date_joined),
-            'categories': []
-        })
+        self.assertEqual(response.obj, context.user)
 
 class UserCategoriesViewTest(TestCase):
     def test_create(self):
@@ -285,7 +348,7 @@ class UserRecordsViewTest(TestCase):
         post = response.obj['post']
 
         self.assertTrue('id' in record)
-        self.assertEqual(record['user_id'], context.user.id)
+        self.assertEqual(record['user_id'], context.user['id'])
         self.assertEqual(record['category_id'], None)
         self.assertEqual(record['title'], data['work_title'])
         self.assertEqual(record['status'], '')
@@ -407,7 +470,7 @@ class RecordPostsViewTest(TestCase):
         post = response.obj['post']
 
         self.assertTrue('id' in updated_record)
-        self.assertEqual(updated_record['user_id'], context.user.id)
+        self.assertEqual(updated_record['user_id'], context.user['id'])
         self.assertEqual(updated_record['category_id'], record['category_id'])
         self.assertEqual(updated_record['title'], record['title'])
         self.assertEqual(updated_record['status'], data['status'])
@@ -494,8 +557,8 @@ class WorkPostsViewTest(TestCase):
             self.assertEqual(response.obj[0][key], post2[key])
             self.assertEqual(response.obj[1][key], post1[key])
         for post in response.obj:
-            self.assertEqual(post['user']['id'], context.user.id)
-            self.assertEqual(post['user']['name'], context.user.username)
+            self.assertEqual(post['user']['id'], context.user['id'])
+            self.assertEqual(post['user']['name'], context.user['name'])
 
         response = self.client.get(path, {'before_id': post2['id']})
         self.assertEqual(response.status_code, 200)

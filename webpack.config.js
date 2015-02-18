@@ -19,6 +19,8 @@ module.exports = config = {
         work: './frontend/js/work.react.js',
         post: './frontend/js/post.react.js',
         index: './frontend/js/index.react.js',
+        signup: './frontend/js/signup.react.js',
+        login: './frontend/js/login.react.js',
         common: './frontend/js/common.js'
     },
     output: {
