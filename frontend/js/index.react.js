@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var React = require('react');
+var Router = require('react-router');
 var GlobalHeader = require('./GlobalHeader');
 var Grid = require('./Grid');
 var TimeAgo = require('./TimeAgo');
@@ -10,6 +11,16 @@ if (process.env.CLIENT) {
 }
 
 var App = React.createClass({
+    render() {
+        var data = this.props.PreloadData;
+        return <div>
+            <GlobalHeader currentUser={data.current_user} />
+            <Router.RouteHandler PreloadData={data} />
+        </div>;
+    }
+});
+
+var IndexRoute = React.createClass({
     getInitialState() {
         return {
             posts: this.props.PreloadData.posts,
@@ -22,17 +33,14 @@ var App = React.createClass({
             this.setState({posts: this.state.posts.slice(0, 3)});
     },
     render() {
-        return <div>
-            <GlobalHeader currentUser={this.props.PreloadData.current_user} />
-            <Grid.Row>
-                <Grid.Column size={8} pull="left">
-                    {this._renderTimeline(this.state.posts)}
-                </Grid.Column>
-                <Grid.Column size={4} pull="right">
-                    <WeeklyChart data={this.props.PreloadData.chart} />
-                </Grid.Column>
-            </Grid.Row>
-        </div>;
+        return <Grid.Row>
+            <Grid.Column size={8} pull="left">
+                {this._renderTimeline(this.state.posts)}
+            </Grid.Column>
+            <Grid.Column size={4} pull="right">
+                <WeeklyChart data={this.props.PreloadData.chart} />
+            </Grid.Column>
+        </Grid.Row>;
     },
     _renderChart(chart) {
         return <div className="weekly-chart">
@@ -103,9 +111,25 @@ var App = React.createClass({
     }
 });
 
+var LoginDialog = require('./LoginDialog');
+var LoginRoute = React.createClass({
+    render() {
+        return <LoginDialog next="/" />;
+    }
+});
+
+var {Route, DefaultRoute} = Router;
+var routes = <Route handler={App}>
+    <DefaultRoute handler={IndexRoute} />
+    <Route handler={LoginRoute} path="/login/" />
+    <Route handler={require('./SignupRoute')} path="/signup/" />
+</Route>;
+
 if (process.env.CLIENT) {
-    React.render(<App PreloadData={global.PreloadData} />,
-        document.getElementById('app'));
+    Router.run(routes, Router.RefreshLocation, (Handler) => {
+        React.render(<Handler PreloadData={global.PreloadData} />,
+            document.getElementById('app'));
+    });
 } else {
-    module.exports = App;
+    module.exports = routes;
 }

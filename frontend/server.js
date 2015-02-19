@@ -5,33 +5,37 @@ require('moment').locale('ko');
 var React = require('react');
 var Router = require('react-router');
 var workRoutes = require('./js/work.react.js');
-var IndexApp = require('./js/index.react.js');
+var indexRoutes = require('./js/index.react.js');
 var PostApp = require('./js/post.react.js');
 var http = require('http');
 
 var renderers = {
-    '/work': renderWork,
-    '/index': createSimpleRenderer(IndexApp),
+    '/work': createRoutesRenderer(workRoutes, true),
+    '/index': createRoutesRenderer(indexRoutes),
     '/post': createSimpleRenderer(PostApp),
 };
 
-function renderWork(path, preloadData, next) {
-    var router = Router.create({
-        routes: workRoutes,
-        location: path
-    });
+function createRoutesRenderer(routes, hashPatch) {
+    return function(path, preloadData, next) {
+        var router = Router.create({
+            routes: routes,
+            location: path
+        });
 
-    // Monkey patch makeHref to support hash-prefixed link
-    var makeHref = router.type.makeHref;
-    router.type.makeHref = function(to, params, query) {
-        return '#' + makeHref.call(this, to, params, query);
+        if (hashPatch) {
+            // Monkey patch makeHref to support hash-prefixed link
+            var makeHref = router.type.makeHref;
+            router.type.makeHref = function(to, params, query) {
+                return '#' + makeHref.call(this, to, params, query);
+            };
+        }
+
+        router.run(function(Handler) {
+            next(React.renderToString(React.createElement(Handler, {
+                PreloadData: preloadData
+            })));
+        });
     };
-
-    router.run(function(Handler) {
-        next(React.renderToString(React.createElement(Handler, {
-            PreloadData: preloadData
-        })));
-    });
 }
 
 function createSimpleRenderer(cls) {

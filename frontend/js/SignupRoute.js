@@ -1,9 +1,10 @@
 var $ = require('jquery');
 var React = require('react/addons');
-var GlobalHeader = require('./GlobalHeader');
-require('../less/signup.less');
+if (process.env.CLIENT) {
+    require('../less/signup.less');
+}
 
-var App = React.createClass({
+var SignupRoute = React.createClass({
     getInitialState() {
         return {
             submitted: false,
@@ -14,12 +15,6 @@ var App = React.createClass({
         };
     },
     render() {
-        return <div>
-            <GlobalHeader currentUser={null} />
-            {this._renderForm()}
-        </div>;
-    },
-    _renderForm() {
         return <div className="signup-form" onSubmit={this._onSubmit}>
             <div className="signup-header">
                 <h2 className="signup-title">회원 가입</h2>
@@ -85,7 +80,4 @@ var App = React.createClass({
     }
 });
 
-React.render(
-    <App />, 
-    document.getElementById('app')
-);
+module.exports = SignupRoute;
