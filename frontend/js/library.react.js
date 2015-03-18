@@ -48,7 +48,7 @@ function onPageTransition() {
     initialLoad = false;
 }
 
-var supportsHistory = require('react-router/utils/supportsHistory');
+var supportsHistory = require('react-router/modules/utils/supportsHistory');
 
 function runApp() {
     var locationStrategy = Router.HistoryLocation;

@@ -1,6 +1,7 @@
 from fabric.api import *
 
 def deploy():
+    local('git push')
     with cd('/home/ditto/animeta'):
         run('git pull') # To get password prompt first
         local('rm -f animeta/static/build/*')
