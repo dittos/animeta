@@ -82,9 +82,14 @@ def _get_schedule(schedule, period):
 def parse_date(s, period):
     # date is MM-DD HH:MM format
     date, time = s.split(' ')
-    m, d = map(int, date.split('-'))
+    date_parts = map(int, date.split('-'))
+    if len(date_parts) == 3:
+        y, m, d = date_parts
+    else:
+        y = period.year
+        m, d = date_parts
     h, min = map(int, time.split(':'))
-    return datetime.datetime(period.year, m, d, h, min)
+    return datetime.datetime(y, m, d, h, min)
 
 def enha_link(ref):
     t = ref.rsplit('#', 1)
