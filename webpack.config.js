@@ -28,7 +28,7 @@ module.exports = config = {
     },
     module: {
         loaders: [
-            { test: /\.js[x]?$/, loader: 'jsx-loader?harmony' },
+            { test: /\.js[x]?$/, loader: __dirname + '/jsx-loader?harmony&target=es3' },
             { test: /\.less$/, loader: 'style!css!autoprefixer!less' },
             { test: /\.less\?extract$/, loader: ExtractTextPlugin.extract('style', 'css!autoprefixer!less') },
             { test: /\.(png|gif|svg)$/, loader: 'url' }
