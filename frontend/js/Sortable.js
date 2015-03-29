@@ -58,7 +58,7 @@ var SortableItem = React.createClass({
     },
 
     _manageEventListeners(isDragging) {
-        var body = this.getDOMNode().ownerDocument;
+        var body = React.findDOMNode(this).ownerDocument;
         if (isDragging && !this._registeredEventListeners) {
             body.addEventListener('mousemove', this._onMouseMove);
             body.addEventListener('mouseup', this._onMouseUp);
@@ -71,7 +71,7 @@ var SortableItem = React.createClass({
     },
 
     _onMouseDown(event) {
-        var bounds = this.getDOMNode().getBoundingClientRect();
+        var bounds = React.findDOMNode(this).getBoundingClientRect();
         this.setState({
             dragging: true,
             origTop: bounds.top,
@@ -107,7 +107,7 @@ var SortableItem = React.createClass({
 
     _remeasure() {
         var offset = this.state.mouseY - this.state.origTop - this.state.holdY;
-        var bounds = this.getDOMNode().getBoundingClientRect();
+        var bounds = React.findDOMNode(this).getBoundingClientRect();
         this.setState({
             origTop: bounds.top - offset,
             origBottom: bounds.bottom - offset

@@ -118,7 +118,6 @@ var LibraryItemView = React.createClass({
 });
 
 var LibraryHeader = React.createClass({
-    mixins: [Router.Navigation, Router.State],
     render() {
         return <div className="library-header">
             <p>
@@ -158,7 +157,7 @@ var LibraryHeader = React.createClass({
     },
 
     _updateQuery(updates) {
-        this.transitionTo('records', {}, {...this.getQuery(), ...updates});
+        this.props.onUpdateQuery(updates);
     },
 
     _onStatusTypeFilterChange(e) {
@@ -171,8 +170,6 @@ var LibraryHeader = React.createClass({
 });
 
 var Library = React.createClass({
-    mixins: [Router.Navigation, Router.State],
-
     componentDidMount() {
         RecordStore.addChangeListener(this._onChange);
     },
@@ -191,7 +188,7 @@ var Library = React.createClass({
             return this._renderEmpty();
         }
 
-        var {type, category, sort} = this.getQuery();
+        var {type, category, sort} = this.props.query;
         if (!sort) sort = 'date';
         var records = RecordStore.query(type, category, sort);
         var categoryStats = RecordStore.getCategoryStats();
@@ -213,7 +210,8 @@ var Library = React.createClass({
                 categoryFilter={category}
                 categoryList={categoryList}
                 categoryStats={categoryStats}
-                canEdit={this.props.canEdit} />
+                canEdit={this.props.canEdit}
+                onUpdateQuery={this.props.onUpdateQuery} />
             {this._renderNotice()}
             {sort == 'title' && <p className="library-toc">
                 건너뛰기: {groups.map(group => <a href={'#group' + group.index}>{group.key}</a>)}
@@ -254,4 +252,18 @@ var Library = React.createClass({
     }
 });
 
-module.exports = Library;
+var LibraryContainer = React.createClass({
+    mixins: [Router.Navigation, Router.State],
+    render() {
+        return <Library
+            {...this.props}
+            query={this.getQuery()}
+            onUpdateQuery={this._onUpdateQuery}
+        />;
+    },
+    _onUpdateQuery(updates) {
+        this.transitionTo('records', {}, {...this.getQuery(), ...updates});
+    }
+});
+
+module.exports = LibraryContainer;

@@ -48,9 +48,9 @@ var PositionSticky = React.createClass({
     },
 
     measure() {
-        this._offsetTop = $(this.getDOMNode()).offset().top;
+        this._offsetTop = $(React.findDOMNode(this)).offset().top;
 
-        var node = $(this.refs.content.getDOMNode());
+        var node = $(React.findDOMNode(this.refs.content));
         var left = node.position().left;
         var right = $('body').width() - (left + node.width());
         var height = node.height();

@@ -14,7 +14,7 @@ var Typeahead = require('./Typeahead');
 
 var TitleEditView = React.createClass({
     componentDidMount() {
-        var typeahead = Typeahead.initSuggest(this.refs.titleInput.getDOMNode());
+        var typeahead = Typeahead.initSuggest(React.findDOMNode(this.refs.titleInput));
         typeahead.on('keypress', event => {
             if (event.keyCode == 13) {
                 this._onSave();
@@ -33,7 +33,7 @@ var TitleEditView = React.createClass({
     },
 
     _onSave() {
-        this.props.onSave(this.refs.titleInput.getDOMNode().value);
+        this.props.onSave(React.findDOMNode(this.refs.titleInput).value);
     },
 
     _onCancel(event) {
@@ -160,11 +160,9 @@ function getStoreState(recordID) {
 }
 
 var RecordDetail = React.createClass({
-    mixins: [Router.Navigation, Router.State],
-
     getInitialState() {
         return {
-            ...getStoreState(this.getParams().recordId),
+            ...getStoreState(this.props.recordId),
             connectedServices: this.props.canEdit &&
                 PreloadData.current_user.connected_services
         };
@@ -182,7 +180,7 @@ var RecordDetail = React.createClass({
     },
 
     _onChange() {
-        this.setState(getStoreState(this.getParams().recordId));
+        this.setState(getStoreState(this.props.recordId));
     },
 
     loadPosts() {
@@ -231,8 +229,7 @@ var RecordDetail = React.createClass({
 
     _onSave(post, publishOptions) {
         PostActions.createPost(this.state.record.id, post, publishOptions);
-        // TODO: preserve sort mode
-        this.transitionTo('records');
+        this.props.onSave();
     },
 
     _onConnectedServicesChange(services) {
@@ -241,4 +238,21 @@ var RecordDetail = React.createClass({
     }
 });
 
-module.exports = RecordDetail;
+var RecordDetailContainer = React.createClass({
+    mixins: [Router.Navigation, Router.State],
+
+    render() {
+        return <RecordDetail
+            {...this.props}
+            recordId={this.getParams().recordId}
+            onSave={this._onSave}
+        />;
+    },
+
+    _onSave() {
+        // TODO: preserve sort mode
+        this.transitionTo('records');
+    }
+});
+
+module.exports = RecordDetailContainer;

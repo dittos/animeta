@@ -16,11 +16,9 @@ var App = React.createClass({
     }
 });
 
-var WorkRoute = React.createClass({
-    mixins: [Router.State],
+var Work = React.createClass({
     render() {
         var work = this.props.work;
-        var episode = this.getParams().episode;
         return <WorkViews.Work
             work={work}
             chart={this.props.chart}
@@ -30,8 +28,22 @@ var WorkRoute = React.createClass({
                 {work.episodes.map(ep =>
                     <Router.Link to="work-episode" params={{episode: ep.number}} className={ep.post_count > 0 ? 'has-post' : ''}>{ep.number}화</Router.Link>)}
             </div>
-            <Router.RouteHandler work={work} key={episode} />
+            {this.props.children}
         </WorkViews.Work>;
+    }
+});
+
+var WorkRoute = React.createClass({
+    mixins: [Router.State],
+    render() {
+        var work = this.props.work;
+        var episode = this.getParams().episode;
+        return <Work
+            {...this.props}
+            episode={this.episode}
+        >
+            <Router.RouteHandler work={work} key={episode} />
+        </Work>;
     }
 });
 

@@ -10,15 +10,12 @@ var Layout = require('./Layout');
 var GlobalHeader = require('./GlobalHeader');
 require('../less/library.less');
 
-var App = React.createClass({
-    mixins: [Router.Navigation, Router.State],
-
+class App extends React.Component {
     render() {
-        var user = PreloadData.owner;
-        var canEdit = PreloadData.current_user && PreloadData.current_user.id == user.id;
-        var key = this.getParams().recordId;
+        var user = this.props.owner;
+        var canEdit = this.props.currentUser && this.props.currentUser.id == user.id;
         return <div>
-            <GlobalHeader currentUser={PreloadData.current_user} />
+            <GlobalHeader currentUser={this.props.currentUser} />
             <Layout.CenteredFullWidth className="user-container">
                 <div className="nav-user">
                     <h1><Link to="records">{user.name} 사용자</Link></h1>
@@ -29,13 +26,31 @@ var App = React.createClass({
                     </p>
                 </div>
                 <div className="user-content">
-                    <Router.RouteHandler
-                        user={user}
-                        canEdit={canEdit}
-                        key={key} />
+                    {this.props.children}
                 </div>
             </Layout.CenteredFullWidth>
         </div>;
+    }
+}
+
+var AppContainer = React.createClass({
+    mixins: [Router.Navigation, Router.State],
+
+    render() {
+        var user = PreloadData.owner;
+        var canEdit = PreloadData.current_user && PreloadData.current_user.id == user.id;
+        var key = this.getParams().recordId;
+        return <App
+            {...this.props}
+            owner={user}
+            currentUser={PreloadData.current_user}
+        >
+            <Router.RouteHandler
+                user={user}
+                canEdit={canEdit}
+                key={key}
+            />
+        </App>;
     }
 });
 
@@ -48,7 +63,7 @@ function onPageTransition() {
     initialLoad = false;
 }
 
-var supportsHistory = require('react-router/modules/utils/supportsHistory');
+var supportsHistory = require('./supportsHistory');
 
 function runApp() {
     var locationStrategy = Router.HistoryLocation;
@@ -72,7 +87,7 @@ function runApp() {
 
     var {Route, DefaultRoute} = Router;
     var routes = (
-        <Route path={libraryPath} handler={App}>
+        <Route path={libraryPath} handler={AppContainer}>
             <DefaultRoute name="records" handler={require('./Library')} />
             <Route name="add-record" path="/records/add/:title?/?" handler={require('./AddRecord')} />
             <Route name="manage-category" path="/records/category/" handler={require('./ManageCategory')} />

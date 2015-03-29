@@ -144,8 +144,8 @@ var Schedule = React.createClass({
         var $content = $(window);
         var scrollTop = 0;
         if (i > 0) {
-            var $group = $(this.refs['group' + i].getDOMNode());
-            var $nav = $(this.refs.nav.getDOMNode());
+            var $group = $(React.findDOMNode(this.refs['group' + i]));
+            var $nav = $(React.findDOMNode(this.refs.nav));
             scrollTop = Math.ceil($group.position().top - $nav.height());
         }
         $content.scrollTop(scrollTop);
@@ -161,10 +161,10 @@ var Schedule = React.createClass({
 
     handleScroll: util.debounce(function() {
         var $content = $(window);
-        var $nav = $(this.refs.nav.getDOMNode());
+        var $nav = $(React.findDOMNode(this.refs.nav));
         var contentOffset = $content.scrollTop() + $nav.height();
         for (var i = WEEKDAYS.length - 1; i >= 0; i--) {
-            var $group = $(this.refs['group' + i].getDOMNode());
+            var $group = $(React.findDOMNode(this.refs['group' + i]));
             if ($group.position().top <= contentOffset) {
                 if (this.state.focusedIndex != i) {
                     this.setState({focusedIndex: i});

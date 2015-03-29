@@ -33,8 +33,6 @@ var CategorySelect = React.createClass({
 });
 
 var AddRecord = React.createClass({
-    mixins: [Router.Navigation, Router.State],
-
     getInitialState() {
         return {
             selectedCategoryId: 0,
@@ -44,15 +42,12 @@ var AddRecord = React.createClass({
     },
 
     render() {
-        // XXX: decode one more time due to react-router bug
-        // https://github.com/rackt/react-router/issues/650
-        var defaultTitle = decodeURIComponent(this.getParams().title || '');
         return <form className="record-add-form">
             <table>
                 <tr>
                     <th>작품 제목</th>
                     <td><input name="work_title" ref="title"
-                        defaultValue={defaultTitle} /></td>
+                        defaultValue={this.props.defaultTitle} /></td>
                 </tr>
                 <tr>
                     <th>감상 상태</th>
@@ -86,7 +81,7 @@ var AddRecord = React.createClass({
     },
 
     componentDidMount() {
-        Typeahead.initSuggest(this.refs.title.getDOMNode());
+        Typeahead.initSuggest(React.findDOMNode(this.refs.title));
     },
 
     _onCategoryChange(categoryId) {
@@ -102,9 +97,9 @@ var AddRecord = React.createClass({
         if (this.state.isRequesting)
             return;
         this.setState({isRequesting: true});
-        var data = $(this.getDOMNode()).serialize();
+        var data = $(React.findDOMNode(this)).serialize();
         RecordActions.addRecord(this.props.user.name, data).then(() => {
-            this.transitionTo('records');
+            this.props.onSave();
         }).always(() => {
             if (this.isMounted())
                 this.setState({isRequesting: false});
@@ -112,4 +107,21 @@ var AddRecord = React.createClass({
     }
 });
 
-module.exports = AddRecord;
+var AddRecordContainer = React.createClass({
+    mixins: [Router.Navigation, Router.State],
+    render() {
+        // XXX: decode one more time due to react-router bug
+        // https://github.com/rackt/react-router/issues/650
+        var defaultTitle = decodeURIComponent(this.getParams().title || '');
+        return <AddRecord
+            {...this.props}
+            defaultTitle={defaultTitle}
+            onSave={this._onSave}
+        />;
+    },
+    _onSave() {
+        this.transitionTo('records');
+    }
+});
+
+module.exports = AddRecordContainer;

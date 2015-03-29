@@ -120,7 +120,7 @@ var ManageCategory = React.createClass({
     },
     _onAdd(event) {
         event.preventDefault();
-        var input = this.refs.nameInput.getDOMNode();
+        var input = React.findDOMNode(this.refs.nameInput);
         CategoryActions.addCategory(this.props.user.name, input.value);
         input.value = '';
     }

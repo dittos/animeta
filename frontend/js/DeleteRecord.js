@@ -4,10 +4,9 @@ var RecordActions = require('./RecordActions');
 var RecordStore = require('./RecordStore');
 
 var DeleteRecord = React.createClass({
-    mixins: [Router.Navigation, Router.State],
     getInitialState() {
         return {
-            record: RecordStore.get(this.getParams().recordId)
+            record: RecordStore.get(this.props.recordId)
         };
     },
     render() {
@@ -20,9 +19,23 @@ var DeleteRecord = React.createClass({
     },
     _onDelete() {
         RecordActions.deleteRecord(this.state.record.id).then(() => {
-            this.transitionTo('records');
+            this.props.onDelete();
         });
     }
 });
 
-module.exports = DeleteRecord;
+var DeleteRecordContainer = React.createClass({
+    mixins: [Router.Navigation, Router.State],
+    render() {
+        return <DeleteRecord
+            {...this.props}
+            recordId={this.getParams().recordId}
+            onDelete={this._onDelete}
+        />;
+    },
+    _onDelete() {
+        this.transitionTo('records');
+    }
+});
+
+module.exports = DeleteRecordContainer;
