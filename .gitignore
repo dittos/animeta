@@ -11,3 +11,4 @@ animeta/static/build/*.png
 animeta/assets.py
 .coverage
 htmlcov
+.env
