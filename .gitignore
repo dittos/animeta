@@ -12,3 +12,4 @@ animeta/assets.py
 .coverage
 htmlcov
 .env
+*.db
