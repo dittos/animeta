@@ -34,12 +34,10 @@ class App extends React.Component {
 }
 
 var AppContainer = React.createClass({
-    mixins: [Router.Navigation, Router.State],
-
     render() {
         var user = PreloadData.owner;
         var canEdit = PreloadData.current_user && PreloadData.current_user.id == user.id;
-        var key = this.getParams().recordId;
+        var key = this.props.params && this.props.params.recordId;
         return <App
             {...this.props}
             owner={user}

@@ -25,11 +25,11 @@ var DeleteRecord = React.createClass({
 });
 
 var DeleteRecordContainer = React.createClass({
-    mixins: [Router.Navigation, Router.State],
+    mixins: [Router.Navigation],
     render() {
         return <DeleteRecord
             {...this.props}
-            recordId={this.getParams().recordId}
+            recordId={this.props.params.recordId}
             onDelete={this._onDelete}
         />;
     },

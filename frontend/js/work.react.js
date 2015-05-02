@@ -34,13 +34,12 @@ var Work = React.createClass({
 });
 
 var WorkRoute = React.createClass({
-    mixins: [Router.State],
     render() {
         var work = this.props.work;
-        var episode = this.getParams().episode;
+        var episode = this.props.params.episode;
         return <Work
             {...this.props}
-            episode={this.episode}
+            episode={episode}
         >
             <Router.RouteHandler work={work} key={episode} />
         </Work>;
@@ -48,11 +47,10 @@ var WorkRoute = React.createClass({
 });
 
 var WorkIndexRoute = React.createClass({
-    mixins: [Router.State],
     render() {
         return <WorkViews.WorkIndex
             work={this.props.work}
-            episode={this.getParams().episode} />;
+            episode={this.props.params.episode} />;
     }
 });
 

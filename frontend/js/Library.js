@@ -253,16 +253,16 @@ var Library = React.createClass({
 });
 
 var LibraryContainer = React.createClass({
-    mixins: [Router.Navigation, Router.State],
+    mixins: [Router.Navigation],
     render() {
         return <Library
             {...this.props}
-            query={this.getQuery()}
+            query={this.props.query}
             onUpdateQuery={this._onUpdateQuery}
         />;
     },
     _onUpdateQuery(updates) {
-        this.transitionTo('records', {}, {...this.getQuery(), ...updates});
+        this.transitionTo('records', {}, {...this.props.query, ...updates});
     }
 });
 

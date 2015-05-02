@@ -239,12 +239,12 @@ var RecordDetail = React.createClass({
 });
 
 var RecordDetailContainer = React.createClass({
-    mixins: [Router.Navigation, Router.State],
+    mixins: [Router.Navigation],
 
     render() {
         return <RecordDetail
             {...this.props}
-            recordId={this.getParams().recordId}
+            recordId={this.props.params.recordId}
             onSave={this._onSave}
         />;
     },
