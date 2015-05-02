@@ -1,6 +1,4 @@
 jest.dontMock('../PostStore');
-jest.dontMock('object.assign');
-Object.assign = require('object.assign');
 
 describe('PostStore', function() {
     var PostStore;

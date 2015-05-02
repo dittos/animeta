@@ -24,7 +24,7 @@ var Nav = React.createClass({
             tabs.push(
                 <span className={'tab' + (i == this.props.focusedIndex ? ' active' : '')}
                         key={'tab' + i}
-                        onClick={(i => this.props.onDaySelect(i)).bind(null, i)}>
+                        onClick={this.props.onDaySelect.bind(null, i)}>
                     {WEEKDAYS[i]}
                 </span>
             );

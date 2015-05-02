@@ -1,5 +1,6 @@
-require('node-jsx').install({harmony: true});
-require('object.assign').shim();
+require('babel/register')({
+    optional: ['es7.objectRestSpread']
+});
 require('moment').locale('ko');
 
 var React = require('react');

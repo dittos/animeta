@@ -1,13 +1,9 @@
-require('es5-shim/es5-shim');
-require('es5-shim/es5-sham');
 require('react/addons');
 
 var $ = require('jquery');
 var cookie = require('cookie');
-var assign = require('object.assign');
 var moment = require('moment');
 
-assign.shim();
 moment.locale('ko');
 
 function csrfSafeMethod(method) {

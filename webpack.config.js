@@ -28,7 +28,7 @@ module.exports = config = {
     },
     module: {
         loaders: [
-            { test: /\.js[x]?$/, loader: __dirname + '/jsx-loader?harmony&target=es3' },
+            { test: /\.js[x]?$/, exclude: /node_modules/, loader: 'babel-loader?optional=es7.objectRestSpread&blacklist=es3.propertyLiterals' },
             { test: /\.less$/, loader: 'style!css!autoprefixer!less' },
             { test: /\.less\?extract$/, loader: ExtractTextPlugin.extract('style', 'css!autoprefixer!less') },
             { test: /\.(png|gif|svg)$/, loader: 'url' }
@@ -109,6 +109,8 @@ if (process.env.NODE_ENV == 'production') {
         "-W058": false, // new A;
 
         // Relaxing options
-        eqnull: true
+        eqnull: true,
+        globalstrict: true,
+        proto: true
     };
 }
