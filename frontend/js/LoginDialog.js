@@ -6,8 +6,6 @@ var LoginDialog = React.createClass({
         return {
             submitted: false,
             errors: false,
-            username: '',
-            password: '',
             isTransient: true
         };
     },
@@ -24,14 +22,14 @@ var LoginDialog = React.createClass({
                     <div className="login-row-group">
                     <div className="login-row">
                         <label>아이디</label>
-                        <input name="username" maxLength="30" autoFocus value={this.state.username} onChange={e => this.setState({username: e.target.value})} />
+                        <input name="username" maxLength="30" autoFocus ref="username" />
                     </div>
                     <div className="login-row">
                         <label>암호</label>
-                        <input type="password" name="password" value={this.state.password} onChange={e => this.setState({password: e.target.value})} />
+                        <input type="password" name="password" ref="password" />
                     </div>
                     </div>
-                    {!this.state.submitted && <button type="submit" className="btn-login" disabled={!this._isValid()}>로그인</button>}
+                    {!this.state.submitted && <button type="submit" className="btn-login">로그인</button>}
                     <div className="login-check-row">
                         <label>
                             <input type="checkbox" checked={!this.state.isTransient} onChange={e => this.setState({isTransient: !e.target.checked})} />
@@ -46,8 +44,8 @@ var LoginDialog = React.createClass({
         event.preventDefault();
         this.setState({submitted: true});
         $.post('/api/v2/auth', {
-            'username': this.state.username,
-            'password': this.state.password,
+            'username': React.findDOMNode(this.refs.username).value,
+            'password': React.findDOMNode(this.refs.password).value,
             'transient': this.state.isTransient ? 'true' : 'false'
         }).then(result => {
             if (result.ok) {
@@ -62,10 +60,6 @@ var LoginDialog = React.createClass({
                 });
             }
         });
-    },
-    _isValid() {
-        return this.state.username.length > 0 &&
-            this.state.password.length > 0;
     }
 });
 
