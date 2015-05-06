@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-import json
 import requests
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
-from work.models import Work, TitleMapping
+from work.models import TitleMapping
 from chart.models import weekly, PopularWorksChart
 from record.models import History
 from api import serializers
@@ -43,11 +41,21 @@ def detail(request, title):
         'daum_api_key': settings.DAUM_API_KEY,
         'chart': _get_chart(),
     }
-    return render(request, "work.html", {
+    content_data = {
         'title': title,
         'preload_data': preload_data,
         'html': _call_backend('work', preload_data),
-    })
+    }
+    try:
+        studios = u','.join(preload_data['work']['metadata']['studios'])
+        content_data.update({
+            'studios': studios,
+            'description': u'{} 제작'.format(studios),
+            'keywords': u','.join([title, studios]),
+        })
+    except KeyError:
+        pass
+    return render(request, "work.html", content_data)
 
 def episode_detail(request, title, ep):
     ep = int(ep)

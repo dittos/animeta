@@ -1,15 +1,12 @@
 {% extends 'base_js.html' %}
 
 {% block title %}{{ title }} - 애니메타{% endblock %}
-
+{% block og_url %}{% url "work.views.detail" title %}{% endblock %}
+{% block og_type %}tv_show{% endblock %}
+{% block tw_image %}{{ preload_data.work.metadata.image_url }}{% endblock %}
 {% block head-extra %}
-    <meta property="og:title" content="{{ title }}">
-    <meta property="og:type" content="tv_show">
-    <meta property="og:url" content="http://animeta.net{% url "work.views.detail" title %}">
-    <meta property="og:site_name" content="animeta">
-    <meta property="og:description" content="">
-    <meta property="fb:app_id" content="153413084690553">
     <link href="{{ STATIC_URL }}build/{{ asset_filenames.work.css }}" rel="stylesheet">
+
 {% endblock %}
 
 {% block js %}
