@@ -4,26 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}애니메타{% endblock %}</title>
-    <meta name="title" content="{% if title %}{{ title }}{% else %}애니메타{% endif %}"/>
+    <meta name="title" content="{% if title %}{{ title }}{% else %}애니메타{% endif %}">
     <meta name="description"
-          content="{% if description %}{{ description }}{% else %}애니메타는 애니메이션, 만화, 드라마 등의 순위를
-                   확인하고 감상 기록을 관리할 수 있는 서비스입니다.{% endif %}" />
+          content="{% if meta_description %}{{ meta_description }}{% else %}애니메타는 애니메이션, 만화, 드라마 등의 순위를
+                   확인하고 감상 기록을 관리할 수 있는 서비스입니다.{% endif %}">
     <meta name="keywords"
-          content="{% if keywords %}{{ keywords }}{% else %}애니메타, 애니메이션, 만화, 드라마,
-          순위, 감상{% endif %}"/>
+          content="{% if meta_keywords %}{{ meta_keywords }}{% else %}애니메타, 애니메이션, 만화, 드라마,
+          순위, 감상{% endif %}">
 
     <meta property="og:site_name" content="animeta">
     <meta property="og:title" content="{% if title %}{{ title }}{% else %}애니메타{% endif %}">
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
     <meta property="og:url" content="http://animeta.net{% block og_url %}/{% endblock %}">
-    <meta property="og:description" content="{% if description %}{{ description }}{% else %}애니메타는 애니메이션, 만화, 드라마 등의 순위를
+    <meta property="og:description" content="{% if meta_description %}{{ meta_description }}{% else %}애니메타는 애니메이션, 만화, 드라마 등의 순위를
                    확인하고 감상 기록을 관리할 수 있는 서비스입니다.{% endif %}">
     <meta property="fb:app_id" content="153413084690553">
 
     <meta name="twitter:card" content="summary"/>
     <meta name="twitter:url" content="http://animeta.net{% block tw_url %}/{% endblock %}"/>
     <meta name="twitter:title" content="{% if title %}{{ title }}{% else %}애니메타{% endif %}"/>
-    <meta name="twitter:description" content="{% if description %}{{ description }}{% else %}애니메타는 애니메이션, 만화, 드라마 등의 순위를
+    <meta name="twitter:description" content="{% if meta_description %}{{ meta_description }}{% else %}애니메타는 애니메이션, 만화, 드라마 등의 순위를
                    확인하고 감상 기록을 관리할 수 있는 서비스입니다.{% endif %}"/>
     <meta name="twitter:image:src"
           content="{% block tw_image %}{{ STATIC_URL }}apple-touch-icon-180x.png{% endblock %}"/>

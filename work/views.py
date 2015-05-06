@@ -49,9 +49,8 @@ def detail(request, title):
     try:
         studios = u','.join(preload_data['work']['metadata']['studios'])
         content_data.update({
-            'studios': studios,
-            'description': u'{} 제작'.format(studios),
-            'keywords': u','.join([title, studios]),
+            'meta_description': u'{} 제작'.format(studios),
+            'meta_keywords': u','.join([title, studios]),
         })
     except KeyError:
         pass
