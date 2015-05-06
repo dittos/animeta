@@ -33,7 +33,7 @@ if (!document.createElementNS || !document.createElementNS('http://www.w3.org/20
 {% if not settings.DEBUG %}
 <script>
 Raven.config('http://fb3fd1fc77c94c4799d9fc7228260818@sentry.sapzil.org/3', {
-    //whitelistUrls: [/example\.com/]
+    ignoreErrors: ['hideGuidePopup']
 }).install();
 </script>
 {% endif %}
