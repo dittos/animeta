@@ -17,6 +17,8 @@
     <meta property="og:url" content="http://animeta.net{% block og_url %}/{% endblock %}">
     <meta property="og:description" content="{% if meta_description %}{{ meta_description }}{% else %}애니메타는 애니메이션, 만화, 드라마 등의 순위를
                    확인하고 감상 기록을 관리할 수 있는 서비스입니다.{% endif %}">
+    <meta property="og:image"
+          content="{% block og_image %}{{ STATIC_URL }}apple-touch-icon-180x.png{% endblock %}"/>
     <meta property="fb:app_id" content="153413084690553">
 
     <meta name="twitter:card" content="summary"/>

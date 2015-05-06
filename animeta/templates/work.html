@@ -3,7 +3,8 @@
 {% block title %}{{ title }} - 애니메타{% endblock %}
 {% block og_url %}{% url "work.views.detail" title %}{% endblock %}
 {% block og_type %}tv_show{% endblock %}
-{% block tw_image %}{{ preload_data.work.metadata.image_url }}{% endblock %}
+{% block og_image %}{{ preload_data.work.metadata.image_url|default:block.super }}{% endblock %}
+{% block tw_image %}{{ preload_data.work.metadata.image_url|default:block.super }}{% endblock %}
 {% block head-extra %}
     <link href="{{ STATIC_URL }}build/{{ asset_filenames.work.css }}" rel="stylesheet">
 
