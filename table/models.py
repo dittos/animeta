@@ -44,8 +44,8 @@ def item_json(item, period):
     data['links'] = {}
     if 'website' in item:
         data['links']['website'] = item['website']
-    if 'enha_ref' in item:
-        data['links']['enha'] = enha_link(item['enha_ref'])
+    if 'namu_ref' in item:
+        data['links']['namu'] = namu_link(item['namu_ref'])
     if 'ann_id' in item:
         data['links']['ann'] = 'http://www.animenewsnetwork.com/encyclopedia/anime.php?id=' + str(item['ann_id'])
 
@@ -91,14 +91,14 @@ def parse_date(s, period):
     h, min = map(int, time.split(':'))
     return datetime.datetime(y, m, d, h, min)
 
-def enha_link(ref):
+def namu_link(ref):
     t = ref.rsplit('#', 1)
     if len(t) == 2:
         page, anchor = t
     else:
         page = ref
         anchor = None
-    url = 'http://mirror.enha.kr/wiki/' + urllib.quote(page.encode('utf-8'))
+    url = 'https://namu.wiki/w/' + urllib.quote(page.encode('utf-8'))
     if anchor:
         url += '#' + urllib.quote(anchor.encode('utf-8'))
     return url
