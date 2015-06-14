@@ -169,8 +169,8 @@ var Sidebar = React.createClass({
                 <div className="links">
                 {metadata.links.website &&
                     <p><i className="fa fa-globe" /> <a href={metadata.links.website} target="_blank">공식 사이트</a></p>}
-                {metadata.links.enha &&
-                    <p><i className="fa fa-globe" /> <a href={metadata.links.enha} target="_blank">엔하위키 미러</a></p>}
+                {metadata.links.namu &&
+                    <p><i className="fa fa-globe" /> <a href={metadata.links.namu} target="_blank">나무위키</a></p>}
                 {metadata.links.ann &&
                     <p><i className="fa fa-globe" /> <a href={metadata.links.ann} target="_blank">AnimeNewsNetwork (영문)</a></p>}
                 </div>
