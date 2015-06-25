@@ -24,6 +24,12 @@ class Period(object):
     def __str__(self):
         return '%dQ%d' % (self.year, self.quarter)
 
+    def prev(self):
+        if self.quarter == 1:
+            return Period(self.year - 1, 4)
+        else:
+            return Period(self.year, self.quarter - 1)
+
     @classmethod
     def parse(cls, s):
         # yyyyQq
