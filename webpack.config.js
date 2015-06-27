@@ -19,6 +19,7 @@ module.exports = config = {
         work: './frontend/js/work.react.js',
         post: './frontend/js/post.react.js',
         index: './frontend/js/index.react.js',
+        chart: './frontend/js/chart.react.js',
         common: './frontend/js/common.js'
     },
     output: {
