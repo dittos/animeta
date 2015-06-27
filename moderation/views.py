@@ -19,7 +19,7 @@ def index(request):
     queryset = Work.objects.order_by('-id')
     if only_orphans:
         queryset = queryset.filter(index__record_count=0)
-    return render(request, 'moderation/index.html', {
+    return render(request, 'moderation.html', {
         'recent_works': queryset[offset:offset+limit],
         'prev_offset': offset - limit if offset > 0 else None,
         'next_offset': offset + limit,
@@ -46,7 +46,7 @@ def work_detail(request, work_id):
     for mapping in title_mappings:
         mapping.count = mapping.record_count
     title_mappings.sort(key=lambda m: m.count, reverse=True)
-    return render(request, 'moderation/index.html', {'work': work, 'title_mappings': title_mappings})
+    return render(request, 'moderation.html', {'work': work, 'title_mappings': title_mappings})
 
 @user_passes_test(test_is_staff)
 def merge_work(request, work_id):

@@ -21,7 +21,6 @@ var SignupRoute = React.createClass({
             </div>
             {this._renderError()}
             <form method="post" action="/signup/">
-                <input type="hidden" name="csrfmiddlewaretoken" value={this.state.csrfToken} />
                 <div className="signup-row-group">
                 <div className="signup-row signup-row-hint">
                     <label>아이디</label>

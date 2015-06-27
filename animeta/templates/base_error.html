@@ -1,0 +1,28 @@
+{% extends "base_js.html" %}
+
+{% block head-extra %}
+<style>
+.content {
+    margin: 0 auto;
+    max-width: 600px;
+    text-align: center;
+}
+.footer {
+    font-weight: bold;
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+}
+.footer a {
+    color: #4bb000;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+{% block error_content %}
+{% endblock %}
+
+<p class="footer"><a href="/">animeta</a></p>
+</div>
+{% endblock %}

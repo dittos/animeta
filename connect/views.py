@@ -56,7 +56,6 @@ def twitter_disconnect(request):
     if request.method == 'POST':
         setting = TwitterSetting.objects.get(user=request.user)
         setting.delete()
-        messages.success(request, u'인증 정보를 삭제하였습니다.')
         return redirect('/settings/')
 
 @login_required

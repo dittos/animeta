@@ -1,9 +1,7 @@
-{% extends "base.html" %}
+{% extends "base_error.html" %}
 
-{% block nav %}
+{% block error_content %}
 <h1>오류가 발생하였습니다.</h1>
-{% endblock %}
 
-{% block content %}
-<p>오류 정보가 관리자에게 자동으로 전송됐습니다. 최대한 빨리 고치겠습니다.<br />한참 뒤에도 오류가 계속 발생한다면, <a href="/support/">버그 신고</a>에 글을 써주세요.</p>
+<p>오류 정보가 관리자에게 자동으로 전송됐습니다. 최대한 빨리 고치겠습니다.<br>한참 뒤에도 오류가 계속 발생한다면, <a href="/support/">버그 신고</a>에 글을 써주세요.</p>
 {% endblock %}

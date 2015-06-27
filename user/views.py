@@ -21,20 +21,17 @@ class SettingsView(TemplateView):
     template_name = 'user/settings.html'
 
     def get(self, request, *args, **kwargs):
-        self.password_change_form = PasswordChangeForm(user=request.user)
-        return super(SettingsView, self).get(request, *args, **kwargs)
+        return library(request, request.user.username)
 
     def post(self, request, *args, **kwargs):
-        self.password_change_form = PasswordChangeForm(user=request.user, data=request.POST)
-        if self.password_change_form.is_valid():
-            self.password_change_form.save()
-            messages.success(request, u'암호를 바꿨습니다.')
-            return redirect('/settings/')
+        self.form = PasswordChangeForm(user=request.user, data=request.POST)
+        if self.form.is_valid():
+            self.form.save()
         return super(SettingsView, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         return {
-            'password_change_form': self.password_change_form,
+            'form': self.form,
             'services': get_connected_services(self.request.user),
         }
 

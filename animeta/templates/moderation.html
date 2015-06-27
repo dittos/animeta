@@ -1,4 +1,32 @@
-{% extends 'base.html' %}
+{% extends 'base_js.html' %}
+
+{% block head-extra %}
+<style>
+.tt-dropdown-menu {
+  display: block;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  max-height: 300px;
+  width: 300px;
+  overflow-y: auto;
+  margin-top: -1px;
+}
+.tt-suggestion {
+  display: block;
+  padding: 5px !important;
+  cursor: pointer;
+}
+.tt-suggestion .count {
+  font-size: 11px;
+  color: #999;
+  white-space: nowrap;
+  display: inline-block;
+}
+.tt-suggestion.tt-cursor {
+  background-color: #f4f4f4;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 
@@ -118,6 +146,9 @@
 {% endblock %}
 
 {% block js %}
+<script type="text/javascript" src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.2.min.js"></script>
+<script src="//cdn.jsdelivr.net/typeahead.js/0.10.2/typeahead.jquery.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}common.js?1"></script>
 <script>
 var modSearchSource = cachingSource(debouncingSource(function (q, cb) {
     $.getJSON('/search/?min_record_count=0', {q: q}, cb);

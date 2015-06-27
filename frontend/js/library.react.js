@@ -92,6 +92,7 @@ function runApp() {
             <Route name="delete-record" path="/records/:recordId/delete/" handler={require('./DeleteRecord')} />
             <Route name="record" path="/records/:recordId/" handler={require('./RecordDetail')} />
             <Route name="history" path={libraryPath + "history/"} handler={require('./LibraryHistory')} />
+            <Route name="settings" path="/settings/" handler={require('./Settings')} />
         </Route>
     );
     RecordActions.loadRecords(PreloadData.records);

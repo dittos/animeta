@@ -91,7 +91,7 @@ if (process.env.NODE_ENV == 'production') {
         commonsPlugin,
         new ExtractTextPlugin('[name].css')
     ].concat(config.plugins);
-    config.devtool = 'eval';
+    config.devtool = 'cheap-source-map';
     config.module.postLoaders = [
         {
             test: /\.js$/,

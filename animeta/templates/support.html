@@ -1,11 +1,11 @@
-{% extends 'base.html' %}
+{% extends 'base_js.html' %}
 
-{% block nav %}
-<h1>버그 신고 및 기능 건의</h1>
-{% endblock %}
+{% block title %}버그 제보 / 건의{% endblock %}
 
 {% block content %}
-<div id="disqus_thread"></div>
+<div style="margin: 0 auto; max-width: 960px">
+    <div id="disqus_thread"></div>
+</div>
 <script type="text/javascript">
     var disqus_shortname = 'animeta';
     var disqus_identifier = 'support';

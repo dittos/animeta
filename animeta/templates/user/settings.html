@@ -1,31 +1,8 @@
-{% extends "base.html" %}
-
-{% block nav %}
-<h1><a href="/settings/">설정</a></h1>
-{% endblock %}
-
-{% block content %}
-<form method="post" action="">
-{% csrf_token %}
-<h2>암호 바꾸기</h2>
-<table>
-{{ password_change_form.as_table }}
-<tr>
-    <th></th>
-    <td><input type="submit" value="바꾸기" class="button" /></td>
-</tr>
-</table>
-</form>
-
-<h2>트위터 연동</h2>
-{% if "twitter" in services %}
-<form method="post" action="/connect/twitter/disconnect/">
-    {% csrf_token %}
-    <input type="submit" value="연결 끊기" />
-</form>
+<script>
+{% if form.is_valid %}
+alert('암호를 변경했습니다.');
 {% else %}
-<form action="/connect/twitter/">
-    <input type="submit" value="연결하기" />
-</form>
+alert('암호를 변경하지 못했습니다. 입력하신 암호를 확인해주세요.');
 {% endif %}
-{% endblock %}
+location.href = '/settings/';
+</script>

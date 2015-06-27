@@ -1,8 +1,8 @@
 require('react/addons');
 
 var $ = require('jquery');
-var cookie = require('cookie');
 var moment = require('moment');
+var CSRF = require('./CSRF');
 
 moment.locale('ko');
 
@@ -13,8 +13,7 @@ function csrfSafeMethod(method) {
 $.ajaxSetup({
     beforeSend: function(xhr, settings) {
         if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-            var csrfToken = cookie.parse(document.cookie).csrftoken;
-            xhr.setRequestHeader("X-CSRFToken", csrfToken);
+            xhr.setRequestHeader("X-CSRFToken", CSRF.getToken());
         }
     }
 });
