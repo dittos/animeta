@@ -7,10 +7,7 @@ env
 settings_local.py
 node_modules
 animeta/settings.py
-animeta/static/build/*.css
-!animeta/static/build/common.css
-animeta/static/build/*.js
-animeta/static/build/*.png
+animeta/static/build/
 animeta/assets.py
 .coverage
 htmlcov
