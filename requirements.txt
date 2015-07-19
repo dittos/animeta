@@ -1,4 +1,4 @@
-Django==1.7.2
+Django==1.8.3
 git+git://github.com/jbalogh/django-queryset-transform.git#egg=django-queryset-transform
 httplib2==0.8
 oauth2==1.5.211
