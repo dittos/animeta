@@ -67,11 +67,13 @@ var GlobalHeader = React.createClass({
         };
     },
     render() {
-        return <Layout.CenteredFullWidth className="header">
-            <Layout.LeftRight className="header-inner"
-                left={this._renderLeft()}
-                right={this._renderRight()} />
-        </Layout.CenteredFullWidth>;
+        return <div className="header-container">
+            <Layout.CenteredFullWidth className="header">
+                <Layout.LeftRight className="header-inner"
+                    left={this._renderLeft()}
+                    right={this._renderRight()} />
+            </Layout.CenteredFullWidth>
+        </div>;
     },
     _renderLeft() {
         return <div>
@@ -80,7 +82,7 @@ var GlobalHeader = React.createClass({
                 <i className="fa fa-bars" />
             </div>
             <div className="logo">
-                <a href="/">animeta</a>
+                <a href="/">애니메타</a>
             </div>
             <Search />
             <div className="menu-global"

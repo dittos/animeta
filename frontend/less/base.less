@@ -1,4 +1,12 @@
 @color-main: #4bb000;
+@color-primary: #4bb000;
+@color-primary-muted: mix(@color-primary, #fff, 15%);
+@color-text-dark: hsl(hue(@color-primary), 1%, 36%);
+@color-text-light: hsl(hue(@color-primary), 1%, 60%);
+@color-border: hsl(hue(@color-primary), 1%, 85%);
+@button-height: 24px;
+@button-hpadding: 10px;
+@nav-height: 50px;
 @z-overlay: 1000;
 @z-modal: 2000;
 
@@ -6,6 +14,7 @@ body, input, textarea, select, optgroup, option, button {
     margin: 0;
 	font-family: "Helvetica Neue",
         "HiraKakuProN-W3","Hiragino Sans GB W3",
+        "Nanum Gothic",
         "Apple SD Gothic Neo","Malgun Gothic",
         sans-serif;
 }
@@ -15,7 +24,7 @@ body, input, textarea, select, optgroup, option, button {
 .mixin-dropdown {
     position: absolute;
     z-index: @z-overlay;
-    margin-top: 8px;
+    margin-top: -8px;
     background-color: #fff;
     border: 1px solid #ccc;
     width: 140px;
@@ -33,56 +42,76 @@ body, input, textarea, select, optgroup, option, button {
     }
 }
 
+// Push down body
+.header-container {
+    height: @nav-height;
+}
+
 .header {
-    border-bottom: 1px solid @color-main;
+    background-color: @color-primary;
+    line-height: 1;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
 
     .header-inner {
-        padding: 16px 0;
         position: relative; // this is needed by .menu-user
+        height: @nav-height;
     }
 
     .logo {
         float: left;
+        line-height: @nav-height;
         a {
-            display: block;
-            width: 122px;
-            height: 24px;
-            text-indent: -9999px;
-            background-image: url('../img/animeta.svg');
-            background-size: 122px 24px;
-            background-repeat: no-repeat;
-            overflow: hidden;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 1px 0 rgba(0, 0, 0, 40%);
+            text-decoration: none;
         }
     }
 
     .global-search {
         float: left;
         margin-left: 20px;
+        padding-top: (@nav-height - @button-height) / 2;
+        line-height: 1;
+        height: @button-height;
     }
 
     .account {
-        line-height: 24px;
+        line-height: @nav-height;
     }
 
     .btn {
         display: inline-block;
-        line-height: 1;
-        border: 1px solid #666;
-        padding: 8px - 1px 16px - 1px;
-        border-radius: 5px;
-        color: #444;
+        border: 1px solid;
+        border-radius: 2px;
+        font-size: 12px;
+        height: @button-height - 1px * 2;
+        line-height: @button-height - 1px * 2;
+        padding: 0 @button-hpadding;
+        cursor: pointer;
+        vertical-align: middle;
         text-decoration: none;
-        font-size: 13px;
         margin-left: 8px;
     }
 
     .btn-signup {
-        border-color: @color-main;
-        background: @color-main;
-        color: #fff;
+        border-color: #fff;
+        background: #fff;
+        color: @color-primary;
+    }
+
+    .btn-login {
+        border-color: @color-primary-muted;
+        color: @color-primary-muted;
     }
 
     .btn-user {
+        border-color: @color-primary-muted;
+        color: @color-primary-muted;
         .fa-user { margin-right: 5px; }
         .fa-caret-down { margin-left: 10px; }
     }
@@ -96,6 +125,7 @@ body, input, textarea, select, optgroup, option, button {
         position: fixed;
         bottom: 8px;
         right: 10px;
+        line-height: 1;
         z-index: @z-overlay;
         a {
             float: right;
@@ -113,10 +143,6 @@ body, input, textarea, select, optgroup, option, button {
     }
 }
 
-.no-svg .logo a {
-    background-image: url('../img/animeta.gif');
-}
-
 .global-search {
     width: 200px;
     font-size: 14px;
@@ -126,6 +152,7 @@ body, input, textarea, select, optgroup, option, button {
     }
 
     .tt-hint, .tt-input {
+        height: @button-height;
         padding: 5px;
         border: 1px solid #bbb;
         width: 100%;
@@ -348,12 +375,13 @@ body, input, textarea, select, optgroup, option, button {
         float: left;
         width: 30px;
         height: 30px;
-        line-height: 30px;
+        line-height: @nav-height;
         margin-right: 10px;
         text-align: center;
         cursor: pointer;
+        color: @color-primary-muted;
         &.active {
-            color: @color-main;
+            color: #fff;
         }
     }
 
@@ -383,13 +411,15 @@ body, input, textarea, select, optgroup, option, button {
     .menu-global {
         float: left;
         margin-left: 20px;
-        line-height: 24px;
+        line-height: @nav-height;
         a {
-            color: #444;
+            color: @color-primary-muted;
             text-decoration: none;
             margin-right: 1em;
+            font-size: 14px;
+            font-weight: bold;
             &:hover {
-                color: @color-main;
+                color: #fff;
             }
         }
     }
