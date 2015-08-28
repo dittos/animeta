@@ -1,4 +1,5 @@
 jest.dontMock('../RecordStore');
+jest.dontMock('flux/lib/FluxStore');
 
 describe('RecordStore', function() {
     var RecordStore;

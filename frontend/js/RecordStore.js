@@ -1,105 +1,95 @@
-var events = require('events');
 var _ = require('lodash');
+var {ReduceStore} = require('flux/utils');
 var Dispatcher = require('./Dispatcher');
 
-var _events = new events.EventEmitter;
-var _records = {};
-
-exports.addChangeListener = function(listener) {
-    _events.on('change', listener);
-};
-
-exports.removeChangeListener = function(listener) {
-    _events.removeListener('change', listener);
-};
-
-function emitChange() {
-    _events.emit('change');
-}
-
-exports.getCount = function() {
-    return _.size(_records);
-};
-
-exports.getCategoryStats = function() {
-    return _.countBy(_records, record => record.category_id || 0);
-};
-
-exports.getStatusTypeStats = function() {
-    return _.countBy(_records, 'status_type');
-};
-
-exports.query = function(statusType, categoryId, sortBy) {
-    var chain = _(_records);
-    if (statusType) {
-        chain = chain.filter(record => record.status_type == statusType);
-    }
-    if (categoryId === 0 || categoryId) {
-        chain = chain.filter(record => (record.category_id || 0) == categoryId);
-    }
-    chain = chain.values();
-    if (sortBy == 'date') {
-        chain = chain.sortBy('created_at').reverse();
-    } else if (sortBy == 'title') {
-        chain = chain.sortBy('title');
-    }
-    return chain.value();
-};
-
-exports.get = function(id) {
-    return _records[id];
-};
-
-var actions = {
-    loadRecords({records}) {
+var reducers = {
+    loadRecords(_records, {records}) {
         records.forEach(record => {
             _records[record.id] = record;
         });
-        emitChange();
     },
-    updateRecordTitle({recordID, title}) {
+    updateRecordTitle(_records, {recordID, title}) {
         _records[recordID].title = title;
-        emitChange();
     },
-    updateRecordCategory({recordID, categoryID}) {
+    updateRecordCategory(_records, {recordID, categoryID}) {
         _records[recordID].category_id = categoryID;
-        emitChange();
     },
-    createPendingPost({recordID, post}) {
+    createPendingPost(_records, {recordID, post}) {
         var record = _records[recordID];
         record.status = post.status;
         record.status_type = post.status_type;
         record.updated_at = +(new Date);
         record.has_newer_episode = false;
-        emitChange();
     },
-    resolvePendingPost({updatedRecord}) {
+    resolvePendingPost(_records, {updatedRecord}) {
         _records[updatedRecord.id] = updatedRecord;
-        emitChange();
     },
-    addRecord({record}) {
+    addRecord(_records, {record}) {
         _records[record.id] = record;
-        emitChange();
     },
-    deleteRecord({recordID}) {
+    deleteRecord(_records, {recordID}) {
         delete _records[recordID];
-        emitChange();
     },
-    removeCategory({categoryID}) {
+    removeCategory(_records, {categoryID}) {
         _.each(_records, record => {
             if (record.category_id == categoryID)
                 record.category_id = 0;
         });
-        emitChange();
     },
-    deletePost({updatedRecord}) {
+    deletePost(_records, {updatedRecord}) {
         _records[updatedRecord.id] = updatedRecord;
-        emitChange();
     }
 };
 
-exports.dispatchToken = Dispatcher.register(payload => {
-    var action = actions[payload.type];
-    if (action)
-        action(payload);
-});
+class RecordStore extends ReduceStore {
+    getInitialState() {
+        return {};
+    }
+
+    getCount() {
+        return _.size(this.getState());
+    }
+
+    getCategoryStats() {
+        return _.countBy(this.getState(), record => record.category_id || 0);
+    }
+
+    getStatusTypeStats() {
+        return _.countBy(this.getState(), 'status_type');
+    }
+
+    query(statusType, categoryId, sortBy) {
+        var chain = _(this.getState());
+        if (statusType) {
+            chain = chain.filter(record => record.status_type == statusType);
+        }
+        if (categoryId === 0 || categoryId) {
+            chain = chain.filter(record => (record.category_id || 0) == categoryId);
+        }
+        chain = chain.values();
+        if (sortBy == 'date') {
+            chain = chain.sortBy('created_at').reverse();
+        } else if (sortBy == 'title') {
+            chain = chain.sortBy('title');
+        }
+        return chain.value();
+    }
+
+    get(id) {
+        return this.getState()[id];
+    }
+
+    reduce(state, action) {
+        const reducer = reducers[action.type];
+        if (reducer)
+            reducer(state, action);
+        return state;
+    }
+
+    areEqual() {
+        // Currently mutated in-place
+        return false;
+    }
+}
+
+module.exports = new RecordStore(Dispatcher);

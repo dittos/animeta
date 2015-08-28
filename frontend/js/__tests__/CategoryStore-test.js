@@ -1,4 +1,6 @@
+jest.dontMock('../Dispatcher');
 jest.dontMock('../CategoryStore');
+jest.dontMock('flux/lib/FluxStore');
 
 describe('CategoryStore', function() {
     var CategoryStore;
@@ -17,7 +19,7 @@ describe('CategoryStore', function() {
     beforeEach(function() {
         var Dispatcher = require('../Dispatcher');
         CategoryStore = require('../CategoryStore');
-        callback = Dispatcher.register.mock.calls[0][0];
+        callback = Dispatcher.dispatch.bind(Dispatcher);
         initStore();
     });
 

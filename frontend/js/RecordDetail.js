@@ -169,14 +169,14 @@ var RecordDetail = React.createClass({
     },
 
     componentDidMount() {
-        RecordStore.addChangeListener(this._onChange);
-        PostStore.addChangeListener(this._onChange);
+        this._recordStore = RecordStore.addListener(this._onChange);
+        this._postStore = PostStore.addListener(this._onChange);
         this.loadPosts();
     },
 
     componentWillUnmount() {
-        RecordStore.removeChangeListener(this._onChange);
-        PostStore.removeChangeListener(this._onChange);
+        this._recordStore && this._recordStore.remove();
+        this._postStore && this._postStore.remove();
     },
 
     _onChange() {

@@ -1,4 +1,6 @@
+jest.dontMock('../Dispatcher');
 jest.dontMock('../PostStore');
+jest.dontMock('flux/lib/FluxStore');
 
 describe('PostStore', function() {
     var PostStore;
@@ -7,7 +9,7 @@ describe('PostStore', function() {
     beforeEach(function() {
         var Dispatcher = require('../Dispatcher');
         PostStore = require('../PostStore');
-        callback = Dispatcher.register.mock.calls[0][0];
+        callback = Dispatcher.dispatch.bind(Dispatcher);
     });
 
     it('loads record posts', function() {

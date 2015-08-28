@@ -63,10 +63,10 @@ var ManageCategory = React.createClass({
         this._onStoreChange();
     },
     componentDidMount() {
-        CategoryStore.addChangeListener(this._onStoreChange);
+        this._categoryStore = CategoryStore.addListener(this._onStoreChange);
     },
     componentWillUnmount() {
-        CategoryStore.removeChangeListener(this._onStoreChange);
+        this._categoryStore && this._categoryStore.remove();
     },
     render() {
         var items = this.state.categoryList.map(category =>

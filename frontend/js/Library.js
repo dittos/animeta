@@ -171,11 +171,11 @@ var LibraryHeader = React.createClass({
 
 var Library = React.createClass({
     componentDidMount() {
-        RecordStore.addChangeListener(this._onChange);
+        this._recordStore = RecordStore.addListener(this._onChange);
     },
 
     componentWillUnmount() {
-        RecordStore.removeChangeListener(this._onChange);
+        this._recordStore && this._recordStore.remove();
     },
 
     _onChange() {

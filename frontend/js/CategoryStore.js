@@ -1,51 +1,47 @@
-var events = require('events');
 var Dispatcher = require('./Dispatcher');
+var {ReduceStore} = require('flux/utils');
 
-var _events = new events.EventEmitter;
-var _categories = [];
-
-exports.addChangeListener = function(listener) {
-    _events.on('change', listener);
-};
-
-exports.removeChangeListener = function(listener) {
-    _events.removeListener('change', listener);
-};
-
-function emitChange() {
-    _events.emit('change');
-}
-
-exports.getAll = function() {
-    return _categories;
-};
-
-var actions = {
-    loadCategories({categories}) {
-        _categories = categories;
-        emitChange();
+var reducers = {
+    loadCategories(_, {categories}) {
+        return categories;
     },
-    addCategory({category}) {
-        _categories.push(category);
-        emitChange();
+    addCategory(_categories, {category}) {
+        return _categories.concat([category]);
     },
-    removeCategory({categoryID}) {
-        _categories = _categories.filter(c => c.id != categoryID);
-        emitChange();
+    removeCategory(_categories, {categoryID}) {
+        return _categories.filter(c => c.id != categoryID);
     },
-    updateCategory({category}) {
+    updateCategory(_categories, {category}) {
         for (var i = 0; i < _categories.length; i++) {
             if (_categories[i].id == category.id) {
                 _categories[i] = category;
-                emitChange();
-                return;
+                break;
             }
         }
+        return _categories;
     }
 };
 
-exports.dispatchToken = Dispatcher.register(payload => {
-    var action = actions[payload.type];
-    if (action)
-        action(payload);
-});
+class CategoryStore extends ReduceStore {
+    getInitialState() {
+        return [];
+    }
+
+    getAll() {
+        return this.getState();
+    }
+
+    reduce(state, action) {
+        const reducer = reducers[action.type];
+        if (reducer)
+            state = reducer(state, action);
+        return state;
+    }
+
+    areEqual() {
+        // Currently mutated in-place
+        return false;
+    }
+}
+
+module.exports = new CategoryStore(Dispatcher);
