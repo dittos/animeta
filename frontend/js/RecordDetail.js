@@ -1,6 +1,7 @@
 /* global PreloadData */
 /* global confirm */
 var React = require('react/addons');
+var {Container} = require('flux/utils');
 var Router = require('react-router');
 var TimeAgo = require('./TimeAgo');
 var PostComposer = require('./PostComposer');
@@ -152,35 +153,30 @@ var PostView = React.createClass({
     }
 });
 
-function getStoreState(recordID) {
-    return {
-        record: RecordStore.get(recordID),
-        posts: PostStore.findByRecordId(recordID)
-    };
-}
+var RecordDetail = Container.create(React.createClass({
+    statics: {
+        getStores() {
+            return [RecordStore, PostStore, CategoryStore];
+        },
+        calculateState(_, props) {
+            var {recordId} = props;
+            return {
+                record: RecordStore.get(recordId),
+                posts: PostStore.findByRecordId(recordId),
+                categoryList: CategoryStore.getAll()
+            };
+        }
+    },
 
-var RecordDetail = React.createClass({
     getInitialState() {
         return {
-            ...getStoreState(this.props.recordId),
             connectedServices: this.props.canEdit &&
                 PreloadData.current_user.connected_services
         };
     },
 
     componentDidMount() {
-        this._recordStore = RecordStore.addListener(this._onChange);
-        this._postStore = PostStore.addListener(this._onChange);
         this.loadPosts();
-    },
-
-    componentWillUnmount() {
-        this._recordStore && this._recordStore.remove();
-        this._postStore && this._postStore.remove();
-    },
-
-    _onChange() {
-        this.setState(getStoreState(this.props.recordId));
     },
 
     loadPosts() {
@@ -212,7 +208,7 @@ var RecordDetail = React.createClass({
                 recordId={this.state.record.id}
                 title={this.state.record.title}
                 categoryId={this.state.record.category_id}
-                categoryList={CategoryStore.getAll()} />
+                categoryList={this.state.categoryList} />
             {composer}
             <div className="record-detail-posts">
                 {this.state.posts.map(post => {
@@ -236,7 +232,7 @@ var RecordDetail = React.createClass({
         PreloadData.current_user.connected_services = services;
         this.setState({connectedServices: services});
     }
-});
+}), {pure: false, withProps: true});
 
 var RecordDetailContainer = React.createClass({
     mixins: [Router.Navigation],

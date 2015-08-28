@@ -1,5 +1,6 @@
 /* global confirm */
 var React = require('react/addons');
+var {Container} = require('flux/utils');
 var Sortable = require('./Sortable');
 var CategoryStore = require('./CategoryStore');
 var CategoryActions = require('./CategoryActions');
@@ -55,18 +56,18 @@ var CategoryItem = React.createClass({
     }
 });
 
-var ManageCategory = React.createClass({
+var ManageCategory = Container.create(React.createClass({
+    statics: {
+        getStores() {
+            return [CategoryStore];
+        },
+        calculateState() {
+            return {categoryList: CategoryStore.getAll()};
+        }
+    },
+
     getInitialState() {
         return {isSorting: false};
-    },
-    componentWillMount() {
-        this._onStoreChange();
-    },
-    componentDidMount() {
-        this._categoryStore = CategoryStore.addListener(this._onStoreChange);
-    },
-    componentWillUnmount() {
-        this._categoryStore && this._categoryStore.remove();
     },
     render() {
         var items = this.state.categoryList.map(category =>
@@ -115,15 +116,12 @@ var ManageCategory = React.createClass({
         var categoryIDs = this.state.categoryList.map(c => c.id);
         CategoryActions.updateCategoryOrder(this.props.user.name, categoryIDs);
     },
-    _onStoreChange() {
-        this.setState({categoryList: CategoryStore.getAll()});
-    },
     _onAdd(event) {
         event.preventDefault();
         var input = React.findDOMNode(this.refs.nameInput);
         CategoryActions.addCategory(this.props.user.name, input.value);
         input.value = '';
     }
-});
+}), {pure: false});
 
 module.exports = ManageCategory;

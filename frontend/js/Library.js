@@ -2,6 +2,7 @@ var React = require('react/addons');
 var moment = require('moment');
 var Router = require('react-router');
 var {Link} = Router;
+var {Container} = require('flux/utils');
 var util = require('./util');
 var RecordStore = require('./RecordStore');
 var CategoryStore = require('./CategoryStore');
@@ -169,37 +170,49 @@ var LibraryHeader = React.createClass({
     }
 });
 
-var Library = React.createClass({
-    componentDidMount() {
-        this._recordStore = RecordStore.addListener(this._onChange);
-    },
+var Library = Container.create(React.createClass({
+    statics: {
+        getStores() {
+            return [RecordStore, CategoryStore];
+        },
+        calculateState(_, props) {
+            var count = RecordStore.getCount();
+            if (count === 0) {
+                return {count};
+            }
 
-    componentWillUnmount() {
-        this._recordStore && this._recordStore.remove();
-    },
-
-    _onChange() {
-        this.forceUpdate();
+            var {type, category, sort} = props.query;
+            if (!sort) sort = 'date';
+            return {
+                count: RecordStore.getCount(),
+                records: RecordStore.query(type, category, sort),
+                categoryStats: RecordStore.getCategoryStats(),
+                statusTypeStats: RecordStore.getStatusTypeStats(),
+                categoryList: CategoryStore.getAll()
+            };
+        }
     },
 
     render() {
-        var count = RecordStore.getCount();
-        if (count === 0) {
+        if (this.state.count === 0) {
             return this._renderEmpty();
         }
 
         var {type, category, sort} = this.props.query;
         if (!sort) sort = 'date';
-        var records = RecordStore.query(type, category, sort);
-        var categoryStats = RecordStore.getCategoryStats();
-        var statusTypeStats = RecordStore.getStatusTypeStats();
+        var {
+            count,
+            records,
+            categoryStats,
+            statusTypeStats,
+            categoryList
+        } = this.state;
         var groups;
         if (sort == 'date') {
             groups = groupRecordsByDate(records);
         } else if (sort == 'title') {
             groups = groupRecordsByTitle(records);
         }
-        var categoryList = CategoryStore.getAll();
         return <div className="library">
             <LibraryHeader
                 count={count}
@@ -249,7 +262,7 @@ var Library = React.createClass({
         }
         return null;
     }
-});
+}), {pure: false, withProps: true});
 
 var LibraryContainer = React.createClass({
     mixins: [Router.Navigation],
