@@ -11,6 +11,7 @@ var PostActions = require('./PostActions');
 var RecordStore = require('./RecordStore');
 var PostStore = require('./PostStore');
 var CategoryStore = require('./CategoryStore');
+var ExternalServiceStore = require('./ExternalServiceStore');
 var Typeahead = require('./Typeahead');
 
 var TitleEditView = React.createClass({
@@ -156,13 +157,17 @@ var PostView = React.createClass({
 var RecordDetail = Container.create(React.createClass({
     statics: {
         getStores() {
-            return [RecordStore, PostStore, CategoryStore];
+            return [
+                RecordStore,
+                PostStore,
+                CategoryStore,
+                ExternalServiceStore
+            ];
         },
         calculateState(_, props) {
             var {recordId} = props;
             return {
-                connectedServices: props.canEdit &&
-                    PreloadData.current_user.connected_services,
+                connectedServices: ExternalServiceStore.getConnectedServices(),
                 record: RecordStore.get(recordId),
                 posts: PostStore.findByRecordId(recordId),
                 categoryList: CategoryStore.getAll()
@@ -193,7 +198,6 @@ var RecordDetail = Container.create(React.createClass({
                     currentStatus={this.state.record.status}
                     initialStatusType={this.state.record.status_type}
                     connectedServices={this.state.connectedServices}
-                    onConnectedServicesChange={this._onConnectedServicesChange}
                     onSave={this._onSave} />
             );
         }
@@ -221,11 +225,6 @@ var RecordDetail = Container.create(React.createClass({
     _onSave(post, publishOptions) {
         PostActions.createPost(this.state.record.id, post, publishOptions);
         this.props.onSave();
-    },
-
-    _onConnectedServicesChange(services) {
-        PreloadData.current_user.connected_services = services;
-        this.setState({connectedServices: services});
     }
 }), {pure: false, withProps: true});
 

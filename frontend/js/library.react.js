@@ -5,6 +5,7 @@ var Router = require('react-router');
 var {Link} = Router;
 var RecordActions = require('./RecordActions');
 var CategoryActions = require('./CategoryActions');
+var UserActions = require('./UserActions');
 var PostStore = require('./PostStore');
 var Layout = require('./Layout');
 var GlobalHeader = require('./GlobalHeader');
@@ -97,6 +98,8 @@ function runApp() {
     );
     RecordActions.loadRecords(PreloadData.records);
     CategoryActions.loadCategories(PreloadData.owner.categories);
+    if (PreloadData.current_user)
+        UserActions.loadCurrentUser(PreloadData.current_user);
     Router.run(routes, locationStrategy, (Handler) => {
         onPageTransition();
         React.render(<Handler />, document.getElementById('app'));

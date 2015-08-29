@@ -2,6 +2,7 @@ var $ = require('jquery');
 var React = require('react/addons');
 var StatusInput = require('./StatusInput');
 var util = require('./util');
+var ExternalServiceActions = require('./ExternalServiceActions');
 
 var PostComposer = React.createClass({
     mixins: [React.addons.LinkedStateMixin],
@@ -69,9 +70,7 @@ var PostComposer = React.createClass({
         if (!this._isTwitterConnected()) {
             window.onTwitterConnect = ok => {
                 if (ok) {
-                    this.props.onConnectedServicesChange(
-                        this.props.connectedServices.concat(['twitter'])
-                    );
+                    ExternalServiceActions.connectService('twitter');
                     this.setState({publishTwitter: true});
                 } else {
                     alert('연동 실패. 잠시 후 다시 시도해주세요.');
@@ -84,7 +83,7 @@ var PostComposer = React.createClass({
     },
 
     _isTwitterConnected() {
-        return $.inArray('twitter', this.props.connectedServices) !== -1;
+        return this.props.connectedServices.has('twitter');
     }
 });
 

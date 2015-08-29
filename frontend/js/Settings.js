@@ -1,7 +1,20 @@
 import React from "react";
+import {Container} from "flux/utils";
 import * as CSRF from "./CSRF";
+import * as ExternalServiceActions from "./ExternalServiceActions";
+import ExternalServiceStore from "./ExternalServiceStore";
 
-export default React.createClass({
+export default Container.create(class extends React.Component {
+    static getStores() {
+        return [ExternalServiceStore];
+    }
+
+    static calculateState() {
+        return {
+            connectedServices: ExternalServiceStore.getConnectedServices()
+        };
+    }
+
     render() {
         const csrfInput = <input type='hidden' name='csrfmiddlewaretoken' value={CSRF.getToken()} />;
         return <div>
@@ -20,23 +33,23 @@ export default React.createClass({
             </form>
 
             <h2>트위터 연동</h2>
-            {this.props.user.connected_services.indexOf('twitter') !== -1 ?
+            {this.state.connectedServices.has('twitter') ?
                 <form method="post" action="/connect/twitter/disconnect/">
                     {csrfInput}
                     <input type="submit" value="연결 끊기" />
                 </form>
                 : <button onClick={this._connectTwitter}>연결하기</button>}
         </div>;
-    },
+    }
 
     _connectTwitter() {
         window.onTwitterConnect = ok => {
             if (ok) {
-                location.reload();
+                ExternalServiceActions.connectService('twitter');
             } else {
                 alert('연동 실패. 잠시 후 다시 시도해주세요.');
             }
         };
         window.open('/connect/twitter/?popup=true');
     }
-});
+})
