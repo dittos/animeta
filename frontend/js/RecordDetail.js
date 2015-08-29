@@ -161,18 +161,13 @@ var RecordDetail = Container.create(React.createClass({
         calculateState(_, props) {
             var {recordId} = props;
             return {
+                connectedServices: props.canEdit &&
+                    PreloadData.current_user.connected_services,
                 record: RecordStore.get(recordId),
                 posts: PostStore.findByRecordId(recordId),
                 categoryList: CategoryStore.getAll()
             };
         }
-    },
-
-    getInitialState() {
-        return {
-            connectedServices: this.props.canEdit &&
-                PreloadData.current_user.connected_services
-        };
     },
 
     componentDidMount() {
