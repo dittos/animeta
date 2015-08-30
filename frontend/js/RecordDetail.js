@@ -1,4 +1,3 @@
-/* global PreloadData */
 /* global confirm */
 var React = require('react/addons');
 var {Container} = require('flux/utils');
@@ -168,6 +167,7 @@ var RecordDetail = Container.create(React.createClass({
             var {recordId} = props;
             return {
                 connectedServices: ExternalServiceStore.getConnectedServices(),
+                lastPublishOptions: ExternalServiceStore.getLastPublishOptions(),
                 record: RecordStore.get(recordId),
                 posts: PostStore.findByRecordId(recordId),
                 categoryList: CategoryStore.getAll()
@@ -198,6 +198,7 @@ var RecordDetail = Container.create(React.createClass({
                     currentStatus={this.state.record.status}
                     initialStatusType={this.state.record.status_type}
                     connectedServices={this.state.connectedServices}
+                    initialPublishOptions={this.state.lastPublishOptions}
                     onSave={this._onSave} />
             );
         }

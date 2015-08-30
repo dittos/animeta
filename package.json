@@ -46,7 +46,8 @@
     "unmockedModulePathPatterns": [
       "<rootDir>/node_modules/react",
       "<rootDir>/node_modules/lodash",
-      "core-js/*"
+      "core-js/*",
+      "immutable"
     ]
   }
 }

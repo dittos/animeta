@@ -1,3 +1,4 @@
+var Immutable = require('immutable');
 jest.dontMock('../Dispatcher');
 jest.dontMock('../ExternalServiceStore');
 jest.dontMock('flux/lib/FluxStore');
@@ -56,5 +57,49 @@ describe('ExternalServiceStore', function() {
         });
         // unchanged
         expect(ExternalServiceStore.getConnectedServices()).toBe(connectedServices);
+    });
+
+    it('save publish option when post is created', function() {
+        var LocalStorage = require('../LocalStorage');
+        callback({
+            type: 'createPendingPost',
+            publishOptions: Immutable.Set(['twitter'])
+        });
+        var publishOptions = ExternalServiceStore.getLastPublishOptions();
+        expect(publishOptions.size).toBe(1);
+        expect(publishOptions.has('twitter')).toBeTruthy();
+        expect(LocalStorage.setItem).toBeCalledWith('publishTwitter', true);
+        // off
+        callback({
+            type: 'createPendingPost',
+            publishOptions: Immutable.Set()
+        });
+        var publishOptions = ExternalServiceStore.getLastPublishOptions();
+        expect(publishOptions.size).toBe(0);
+        expect(LocalStorage.setItem).toBeCalledWith('publishTwitter', false);
+    });
+});
+
+describe('ExternalServiceStore + LocalStorage', function() {
+    it('loads publish option from local storage (empty)', function() {
+        var LocalStorage = require('../LocalStorage');
+        var Dispatcher = require('../Dispatcher');
+        var ExternalServiceStore = require('../ExternalServiceStore');
+        var callback = Dispatcher.dispatch.bind(Dispatcher);
+        var publishOptions = ExternalServiceStore.getLastPublishOptions();
+        expect(publishOptions.size).toBe(0);
+        expect(LocalStorage.getItem).toBeCalledWith('publishTwitter');
+    });
+
+    it('loads publish option from local storage', function() {
+        var LocalStorage = require('../LocalStorage');
+        LocalStorage.getItem.mockReturnValueOnce('true');
+        var Dispatcher = require('../Dispatcher');
+        var ExternalServiceStore = require('../ExternalServiceStore');
+        var callback = Dispatcher.dispatch.bind(Dispatcher);
+        var publishOptions = ExternalServiceStore.getLastPublishOptions();
+        expect(publishOptions.size).toBe(1);
+        expect(publishOptions.has('twitter')).toBeTruthy();
+        expect(LocalStorage.getItem).toBeCalledWith('publishTwitter');
     });
 });

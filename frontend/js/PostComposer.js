@@ -1,4 +1,3 @@
-var $ = require('jquery');
 var React = require('react/addons');
 var StatusInput = require('./StatusInput');
 var util = require('./util');
@@ -12,7 +11,7 @@ var PostComposer = React.createClass({
             statusType: this.props.initialStatusType,
             status: util.plusOne(this.props.currentStatus),
             comment: '',
-            publishTwitter: localStorage.getItem('publishTwitter') === 'true'
+            publishOptions: this.props.initialPublishOptions
         };
     },
 
@@ -41,7 +40,7 @@ var PostComposer = React.createClass({
             <div className="actions">
                 <label>
                     <input type="checkbox" name="publish_twitter"
-                        checked={this._isTwitterConnected() && this.state.publishTwitter}
+                        checked={this._isTwitterConnected() && this.state.publishOptions.has('twitter')}
                         onChange={this._onPublishTwitterChange} />
                     {' 트위터에 공유'}
                 </label>
@@ -52,14 +51,11 @@ var PostComposer = React.createClass({
 
     _onSubmit(event) {
         event.preventDefault();
-        localStorage.setItem('publishTwitter', this.state.publishTwitter);
         this.props.onSave({
             status: this.state.status,
             status_type: this.state.statusType,
             comment: this.state.comment
-        }, {
-            twitter: this.state.publishTwitter
-        });
+        }, this.state.publishOptions.intersect(this.props.connectedServices));
     },
 
     _onStatusChange(newValue) {
@@ -71,14 +67,20 @@ var PostComposer = React.createClass({
             window.onTwitterConnect = ok => {
                 if (ok) {
                     ExternalServiceActions.connectService('twitter');
-                    this.setState({publishTwitter: true});
+                    this.setState({publishOptions: this.state.publishOptions.add('twitter')});
                 } else {
                     alert('연동 실패. 잠시 후 다시 시도해주세요.');
                 }
             };
             window.open('/connect/twitter/?popup=true');
         } else {
-            this.setState({publishTwitter: event.target.checked});
+            var {publishOptions} = this.state;
+            if (event.target.checked) {
+                publishOptions = publishOptions.add('twitter');
+            } else {
+                publishOptions = publishOptions.remove('twitter');
+            }
+            this.setState({publishOptions});
         }
     },
 

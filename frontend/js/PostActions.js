@@ -17,18 +17,19 @@ function createPost(recordID, post, publishOptions) {
     var context = _pendingPostID++;
     Dispatcher.dispatch({
         type: 'createPendingPost',
-        recordID, post, context
+        recordID, post, context, publishOptions
     });
     // TODO: handle failure case
     return $.post('/api/v2/records/' + recordID + '/posts', {
         ...post,
-        publish_twitter: publishOptions.twitter ? 'on' : 'off'
+        publish_twitter: publishOptions.has('twitter') ? 'on' : 'off'
     }).then(result => {
         Dispatcher.dispatch({
             type: 'resolvePendingPost',
             context: context,
             updatedRecord: result.record,
-            post: result.post
+            post: result.post,
+            publishOptions
         });
     });
 }
