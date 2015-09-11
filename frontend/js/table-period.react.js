@@ -3,8 +3,8 @@ var _ = require('lodash');
 var $ = require('jquery');
 var React = require('react');
 var util = require('./util');
-var GlobalHeader = require('./GlobalHeader');
-var LazyImageView = require('./LazyImage');
+var GlobalHeader = require('./ui/GlobalHeader');
+var LazyImageView = require('./ui/LazyImage');
 require('../less/table-period.less');
 
 function getLoginURL() {

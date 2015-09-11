@@ -5,8 +5,8 @@ var moment = require('moment');
 var TimeAgo = require('./TimeAgo');
 var Grid = require('./Grid');
 var Layout = require('./Layout');
-var util = require('./util');
 var WeeklyChart = require('./WeeklyChart');
+var util = require('../util');
 
 function fixTitle(title) {
     // &lt;b&gt;...&lt;b&gt; -> <b>...</b>

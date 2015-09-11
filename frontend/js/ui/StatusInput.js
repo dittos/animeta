@@ -1,5 +1,5 @@
 var React = require('react');
-var {plusOne} = require('./util');
+var {plusOne} = require('../util');
 
 var StatusInputView = React.createClass({
     getDefaultProps() {
@@ -22,7 +22,7 @@ var StatusInputView = React.createClass({
                 ref="input" />
             {showSuffix ? '화' : null}
             <span className="plus-one" style={{cursor: 'pointer'}} onClick={this._onClickPlus}>
-                <img src={require('../img/plus.gif')} alt="+1" />
+                <img src={require('../../img/plus.gif')} alt="+1" />
             </span>
         </span>;
     },

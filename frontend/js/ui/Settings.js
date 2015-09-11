@@ -1,8 +1,8 @@
 import React from "react";
 import {Container} from "flux/utils";
-import * as CSRF from "./CSRF";
-import * as ExternalServiceActions from "./ExternalServiceActions";
-import ExternalServiceStore from "./ExternalServiceStore";
+import * as CSRF from "../CSRF";
+import * as ExternalServiceActions from "../store/ExternalServiceActions";
+import ExternalServiceStore from "../store/ExternalServiceStore";
 
 export default Container.create(class extends React.Component {
     static getStores() {

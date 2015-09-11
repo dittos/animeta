@@ -3,10 +3,10 @@ var _ = require('lodash');
 var $ = require('jquery');
 var React = require('react');
 var util = require('./util');
-var Layout = require('./Layout');
-var GlobalHeader = require('./GlobalHeader');
-var PositionSticky = require('./PositionSticky');
-var LazyImageView = require('./LazyImage');
+var Layout = require('./ui/Layout');
+var GlobalHeader = require('./ui/GlobalHeader');
+var PositionSticky = require('./ui/PositionSticky');
+var LazyImageView = require('./ui/LazyImage');
 require('../less/table-index.less');
 
 var SCROLL_DEBOUNCE = 20;

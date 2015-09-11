@@ -1,11 +1,11 @@
 var $ = require('jquery');
 var React = require('react');
 var Router = require('react-router');
-var GlobalHeader = require('./GlobalHeader');
-var Grid = require('./Grid');
-var TimeAgo = require('./TimeAgo');
+var GlobalHeader = require('./ui/GlobalHeader');
+var Grid = require('./ui/Grid');
+var TimeAgo = require('./ui/TimeAgo');
 var util = require('./util');
-var WeeklyChart = require('./WeeklyChart');
+var WeeklyChart = require('./ui/WeeklyChart');
 if (process.env.CLIENT) {
     require('../less/index.less?extract');
 }
@@ -111,7 +111,7 @@ var IndexRoute = React.createClass({
     }
 });
 
-var LoginDialog = require('./LoginDialog');
+var LoginDialog = require('./ui/LoginDialog');
 var LoginRoute = React.createClass({
     render() {
         return <LoginDialog next="/" />;
@@ -122,7 +122,7 @@ var {Route, DefaultRoute} = Router;
 var routes = <Route handler={App}>
     <DefaultRoute handler={IndexRoute} />
     <Route handler={LoginRoute} path="/login/" />
-    <Route handler={require('./SignupRoute')} path="/signup/" />
+    <Route handler={require('./ui/SignupRoute')} path="/signup/" />
 </Route>;
 
 if (process.env.CLIENT) {

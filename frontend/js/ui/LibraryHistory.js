@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var React = require('react/addons');
 var TimeAgo = require('./TimeAgo');
-var util = require('./util');
+var util = require('../util');
 
 function getDateHeader(post) {
     var date = new Date(post.updated_at);

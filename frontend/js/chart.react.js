@@ -1,6 +1,6 @@
 import React from "react";
-import GlobalHeader from "./GlobalHeader";
-import Layout from "./Layout";
+import GlobalHeader from "./ui/GlobalHeader";
+import Layout from "./ui/Layout";
 require('../less/chart.less');
 
 class Header extends React.Component {

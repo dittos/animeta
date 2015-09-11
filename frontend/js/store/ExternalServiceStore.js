@@ -1,7 +1,7 @@
 var Immutable = require('immutable');
 var {MapStore} = require('flux/utils');
 var Dispatcher = require('./Dispatcher');
-var LocalStorage = require('./LocalStorage');
+var LocalStorage = require('../LocalStorage');
 
 class ExternalServiceStore extends MapStore {
     getInitialState() {

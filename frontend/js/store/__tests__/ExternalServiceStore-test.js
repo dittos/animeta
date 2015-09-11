@@ -60,7 +60,7 @@ describe('ExternalServiceStore', function() {
     });
 
     it('save publish option when post is created', function() {
-        var LocalStorage = require('../LocalStorage');
+        var LocalStorage = require('../../LocalStorage');
         callback({
             type: 'createPendingPost',
             publishOptions: Immutable.Set(['twitter'])
@@ -82,7 +82,7 @@ describe('ExternalServiceStore', function() {
 
 describe('ExternalServiceStore + LocalStorage', function() {
     it('loads publish option from local storage (empty)', function() {
-        var LocalStorage = require('../LocalStorage');
+        var LocalStorage = require('../../LocalStorage');
         var Dispatcher = require('../Dispatcher');
         var ExternalServiceStore = require('../ExternalServiceStore');
         var callback = Dispatcher.dispatch.bind(Dispatcher);
@@ -92,7 +92,7 @@ describe('ExternalServiceStore + LocalStorage', function() {
     });
 
     it('loads publish option from local storage', function() {
-        var LocalStorage = require('../LocalStorage');
+        var LocalStorage = require('../../LocalStorage');
         LocalStorage.getItem.mockReturnValueOnce('true');
         var Dispatcher = require('../Dispatcher');
         var ExternalServiceStore = require('../ExternalServiceStore');

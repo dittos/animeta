@@ -1,6 +1,6 @@
 var React = require('react/addons');
-var GlobalHeader = require('./GlobalHeader');
-var WorkViews = require('./WorkViews');
+var GlobalHeader = require('./ui/GlobalHeader');
+var WorkViews = require('./ui/WorkViews');
 var util = require('./util');
 if (process.env.CLIENT) {
     require('../less/work.less?extract');

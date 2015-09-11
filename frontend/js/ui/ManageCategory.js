@@ -2,8 +2,8 @@
 var React = require('react/addons');
 var {Container} = require('flux/utils');
 var Sortable = require('./Sortable');
-var CategoryStore = require('./CategoryStore');
-var CategoryActions = require('./CategoryActions');
+var CategoryStore = require('../store/CategoryStore');
+var CategoryActions = require('../store/CategoryActions');
 
 var CategoryItem = React.createClass({
     getInitialState() {

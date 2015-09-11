@@ -1,5 +1,5 @@
 var React = require('react');
-var util = require('./util');
+var util = require('../util');
 
 var WeeklyChart = React.createClass({
     render() {

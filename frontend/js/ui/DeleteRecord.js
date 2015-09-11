@@ -1,7 +1,7 @@
 var React = require('react/addons');
 var Router = require('react-router');
-var RecordActions = require('./RecordActions');
-var RecordStore = require('./RecordStore');
+var RecordActions = require('../store/RecordActions');
+var RecordStore = require('../store/RecordStore');
 
 var DeleteRecord = React.createClass({
     getInitialState() {

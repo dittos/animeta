@@ -3,12 +3,12 @@ var $ = require('jquery');
 var React = require('react/addons');
 var Router = require('react-router');
 var {Link} = Router;
-var RecordActions = require('./RecordActions');
-var CategoryActions = require('./CategoryActions');
-var UserActions = require('./UserActions');
-var PostStore = require('./PostStore');
-var Layout = require('./Layout');
-var GlobalHeader = require('./GlobalHeader');
+var RecordActions = require('./store/RecordActions');
+var CategoryActions = require('./store/CategoryActions');
+var UserActions = require('./store/UserActions');
+var PostStore = require('./store/PostStore');
+var Layout = require('./ui/Layout');
+var GlobalHeader = require('./ui/GlobalHeader');
 require('../less/library.less');
 
 class App extends React.Component {
@@ -87,13 +87,13 @@ function runApp() {
     var {Route, DefaultRoute} = Router;
     var routes = (
         <Route path={libraryPath} handler={AppContainer}>
-            <DefaultRoute name="records" handler={require('./Library')} />
-            <Route name="add-record" path="/records/add/:title?/?" handler={require('./AddRecord')} />
-            <Route name="manage-category" path="/records/category/" handler={require('./ManageCategory')} />
-            <Route name="delete-record" path="/records/:recordId/delete/" handler={require('./DeleteRecord')} />
-            <Route name="record" path="/records/:recordId/" handler={require('./RecordDetail')} />
-            <Route name="history" path={libraryPath + "history/"} handler={require('./LibraryHistory')} />
-            <Route name="settings" path="/settings/" handler={require('./Settings')} />
+            <DefaultRoute name="records" handler={require('./ui/Library')} />
+            <Route name="add-record" path="/records/add/:title?/?" handler={require('./ui/AddRecord')} />
+            <Route name="manage-category" path="/records/category/" handler={require('./ui/ManageCategory')} />
+            <Route name="delete-record" path="/records/:recordId/delete/" handler={require('./ui/DeleteRecord')} />
+            <Route name="record" path="/records/:recordId/" handler={require('./ui/RecordDetail')} />
+            <Route name="history" path={libraryPath + "history/"} handler={require('./ui/LibraryHistory')} />
+            <Route name="settings" path="/settings/" handler={require('./ui/Settings')} />
         </Route>
     );
     RecordActions.loadRecords(PreloadData.records);

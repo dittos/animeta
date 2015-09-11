@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var React = require('react/addons');
 if (process.env.CLIENT) {
-    require('../less/signup.less');
+    require('../../less/signup.less');
 }
 
 var SignupRoute = React.createClass({

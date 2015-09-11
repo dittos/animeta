@@ -4,9 +4,9 @@ var moment = require('moment');
 var Router = require('react-router');
 var {Link} = Router;
 var {Container} = require('flux/utils');
-var util = require('./util');
-var RecordStore = require('./RecordStore');
-var CategoryStore = require('./CategoryStore');
+var util = require('../util');
+var RecordStore = require('../store/RecordStore');
+var CategoryStore = require('../store/CategoryStore');
 
 function getDateHeader(record) {
     var date = moment(record.updated_at).startOf('day');

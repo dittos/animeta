@@ -2,16 +2,16 @@
 var React = require('react/addons');
 var {Container} = require('flux/utils');
 var Router = require('react-router');
+var util = require('../util');
 var TimeAgo = require('./TimeAgo');
 var PostComposer = require('./PostComposer');
-var util = require('./util');
-var RecordActions = require('./RecordActions');
-var PostActions = require('./PostActions');
-var RecordStore = require('./RecordStore');
-var PostStore = require('./PostStore');
-var CategoryStore = require('./CategoryStore');
-var ExternalServiceStore = require('./ExternalServiceStore');
 var Typeahead = require('./Typeahead');
+var RecordActions = require('../store/RecordActions');
+var PostActions = require('../store/PostActions');
+var RecordStore = require('../store/RecordStore');
+var PostStore = require('../store/PostStore');
+var CategoryStore = require('../store/CategoryStore');
+var ExternalServiceStore = require('../store/ExternalServiceStore');
 
 var TitleEditView = React.createClass({
     componentDidMount() {

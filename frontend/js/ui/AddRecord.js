@@ -1,8 +1,8 @@
 var $ = require('jquery');
 var React = require('react/addons');
 var Router = require('react-router');
-var RecordActions = require('./RecordActions');
-var CategoryStore = require('./CategoryStore');
+var RecordActions = require('../store/RecordActions');
+var CategoryStore = require('../store/CategoryStore');
 var Typeahead = require('./Typeahead');
 
 var CategorySelect = React.createClass({
