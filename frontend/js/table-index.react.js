@@ -99,7 +99,7 @@ function groupItemsByWeekday(items, preferKR) {
         }
     });
     groups.forEach(group => {
-        group.items.sort(util.keyComparator(item => item.schedule.time));
+        group.items = _.sortBy(group.items, item => item.schedule.time);
     });
     return groups;
 }
@@ -159,7 +159,7 @@ var Schedule = React.createClass({
         });
     },
 
-    handleScroll: util.debounce(function() {
+    handleScroll: _.debounce(function() {
         var $content = $(window);
         var $nav = $(React.findDOMNode(this.refs.nav));
         var contentOffset = $content.scrollTop() + $nav.height();

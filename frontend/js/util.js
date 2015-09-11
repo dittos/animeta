@@ -1,25 +1,13 @@
-module.exports.keyComparator = function(keyFunc) {
-    return (a, b) => {
-        a = keyFunc(a);
-        b = keyFunc(b);
-        if (a < b)
-            return -1;
-        if (a > b)
-            return 1;
-        return 0;
-    };
-};
-
-var zerofill = module.exports.zerofill = function(n) {
+export function zerofill(n) {
     n = String(n);
     if (n.length == 1)
         n = '0' + n;
     return n;
-};
+}
 
-module.exports.getTime = function(date) {
+export function getTime(date) {
     return zerofill(date.getHours()) + ':' + zerofill(date.getMinutes());
-};
+}
 
 var HOURS = [];
 for (var h = 0; h < 24; h++) {
@@ -33,28 +21,16 @@ for (var h = 0; h < 24; h++) {
     HOURS[h] = result;
 }
 
-module.exports.formatTime = function(value) {
+export function formatTime(value) {
     var result = HOURS[value.getHours()];
     var m = value.getMinutes();
     if (m > 0) {
         result += ' ' + zerofill(m) + '분';
     }
     return result;
-};
+}
 
-module.exports.debounce = function(fn, t) {
-    var timer;
-    return function() {
-        var self = this;
-        if (timer) clearTimeout(timer);
-        timer = setTimeout(function() {
-            fn.call(self);
-            timer = null;
-        }, t);
-    };
-};
-
-module.exports.plusOne = function(val) {
+export function plusOne(val) {
     var matches = val.match(/(\d+)[^\d]*$/);
     if (!matches)
         return val;
@@ -64,22 +40,20 @@ module.exports.plusOne = function(val) {
         for (var i = 0; i < digits - add1.length; i++)
             add1 = '0' + add1;
     return val.replace(/(\d+)([^\d]*)$/, add1 + '$2');
-};
+}
 
-function getStatusDisplay(record) {
+export function getStatusDisplay(record) {
     return record.status.trim().replace(/([0-9]+)$/, '$1화');
 }
 
-exports.getStatusDisplay = getStatusDisplay;
-
-exports.STATUS_TYPE_TEXT = {
+export var STATUS_TYPE_TEXT = {
     watching: '보는 중',
     finished: '완료',
     interested: '볼 예정',
     suspended: '중단'
 };
 
-exports.getStatusText = function(record) {
+export function getStatusText(record) {
     var status = getStatusDisplay(record);
     if (record.status_type != 'watching' || status === '') {
         var statusTypeText = exports.STATUS_TYPE_TEXT[record.status_type];
@@ -90,21 +64,21 @@ exports.getStatusText = function(record) {
         }
     }
     return status;
-};
+}
 
-exports.getWorkURL = function(title) {
+export function getWorkURL(title) {
     return '/works/' + encodeURIComponent(title) + '/';
-};
+}
 
-exports.getPostURL = function(post) {
+export function getPostURL(post) {
     return '/-' + post.id;
-};
+}
 
-exports.getPostDeleteURL = function(user, post) {
+export function getPostDeleteURL(user, post) {
     return '/users/' + user.name + '/history/' + post.id + '/delete/';
-};
+}
 
-exports.SOURCE_TYPE_MAP = {
+export var SOURCE_TYPE_MAP = {
     'manga': '만화 원작', 
     'original': '오리지널 작품',
     'lightnovel': '라노베 원작',

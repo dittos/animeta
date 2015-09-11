@@ -15,16 +15,14 @@ function nullslast(val) {
     return [!val, val];
 }
 
-var scheduleComparator = util.keyComparator((item) => 
-    nullslast(item.metadata.schedule.jp && item.metadata.schedule.jp.date)
-);
+var scheduleComparator = (item) =>
+    nullslast(item.metadata.schedule.jp && item.metadata.schedule.jp.date);
 
-var preferKRScheduleComparator = util.keyComparator((item) =>
+var preferKRScheduleComparator = (item) =>
     nullslast(item.metadata.schedule.kr && item.metadata.schedule.kr.date ||
-        item.metadata.schedule.jp && item.metadata.schedule.jp.date)
-);
+        item.metadata.schedule.jp && item.metadata.schedule.jp.date);
 
-var recordCountComparator = util.keyComparator((item) => -item.record_count);
+var recordCountComparator = (item) => -item.record_count;
 
 var comparatorMap = {
     'schedule': scheduleComparator,
@@ -69,7 +67,7 @@ var scheduleStore = {
     },
 
     _sort() {
-        this._items.sort(comparatorMap[this._ordering]);
+        this._items = _.sortBy(this._items, comparatorMap[this._ordering]);
     },
 
     containsKRSchedule() {

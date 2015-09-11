@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var React = require('react/addons');
 var moment = require('moment');
 var Router = require('react-router');
@@ -54,7 +55,7 @@ function getIndexChar(s) {
 }
 
 function groupRecordsByTitle(records) {
-    records.sort(util.keyComparator(record => getIndexChar(record.title)));
+    records = _.sortBy(records, record => getIndexChar(record.title));
     var groups = [];
     var lastKey, group;
     records.forEach(record => {
@@ -75,7 +76,7 @@ function groupRecordsByTitle(records) {
 }
 
 function groupRecordsByDate(records) {
-    records.sort(util.keyComparator(record => -record.updated_at));
+    records = _.sortBy(records, record => -record.updated_at);
     var groups = [];
     var unknownGroup = [];
     var lastKey, group;
