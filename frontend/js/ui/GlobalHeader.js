@@ -126,20 +126,10 @@ var GlobalHeader = React.createClass({
     },
     _openLogin(e) {
         if (e) e.preventDefault();
-        var container = document.getElementById('dialog-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'dialog-container';
-            document.body.appendChild(container);
-        }
-        React.render(<LoginDialog onClose={this._closeLogin} />, container);
+        LoginDialog.open();
     },
     _closeLogin() {
-        var container = document.getElementById('dialog-container');
-        if (!container)
-            return;
-        React.unmountComponentAtNode(container);
-        document.body.removeChild(container);
+        LoginDialog.close();
     }
 });
 

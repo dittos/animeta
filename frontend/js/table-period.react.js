@@ -1,96 +1,14 @@
 /* global PreloadData */
-var _ = require('lodash');
-var $ = require('jquery');
 var React = require('react');
+var {Container} = require('flux/utils');
 var util = require('./util');
+var ScheduleStore = require('./table/ScheduleStore');
+var TableActions = require('./table/TableActions');
+var Notifications = require('./table/Notifications');
 var GlobalHeader = require('./ui/GlobalHeader');
 var LazyImageView = require('./ui/LazyImage');
+var LoginDialog = require('./ui/LoginDialog');
 require('../less/table-period.less');
-
-function getLoginURL() {
-    return '/login/?next=' + encodeURIComponent(location.pathname);
-}
-
-function nullslast(val) {
-    return [!val, val];
-}
-
-var scheduleComparator = (item) =>
-    nullslast(item.metadata.schedule.jp && item.metadata.schedule.jp.date);
-
-var preferKRScheduleComparator = (item) =>
-    nullslast(item.metadata.schedule.kr && item.metadata.schedule.kr.date ||
-        item.metadata.schedule.jp && item.metadata.schedule.jp.date);
-
-var recordCountComparator = (item) => -item.record_count;
-
-var comparatorMap = {
-    'schedule': scheduleComparator,
-    'schedule.kr': preferKRScheduleComparator,
-    'recordCount': recordCountComparator
-};
-
-var scheduleStore = {
-    addChangeListener(callback) {
-        this._listeners.push(callback);
-    },
-
-    removeChangeListener(callback) {
-        this._listeners = this._listeners.filter(cb => cb != callback);
-    },
-
-    emitChange(data) {
-        this._listeners.forEach(callback => callback(data));
-    },
-
-    initialize(initialData) {
-        this._listeners = [];
-        this._items = initialData;
-        this._ordering = window.localStorage['animeta.table.' + PreloadData.period + '.ordering'] || 'schedule';
-        this._containsKRSchedule = _.some(initialData, i => i.metadata.schedule.kr && i.metadata.schedule.kr.date);
-        this._sort();
-    },
-
-    getAllItems() {
-        return this._items;
-    },
-
-    getOrdering() {
-        return this._ordering;
-    },
-
-    setOrdering(ordering) {
-        this._ordering = ordering;
-        window.localStorage['animeta.table.' + PreloadData.period + '.ordering'] = ordering;
-        this._sort();
-        this.emitChange();
-    },
-
-    _sort() {
-        this._items = _.sortBy(this._items, comparatorMap[this._ordering]);
-    },
-
-    containsKRSchedule() {
-        return this._containsKRSchedule;
-    },
-
-    favoriteItem(item) {
-        return $.post('/api/v1/records', {
-            work: item.title,
-            status_type: 'interested'
-        }).then((result) => {
-            item.record = {
-                id: result.record_id
-            };
-            item.record_count++;
-            this.emitChange({
-                event: 'favorite-added',
-                title: item.title
-            });
-        });
-    }
-};
-scheduleStore.initialize(PreloadData.schedule);
 
 function formatPeriod(period) {
     var parts = period.split('Q');
@@ -117,7 +35,7 @@ var HeaderView = React.createClass({
         var switches = options.map((option) => {
             return <span className={this.props.ordering == option.value ? 'active' : ''}
                 key={option.value}
-                onClick={() => scheduleStore.setOrdering(option.value)}>{option.label}</span>;
+                onClick={() => TableActions.sort(option.value)}>{option.label}</span>;
         });
         return (
             <div className="page-header">
@@ -157,13 +75,32 @@ var FavButton = React.createClass({
 var ItemView = React.createClass({
     render() {
         var item = this.props.item;
+        var {links, studios, source, schedule} = item.metadata;
         return (
             <div className="item">
                 <div className="item-inner">
                     <div className="item-poster-wrap">
                         <LazyImageView src={item.metadata.image_url} width={233} height={318} className="item-poster" />
                     </div>
-                    <div dangerouslySetInnerHTML={{__html: ItemView.template(this.getTemplateContext())}} />
+                    <div className="item-frame">
+                        <div className="item-overlay">
+                            <h3 className="item-title">{item.metadata.title}</h3>
+                            <div className="item-info">
+                                <span className="studio">{studios ? studios.join(', ') : '제작사 미정'}</span>
+                                {source && ['/ ', <span className="source">{util.SOURCE_TYPE_MAP[source]}</span>]}
+                            </div>
+                            {this._renderSchedule('jp', schedule.jp)}
+                            {schedule.kr && this._renderSchedule('kr', schedule.kr)}
+                        </div>
+                    </div>
+                    <div className="item-links">
+                        {links.website &&
+                            <a href={links.website} className="link link-official" target="_blank">공식 사이트</a>}
+                        {links.namu &&
+                            <a href={links.namu} className="link link-namu" target="_blank">나무위키</a>}
+                        {links.ann &&
+                            <a href={links.ann} className="link link-ann" target="_blank">ANN (en)</a>}
+                    </div>
                     <div className="item-actions">
                         <FavButton active={item.record != null}
                             count={item.record_count}
@@ -174,10 +111,26 @@ var ItemView = React.createClass({
         );
     },
 
+    _renderSchedule(country, schedule) {
+        var {date, broadcasts} = schedule;
+        if (date) {
+            date = new Date(date);
+        }
+        return <div className={"item-schedule item-schedule-" + country}>
+            {date ? [
+                <span className="date">{getDate(date)}</span>,
+                ' ',
+                <span className="time">{util.formatTime(date)}</span>
+            ] : <span className="date">미정</span>}
+            {broadcasts &&
+                [' ', <span className="broadcasts">({broadcasts.join(', ')})</span>]}
+        </div>;
+    },
+
     handleFavButtonClick() {
         if (!PreloadData.current_user) {
             alert('로그인 후 관심 등록할 수 있습니다.');
-            location.href = getLoginURL();
+            LoginDialog.open();
             return;
         }
 
@@ -185,60 +138,27 @@ var ItemView = React.createClass({
         if (record) {
             window.open('/records/' + record.id + '/');
         } else {
-            scheduleStore.favoriteItem(this.props.item);
+            TableActions.favoriteItem(this.props.item)
+                .then(data => Notifications.show(['관심 등록 완료 — ', <b>{data.title}</b>], 3000));
         }
-    },
-
-    getTemplateContext() {
-        var context = _.cloneDeep(this.props.item.metadata);
-        if (context.studios)
-            context.studios = context.studios.join(', ');
-        if (context.source)
-            context.source = util.SOURCE_TYPE_MAP[context.source];
-        if (!context.schedule.jp)
-            context.schedule.jp = {};
-        ['jp', 'kr'].forEach((country) => {
-            var schedule = context.schedule[country];
-            if (!schedule) {
-                return;
-            }
-            var date = schedule.date;
-            if (date) {
-                date = new Date(date);
-                schedule.date = getDate(date);
-                schedule.time = util.formatTime(date);
-            }
-            if (schedule.broadcasts)
-                schedule.broadcasts = schedule.broadcasts.join(', ');
-        });
-        return context;
-    },
-
-    statics: {
-        template: require('!handlebars!./table-period-item.hbs')
     }
 });
 
 var NotificationView = React.createClass({
     getInitialState() {
-        return {hidden: true};
+        return Notifications.getState();
+    },
+
+    componentWillMount() {
+        Notifications.setListener(this._onChange);
     },
 
     componentWillUnmount() {
-        if (this.state.timer)
-            clearTimeout(this.state.timer);
+        Notifications.clearListener(this._onChange);
     },
 
-    show(message, timeout) {
-        var update = {
-            message: message,
-            hidden: false
-        };
-        if (this.state.timer)
-            clearTimeout(this.state.timer);
-        if (timeout)
-            update.timer = setTimeout(() => this.setState({hidden: true}), timeout);
-        this.setState(update);
+    _onChange() {
+        this.setState(Notifications.getState());
     },
 
     render() {
@@ -252,31 +172,19 @@ var NotificationView = React.createClass({
     }
 });
 
-function getAppViewState() {
-    return {
-        items: scheduleStore.getAllItems(),
-        ordering: scheduleStore.getOrdering(),
-        excludeKR: !scheduleStore.containsKRSchedule()
-    };
-}
+var AppView = Container.create(React.createClass({
+    statics: {
+        getStores() {
+            return [ScheduleStore];
+        },
 
-var AppView = React.createClass({
-    getInitialState() {
-        return getAppViewState();
-    },
-
-    componentDidMount() {
-        scheduleStore.addChangeListener(this._onChange);
-        if (!PreloadData.current_user) {
-            this.refs.notification.show([
-                '관심 등록은 로그인 후 가능합니다. ',
-                <a href={getLoginURL()} className="btn btn-login">로그인</a>
-            ]);
+        calculateState() {
+            return {
+                items: ScheduleStore.getAllItems(),
+                ordering: ScheduleStore.getOrdering(),
+                excludeKR: !ScheduleStore.containsKRSchedule()
+            };
         }
-    },
-
-    componentWillUnmount() {
-        scheduleStore.removeChangeListener(this._onChange);
     },
 
     render() {
@@ -294,18 +202,27 @@ var AppView = React.createClass({
                     )}
                     </div>
                 </div>
-                <NotificationView ref="notification" />
+                <NotificationView />
             </div>
         );
-    },
-
-    _onChange(data) {
-        this.setState(getAppViewState());
-        if (data && data.event == 'favorite-added') {
-            this.refs.notification.show(['관심 등록 완료 — ', <b>{data.title}</b>], 3000);
-        }
     }
-});
+}), {pure: false});
+
+if (!PreloadData.current_user) {
+    function getLoginURL() {
+        return '/login/?next=' + encodeURIComponent(location.pathname);
+    }
+
+    Notifications.show([
+        '관심 등록은 로그인 후 가능합니다. ',
+        <a href={getLoginURL()} className="btn btn-login" onClick={event => {
+            event.preventDefault();
+            LoginDialog.open();
+        }}>로그인</a>
+    ]);
+}
+
+TableActions.initialize(PreloadData.schedule);
 
 React.render(<AppView period={PreloadData.period} />,
     document.getElementById('app'));

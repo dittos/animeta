@@ -24,8 +24,6 @@
     "css-loader": "^0.15.1",
     "extract-text-webpack-plugin": "^0.8.2",
     "file-loader": "^0.8.4",
-    "handlebars": "^3.0.3",
-    "handlebars-loader": "^1.0.2",
     "jest-cli": "^0.5.0",
     "jshint": "^2.8.0",
     "jshint-loader": "^0.8.3",

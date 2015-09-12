@@ -2,6 +2,24 @@ var $ = require('jquery');
 var React = require('react');
 
 var LoginDialog = React.createClass({
+    statics: {
+        open() {
+            var container = document.getElementById('dialog-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'dialog-container';
+                document.body.appendChild(container);
+            }
+            React.render(<LoginDialog onClose={LoginDialog.close} />, container);
+        },
+        close() {
+            var container = document.getElementById('dialog-container');
+            if (!container)
+                return;
+            React.unmountComponentAtNode(container);
+            document.body.removeChild(container);
+        }
+    },
     getInitialState() {
         return {
             submitted: false,
