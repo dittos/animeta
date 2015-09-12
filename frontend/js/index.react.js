@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var React = require('react');
-var Router = require('react-router');
+var {Router, Route, IndexRoute} = require('react-router');
+var createBrowserHistory = require('history/lib/createBrowserHistory');
 var GlobalHeader = require('./ui/GlobalHeader');
 var Grid = require('./ui/Grid');
 var TimeAgo = require('./ui/TimeAgo');
@@ -12,15 +13,15 @@ if (process.env.CLIENT) {
 
 var App = React.createClass({
     render() {
-        var data = this.props.PreloadData;
+        var data = global.PreloadData;
         return <div>
             <GlobalHeader currentUser={data.current_user} />
-            <Router.RouteHandler PreloadData={data} />
+            {React.cloneElement(this.props.children, {PreloadData: data})}
         </div>;
     }
 });
 
-var IndexRoute = React.createClass({
+var Index = React.createClass({
     getInitialState() {
         return {
             posts: this.props.PreloadData.posts,
@@ -118,18 +119,14 @@ var LoginRoute = React.createClass({
     }
 });
 
-var {Route, DefaultRoute} = Router;
-var routes = <Route handler={App}>
-    <DefaultRoute handler={IndexRoute} />
-    <Route handler={LoginRoute} path="/login/" />
-    <Route handler={require('./ui/SignupRoute')} path="/signup/" />
+var routes = <Route component={App} path="/">
+    <IndexRoute component={Index} />
+    <Route component={LoginRoute} path="/login/" />
+    <Route component={require('./ui/SignupRoute')} path="/signup/" />
 </Route>;
 
 if (process.env.CLIENT) {
-    Router.run(routes, Router.RefreshLocation, (Handler) => {
-        React.render(<Handler PreloadData={global.PreloadData} />,
-            document.getElementById('app'));
-    });
+    React.render(<Router history={createBrowserHistory()}>{routes}</Router>, document.getElementById('app'));
 } else {
     module.exports = routes;
 }

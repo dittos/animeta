@@ -99,7 +99,7 @@ var HeaderView = React.createClass({
             toolbar = (
                 <div className="record-detail-toolbar">
                     {editTitleButton}
-                    <Router.Link to="delete-record" params={{recordId: this.props.recordId}} className="btn btn-delete">삭제</Router.Link>
+                    <Router.Link to={`/records/${this.props.recordId}/delete/`} className="btn btn-delete">삭제</Router.Link>
                     <CategoryEditView
                         recordId={this.props.recordId}
                         categoryList={this.props.categoryList}
@@ -230,7 +230,7 @@ var RecordDetail = Container.create(React.createClass({
 }), {pure: false, withProps: true});
 
 var RecordDetailContainer = React.createClass({
-    mixins: [Router.Navigation],
+    mixins: [Router.History],
 
     render() {
         return <RecordDetail
@@ -242,7 +242,7 @@ var RecordDetailContainer = React.createClass({
 
     _onSave() {
         // TODO: preserve sort mode
-        this.transitionTo('records');
+        this.history.pushState(null, this.history.libraryPath);
     }
 });
 

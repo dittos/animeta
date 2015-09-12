@@ -1,5 +1,6 @@
 var React = require('react/addons');
 var Router = require('react-router');
+var createHashHistory = require('history/lib/createHashHistory');
 var GlobalHeader = require('./ui/GlobalHeader');
 var WorkViews = require('./ui/WorkViews');
 if (process.env.CLIENT) {
@@ -8,10 +9,16 @@ if (process.env.CLIENT) {
 
 var App = React.createClass({
     render() {
+        var data = global.PreloadData;
         return <div>
-            <GlobalHeader currentUser={this.props.PreloadData.current_user} />
-            <Router.RouteHandler work={this.props.PreloadData.work}
-                chart={this.props.PreloadData.chart} />
+            <GlobalHeader currentUser={data.current_user} />
+            {React.cloneElement(
+                this.props.children,
+                {
+                    work: data.work,
+                    chart: data.chart
+                }
+            )}
         </div>;
     }
 });
@@ -24,9 +31,11 @@ var Work = React.createClass({
             chart={this.props.chart}
         >
             <div className="episodes">
-                <Router.Link to="work-index" className="recent">최신</Router.Link>
+                <Router.Link to="/" activeClassName="active" className="recent">최신</Router.Link>
                 {work.episodes.map(ep =>
-                    <Router.Link to="work-episode" params={{episode: ep.number}} className={ep.post_count > 0 ? 'has-post' : ''}>{ep.number}화</Router.Link>)}
+                    <Router.Link to={`/ep/${ep.number}/`}
+                        activeClassName="active"
+                        className={ep.post_count > 0 ? 'has-post' : ''}>{ep.number}화</Router.Link>)}
             </div>
             {this.props.children}
         </WorkViews.Work>;
@@ -41,7 +50,7 @@ var WorkRoute = React.createClass({
             {...this.props}
             episode={episode}
         >
-            <Router.RouteHandler work={work} key={episode} />
+            {React.cloneElement(this.props.children, {work: work, key: episode})}
         </Work>;
     }
 });
@@ -54,29 +63,21 @@ var WorkIndexRoute = React.createClass({
     }
 });
 
-var {Route, DefaultRoute} = Router;
-var routes = <Route handler={App}>
-    <Route handler={WorkRoute} path="/" ignoreScrollBehavior>
-        <DefaultRoute name="work-index" handler={WorkIndexRoute} />
-        <Route name="work-episode" handler={WorkIndexRoute} path="/ep/:episode/" />
+var {Route, IndexRoute} = Router;
+var routes = <Route component={App}>
+    <Route component={WorkRoute} path="/" ignoreScrollBehavior>
+        <IndexRoute component={WorkIndexRoute} />
+        <Route component={WorkIndexRoute} path="ep/:episode/" />
     </Route>
 </Route>;
 
-var initialLoad = true;
-
 function onPageTransition() {
-    if (!initialLoad) {
-        _gaq.push(['_trackPageview']);
-    }
-    initialLoad = false;
+    _gaq.push(['_trackPageview']);
 }
 
 if (process.env.CLIENT) {
-    Router.run(routes, Router.HashLocation, (Handler) => {
-        onPageTransition();
-        React.render(<Handler PreloadData={global.PreloadData} />,
-            document.getElementById('app'));
-    });
+    React.render(<Router.Router history={createHashHistory({queryKey: false})} onUpdate={onPageTransition}>{routes}</Router.Router>,
+        document.getElementById('app'));
 } else {
     module.exports = routes;
 }

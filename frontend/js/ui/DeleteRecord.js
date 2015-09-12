@@ -25,7 +25,7 @@ var DeleteRecord = React.createClass({
 });
 
 var DeleteRecordContainer = React.createClass({
-    mixins: [Router.Navigation],
+    mixins: [Router.History],
     render() {
         return <DeleteRecord
             {...this.props}
@@ -34,7 +34,7 @@ var DeleteRecordContainer = React.createClass({
         />;
     },
     _onDelete() {
-        this.transitionTo('records');
+        this.history.pushState(null, this.history.libraryPath);
     }
 });
 

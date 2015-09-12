@@ -1,8 +1,9 @@
 /* global PreloadData */
 var $ = require('jquery');
 var React = require('react/addons');
-var Router = require('react-router');
-var {Link} = Router;
+var {Router, Route, IndexRoute, Link, History} = require('react-router');
+var createBrowserHistory = require('history/lib/createBrowserHistory');
+var createHashHistory = require('history/lib/createHashHistory');
 var RecordActions = require('./store/RecordActions');
 var CategoryActions = require('./store/CategoryActions');
 var UserActions = require('./store/UserActions');
@@ -11,7 +12,8 @@ var Layout = require('./ui/Layout');
 var GlobalHeader = require('./ui/GlobalHeader');
 require('../less/library.less');
 
-class App extends React.Component {
+var App = React.createClass({
+    mixins: [History],
     render() {
         var user = this.props.owner;
         var canEdit = this.props.currentUser && this.props.currentUser.id == user.id;
@@ -19,11 +21,11 @@ class App extends React.Component {
             <GlobalHeader currentUser={this.props.currentUser} />
             <Layout.CenteredFullWidth className="user-container">
                 <div className="nav-user">
-                    <h1><Link to="records">{user.name} 사용자</Link></h1>
+                    <h1><Link to={this.history.libraryPath}>{user.name} 사용자</Link></h1>
                     <p>
-                        <Link to="records">작품 목록</Link>
-                        <Link to="history">기록 내역</Link>
-                        {canEdit && <Link to="add-record" className="add-record">작품 추가</Link>}
+                        <Link to={this.history.libraryPath}>작품 목록</Link>
+                        <Link to={`${this.history.libraryPath}/history/`}>기록 내역</Link>
+                        {canEdit && <Link to="/records/add/" className="add-record">작품 추가</Link>}
                     </p>
                 </div>
                 <div className="user-content">
@@ -32,7 +34,7 @@ class App extends React.Component {
             </Layout.CenteredFullWidth>
         </div>;
     }
-}
+});
 
 var AppContainer = React.createClass({
     render() {
@@ -44,28 +46,21 @@ var AppContainer = React.createClass({
             owner={user}
             currentUser={PreloadData.current_user}
         >
-            <Router.RouteHandler
-                user={user}
-                canEdit={canEdit}
-                key={key}
-            />
+            {React.cloneElement(this.props.children, {
+                user, canEdit, key
+            })}
         </App>;
     }
 });
 
-var initialLoad = true;
-
 function onPageTransition() {
-    if (!initialLoad) {
-        _gaq.push(['_trackPageview']);
-    }
-    initialLoad = false;
+    _gaq.push(['_trackPageview']);
 }
 
-var supportsHistory = require('./supportsHistory');
+var supportsHistory = require('history/lib/DOMUtils').supportsHistory;
 
 function runApp() {
-    var locationStrategy = Router.HistoryLocation;
+    var locationStrategy;
     var libraryPath = '/users/' + PreloadData.owner.name + '/';
     if (!supportsHistory()) {
         // TODO: handle URL coming from hash location
@@ -80,30 +75,30 @@ function runApp() {
             location.href = libraryPath + '#' + path;
             return;
         }
-        locationStrategy = Router.HashLocation;
-        libraryPath = '/';
+        locationStrategy = createHashHistory({queryKey: false});
+        locationStrategy.libraryPath = '/';
+    } else {
+        locationStrategy = createBrowserHistory();
+        locationStrategy.libraryPath = libraryPath;
     }
 
-    var {Route, DefaultRoute} = Router;
     var routes = (
-        <Route path={libraryPath} handler={AppContainer}>
-            <DefaultRoute name="records" handler={require('./ui/Library')} />
-            <Route name="add-record" path="/records/add/:title?/?" handler={require('./ui/AddRecord')} />
-            <Route name="manage-category" path="/records/category/" handler={require('./ui/ManageCategory')} />
-            <Route name="delete-record" path="/records/:recordId/delete/" handler={require('./ui/DeleteRecord')} />
-            <Route name="record" path="/records/:recordId/" handler={require('./ui/RecordDetail')} />
-            <Route name="history" path={libraryPath + "history/"} handler={require('./ui/LibraryHistory')} />
-            <Route name="settings" path="/settings/" handler={require('./ui/Settings')} />
+        <Route path={libraryPath} component={AppContainer}>
+            <IndexRoute component={require('./ui/Library')} />
+            <Route path="/records/add/(:title/)" component={require('./ui/AddRecord')} />
+            <Route path="/records/category/" component={require('./ui/ManageCategory')} />
+            <Route path="/records/:recordId/delete/" component={require('./ui/DeleteRecord')} />
+            <Route path="/records/:recordId/" component={require('./ui/RecordDetail')} />
+            <Route path={libraryPath + "history/"} component={require('./ui/LibraryHistory')} />
+            <Route path="/settings/" component={require('./ui/Settings')} />
         </Route>
     );
     RecordActions.loadRecords(PreloadData.records);
     CategoryActions.loadCategories(PreloadData.owner.categories);
     if (PreloadData.current_user)
         UserActions.loadCurrentUser(PreloadData.current_user);
-    Router.run(routes, locationStrategy, (Handler) => {
-        onPageTransition();
-        React.render(<Handler />, document.getElementById('app'));
-    });
+    React.render(<Router history={locationStrategy} onUpdate={onPageTransition}>{routes}</Router>,
+        document.getElementById('app'));
 }
 
 runApp();

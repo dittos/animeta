@@ -5,6 +5,7 @@ require('babel/register')({
 require('moment').locale('ko');
 
 var React = require('react');
+var createLocation = require('history/lib/createLocation');
 var Router = require('react-router');
 var workRoutes = require('./js/work.react.js');
 var indexRoutes = require('./js/index.react.js');
@@ -19,23 +20,25 @@ var renderers = {
 
 function createRoutesRenderer(routes, hashPatch) {
     return function(path, preloadData, next) {
-        var router = Router.create({
-            routes: routes,
-            location: path
-        });
+        var location = createLocation(path);
 
-        if (hashPatch) {
-            // Monkey patch makeHref to support hash-prefixed link
-            var makeHref = router.type.makeHref;
-            router.type.makeHref = function(to, params, query) {
-                return '#' + makeHref.call(this, to, params, query);
-            };
-        }
+        Router.match({routes: routes, location: location}, function(error, redirectLocation, renderProps) {
+            if (hashPatch) {
+                // Monkey patch makeHref to support hash-prefixed link
+                var createHref = renderProps.history.createHref;
+                renderProps.history.createHref = function(to, query) {
+                    return '#' + createHref.call(this, to, query);
+                };
+            }
 
-        router.run(function(Handler) {
-            next(React.renderToString(React.createElement(Handler, {
-                PreloadData: preloadData
-            })));
+            global.PreloadData = preloadData;
+            var markup;
+            try {
+                markup = React.renderToString(React.createElement(Router.RoutingContext, renderProps));
+            } finally {
+                delete global.PreloadData;
+            }
+            next(markup);
         });
     };
 }

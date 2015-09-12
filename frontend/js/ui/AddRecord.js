@@ -108,7 +108,7 @@ var AddRecord = React.createClass({
 });
 
 var AddRecordContainer = React.createClass({
-    mixins: [Router.Navigation],
+    mixins: [Router.History],
     render() {
         // XXX: decode one more time due to react-router bug
         // https://github.com/rackt/react-router/issues/650
@@ -120,7 +120,7 @@ var AddRecordContainer = React.createClass({
         />;
     },
     _onSave() {
-        this.transitionTo('records');
+        this.history.pushState(null, this.history.libraryPath);
     }
 });
 

@@ -1,8 +1,7 @@
 var _ = require('lodash');
 var React = require('react/addons');
 var moment = require('moment');
-var Router = require('react-router');
-var {Link} = Router;
+var {Link, History} = require('react-router');
 var {Container} = require('flux/utils');
 var util = require('../util');
 var RecordStore = require('../store/RecordStore');
@@ -108,7 +107,7 @@ var LibraryItemView = React.createClass({
         var record = this.props.record;
         var content;
         content = (
-            <Link to="record" params={{recordId: record.id}}>
+            <Link to={`/records/${record.id}/`}>
                 <span className="item-title">{record.title}</span>
                 <span className="item-status">{util.getStatusText(record)}</span>
                 {record.has_newer_episode &&
@@ -153,7 +152,7 @@ var LibraryHeader = React.createClass({
                     return <option value={category.id}>{category.name} ({this.props.categoryStats[category.id] || 0})</option>;
                 })}
                 </select>
-                {' '}{this.props.canEdit && <Link to="manage-category">관리</Link>}
+                {' '}{this.props.canEdit && <Link to="/records/category/">관리</Link>}
             </p>
         </div>;
     },
@@ -182,7 +181,7 @@ var Library = Container.create(React.createClass({
                 return {count};
             }
 
-            var {type, category, sort} = props.query;
+            var {type, category, sort} = props.location.query;
             if (!sort) sort = 'date';
             return {
                 count: RecordStore.getCount(),
@@ -199,7 +198,7 @@ var Library = Container.create(React.createClass({
             return this._renderEmpty();
         }
 
-        var {type, category, sort} = this.props.query;
+        var {type, category, sort} = this.props.location.query;
         if (!sort) sort = 'date';
         var {
             count,
@@ -244,7 +243,7 @@ var Library = Container.create(React.createClass({
     _renderEmpty() {
         var help;
         if (this.props.canEdit) {
-            help = <p>위에 있는 <Link to="add-record" className="add-record">작품 추가</Link>를 눌러 감상 기록을 등록할 수 있습니다.</p>;
+            help = <p>위에 있는 <Link to="/records/add/" className="add-record">작품 추가</Link>를 눌러 감상 기록을 등록할 수 있습니다.</p>;
         }
 
         return <div>
@@ -266,16 +265,15 @@ var Library = Container.create(React.createClass({
 }), {pure: false, withProps: true});
 
 var LibraryContainer = React.createClass({
-    mixins: [Router.Navigation],
+    mixins: [History],
     render() {
         return <Library
             {...this.props}
-            query={this.props.query}
             onUpdateQuery={this._onUpdateQuery}
         />;
     },
     _onUpdateQuery(updates) {
-        this.transitionTo('records', {}, {...this.props.query, ...updates});
+        this.history.pushState(null, this.props.location.pathname, {...this.props.location.query, ...updates});
     }
 });
 
