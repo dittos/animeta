@@ -54,7 +54,7 @@
 if (!document.createElementNS || !document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect)document.body.className+=' no-svg';
 </script>
 {% block content %}<div id="app">{{ html|safe }}</div>{% endblock %}
-<script src="{{ STATIC_URL }}raven.min.js"></script>
+<script src="//cdn.ravenjs.com/1.1.20/raven.min.js"></script>
 {% if not settings.DEBUG %}
 <script>
 Raven.config('http://fb3fd1fc77c94c4799d9fc7228260818@sentry.sapzil.org/3', {
