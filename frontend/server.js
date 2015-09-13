@@ -5,7 +5,6 @@ require('babel/register')({
 require('moment').locale('ko');
 
 var React = require('react');
-var ReactDOM = require('react-dom');
 var createLocation = require('history/lib/createLocation');
 var Router = require('react-router');
 var workRoutes = require('./js/work.react.js');
@@ -35,7 +34,7 @@ function createRoutesRenderer(routes, hashPatch) {
             global.PreloadData = preloadData;
             var markup;
             try {
-                markup = ReactDOM.renderToString(React.createElement(Router.RoutingContext, renderProps));
+                markup = React.renderToString(React.createElement(Router.RoutingContext, renderProps));
             } finally {
                 delete global.PreloadData;
             }
@@ -46,7 +45,7 @@ function createRoutesRenderer(routes, hashPatch) {
 
 function createSimpleRenderer(cls) {
     return function(path, preloadData, next) {
-        next(ReactDOM.renderToString(React.createElement(cls, {
+        next(React.renderToString(React.createElement(cls, {
             PreloadData: preloadData
         })));
     };

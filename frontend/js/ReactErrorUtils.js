@@ -1,37 +1,67 @@
 /**
- * Copyright 2013-2014 Facebook, Inc.
+ * Copyright 2013-2015, Facebook, Inc.
+ * All rights reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ReactErrorUtils
  * @typechecks
  */
 
-"use strict";
+'use strict';
+
+var caughtError = null;
 
 var ReactErrorUtils = {
   /**
-   * Creates a guarded version of a function. This is supposed to make debugging
-   * of event handlers easier. To aid debugging with the browser's debugger,
-   * this currently simply returns the original function.
+   * Call a function while guarding against errors that happens within it.
    *
-   * @param {function} func Function to be executed
-   * @param {string} name The name of the guard
-   * @return {function}
+   * @param {?String} name of the guard to use for logging or debugging
+   * @param {Function} func The function to invoke
+   * @param {*} a First argument
+   * @param {*} b Second argument
    */
-  guard: function(func, name) {
-    return Raven.wrap(func);
+  invokeGuardedCallback: function (name, func, a, b) {
+    try {
+      func = Raven.wrap(func);
+      return func(a, b);
+    } catch (x) {
+      if (caughtError === null) {
+        caughtError = x;
+      }
+      return undefined;
+    }
+  },
+
+  /**
+   * During execution of guarded functions we will capture the first error which
+   * we will rethrow to be handled by the top level error handler.
+   */
+  rethrowCaughtError: function () {
+    if (caughtError) {
+      var error = caughtError;
+      caughtError = null;
+      throw error;
+    }
   }
 };
+
+if (process.env.NODE_ENV !== 'production') {
+  /**
+   * To help development we can get better devtools integration by simulating a
+   * real browser event.
+   */
+  if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof Event === 'function') {
+    var fakeNode = document.createElement('react');
+    ReactErrorUtils.invokeGuardedCallback = function (name, func, a, b) {
+      var boundFunc = func.bind(null, a, b);
+      fakeNode.addEventListener(name, boundFunc, false);
+      fakeNode.dispatchEvent(new Event(name));
+      fakeNode.removeEventListener(name, boundFunc, false);
+    };
+  }
+}
 
 module.exports = ReactErrorUtils;
