@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var React = require('react/addons');
+var ReactDOM = require('react-dom');
 
 var PositionSticky = React.createClass({
     mixins: [React.addons.PureRenderMixin],
@@ -48,9 +49,9 @@ var PositionSticky = React.createClass({
     },
 
     measure() {
-        this._offsetTop = $(React.findDOMNode(this)).offset().top;
+        this._offsetTop = $(ReactDOM.findDOMNode(this)).offset().top;
 
-        var node = $(React.findDOMNode(this.refs.content));
+        var node = $(this.refs.content);
         var left = node.position().left;
         var right = $('body').width() - (left + node.width());
         var height = node.height();

@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var React = require('react');
+var ReactDOM = require('react-dom');
 
 var LoginDialog = React.createClass({
     statics: {
@@ -10,13 +11,13 @@ var LoginDialog = React.createClass({
                 container.id = 'dialog-container';
                 document.body.appendChild(container);
             }
-            React.render(<LoginDialog onClose={LoginDialog.close} />, container);
+            ReactDOM.render(<LoginDialog onClose={LoginDialog.close} />, container);
         },
         close() {
             var container = document.getElementById('dialog-container');
             if (!container)
                 return;
-            React.unmountComponentAtNode(container);
+            ReactDOM.unmountComponentAtNode(container);
             document.body.removeChild(container);
         }
     },
@@ -62,8 +63,8 @@ var LoginDialog = React.createClass({
         event.preventDefault();
         this.setState({submitted: true});
         $.post('/api/v2/auth', {
-            'username': React.findDOMNode(this.refs.username).value,
-            'password': React.findDOMNode(this.refs.password).value,
+            'username': this.refs.username.value,
+            'password': this.refs.password.value,
             'transient': this.state.isTransient ? 'true' : 'false'
         }).then(result => {
             if (result.ok) {

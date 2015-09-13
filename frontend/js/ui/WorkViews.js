@@ -1,6 +1,7 @@
 /* global PreloadData */
 var $ = require('jquery');
-var React = require('react/addons');
+var React = require('react');
+var cx = require('classnames');
 var moment = require('moment');
 var TimeAgo = require('./TimeAgo');
 var Grid = require('./Grid');
@@ -268,7 +269,7 @@ var Work = React.createClass({
 var Post = React.createClass({
     render() {
         var post = this.props.post;
-        return <div className={React.addons.classSet({'post-item': true})}>
+        return <div className={cx({'post-item': true})}>
             <div className="meta">
                 <a href={'/users/' + post.user.name + '/'} className="user">{post.user.name}</a>
                 {post.status &&

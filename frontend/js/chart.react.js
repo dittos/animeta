@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom";
 import GlobalHeader from "./ui/GlobalHeader";
 import Layout from "./ui/Layout";
 require('../less/chart.less');
@@ -66,5 +67,5 @@ class Chart extends React.Component {
     }
 }
 
-React.render(<Chart {...global.PreloadData} />,
+ReactDOM.render(<Chart {...global.PreloadData} />,
     document.getElementById('app'));

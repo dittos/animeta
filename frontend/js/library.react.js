@@ -1,6 +1,7 @@
 /* global PreloadData */
 var $ = require('jquery');
 var React = require('react/addons');
+var ReactDOM = require('react-dom');
 var {Router, Route, IndexRoute, Link, History} = require('react-router');
 var createBrowserHistory = require('history/lib/createBrowserHistory');
 var createHashHistory = require('history/lib/createHashHistory');
@@ -97,7 +98,7 @@ function runApp() {
     CategoryActions.loadCategories(PreloadData.owner.categories);
     if (PreloadData.current_user)
         UserActions.loadCurrentUser(PreloadData.current_user);
-    React.render(<Router history={locationStrategy} onUpdate={onPageTransition}>{routes}</Router>,
+    ReactDOM.render(<Router history={locationStrategy} onUpdate={onPageTransition}>{routes}</Router>,
         document.getElementById('app'));
 }
 

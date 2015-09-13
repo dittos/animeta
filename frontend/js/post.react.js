@@ -1,12 +1,12 @@
-var React = require('react/addons');
+var React = require('react');
+var ReactDOM = require('react-dom');
+var cx = require('classnames');
 var GlobalHeader = require('./ui/GlobalHeader');
 var WorkViews = require('./ui/WorkViews');
 var util = require('./util');
 if (process.env.CLIENT) {
     require('../less/work.less?extract');
 }
-
-var cx = React.addons.classSet;
 
 var App = React.createClass({
     render() {
@@ -44,7 +44,7 @@ var App = React.createClass({
 });
 
 if (process.env.CLIENT) {
-    React.render(
+    ReactDOM.render(
         <App PreloadData={global.PreloadData} />,
         document.getElementById('app')
     );

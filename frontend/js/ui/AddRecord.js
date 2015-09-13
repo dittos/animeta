@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var React = require('react/addons');
+var ReactDOM = require('react-dom');
 var Router = require('react-router');
 var RecordActions = require('../store/RecordActions');
 var CategoryStore = require('../store/CategoryStore');
@@ -81,7 +82,7 @@ var AddRecord = React.createClass({
     },
 
     componentDidMount() {
-        Typeahead.initSuggest(React.findDOMNode(this.refs.title));
+        Typeahead.initSuggest(this.refs.title);
     },
 
     _onCategoryChange(categoryId) {
@@ -97,7 +98,7 @@ var AddRecord = React.createClass({
         if (this.state.isRequesting)
             return;
         this.setState({isRequesting: true});
-        var data = $(React.findDOMNode(this)).serialize();
+        var data = $(ReactDOM.findDOMNode(this)).serialize();
         RecordActions.addRecord(this.props.user.name, data).then(() => {
             this.props.onSave();
         }).always(() => {

@@ -1,4 +1,6 @@
-var React = require('react/addons');
+var React = require('react');
+var ReactDOM = require('react-dom');
+var cx = require('classnames');
 
 var Sortable = React.createClass({
     render() {
@@ -50,7 +52,7 @@ var SortableItem = React.createClass({
             style.position = 'relative';
             style.top = this.state.mouseY - this.state.origTop - this.state.holdY;
         }
-        return <div className={React.addons.classSet({draggable: true, dragging: this.state.dragging})}
+        return <div className={cx({draggable: true, dragging: this.state.dragging})}
             style={style}
             onMouseDown={this._onMouseDown}>
                 {this.props.component}
@@ -58,7 +60,7 @@ var SortableItem = React.createClass({
     },
 
     _manageEventListeners(isDragging) {
-        var body = React.findDOMNode(this).ownerDocument;
+        var body = ReactDOM.findDOMNode(this).ownerDocument;
         if (isDragging && !this._registeredEventListeners) {
             body.addEventListener('mousemove', this._onMouseMove);
             body.addEventListener('mouseup', this._onMouseUp);
@@ -71,7 +73,7 @@ var SortableItem = React.createClass({
     },
 
     _onMouseDown(event) {
-        var bounds = React.findDOMNode(this).getBoundingClientRect();
+        var bounds = ReactDOM.findDOMNode(this).getBoundingClientRect();
         this.setState({
             dragging: true,
             origTop: bounds.top,
@@ -107,7 +109,7 @@ var SortableItem = React.createClass({
 
     _remeasure() {
         var offset = this.state.mouseY - this.state.origTop - this.state.holdY;
-        var bounds = React.findDOMNode(this).getBoundingClientRect();
+        var bounds = ReactDOM.findDOMNode(this).getBoundingClientRect();
         this.setState({
             origTop: bounds.top - offset,
             origBottom: bounds.bottom - offset

@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var React = require('react');
+var ReactDOM = require('react-dom');
 var {Router, Route, IndexRoute} = require('react-router');
 var createBrowserHistory = require('history/lib/createBrowserHistory');
 var GlobalHeader = require('./ui/GlobalHeader');
@@ -126,7 +127,7 @@ var routes = <Route component={App} path="/">
 </Route>;
 
 if (process.env.CLIENT) {
-    React.render(<Router history={createBrowserHistory()}>{routes}</Router>, document.getElementById('app'));
+    ReactDOM.render(<Router history={createBrowserHistory()}>{routes}</Router>, document.getElementById('app'));
 } else {
     module.exports = routes;
 }

@@ -1,5 +1,6 @@
 /* global confirm */
-var React = require('react/addons');
+var React = require('react');
+var cx = require('classnames');
 var {Container} = require('flux/utils');
 var Sortable = require('./Sortable');
 var CategoryStore = require('../store/CategoryStore');
@@ -79,7 +80,7 @@ var ManageCategory = Container.create(React.createClass({
                 {items}
             </Sortable>;
         }
-        return <div className={React.addons.classSet({
+        return <div className={cx({
             'manage-category': true,
             'sorting': this.state.isSorting
         })}>
@@ -118,7 +119,7 @@ var ManageCategory = Container.create(React.createClass({
     },
     _onAdd(event) {
         event.preventDefault();
-        var input = React.findDOMNode(this.refs.nameInput);
+        var input = this.refs.nameInput;
         CategoryActions.addCategory(this.props.user.name, input.value);
         input.value = '';
     }

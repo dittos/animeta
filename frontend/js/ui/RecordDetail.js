@@ -1,5 +1,6 @@
 /* global confirm */
-var React = require('react/addons');
+var React = require('react');
+var cx = require('classnames');
 var {Container} = require('flux/utils');
 var Router = require('react-router');
 var util = require('../util');
@@ -15,7 +16,7 @@ var ExternalServiceStore = require('../store/ExternalServiceStore');
 
 var TitleEditView = React.createClass({
     componentDidMount() {
-        var typeahead = Typeahead.initSuggest(React.findDOMNode(this.refs.titleInput));
+        var typeahead = Typeahead.initSuggest(this.refs.titleInput);
         typeahead.on('keypress', event => {
             if (event.keyCode == 13) {
                 this._onSave();
@@ -34,7 +35,7 @@ var TitleEditView = React.createClass({
     },
 
     _onSave() {
-        this.props.onSave(React.findDOMNode(this.refs.titleInput).value);
+        this.props.onSave(this.refs.titleInput.value);
     },
 
     _onCancel(event) {
@@ -134,7 +135,7 @@ var PostView = React.createClass({
     render() {
         var post = this.props.post;
         return (
-            <div className={React.addons.classSet({'post-item': true, 'no-comment': !post.comment, 'pending': this.props.isPending})}>
+            <div className={cx({'post-item': true, 'no-comment': !post.comment, 'pending': this.props.isPending})}>
                 <div className="progress">{util.getStatusText(post)}</div>
                 {post.comment && <div className="comment">{post.comment}</div>}
                 <div className="meta">

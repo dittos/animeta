@@ -1,5 +1,6 @@
 var $ = require('jquery');
-var React = require('react/addons');
+var React = require('react');
+var cx = require('classnames');
 var TimeAgo = require('./TimeAgo');
 var util = require('../util');
 
@@ -11,7 +12,7 @@ function getDateHeader(post) {
 var Post = React.createClass({
     render() {
         var post = this.props.post;
-        return <div className={React.addons.classSet({'post-item': true, 'no-comment': !post.comment})}>
+        return <div className={cx({'post-item': true, 'no-comment': !post.comment})}>
             <a href={util.getWorkURL(post.record.title)} className="title">{post.record.title}</a>
             <div className={'progress progress-' + post.status_type}>{util.getStatusText(post)}</div>
             <div className="meta">

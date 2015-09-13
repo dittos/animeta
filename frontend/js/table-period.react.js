@@ -1,5 +1,6 @@
 /* global PreloadData */
 var React = require('react');
+var ReactDOM = require('react-dom');
 var {Container} = require('flux/utils');
 var util = require('./util');
 var ScheduleStore = require('./table/ScheduleStore');
@@ -224,5 +225,5 @@ if (!PreloadData.current_user) {
 
 TableActions.initialize(PreloadData.schedule);
 
-React.render(<AppView period={PreloadData.period} />,
+ReactDOM.render(<AppView period={PreloadData.period} />,
     document.getElementById('app'));

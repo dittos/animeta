@@ -1,4 +1,5 @@
-var React = require('react/addons');
+var React = require('react');
+var ReactDOM = require('react-dom');
 var Router = require('react-router');
 var createHashHistory = require('history/lib/createHashHistory');
 var GlobalHeader = require('./ui/GlobalHeader');
@@ -76,7 +77,7 @@ function onPageTransition() {
 }
 
 if (process.env.CLIENT) {
-    React.render(<Router.Router history={createHashHistory({queryKey: false})} onUpdate={onPageTransition}>{routes}</Router.Router>,
+    ReactDOM.render(<Router.Router history={createHashHistory({queryKey: false})} onUpdate={onPageTransition}>{routes}</Router.Router>,
         document.getElementById('app'));
 } else {
     module.exports = routes;

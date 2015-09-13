@@ -2,6 +2,7 @@
 var _ = require('lodash');
 var $ = require('jquery');
 var React = require('react');
+var ReactDOM = require('react-dom');
 var util = require('./util');
 var Layout = require('./ui/Layout');
 var GlobalHeader = require('./ui/GlobalHeader');
@@ -144,8 +145,8 @@ var Schedule = React.createClass({
         var $content = $(window);
         var scrollTop = 0;
         if (i > 0) {
-            var $group = $(React.findDOMNode(this.refs['group' + i]));
-            var $nav = $(React.findDOMNode(this.refs.nav));
+            var $group = $(this.refs['group' + i]);
+            var $nav = $(ReactDOM.findDOMNode(this.refs.nav));
             scrollTop = Math.ceil($group.position().top - $nav.height());
         }
         $content.scrollTop(scrollTop);
@@ -161,10 +162,10 @@ var Schedule = React.createClass({
 
     handleScroll: _.debounce(function() {
         var $content = $(window);
-        var $nav = $(React.findDOMNode(this.refs.nav));
+        var $nav = $(ReactDOM.findDOMNode(this.refs.nav));
         var contentOffset = $content.scrollTop() + $nav.height();
         for (var i = WEEKDAYS.length - 1; i >= 0; i--) {
-            var $group = $(React.findDOMNode(this.refs['group' + i]));
+            var $group = $(this.refs['group' + i]);
             if ($group.position().top <= contentOffset) {
                 if (this.state.focusedIndex != i) {
                     this.setState({focusedIndex: i});
@@ -178,5 +179,5 @@ var Schedule = React.createClass({
     }, SCROLL_DEBOUNCE)
 });
 
-React.render(<Schedule {...PreloadData} />,
+ReactDOM.render(<Schedule {...PreloadData} />,
     document.getElementById('app'));

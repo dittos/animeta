@@ -30,7 +30,7 @@ function openWork(title) {
 
 var Search = React.createClass({
     componentDidMount() {
-        Typeahead.init(React.findDOMNode(this.refs.input),
+        Typeahead.init(this.refs.input,
             {highlight: true, hint: false}, {
                 source: Typeahead.searchSource,
                 displayKey: 'title',
