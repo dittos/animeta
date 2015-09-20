@@ -4,7 +4,7 @@ from table import models
 from search.models import WorkPeriodIndex
 from api import serializers
 
-CURRENT_PERIOD = models.Period.parse('2015Q3')
+CURRENT_PERIOD = models.Period.parse('2015Q4')
 
 def index(request):
     #return _render(request, 'table/index.html', CURRENT_PERIOD)

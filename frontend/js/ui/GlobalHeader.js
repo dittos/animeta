@@ -84,12 +84,16 @@ var GlobalHeader = React.createClass({
             <div className="logo">
                 <a href="/">애니메타</a>
             </div>
+            <a href="/table/" className="banner show-mobile">10월 신작 업데이트!</a>
             <Search />
             <div className="menu-global"
                 style={this.state.showMenu ? {display: 'block'} : {}}>
                 <a href="/">홈</a>
                 <a href="/charts/works/weekly/">순위</a>
-                <a href="/table/">시간표</a>
+                <a href="/table/">
+                    시간표
+                    <div className="banner hide-mobile">10월 신작 업데이트!</div>
+                </a>
             </div>
             <div className="menu-feedback">
                 <a href="/support/"><i className="fa fa-bullhorn" />{' '}버그 제보 / 건의</a>

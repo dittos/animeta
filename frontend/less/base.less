@@ -374,6 +374,10 @@ body, input, textarea, select, optgroup, option, button {
 @media (max-width: 480px) {
     .generate-columns(column-sm, 12);
 
+    .hide-mobile {
+        display: none;
+    }
+
     .menu-toggle {
         float: left;
         width: 30px;
@@ -383,9 +387,22 @@ body, input, textarea, select, optgroup, option, button {
         text-align: center;
         cursor: pointer;
         color: @color-primary-muted;
+        position: relative;
         &.active {
             color: #fff;
         }
+    }
+
+    .badge {
+        @r: 4px;
+        position: absolute;
+        top: 10px;
+        right: 0;
+        border-radius: @r;
+        width: @r * 2;
+        height: @r * 2;
+        display: inline-block;
+        background-color: #ffeb3b;
     }
 
     .global-search,
@@ -397,6 +414,16 @@ body, input, textarea, select, optgroup, option, button {
         .mixin-dropdown;
         left: 0;
         top: 30px + 16px;
+        width: 200px;
+    }
+
+    .banner {
+        display: inline;
+        font-size: 12px;
+        color: #ffeb3b;
+        margin-left: 1em;
+        line-height: @nav-height;
+        text-decoration: none;
     }
 
     .dialog {
@@ -406,6 +433,10 @@ body, input, textarea, select, optgroup, option, button {
 
 @media (min-width: 481px) {
     .generate-columns(column, 12);
+
+    .show-mobile {
+        display: none !important;
+    }
 
     .menu-toggle {
         display: none;
@@ -425,6 +456,18 @@ body, input, textarea, select, optgroup, option, button {
                 color: #fff;
             }
         }
+    }
+
+    .banner {
+        margin-left: 1em;
+        background-color: #444;
+        color: #fff;
+        box-shadow: #fff 0 0 5px;
+        padding: 0 5px;
+        border-radius: 2px;
+        display: inline-block;
+        line-height: 1.8;
+        font-size: 12px;
     }
 
     .dialog {

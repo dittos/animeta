@@ -253,7 +253,7 @@ var Library = Container.create(React.createClass({
     },
 
     _renderNotice() {
-        var enableNotice = true;
+        var enableNotice = false;
         if (enableNotice && this.props.canEdit) {
             return <div className="notice notice-animetable">
                 2015년 7월 신작을 클릭 한번으로 관심 등록!{' '}
