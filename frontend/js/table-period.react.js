@@ -88,7 +88,7 @@ var ItemView = React.createClass({
                             <h3 className="item-title">{item.metadata.title}</h3>
                             <div className="item-info">
                                 <span className="studio">{studios ? studios.join(', ') : '제작사 미정'}</span>
-                                {source && ['/ ', <span className="source">{util.SOURCE_TYPE_MAP[source]}</span>]}
+                                {source && [' / ', <span className="source">{util.SOURCE_TYPE_MAP[source]}</span>]}
                             </div>
                             {this._renderSchedule('jp', schedule.jp)}
                             {schedule.kr && this._renderSchedule('kr', schedule.kr)}
