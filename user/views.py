@@ -42,13 +42,21 @@ def shortcut(request, username):
         return redirect('/%s/' % username)
 
 
+def _call_api_internal(request, path, params=None):
+    return requests.get(
+        settings.API_ENDPOINT + path,
+        params=params,
+        cookies=request.COOKIES,
+        headers={'Host': request.get_host()}
+    )
+
+
 def call_api_internal(request, path, params=None):
-    resp = requests.get(settings.API_ENDPOINT + path, params=params, cookies=request.COOKIES)
-    return resp.json()
+    return _call_api_internal(request, path, params).json()
 
 
 def get_current_user(request):
-    resp = requests.get(settings.API_ENDPOINT + '/me', cookies=request.COOKIES)
+    resp = _call_api_internal(request, '/me')
     if resp.status_code != 200:
         return None
     return resp.json()
