@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 
+from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import ListView, TemplateView
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 from connect import get_connected_services
 from record.models import History
 from api import serializers
-import json
+import requests
 
 def login(request):
     return render(request, 'login.html')
@@ -42,19 +41,38 @@ def shortcut(request, username):
     except User.DoesNotExist:
         return redirect('/%s/' % username)
 
+
+def call_api_internal(request, path, params=None):
+    resp = requests.get(settings.API_ENDPOINT + path, params=params, cookies=request.COOKIES)
+    return resp.json()
+
+
+def get_current_user(request):
+    resp = requests.get(settings.API_ENDPOINT + '/me', cookies=request.COOKIES)
+    if resp.status_code != 200:
+        return None
+    return resp.json()
+
+
 def library(request, username=None):
     if username:
         user = get_object_or_404(User, username=username)
     else:
         return redirect('user.views.library', username=request.user.username)
 
+    owner = call_api_internal(request, '/users/' + username)
+    current_user = get_current_user(request)
+    include_has_newer_episode = current_user and current_user['id'] == owner['id']
+    records = call_api_internal(request, '/users/' + username + '/records', {
+        'include_has_newer_episode': 'true' if include_has_newer_episode else 'false'
+    })
+
     return render(request, 'user/library.html', {
         'owner': user,
         'preload_data': {
-            'owner': serializers.serialize_user(user, request.user),
-            'current_user': serializers.serialize_user(request.user, request.user) if request.user.is_authenticated() else None,
-            'records': [serializers.serialize_record(r, include_has_newer_episode=user == request.user)
-                for r in user.record_set.all()],
+            'owner': owner,
+            'current_user': current_user,
+            'records': records,
         },
     })
 

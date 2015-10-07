@@ -1,9 +1,5 @@
 import uuid
 from django.test import TestCase, Client
-from django.contrib.auth.models import User
-from api.serializers import serialize_datetime
-from record.models import Record, History
-from work.models import Work
 from search import indexer
 
 class TestContext(Client):
@@ -122,6 +118,19 @@ class UserViewTest(TestCase):
         response = self.client.get(context.user_path)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.obj, context.user)
+
+    def test_get_current_user(self):
+        context = TestContext()
+        path = '/api/v2/me'
+
+        # Not logged in
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 403)
+
+        # Logged in
+        response = context.get(path)
+        expected_response = context.get(context.user_path)
+        self.assertEqual(response.obj, expected_response.obj)
 
 class UserCategoriesViewTest(TestCase):
     def test_create(self):
@@ -319,6 +328,52 @@ class UserRecordsViewTest(TestCase):
         self.assertEqual(len(response.obj), 2)
         self.assertEqual(response.obj[0], record2)
         self.assertEqual(response.obj[1], record1)
+
+    def test_get_with_has_newer_episode_flag(self):
+        context1 = TestContext()
+        record1 = context1.new_record()
+        context1.new_post(record1['id'], status='1')
+        unaffected_record = context1.new_record()
+
+        context2 = TestContext()
+        record2 = context2.new_record(work_title=record1['title'])
+        context2.new_post(record2['id'], status='2')
+
+        response = context1.get(context1.user_path + '/records',
+                                data={'include_has_newer_episode': 'true'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.obj), 2)
+        self.assertEqual(response.obj[0]['id'], unaffected_record['id'])
+        self.assertFalse('has_newer_episode' in response.obj[0])
+        self.assertEqual(response.obj[1]['id'], record1['id'])
+        self.assertTrue(response.obj[1]['has_newer_episode'])
+
+        # Default is false
+        response = context1.get(context1.user_path + '/records')
+        self.assertEqual(response.status_code, 200)
+        for record in response.obj:
+            self.assertFalse('has_newer_episode' in record)
+
+        # Non-true value is assumed as false
+        response = context1.get(context1.user_path + '/records',
+                                data={'include_has_newer_episode': 'falsey'})
+        self.assertEqual(response.status_code, 200)
+        for record in response.obj:
+            self.assertFalse('has_newer_episode' in record)
+
+        # Not allowed for unauthenticated user
+        response = self.client.get(context1.user_path + '/records',
+                                   data={'include_has_newer_episode': 'true'})
+        self.assertEqual(response.status_code, 200)
+        for record in response.obj:
+            self.assertFalse('has_newer_episode' in record)
+
+        # Not allowed for unauthenticated user
+        response = context2.get(context1.user_path + '/records',
+                                data={'include_has_newer_episode': 'true'})
+        self.assertEqual(response.status_code, 200)
+        for record in response.obj:
+            self.assertFalse('has_newer_episode' in record)
 
     def test_post(self):
         context = TestContext()

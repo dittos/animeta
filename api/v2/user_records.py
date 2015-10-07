@@ -10,7 +10,11 @@ from record.models import Record, History, StatusTypes
 class UserRecordsView(BaseView):
     def get(self, request, name):
         user = get_object_or_404(User, username=name)
-        return map(serialize_record, user.record_set.all())
+        include_has_newer_episode = request.GET.get('include_has_newer_episode') == 'true'
+        if request.user != user:
+            include_has_newer_episode = False
+        return [serialize_record(record, include_has_newer_episode=include_has_newer_episode)
+                for record in user.record_set.all()]
 
     @transaction.atomic
     def post(self, request, name):
