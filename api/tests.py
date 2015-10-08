@@ -258,6 +258,18 @@ class CategoryViewTest(TestCase):
         self.assertEqual(response.status_code, 400)
 
 class PostViewTest(TestCase):
+    def test_get(self):
+        context = TestContext()
+        record = context.new_record()
+        post = context.new_post(record['id'], status='a', status_type='watching')
+        path = '/api/v2/posts/%s' % post['id']
+
+        response = self.client.get(path)
+        post['user'] = self.client.get(context.user_path).obj
+        post['record'] = self.client.get('/api/v2/records/%s' % record['id']).obj
+        del post['user']['categories']
+        self.assertEqual(response.obj, post)
+
     def test_delete(self):
         context = TestContext()
         record = context.new_record(status_type='watching')
@@ -660,3 +672,29 @@ class PostsViewTest(TestCase):
         self.assertEqual(len(response.obj), 2)
         self.assertEqual(response.obj[0]['id'], post_a2['id'])
         self.assertEqual(response.obj[1]['id'], post_a['id'])
+
+
+from api.v2.chart_view import PopularWorksChartView
+
+
+class PopularWorksChartViewTest(TestCase):
+    def setUp(self):
+        self._orig_range_func = PopularWorksChartView.range_func
+        from chart.utils import Week
+        PopularWorksChartView.range_func = staticmethod(Week.this)
+
+    def tearDown(self):
+        PopularWorksChartView.range_func = self._orig_range_func
+        del self._orig_range_func
+
+    def test_get_weekly(self):
+        context = TestContext()
+        record = context.new_record()
+        context2 = TestContext()
+        context2.new_record(work_title=record['title'])
+
+        response = self.client.get('/api/v2/charts/works/weekly?limit=5')
+        self.assertEqual(len(response.obj), 1)
+        self.assertEqual(response.obj[0]['rank'], 1)
+        self.assertEqual(response.obj[0]['factor_percent'], 100.0)
+        self.assertEqual(response.obj[0]['object']['id'], record['work_id'])

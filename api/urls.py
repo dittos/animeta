@@ -2,6 +2,7 @@ from django.conf.urls import include, patterns, url
 from api.decorators import route_by_method
 from api.v2.auth import AuthView
 from api.v2.accounts import AccountsView
+from api.v2.chart_view import PopularWorksChartView
 from api.v2.user import UserView
 from api.v2.user_categories import UserCategoriesView
 from api.v2.user_records import UserRecordsView
@@ -42,4 +43,5 @@ urlpatterns += patterns('api.v2',
     (r'^v2/works/(?P<id>[0-9]+)$', WorkView.as_view()),
     (r'^v2/works/(?P<id>_)/(?P<title>.+)$', WorkView.as_view()),
     (r'^v2/works/(?P<id>[0-9]+)/posts$', WorkPostsView.as_view()),
+    (r'^v2/charts/works/weekly$', PopularWorksChartView.as_view()),
 )

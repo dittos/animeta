@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import ListView, TemplateView
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
 from connect import get_connected_services
 from record.models import History
-from api import serializers
-import requests
+from animeta.utils import call_api_internal, get_current_user
+
 
 def login(request):
     return render(request, 'login.html')
@@ -42,30 +41,8 @@ def shortcut(request, username):
         return redirect('/%s/' % username)
 
 
-def _call_api_internal(request, path, params=None):
-    return requests.get(
-        settings.API_ENDPOINT + path,
-        params=params,
-        cookies=request.COOKIES,
-        headers={'Host': request.get_host()}
-    )
-
-
-def call_api_internal(request, path, params=None):
-    return _call_api_internal(request, path, params).json()
-
-
-def get_current_user(request):
-    resp = _call_api_internal(request, '/me')
-    if resp.status_code != 200:
-        return None
-    return resp.json()
-
-
 def library(request, username=None):
-    if username:
-        user = get_object_or_404(User, username=username)
-    else:
+    if not username:
         return redirect('user.views.library', username=request.user.username)
 
     owner = call_api_internal(request, '/users/' + username)
@@ -76,7 +53,6 @@ def library(request, username=None):
     })
 
     return render(request, 'user/library.html', {
-        'owner': user,
         'preload_data': {
             'owner': owner,
             'current_user': current_user,

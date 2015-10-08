@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import get_object_or_404
 from api.v2 import BaseView
-from api.serializers import serialize_record
+from api.serializers import serialize_record, serialize_post
 from record.models import History
 
+
 class PostView(BaseView):
+    def get(self, request, id):
+        post = get_object_or_404(History, id=id)
+        return serialize_post(post, include_record=True, include_user=True)
+
     def delete(self, request, id):
         history = get_object_or_404(History, id=id)
         self.check_login()
