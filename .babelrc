@@ -5,5 +5,12 @@
     ],
     "blacklist": [
         "es3.propertyLiterals"
-    ]
+    ],
+    "env": {
+        "production": {
+            "optional": [
+                "optimisation.react.inlineElements"
+            ]
+        }
+    }
 }

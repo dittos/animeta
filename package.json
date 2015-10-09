@@ -13,9 +13,9 @@
     "jquery": "^2.1.4",
     "lodash": "^3.9.3",
     "moment": "^2.10.3",
-    "react": "^0.14.0-rc1",
-    "react-dom": "^0.14.0-rc1",
-    "react-router": "^1.0.0-rc1",
+    "react": "^0.14.0",
+    "react-dom": "^0.14.0",
+    "react-router": "^1.0.0-rc3",
     "regenerator": "^0.8.36",
     "typeahead.js": "^0.10.5"
   },

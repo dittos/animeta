@@ -13,33 +13,12 @@ var App = React.createClass({
         var data = global.PreloadData;
         return <div>
             <GlobalHeader currentUser={data.current_user} />
-            {React.cloneElement(
-                this.props.children,
-                {
-                    work: data.work,
-                    chart: data.chart
-                }
-            )}
+            <WorkRoute work={data.work}
+                chart={data.chart}
+                params={this.props.params}>
+                {this.props.children}
+            </WorkRoute>
         </div>;
-    }
-});
-
-var Work = React.createClass({
-    render() {
-        var work = this.props.work;
-        return <WorkViews.Work
-            work={work}
-            chart={this.props.chart}
-        >
-            <div className="episodes">
-                <Router.Link to="/" activeClassName="active" className="recent">최신</Router.Link>
-                {work.episodes.map(ep =>
-                    <Router.Link to={`/ep/${ep.number}/`}
-                        activeClassName="active"
-                        className={ep.post_count > 0 ? 'has-post' : ''}>{ep.number}화</Router.Link>)}
-            </div>
-            {this.props.children}
-        </WorkViews.Work>;
     }
 });
 
@@ -56,6 +35,25 @@ var WorkRoute = React.createClass({
     }
 });
 
+var Work = React.createClass({
+    render() {
+        var work = this.props.work;
+        return <WorkViews.Work
+            work={work}
+            chart={this.props.chart}
+        >
+            <div className="episodes">
+                <Router.IndexLink to="/" activeClassName="active" className="recent">최신</Router.IndexLink>
+                {work.episodes.map(ep =>
+                    <Router.Link to={`/ep/${ep.number}/`}
+                        activeClassName="active"
+                        className={ep.post_count > 0 ? 'has-post' : ''}>{ep.number}화</Router.Link>)}
+            </div>
+            {this.props.children}
+        </WorkViews.Work>;
+    }
+});
+
 var WorkIndexRoute = React.createClass({
     render() {
         return <WorkViews.WorkIndex
@@ -65,11 +63,9 @@ var WorkIndexRoute = React.createClass({
 });
 
 var {Route, IndexRoute} = Router;
-var routes = <Route component={App}>
-    <Route component={WorkRoute} path="/" ignoreScrollBehavior>
-        <IndexRoute component={WorkIndexRoute} />
-        <Route component={WorkIndexRoute} path="ep/:episode/" />
-    </Route>
+var routes = <Route component={App} path="/" ignoreScrollBehavior>
+    <IndexRoute component={WorkIndexRoute} />
+    <Route component={WorkIndexRoute} path="ep/:episode/" />
 </Route>;
 
 function onPageTransition() {
