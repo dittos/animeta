@@ -1,4 +1,4 @@
-import json
+import simplejson as json
 from django import template
 from django.utils.safestring import mark_safe
 

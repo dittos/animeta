@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import json
+import simplejson as json
 from django.http import HttpResponse
 from django.views.generic import View
 
