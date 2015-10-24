@@ -1,6 +1,7 @@
 require('moment').locale('ko');
 
 var React = require('react');
+var ReactDOMServer = require('react-dom/server');
 var createLocation = require('history/lib/createLocation');
 var Router = require('react-router');
 var workRoutes = require('../js/work.react.js');
@@ -30,7 +31,7 @@ function createRoutesRenderer(routes, hashPatch) {
             global.PreloadData = preloadData;
             var markup;
             try {
-                markup = React.renderToString(<Router.RoutingContext {...renderProps} />);
+                markup = ReactDOMServer.renderToString(<Router.RoutingContext {...renderProps} />);
             } finally {
                 delete global.PreloadData;
             }
@@ -41,7 +42,7 @@ function createRoutesRenderer(routes, hashPatch) {
 
 function createSimpleRenderer(Component) {
     return (path, preloadData) => Promise.resolve(
-        React.renderToString(<Component PreloadData={preloadData} />)
+        ReactDOMServer.renderToString(<Component PreloadData={preloadData} />)
     );
 }
 
