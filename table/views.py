@@ -26,7 +26,7 @@ def _render(request, template_name, period, exclude_continuous=False):
         cache.set(cache_key, data, 60 * 60)
     if request.user.is_authenticated():
         records = {}
-        for record in request.user.record_set.filter(work_id__in=[i.work_id for i in indexes]):
+        for record in request.user.record_set.filter(work_id__in=[work['id'] for work in data]):
             records[record.work_id] = serializers.serialize_record(record)
         for work in data:
             if work['id'] in records:
