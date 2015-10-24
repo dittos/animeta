@@ -28,11 +28,14 @@ def run():
         ))
         metadata = work.metadata
         if metadata:
+            is_first = True
             for period in metadata['periods']:
                 period_objects.append(WorkPeriodIndex(
                     period=period,
                     work_id=work.id,
+                    is_first_period=is_first,
                 ))
+                is_first = False
     add_ranks(objects)
     WorkIndex.objects.bulk_create(objects)
     WorkPeriodIndex.objects.bulk_create(period_objects)

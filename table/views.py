@@ -16,12 +16,17 @@ def get_period(request, period):
 
 def _render(request, template_name, period, exclude_continuous=False):
     indexes = WorkPeriodIndex.objects.select_related('work', 'work__index')\
-        .filter(period=str(period)).all()
+        .filter(period=str(period))
     if exclude_continuous:
-        # Only include new or split-cour animes
-        prev_period = str(period.prev())
-        indexes = filter(lambda i: prev_period not in i.work.metadata['periods'], indexes)
-    data = [serializers.serialize_work(index.work, request.user) for index in indexes]
+        indexes = indexes.exclude(is_first_period=False)
+    data = [serializers.serialize_work(index.work) for index in indexes]
+    if request.user.is_authenticated():
+        records = {}
+        for record in request.user.record_set.filter(work_id__in=[i.work_id for i in indexes]):
+            records[record.work_id] = serializers.serialize_record(record)
+        for work in data:
+            if work['id'] in records:
+                work['record'] = records[work['id']]
     return render(request, template_name, {
         'period': period,
         'preload_data': {
