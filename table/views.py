@@ -1,4 +1,4 @@
-import json
+from django.core.cache import cache
 from django.shortcuts import render, redirect
 from table import models
 from search.models import WorkPeriodIndex
@@ -15,11 +15,15 @@ def get_period(request, period):
     return _render(request, 'table/period.html', period, True)
 
 def _render(request, template_name, period, exclude_continuous=False):
-    indexes = WorkPeriodIndex.objects.select_related('work', 'work__index')\
-        .filter(period=str(period))
-    if exclude_continuous:
-        indexes = indexes.exclude(is_first_period=False)
-    data = [serializers.serialize_work(index.work) for index in indexes]
+    cache_key = 'table:%s:%s' % (template_name, period)
+    data = cache.get(cache_key)
+    if data is None:
+        indexes = WorkPeriodIndex.objects.select_related('work', 'work__index')\
+            .filter(period=str(period))
+        if exclude_continuous:
+            indexes = indexes.exclude(is_first_period=False)
+        data = [serializers.serialize_work(index.work) for index in indexes]
+        cache.set(cache_key, data, 60 * 60)
     if request.user.is_authenticated():
         records = {}
         for record in request.user.record_set.filter(work_id__in=[i.work_id for i in indexes]):
