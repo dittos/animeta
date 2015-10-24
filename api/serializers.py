@@ -59,16 +59,15 @@ def serialize_post(post, include_record=False, include_user=False):
         data['user'] = serialize_user(post.user, include_categories=False)
     return data
 
-def serialize_work(work, viewer=None):
-    alt_titles = list(TitleMapping.objects.filter(work=work) \
-            .exclude(title=work.title).values_list('title', flat=True))
-    episodes = get_episodes(work)
+def serialize_work(work, viewer=None, full=False):
     data = {
         'id': work.id,
         'title': work.title,
-        'alt_titles': alt_titles,
-        'episodes': episodes,
     }
+    if full:
+        data['alt_titles'] = list(TitleMapping.objects.filter(work=work) \
+                                  .exclude(title=work.title).values_list('title', flat=True))
+        data['episodes'] = get_episodes(work)
     try:
         data['record_count'] = work.index.record_count
         data['rank'] = work.index.rank

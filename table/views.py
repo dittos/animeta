@@ -15,7 +15,8 @@ def get_period(request, period):
     return _render(request, 'table/period.html', period, True)
 
 def _render(request, template_name, period, exclude_continuous=False):
-    indexes = WorkPeriodIndex.objects.filter(period=str(period)).all()
+    indexes = WorkPeriodIndex.objects.select_related('work', 'work__index')\
+        .filter(period=str(period)).all()
     if exclude_continuous:
         # Only include new or split-cour animes
         prev_period = str(period.prev())
