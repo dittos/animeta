@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
 import uuid
 from django.test import TestCase, Client
 from search import indexer
+from work.models import Work
+
 
 class TestContext(Client):
     def __init__(self):
@@ -698,3 +701,84 @@ class PopularWorksChartViewTest(TestCase):
         self.assertEqual(response.obj[0]['rank'], 1)
         self.assertEqual(response.obj[0]['factor_percent'], 100.0)
         self.assertEqual(response.obj[0]['object']['id'], record['work_id'])
+
+
+class TablePeriodViewTest(TestCase):
+    def test_get(self):
+        context = TestContext()
+        work1_id = context.new_record(work_title='A')['work_id']
+        work1 = Work.objects.get(id=work1_id)
+        work1.raw_metadata = u'''periods: ["2015Q2"]
+id: oregairu2
+title: 역시 내 청춘 러브코메디는 잘못됐다 속
+namu_ref: 역시 내 청춘 러브코메디는 잘못됐다
+schedule:
+- 04-03 01:46 #금
+- TBS
+schedule_kr:
+- 04-08 23:00 #수
+- ANIMAX
+source: lightnovel
+studio: Feel
+ann_id: 16329
+image: ann16329.jpg
+website: http://www.tbs.co.jp/anime/oregairu/'''
+        work1.save()
+
+        work2_id = context.new_record(work_title='B')['work_id']
+        work2 = Work.objects.get(id=work2_id)
+        work2.raw_metadata = u'''periods: ["2015Q3"]
+id: gatchaman-crowds-insight
+title: 갓챠맨 크로우즈 인사이트
+namu_ref: GATCHAMAN CROWDS
+schedule:
+- 07-05 01:55 #일
+- NTV
+schedule_kr:
+- 07-08 23:00 #수
+- ANIPLUS
+source: original
+studio: 타츠노코
+website: http://www.ntv.co.jp/GC_insight/
+ann_id: 16697
+image: ann16697.jpg'''
+        work2.save()
+
+        work3_id = context.new_record(work_title='C')['work_id']
+        work3 = Work.objects.get(id=work3_id)
+        work3.raw_metadata = u'''periods: ["2015Q1", "2015Q3"]
+id: 059239ce
+ann_id: 16098
+title: THE IDOLM@STER 신데렐라 걸즈
+namu_ref: 아이돌 마스터 신데렐라 걸즈/애니메이션
+schedule:
+#- 01-10 00:00 #Sat
+- 07-18 00:00 #토
+- MX
+schedule_kr:
+#- 01-20 22:30 #Tue
+- 07-28 22:30 #화
+- ANIPLUS
+image: ann16098.jpg
+source: game
+studio: A-1 픽쳐스
+website: http://imas-cinderella.com/'''
+        work3.save()
+
+        indexer.run()
+
+        path = '/api/v2/table/periods/2015Q3'
+
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([work['id'] for work in response.obj], [work2_id, work3_id])
+
+        response = self.client.get(path, {'only_first_period': 1})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([work['id'] for work in response.obj], [work2_id])
+
+        context2 = TestContext()
+        record = context2.new_record(work_title=work2.title)
+        response = context2.get(path)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([work.get('record') for work in response.obj], [record, None])
