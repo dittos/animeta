@@ -6,6 +6,7 @@ from api.v2.chart_view import PopularWorksChartView
 from api.v2.table_period import TablePeriodView
 from api.v2.user import UserView
 from api.v2.user_categories import UserCategoriesView
+from api.v2.user_password import UserPasswordView
 from api.v2.user_records import UserRecordsView
 from api.v2.user_posts import UserPostsView
 from api.v2.category import CategoryView
@@ -31,7 +32,8 @@ urlpatterns = patterns('api.views',
 urlpatterns += patterns('api.v2',
     (r'^v2/auth$', AuthView.as_view()),
     (r'^v2/accounts$', AccountsView.as_view()),
-    (r'^v2/me', UserView.as_view()),
+    (r'^v2/me$', UserView.as_view()),
+    (r'^v2/me/password', UserPasswordView.as_view()),
     (r'^v2/users/(?P<name>[\w.@+-]+)$', UserView.as_view()),
     (r'^v2/users/(?P<name>[\w.@+-]+)/categories$', UserCategoriesView.as_view()),
     (r'^v2/users/(?P<name>[\w.@+-]+)/records$', UserRecordsView.as_view()),

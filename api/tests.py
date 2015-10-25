@@ -135,6 +135,60 @@ class UserViewTest(TestCase):
         expected_response = context.get(context.user_path)
         self.assertEqual(response.obj, expected_response.obj)
 
+
+class UserPasswordViewTest(TestCase):
+    def test_post(self):
+        context = TestContext()
+        path = '/api/v2/me/password'
+
+        # Not logged in
+        response = self.client.post(path, {
+            'old_password': 'secret',
+            'new_password1': 'new-secret',
+            'new_password2': 'new-secret',
+        })
+        self.assertEqual(response.status_code, 403)
+
+        # Wrong old password
+        response = context.post(path, {
+            'old_password': 'wrong',
+            'new_password1': 'new-secret',
+            'new_password2': 'new-secret',
+        })
+        self.assertEqual(response.status_code, 403)
+
+        # Wrong new password verification
+        response = context.post(path, {
+            'old_password': 'secret',
+            'new_password1': 'new-secret',
+            'new_password2': 'wrong',
+        })
+        self.assertEqual(response.status_code, 400)
+
+        # Success
+        response = context.post(path, {
+            'old_password': 'secret',
+            'new_password1': 'new-secret',
+            'new_password2': 'new-secret',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.obj['ok'])
+
+        # Old password -> fail
+        response = self.client.post('/api/v2/auth', {
+            'username': context.username,
+            'password': 'secret',
+        })
+        self.assertFalse(response.obj['ok'])
+
+        # New password -> pass
+        response = self.client.post('/api/v2/auth', {
+            'username': context.username,
+            'password': 'new-secret',
+        })
+        self.assertTrue(response.obj['ok'])
+
+
 class UserCategoriesViewTest(TestCase):
     def test_create(self):
         name = uuid.uuid4().hex[:30]
