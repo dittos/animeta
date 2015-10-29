@@ -13,3 +13,5 @@ animeta/assets.py
 htmlcov
 .env
 *.db
+frontend/assets.json
+frontend/config.json

@@ -52,8 +52,11 @@ function versionMapPlugin() {
             });
             assets[key] = value;
         });
-        var source = 'ASSET_FILENAMES = ' + JSON.stringify(assets);
-        fs.writeFileSync(path.join(__dirname, 'animeta/assets.py'), source);
+        var source = JSON.stringify(assets);
+        fs.writeFileSync(path.join(__dirname, 'animeta/assets.py'),
+            'ASSET_FILENAMES = ' + source);
+        fs.writeFileSync(path.join(__dirname, 'frontend/assets.json'),
+            source);
     });
 }
 
