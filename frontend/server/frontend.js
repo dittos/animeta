@@ -47,7 +47,7 @@ function wrapHandler(handler) {
 
 server.route({
     method: 'GET',
-    path: '/works2/{title}/',
+    path: '/works/{title}/',
     handler: wrapHandler(async(request, reply) => {
         const {title} = request.params;
         const [currentUser, work, chart] = await Promise.all([
