@@ -16,13 +16,25 @@ server.ext('onPreResponse', (request, reply) => {
     const response = request.response;
 
     if (response.isBoom &&
-        response.output.statusCode === 404 &&
-        !request.path.match(/\/$/)) {
-        var url = request.path + '/';
-        if (request.query) {
-            url += '?' + querystring.stringify(request.query);
+        response.output.statusCode === 404) {
+        var redirectPath;
+        // Strip slashes
+        if (request.path.match(/^\/-(.+)\/$/)) {
+            redirectPath = request.path.substring(0, request.path.length - 1);
         }
-        return reply().redirect(url);
+        // Add slashes
+        if (request.path.match(/^\/works/) &&
+            !request.path.match(/\/$/)) {
+            redirectPath = request.path + '/';
+        }
+        if (redirectPath) {
+            var url = redirectPath;
+            var query = querystring.stringify(request.query);
+            if (query) {
+                url += '?' + query;
+            }
+            return reply().redirect(url);
+        }
     }
     return reply.continue();
 });
@@ -79,6 +91,35 @@ server.route({
     })
 });
 
+server.route({
+    method: 'GET',
+    path: '/-{id}',
+    handler: wrapHandler(async(request, reply) => {
+        const {id} = request.params;
+        const post = await backend.call(request, `/posts/${id}`);
+        const [currentUser, work, chart] = await Promise.all([
+            backend.getCurrentUser(request),
+            backend.call(request, `/works/${post.record.work_id}`),
+            backend.call(request, '/charts/works/weekly', {limit: 5}),
+        ]);
+        const preloadData = {
+            current_user: currentUser,
+            post,
+            work,
+            chart,
+            daum_api_key: config.daumAPIKey,
+        };
+        const html = renderers.post('/', preloadData);
+        reply.view('template', {
+            html,
+            preloadData,
+            title: post.record.title,
+            stylesheets: [`build/${assetFilenames.post.css}`],
+            scripts: [`build/${assetFilenames.post.js}`],
+        });
+    })
+});
+
 server.register(require('vision'), err => {
     if (err)
         throw err;
@@ -112,7 +153,7 @@ if (DEBUG) {
             path: '/static/{param*}',
             handler: {
                 directory: {
-                    path: __dirname + '/../animeta/static'
+                    path: __dirname + '/../../animeta/static'
                 }
             }
         });
