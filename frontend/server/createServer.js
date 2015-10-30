@@ -10,7 +10,7 @@ module.exports = function() {
         req.on('end', async () => {
             var view = req.url;
             var preloadData = JSON.parse(buf);
-            var html = await renderers[view.substring(1)]('/', preloadData);
+            var html = renderers[view.substring(1)]('/', preloadData);
             res.writeHead(200, {'Content-Type': 'text/html'});
             res.write(html);
             res.end();
