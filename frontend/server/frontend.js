@@ -59,6 +59,33 @@ function wrapHandler(handler) {
 
 server.route({
     method: 'GET',
+    path: '/',
+    handler: wrapHandler(async(request, reply) => {
+        const [currentUser, posts, chart] = await Promise.all([
+            backend.getCurrentUser(request),
+            backend.call(request, '/posts', {
+                min_record_count: 2,
+                count: 10
+            }),
+            backend.call(request, '/charts/works/weekly', {limit: 5}),
+        ]);
+        const preloadData = {
+            current_user: currentUser,
+            chart,
+            posts
+        };
+        const html = renderers.index('/', preloadData);
+        reply.view('template', {
+            html,
+            preloadData,
+            stylesheets: [`build/${assetFilenames.index.css}`],
+            scripts: [`build/${assetFilenames.index.js}`],
+        });
+    })
+});
+
+server.route({
+    method: 'GET',
     path: '/works/{title}/',
     handler: wrapHandler(async(request, reply) => {
         const {title} = request.params;
