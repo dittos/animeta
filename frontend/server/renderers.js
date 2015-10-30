@@ -15,7 +15,8 @@ export default {
 };
 
 function createRoutesRenderer(routes, hashPatch) {
-    return (path, preloadData) => new Promise((resolve, reject) => {
+    return (path, preloadData) => {
+        var markup;
         var location = createLocation(path);
 
         Router.match({routes, location}, (error, redirectLocation, renderProps) => {
@@ -28,19 +29,17 @@ function createRoutesRenderer(routes, hashPatch) {
             }
 
             global.PreloadData = preloadData;
-            var markup;
             try {
                 markup = ReactDOMServer.renderToString(<Router.RoutingContext {...renderProps} />);
             } finally {
                 delete global.PreloadData;
             }
-            resolve(markup);
         });
-    });
+        return markup;
+    };
 }
 
 function createSimpleRenderer(Component) {
-    return (path, preloadData) => Promise.resolve(
-        ReactDOMServer.renderToString(<Component PreloadData={preloadData} />)
-    );
+    return (path, preloadData) =>
+        ReactDOMServer.renderToString(<Component PreloadData={preloadData} />);
 }

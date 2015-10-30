@@ -1,6 +1,7 @@
 import querystring from 'querystring';
 import Hapi from 'hapi';
 import ejs from 'ejs';
+import Promise from 'bluebird';
 import renderers from './server/renderers';
 import Backend, {HttpNotFound} from './server/backend';
 import assetFilenames from './assets.json';
@@ -50,7 +51,7 @@ function wrapHandler(handler) {
 
 server.route({
     method: 'GET',
-    path: '/works/{title}/',
+    path: '/works2/{title}/',
     handler: wrapHandler(async(request, reply) => {
         const {title} = request.params;
         const [currentUser, work, chart] = await Promise.all([
@@ -65,7 +66,7 @@ server.route({
             chart,
             daum_api_key: config.daumAPIKey,
         };
-        const html = await renderers.work('/', preloadData);
+        const html = renderers.work('/', preloadData);
         reply.view('template', {
             html,
             preloadData,

@@ -1,4 +1,5 @@
 import request from 'request';
+import Promise from 'bluebird';
 
 export const HttpNotFound = {};
 
@@ -29,6 +30,7 @@ export default class {
                 baseUrl: this.endpoint,
                 url: path,
                 qs: params,
+forever: true,
                 headers: {
                     'Cookie': req.headers.cookie,
                     'Host': req.headers.host,

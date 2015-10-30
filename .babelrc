@@ -11,6 +11,11 @@
             "optional": [
                 "optimisation.react.inlineElements"
             ]
+        },
+        "server": {
+            "optional": [
+                "bluebirdCoroutines"
+            ]
         }
     }
 }
