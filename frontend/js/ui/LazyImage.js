@@ -1,5 +1,5 @@
-/* global Blazy */
 var React = require('react');
+var Blazy = require('blazy');
 
 var BLANK_IMG_URI = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
 

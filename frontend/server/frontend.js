@@ -23,7 +23,7 @@ server.ext('onPreResponse', (request, reply) => {
             redirectPath = request.path.substring(0, request.path.length - 1);
         }
         // Add slashes
-        if (request.path.match(/^\/works/) &&
+        if (request.path.match(/^\/(works|table)/) &&
             !request.path.match(/\/$/)) {
             redirectPath = request.path + '/';
         }
@@ -147,6 +147,51 @@ server.route({
     })
 });
 
+const CURRENT_PERIOD = '2015Q4';
+
+server.route({
+    method: 'GET',
+    path: '/table/',
+    handler(request, reply) {
+        reply.redirect(`/table/${CURRENT_PERIOD}/`);
+    }
+});
+
+server.route({
+    method: 'GET',
+    path: '/table/{period}/',
+    handler: wrapHandler(async (request, reply) => {
+        const {period} = request.params;
+        const matches = period.match(/([0-9]{4})Q([1-4])/);
+        if (!matches) {
+            const response = reply('Not found.');
+            response.statusCode = 404;
+            return;
+        }
+        const year = matches[1];
+        const quarter = matches[2];
+        const month = [1, 4, 7, 10][quarter - 1];
+        const [currentUser, schedule] = await* [
+            backend.getCurrentUser(request),
+            backend.call(request, `/table/periods/${period}`, {
+                only_first_period: JSON.stringify(true)
+            }),
+        ];
+        const preloadData = {
+            current_user: currentUser,
+            period,
+            schedule,
+        };
+        reply.view('template', {
+            html: '',
+            preloadData,
+            title: `${year}년 ${month}월 신작`,
+            scripts: [`build/${assetFilenames.table_period.js}`],
+            useModernizr: true,
+        });
+    })
+});
+
 server.register(require('vision'), err => {
     if (err)
         throw err;
@@ -165,6 +210,7 @@ server.register(require('vision'), err => {
             meta: {},
             stylesheets: [],
             scripts: [],
+            useModernizr: false
         },
         isCached: !DEBUG,
     });
