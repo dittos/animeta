@@ -1,7 +1,6 @@
 import querystring from 'querystring';
 import Hapi from 'hapi';
 import ejs from 'ejs';
-import Promise from 'bluebird';
 import renderers from './renderers';
 import Backend, {HttpNotFound} from './backend';
 import assetFilenames from '../assets.json';
@@ -61,14 +60,14 @@ server.route({
     method: 'GET',
     path: '/',
     handler: wrapHandler(async(request, reply) => {
-        const [currentUser, posts, chart] = await Promise.all([
+        const [currentUser, posts, chart] = await* [
             backend.getCurrentUser(request),
             backend.call(request, '/posts', {
                 min_record_count: 2,
                 count: 10
             }),
             backend.call(request, '/charts/works/weekly', {limit: 5}),
-        ]);
+        ];
         const preloadData = {
             current_user: currentUser,
             chart,
@@ -89,11 +88,11 @@ server.route({
     path: '/works/{title}/',
     handler: wrapHandler(async(request, reply) => {
         const {title} = request.params;
-        const [currentUser, work, chart] = await Promise.all([
+        const [currentUser, work, chart] = await* [
             backend.getCurrentUser(request),
             backend.call(request, '/works/_/' + encodeURIComponent(title)),
             backend.call(request, '/charts/works/weekly', {limit: 5}),
-        ]);
+        ];
         const preloadData = {
             current_user: currentUser,
             title,
@@ -124,11 +123,11 @@ server.route({
     handler: wrapHandler(async(request, reply) => {
         const {id} = request.params;
         const post = await backend.call(request, `/posts/${id}`);
-        const [currentUser, work, chart] = await Promise.all([
+        const [currentUser, work, chart] = await* [
             backend.getCurrentUser(request),
             backend.call(request, `/works/${post.record.work_id}`),
             backend.call(request, '/charts/works/weekly', {limit: 5}),
-        ]);
+        ];
         const preloadData = {
             current_user: currentUser,
             post,
