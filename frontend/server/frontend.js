@@ -22,7 +22,7 @@ server.ext('onPreResponse', (request, reply) => {
             redirectPath = request.path.substring(0, request.path.length - 1);
         }
         // Add slashes
-        if (request.path.match(/^\/(works|table|login|signup|settings)/) &&
+        if (request.path.match(/^\/(works|table|login|signup|settings|records)/) &&
             !request.path.match(/\/$/)) {
             redirectPath = request.path + '/';
         }
@@ -51,6 +51,7 @@ function wrapHandler(handler) {
             if (!(e instanceof Error)) {
                 e = new Error(e);
             }
+            console.trace(e);
             reply(e);
         });
     };
@@ -111,34 +112,72 @@ server.route({
     }
 });
 
+async function userHandler(request, reply, username, currentUser) {
+    if (!currentUser) {
+        currentUser = await backend.getCurrentUser(request);
+    }
+    const [owner, records] = await* [
+        backend.call(request, `/users/${username}`),
+        backend.call(request, `/users/${username}/records`, {
+            include_has_newer_episode: JSON.stringify(true)
+        }),
+    ];
+    const preloadData = {
+        current_user: currentUser,
+        owner,
+        records
+    };
+    reply.view('template', {
+        html: '',
+        title: `${owner.name} 사용자`,
+        preloadData,
+        scripts: [`build/${assetFilenames.library.js}`],
+    });
+}
+
+const recordHandler = wrapHandler(async (request, reply) => {
+    const {id} = request.params;
+    const record = await backend.call(request, `/records/${id}`);
+    return await userHandler(request, reply, record.user.name);
+});
+
+server.route({
+    method: 'GET',
+    path: '/records/{id}/',
+    handler: recordHandler
+});
+
+server.route({
+    method: 'GET',
+    path: '/records/{id}/delete/',
+    handler: recordHandler
+});
+
+const currentUserHandler = wrapHandler(async (request, reply) => {
+    const currentUser = await backend.getCurrentUser(request);
+    if (!currentUser) {
+        reply.redirect('/login/');
+        return;
+    }
+    return await userHandler(request, reply, currentUser.name, currentUser);
+});
+
+server.route({
+    method: 'GET',
+    path: '/records/add/{title*}',
+    handler: currentUserHandler
+});
+
+server.route({
+    method: 'GET',
+    path: '/records/category/',
+    handler: currentUserHandler
+});
+
 server.route({
     method: 'GET',
     path: '/settings/',
-    handler: wrapHandler(async (request, reply) => {
-        const currentUser = await backend.getCurrentUser(request);
-        if (!currentUser) {
-            reply.redirect('/login/');
-            return;
-        }
-        const username = currentUser.name;
-        const [owner, records] = await* [
-            backend.call(request, `/users/${username}`),
-            backend.call(request, `/users/${username}/records`, {
-                include_has_newer_episode: JSON.stringify(true)
-            }),
-        ];
-        const preloadData = {
-            current_user: currentUser,
-            owner,
-            records
-        };
-        reply.view('template', {
-            html: '',
-            title: `${owner.name} 사용자`,
-            preloadData,
-            scripts: [`build/${assetFilenames.library.js}`],
-        });
-    })
+    handler: currentUserHandler
 });
 
 server.route({

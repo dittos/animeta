@@ -8,7 +8,7 @@ from record.models import Record
 class RecordView(BaseView):
     def get(self, request, id):
         record = get_object_or_404(Record, id=id)
-        return serialize_record(record)
+        return serialize_record(record, include_user=True)
 
     @transaction.atomic
     def post(self, request, id):

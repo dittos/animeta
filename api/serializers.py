@@ -29,7 +29,7 @@ def serialize_category(category):
         'name': category.name,
     }
 
-def serialize_record(record, include_has_newer_episode=False):
+def serialize_record(record, include_has_newer_episode=False, include_user=False):
     data = {
         'id': record.id,
         'user_id': record.user_id,
@@ -42,6 +42,8 @@ def serialize_record(record, include_has_newer_episode=False):
     }
     if include_has_newer_episode and record.has_newer_episode():
         data['has_newer_episode'] = True
+    if include_user:
+        data['user'] = serialize_user(record.user, include_categories=False)
     return data
 
 def serialize_post(post, include_record=False, include_user=False):
