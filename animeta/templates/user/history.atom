@@ -8,7 +8,7 @@
 {% for history in object_list %}
     <entry>
         <id>tag:animeta.net,{{ history.updated_at|date:"Y-m-d" }}:{{ history.id }}</id>
-        <link href="http://animeta.net{% url "history-detail" history.id %}" />
+        <link href="http://animeta.net/-{{ history.id }}" />
         <title>{{ history.record.title }} {{ history|status_text }}</title>
         <updated>{{ history.updated_at|date:"Y-m-d\TH:i:sO" }}</updated>
 {% if history.comment %}

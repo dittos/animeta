@@ -9,30 +9,6 @@ from record.models import History
 from animeta.utils import call_api_internal, get_current_user
 
 
-def login(request):
-    return render(request, 'login.html')
-
-def signup(request):
-    return render(request, 'signup.html')
-
-class SettingsView(TemplateView):
-    template_name = 'user/settings.html'
-
-    def get(self, request, *args, **kwargs):
-        return library(request, request.user.username)
-
-    def post(self, request, *args, **kwargs):
-        self.form = PasswordChangeForm(user=request.user, data=request.POST)
-        if self.form.is_valid():
-            self.form.save()
-        return super(SettingsView, self).get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        return {
-            'form': self.form,
-            'services': get_connected_services(self.request.user),
-        }
-
 def shortcut(request, username):
     try:
         user = User.objects.get(username=username)

@@ -22,7 +22,7 @@ server.ext('onPreResponse', (request, reply) => {
             redirectPath = request.path.substring(0, request.path.length - 1);
         }
         // Add slashes
-        if (request.path.match(/^\/(works|table)/) &&
+        if (request.path.match(/^\/(works|table|login|signup|settings)/) &&
             !request.path.match(/\/$/)) {
             redirectPath = request.path + '/';
         }
@@ -79,6 +79,64 @@ server.route({
             preloadData,
             stylesheets: [`build/${assetFilenames.index.css}`],
             scripts: [`build/${assetFilenames.index.js}`],
+        });
+    })
+});
+
+server.route({
+    method: 'GET',
+    path: '/login/',
+    handler(request, reply) {
+        reply.view('template', {
+            html: '',
+            title: '로그인',
+            preloadData: null,
+            stylesheets: [`build/${assetFilenames.index.css}`],
+            scripts: [`build/${assetFilenames.index.js}`],
+        });
+    }
+});
+
+server.route({
+    method: 'GET',
+    path: '/signup/',
+    handler(request, reply) {
+        reply.view('template', {
+            html: '',
+            title: '회원 가입',
+            preloadData: null,
+            stylesheets: [`build/${assetFilenames.index.css}`],
+            scripts: [`build/${assetFilenames.index.js}`],
+        });
+    }
+});
+
+server.route({
+    method: 'GET',
+    path: '/settings/',
+    handler: wrapHandler(async (request, reply) => {
+        const currentUser = await backend.getCurrentUser(request);
+        if (!currentUser) {
+            reply.redirect('/login/');
+            return;
+        }
+        const username = currentUser.name;
+        const [owner, records] = await* [
+            backend.call(request, `/users/${username}`),
+            backend.call(request, `/users/${username}/records`, {
+                include_has_newer_episode: JSON.stringify(true)
+            }),
+        ];
+        const preloadData = {
+            current_user: currentUser,
+            owner,
+            records
+        };
+        reply.view('template', {
+            html: '',
+            title: `${owner.name} 사용자`,
+            preloadData,
+            scripts: [`build/${assetFilenames.library.js}`],
         });
     })
 });
