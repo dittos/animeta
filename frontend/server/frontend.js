@@ -22,7 +22,7 @@ server.ext('onPreResponse', (request, reply) => {
             redirectPath = request.path.substring(0, request.path.length - 1);
         }
         // Add slashes
-        if (request.path.match(/^\/(works|table|login|signup|settings|records)/) &&
+        if (request.path.match(/^\/(works|table|login|signup|settings|records|support)/) &&
             !request.path.match(/\/$/)) {
             redirectPath = request.path + '/';
         }
@@ -82,6 +82,17 @@ server.route({
             scripts: [`build/${assetFilenames.index.js}`],
         });
     })
+});
+
+server.route({
+    method: 'GET',
+    path: '/support/',
+    handler(request, reply) {
+        reply.view('support', {
+            title: '버그 제보 / 건의',
+            preloadData: null,
+        });
+    }
 });
 
 server.route({
@@ -298,6 +309,8 @@ server.register(require('vision'), err => {
         },
         relativeTo: __dirname,
         path: '.',
+        layout: true,
+        layoutPath: '.',
         context: {
             DEBUG,
             STATIC_URL: '/static/',
