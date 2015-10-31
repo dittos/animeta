@@ -41,7 +41,7 @@ def history_compat(request, username):
 
 def history_detail_compat(request, username, id):
     get_object_or_404(History, user__username=username, id=id)
-    return redirect('history-detail', id=id)
+    return redirect('/-%s' % id)
 
 class HistoryFeedView(ListView):
     template_name = 'user/history.atom'
