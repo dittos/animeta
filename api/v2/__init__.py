@@ -17,9 +17,12 @@ class HttpException(Exception):
 class BaseView(View):
     def dispatch(self, request, *args, **kwargs):
         try:
-            return JsonResponse(super(BaseView, self).dispatch(request, *args, **kwargs))
+            response = super(BaseView, self).dispatch(request, *args, **kwargs)
         except HttpException as e:
             return e.response
+        if not isinstance(response, HttpResponse):
+            response = JsonResponse(response)
+        return response
 
     def check_login(self):
         if not self.request.user.is_authenticated():
