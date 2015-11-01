@@ -25,14 +25,3 @@ def get_current_user(request):
     if resp.status_code != 200:
         return None
     return resp.json()
-
-
-def call_render_backend(path, preload_data):
-    try:
-        resp = requests.post(settings.RENDER_BACKEND_URL + path,
-                             json=preload_data,
-                             timeout=settings.RENDER_BACKEND_TIMEOUT)
-        html = resp.content
-    except Exception as e:
-        html = '<!-- Render server not responding: %s -->' % e
-    return html
