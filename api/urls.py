@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from api.decorators import route_by_method
 from api.v2.auth import AuthView
 from api.v2.accounts import AccountsView
-from api.v2.chart_view import PopularWorksChartView
+from api.v2.chart_view import PopularWorksChartView, ChartView
 from api.v2.table_period import TablePeriodView
 from api.v2.user import UserView
 from api.v2.user_categories import UserCategoriesView
@@ -47,6 +47,8 @@ urlpatterns += patterns('api.v2',
     (r'^v2/works/(?P<id>[0-9]+)$', WorkView.as_view()),
     (r'^v2/works/(?P<id>_)/(?P<title>.+)$', WorkView.as_view()),
     (r'^v2/works/(?P<id>[0-9]+)/posts$', WorkPostsView.as_view()),
-    (r'^v2/charts/works/weekly$', PopularWorksChartView.as_view()),
+    (r'^v2/charts/works/weekly$', PopularWorksChartView.as_view()), # deprecated
+    (r'^v2/charts/popular-works/(?P<range>weekly|monthly|overall)$', ChartView.as_view(chart_class=PopularWorksChart)),
+    (r'^v2/charts/active-users/(?P<range>weekly|monthly|overall)$', ChartView.as_view(chart_class=ActiveUsersChart)),
     (r'^v2/table/periods/(?P<period>[0-9]{4}Q[1-4])', TablePeriodView.as_view()),
 )

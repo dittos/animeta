@@ -22,7 +22,7 @@ server.ext('onPreResponse', (request, reply) => {
             redirectPath = request.path.substring(0, request.path.length - 1);
         }
         // Add slashes
-        if (request.path.match(/^\/(works|table|login|signup|settings|records|support)/) &&
+        if (request.path.match(/^\/(works|table|login|signup|settings|records|support|charts)/) &&
             !request.path.match(/\/$/)) {
             redirectPath = request.path + '/';
         }
@@ -295,6 +295,44 @@ server.route({
             title: `${year}년 ${month}월 신작`,
             scripts: [`build/${assetFilenames.table_period.js}`],
             useModernizr: true,
+        });
+    })
+});
+
+const CHART_TYPES = {
+    'users': 'active-users',
+    'works': 'popular-works',
+};
+
+server.route({
+    method: 'GET',
+    path: '/charts/{type}/{range}/',
+    handler: wrapHandler(async(request, reply) => {
+        const {type, range} = request.params;
+        const chartType = CHART_TYPES[type];
+        const [currentUser, chart] = await* [
+            backend.getCurrentUser(request),
+            backend.call(request, `/charts/${chartType}/${range}`,
+                {limit: 100}),
+        ];
+        var title = '';
+        if (range === 'weekly')
+            title = '주간 ';
+        else if (range === 'monthly')
+            title = '월간 ';
+        title += chart.title;
+        const preloadData = {
+            current_user: currentUser,
+            title,
+            chart,
+            has_diff: chart.has_diff,
+        };
+        reply.view('template', {
+            html: '',
+            preloadData,
+            title,
+            stylesheets: [`build/${assetFilenames.chart.css}`],
+            scripts: [`build/${assetFilenames.chart.js}`],
         });
     })
 });
