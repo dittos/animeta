@@ -1,4 +1,5 @@
 from django.conf.urls import include, patterns, url
+from django.views.decorators.csrf import csrf_exempt
 from api.decorators import route_by_method
 from api.v2.auth import AuthView
 from api.v2.accounts import AccountsView
@@ -30,7 +31,7 @@ urlpatterns = patterns('api.views',
 )
 
 urlpatterns += patterns('api.v2',
-    (r'^v2/auth$', AuthView.as_view()),
+    (r'^v2/auth$', csrf_exempt(AuthView.as_view())),
     (r'^v2/accounts$', AccountsView.as_view()),
     (r'^v2/me$', UserView.as_view()),
     (r'^v2/me/password', UserPasswordView.as_view()),
