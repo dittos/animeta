@@ -17,7 +17,7 @@ urlpatterns = patterns('',
     (r'^users/(?P<username>[\w.@+-]+)/', include('user.urls')),
     #(r'^records/', include('record.urls')),
     #(r'^works/', include('work.urls')),
-    (r'^charts/', include('chart.urls')),
+    #(r'^charts/', include('chart.urls')),
     (r'^connect/', include('connect.urls')),
     (r'^moderation/', include('moderation.urls')),
 

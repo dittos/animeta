@@ -1,7 +1,0 @@
-{% extends "base_js.html" %}
-
-{% block title %}{{ title }} - {{ block.super }}{% endblock %}
-
-{% block js %}
-<script type="text/javascript" src="{{ STATIC_URL }}build/{{ asset_filenames.chart.js }}"></script>
-{% endblock %}

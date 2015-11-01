@@ -331,7 +331,6 @@ server.route({
             html: '',
             preloadData,
             title,
-            stylesheets: [`build/${assetFilenames.chart.css}`],
             scripts: [`build/${assetFilenames.chart.js}`],
         });
     })
