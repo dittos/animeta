@@ -76,6 +76,13 @@ class AuthViewTest(TestCase):
         response = self.client.get('/api/v2/auth')
         self.assertTrue(response.obj['ok'])
 
+    def test_delete(self):
+        response = self.client.delete('/api/v2/auth')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get('/api/v2/auth')
+        self.assertFalse(response.obj['ok'])
+
 class AccountsViewTest(TestCase):
     def test_post(self):
         response = self.client.post('/api/v2/accounts')
@@ -325,6 +332,7 @@ class PostViewTest(TestCase):
         post['user'] = self.client.get(context.user_path).obj
         post['record'] = self.client.get('/api/v2/records/%s' % record['id']).obj
         del post['user']['categories']
+        del post['record']['user']
         self.assertEqual(response.obj, post)
 
     def test_delete(self):
@@ -376,6 +384,7 @@ class UserPostsViewTest(TestCase):
         response = self.client.get(context.user_path + '/posts')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.obj), 3)
+        del record['user']
         post1['record'] = post2['record'] = record
         self.assertEqual(response.obj[0], post2)
         self.assertEqual(response.obj[1], post1)
@@ -496,6 +505,7 @@ class RecordViewTest(TestCase):
         record = context.new_record()
 
         response = self.client.get('/api/v2/records/%s' % record['id'])
+        del response.obj['user']
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.obj, record)
 

@@ -3,6 +3,7 @@ import Hapi from 'hapi';
 import ejs from 'ejs';
 import renderers from './renderers';
 import Backend, {HttpNotFound} from './backend';
+import renderFeed from './renderFeed';
 import assetFilenames from '../assets.json';
 import config from '../config.json';
 
@@ -16,18 +17,21 @@ server.ext('onPreResponse', (request, reply) => {
 
     if (response.isBoom &&
         response.output.statusCode === 404) {
-        var redirectPath;
+        var path = request.path;
         // Strip slashes
-        if (request.path.match(/^\/-(.+)\/$/)) {
-            redirectPath = request.path.substring(0, request.path.length - 1);
+        if (path.match(/\/{2,}/)) {
+            path = path.replace(/\/{2,}/g, '/');
+        }
+        if (path.match(/^\/-(.+)\/$/)) {
+            path = path.substring(0, path.length - 1);
         }
         // Add slashes
-        if (request.path.match(/^\/(works|table|login|signup|settings|records|support|charts)/) &&
-            !request.path.match(/\/$/)) {
-            redirectPath = request.path + '/';
+        if (path.match(/^\/(works|table|login|signup|settings|records|support|charts|users|library)/) &&
+            !path.match(/\/$/)) {
+            path = path + '/';
         }
-        if (redirectPath) {
-            var url = redirectPath;
+        if (path !== request.path) {
+            var url = path;
             var query = querystring.stringify(request.query);
             if (query) {
                 url += '?' + query;
@@ -37,6 +41,66 @@ server.ext('onPreResponse', (request, reply) => {
     }
     return reply.continue();
 });
+
+server.register(require('vision'), err => {
+    if (err)
+        throw err;
+
+    server.views({
+        engines: {
+            html: require('ejs')
+        },
+        relativeTo: __dirname,
+        path: '.',
+        layout: true,
+        layoutPath: '.',
+        context: {
+            DEBUG,
+            STATIC_URL: '/static/',
+            assetFilenames,
+            title: '',
+            meta: {},
+            stylesheets: [],
+            scripts: [],
+            useModernizr: false
+        },
+        isCached: !DEBUG,
+    });
+});
+
+if (DEBUG) {
+    server.register(require('inert'), err => {
+        if (err)
+            throw err;
+
+        server.route({
+            method: 'GET',
+            path: '/static/{param*}',
+            handler: {
+                directory: {
+                    path: __dirname + '/../../animeta/static'
+                }
+            }
+        });
+    });
+
+    server.register(require('h2o2'), err => {
+        if (err)
+            throw err;
+
+        server.route({
+            method: '*',
+            path: '/api/{path*}',
+            handler: {
+                proxy: {
+                    host: '127.0.0.1',
+                    port: 8000,
+                    passThrough: true
+                }
+            }
+        });
+    });
+}
 
 const backend = new Backend(config.apiEndpoint);
 
@@ -123,6 +187,29 @@ server.route({
     }
 });
 
+server.route({
+    method: 'GET',
+    path: '/library/',
+    handler: wrapHandler(async (request, reply) => {
+        const currentUser = await backend.getCurrentUser(request);
+        if (!currentUser) {
+            reply.redirect('/login/');
+        } else {
+            reply.redirect(`/users/${currentUser.name}/`);
+        }
+    })
+});
+
+server.route({
+    method: 'GET',
+    path: '/{username}',
+    handler: wrapHandler(async (request, reply) => {
+        const {username} = request.params;
+        const user = await backend.call(request, `/users/${username}`);
+        reply.redirect(`/users/${username}/`);
+    })
+});
+
 async function userHandler(request, reply, username, currentUser) {
     if (!currentUser) {
         currentUser = await backend.getCurrentUser(request);
@@ -145,6 +232,46 @@ async function userHandler(request, reply, username, currentUser) {
         scripts: [`build/${assetFilenames.library.js}`],
     });
 }
+
+const libraryHandler = wrapHandler(async (request, reply) => {
+    const {username} = request.params;
+    return await userHandler(request, reply, username);
+});
+
+server.route({
+    method: 'GET',
+    path: '/users/{username}/',
+    handler: libraryHandler
+});
+
+server.route({
+    method: 'GET',
+    path: '/users/{username}/history/',
+    handler: libraryHandler
+});
+
+server.route({
+    method: 'GET',
+    path: '/users/{username}/history/{id}/',
+    handler: wrapHandler(async (request, reply) => {
+        // TODO: check username
+        reply.redirect(`/-${request.params.id}`);
+    })
+});
+
+server.route({
+    method: 'GET',
+    path: '/users/{username}/feed/',
+    handler: wrapHandler(async (request, reply) => {
+        const {username} = request.params;
+        const [owner, posts] = await* [
+            backend.call(request, `/users/${username}`),
+            backend.call(request, `/users/${username}/posts`),
+        ];
+        reply(renderFeed(owner, posts))
+            .type('application/atom+xml; charset=UTF-8');
+    })
+});
 
 const recordHandler = wrapHandler(async (request, reply) => {
     const {id} = request.params;
@@ -335,65 +462,5 @@ server.route({
         });
     })
 });
-
-server.register(require('vision'), err => {
-    if (err)
-        throw err;
-
-    server.views({
-        engines: {
-            html: require('ejs')
-        },
-        relativeTo: __dirname,
-        path: '.',
-        layout: true,
-        layoutPath: '.',
-        context: {
-            DEBUG,
-            STATIC_URL: '/static/',
-            assetFilenames,
-            title: '',
-            meta: {},
-            stylesheets: [],
-            scripts: [],
-            useModernizr: false
-        },
-        isCached: !DEBUG,
-    });
-});
-
-if (DEBUG) {
-    server.register(require('inert'), err => {
-        if (err)
-            throw err;
-
-        server.route({
-            method: 'GET',
-            path: '/static/{param*}',
-            handler: {
-                directory: {
-                    path: __dirname + '/../../animeta/static'
-                }
-            }
-        });
-    });
-
-    server.register(require('h2o2'), err => {
-        if (err)
-            throw err;
-
-        server.route({
-            method: '*',
-            path: '/api/{path*}',
-            handler: {
-                proxy: {
-                    host: '127.0.0.1',
-                    port: 8000,
-                    passThrough: true
-                }
-            }
-        });
-    });
-}
 
 export default server;

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from api.v2 import BaseView
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+
 
 class AuthView(BaseView):
     def get(self, request):
@@ -18,4 +19,8 @@ class AuthView(BaseView):
         else:
             request.session.set_expiry(0)
         login(request, user)
+        return {'ok': True}
+
+    def delete(self, request):
+        logout(request)
         return {'ok': True}
