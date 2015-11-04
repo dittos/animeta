@@ -53,8 +53,6 @@ function versionMapPlugin() {
             assets[key] = value;
         });
         var source = JSON.stringify(assets);
-        fs.writeFileSync(path.join(__dirname, 'animeta/assets.py'),
-            'ASSET_FILENAMES = ' + source);
         fs.writeFileSync(path.join(__dirname, 'frontend/assets.json'),
             source);
     });
