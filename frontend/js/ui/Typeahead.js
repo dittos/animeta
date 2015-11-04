@@ -28,7 +28,7 @@ function cachingSource(source, maxSize) {
 }
 
 var searchSource = cachingSource(_.throttle(function (q, cb) {
-    $.getJSON('/search/', {q: q}, cb);
+    $.getJSON('/api/v2/search', {q: q}, cb);
 }, 200), 20);
 
 function init(node, viewOptions, sourceOptions) {
@@ -38,7 +38,7 @@ function init(node, viewOptions, sourceOptions) {
 function initSuggest(node) {
     return init(node, null, {
         source: cachingSource(_.throttle(function (q, cb) {
-            $.getJSON('/search/suggest/', {q: q}, cb);
+            $.getJSON('/api/v2/search/suggest', {q: q}, cb);
         }, 200), 20),
         displayKey: 'title',
         templates: templates

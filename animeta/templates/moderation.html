@@ -151,7 +151,7 @@
 <script type="text/javascript" src="{{ STATIC_URL }}common.js?1"></script>
 <script>
 var modSearchSource = cachingSource(debouncingSource(function (q, cb) {
-    $.getJSON('/search/?min_record_count=0', {q: q}, cb);
+    $.getJSON('/api/v2/search?min_record_count=0', {q: q}, cb);
 }, 200), 20);
 
 $('.work-title-search').typeahead({hint: false}, {

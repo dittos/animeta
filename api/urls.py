@@ -52,3 +52,8 @@ urlpatterns += patterns('api.v2',
     (r'^v2/charts/active-users/(?P<range>weekly|monthly|overall)$', ChartView.as_view(chart_class=ActiveUsersChart)),
     (r'^v2/table/periods/(?P<period>[0-9]{4}Q[1-4])', TablePeriodView.as_view()),
 )
+
+urlpatterns += patterns('search.views',
+    (r'^v2/search$', 'search'),
+    (r'^v2/search/suggest$', 'suggest'),
+)
