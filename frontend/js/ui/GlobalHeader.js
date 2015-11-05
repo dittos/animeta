@@ -16,11 +16,19 @@ var DropdownUserMenu = React.createClass({
             onClick={e => e.stopPropagation()}>
             <a href="/library/">기록 관리</a>
             <a href="/settings/">설정</a>
-            <a href="/logout/">로그아웃</a>
+            <a href="#" onClick={this._logout}>로그아웃</a>
         </div>;
     },
     _onClose() {
         this.props.onClose();
+    },
+    _logout() {
+        $.ajax({
+            url: '/api/v2/auth',
+            method: 'DELETE'
+        }).then(() => {
+            location.href = '/';
+        });
     }
 });
 
