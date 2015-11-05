@@ -68,6 +68,16 @@ server.register(require('vision'), err => {
     });
 });
 
+server.register({
+    register: require('crumb'),
+    options: {
+        restful: true
+    }
+}, err => {
+    if (err)
+        throw err;
+});
+
 if (DEBUG) {
     server.register(require('inert'), err => {
         if (err)
