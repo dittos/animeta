@@ -27,6 +27,8 @@ class ExternalServiceStore extends MapStore {
                 return state.set('connectedServices', Immutable.Set(action.user.connected_services || []));
             case 'connectService':
                 return state.update('connectedServices', services => services.add(action.serviceID));
+            case 'disconnectService':
+                return state.update('connectedServices', services => services.remove(action.serviceID));
             case 'createPendingPost':
                 LocalStorage.setItem('publishTwitter', action.publishOptions.has('twitter'));
                 return state.set('lastPublishOptions', action.publishOptions);

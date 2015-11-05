@@ -18,14 +18,14 @@ urlpatterns = patterns('',
     #(r'^records/', include('record.urls')),
     #(r'^works/', include('work.urls')),
     #(r'^charts/', include('chart.urls')),
-    (r'^connect/', include('connect.urls')),
+    #(r'^connect/', include('connect.urls')),
     (r'^moderation/', include('moderation.urls')),
 
     #url(r'^-(?P<id>[0-9]+)/?$', 'work.views.post_detail', name='history-detail'),
     #(r'^(?P<username>[\w.@+-]+)$', 'user.views.shortcut'),
 
-    (r'^search/$', 'search.views.search'),
-    (r'^search/suggest/$', 'search.views.suggest'),
+    #(r'^search/$', 'search.views.search'),
+    #(r'^search/suggest/$', 'search.views.suggest'),
 
     #url(r'^table/$', 'table.views.index', name='table-index'),
     #url(r'^table/(?P<period>[0-9]{4}Q[1-4])/$', 'table.views.get_period', name='table-period'),

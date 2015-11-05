@@ -4,6 +4,7 @@ from api.decorators import route_by_method
 from api.v2.auth import AuthView
 from api.v2.accounts import AccountsView
 from api.v2.chart_view import PopularWorksChartView, ChartView
+from api.v2.external_service import TwitterView, TwitterConnectView
 from api.v2.table_period import TablePeriodView
 from api.v2.user import UserView
 from api.v2.user_categories import UserCategoriesView
@@ -34,7 +35,9 @@ urlpatterns += patterns('api.v2',
     (r'^v2/auth$', csrf_exempt(AuthView.as_view())),
     (r'^v2/accounts$', AccountsView.as_view()),
     (r'^v2/me$', UserView.as_view()),
-    (r'^v2/me/password', UserPasswordView.as_view()),
+    (r'^v2/me/password$', UserPasswordView.as_view()),
+    (r'^v2/me/external-services/twitter$', TwitterView.as_view()),
+    url(r'^v2/me/external-services/twitter/connect$', TwitterConnectView.as_view(), name='twitter-connect'),
     (r'^v2/users/(?P<name>[\w.@+-]+)$', UserView.as_view()),
     (r'^v2/users/(?P<name>[\w.@+-]+)/categories$', UserCategoriesView.as_view()),
     (r'^v2/users/(?P<name>[\w.@+-]+)/records$', UserRecordsView.as_view()),
@@ -50,7 +53,7 @@ urlpatterns += patterns('api.v2',
     (r'^v2/charts/works/weekly$', PopularWorksChartView.as_view()), # deprecated
     (r'^v2/charts/popular-works/(?P<range>weekly|monthly|overall)$', ChartView.as_view(chart_class=PopularWorksChart)),
     (r'^v2/charts/active-users/(?P<range>weekly|monthly|overall)$', ChartView.as_view(chart_class=ActiveUsersChart)),
-    (r'^v2/table/periods/(?P<period>[0-9]{4}Q[1-4])', TablePeriodView.as_view()),
+    (r'^v2/table/periods/(?P<period>[0-9]{4}Q[1-4])$', TablePeriodView.as_view()),
 )
 
 urlpatterns += patterns('search.views',

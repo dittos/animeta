@@ -59,6 +59,27 @@ describe('ExternalServiceStore', function() {
         expect(ExternalServiceStore.getConnectedServices()).toBe(connectedServices);
     });
 
+    it('remove disconnected service', function() {
+        // init
+        callback({
+            type: 'loadCurrentUser',
+            user: { }
+        });
+        // add
+        callback({
+            type: 'connectService',
+            serviceID: 'twitter'
+        });
+        // remove
+        callback({
+            type: 'disconnectService',
+            serviceID: 'twitter'
+        })
+        // Immutable.Set is returned
+        var connectedServices = ExternalServiceStore.getConnectedServices();
+        expect(connectedServices.size).toBe(0);
+    });
+
     it('save publish option when post is created', function() {
         var LocalStorage = require('../../LocalStorage');
         callback({

@@ -1,9 +1,9 @@
 from record.templatetags.status import status_text
 
 def get_connected_services(user):
-    from connect import twitter, fb as facebook
+    from connect import twitter
     services = []
-    for service in (twitter, facebook):
+    for service in (twitter, ):
         if getattr(service, 'available', True):
             setting = service.get_setting(user)
             if setting:
@@ -11,7 +11,7 @@ def get_connected_services(user):
     return services
 
 def post_history(history, services):
-    from connect import twitter, fb as facebook
+    from connect import twitter
     kwargs = {
         'title': history.record.title,
         'status': status_text(history),
@@ -20,7 +20,7 @@ def post_history(history, services):
     }
 
     success = []
-    for name, module in ('twitter', twitter), ('facebook', facebook):
+    for name, module in (('twitter', twitter), ):
         if name not in services: continue
 
         setting = module.get_setting(history.user)

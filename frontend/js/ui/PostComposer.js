@@ -64,15 +64,9 @@ var PostComposer = React.createClass({
 
     _onPublishTwitterChange(event) {
         if (!this._isTwitterConnected()) {
-            window.onTwitterConnect = ok => {
-                if (ok) {
-                    ExternalServiceActions.connectService('twitter');
-                    this.setState({publishOptions: this.state.publishOptions.add('twitter')});
-                } else {
-                    alert('연동 실패. 잠시 후 다시 시도해주세요.');
-                }
-            };
-            window.open('/connect/twitter/?popup=true');
+            ExternalServiceActions.connectTwitter().then(() => {
+                this.setState({publishOptions: this.state.publishOptions.add('twitter')});
+            });
         } else {
             var {publishOptions} = this.state;
             if (event.target.checked) {
