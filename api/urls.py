@@ -5,6 +5,7 @@ from api.v2.auth import AuthView
 from api.v2.accounts import AccountsView
 from api.v2.chart_view import PopularWorksChartView, ChartView
 from api.v2.external_service import TwitterView, TwitterConnectView
+from api.v2.search_view import SearchView, SuggestView
 from api.v2.table_period import TablePeriodView
 from api.v2.user import UserView
 from api.v2.user_categories import UserCategoriesView
@@ -54,9 +55,6 @@ urlpatterns += patterns('api.v2',
     (r'^v2/charts/popular-works/(?P<range>weekly|monthly|overall)$', ChartView.as_view(chart_class=PopularWorksChart)),
     (r'^v2/charts/active-users/(?P<range>weekly|monthly|overall)$', ChartView.as_view(chart_class=ActiveUsersChart)),
     (r'^v2/table/periods/(?P<period>[0-9]{4}Q[1-4])$', TablePeriodView.as_view()),
-)
-
-urlpatterns += patterns('search.views',
-    (r'^v2/search$', 'search'),
-    (r'^v2/search/suggest$', 'suggest'),
+    (r'^v2/search$', SearchView.as_view()),
+    (r'^v2/search/suggest$', SuggestView.as_view()),
 )
