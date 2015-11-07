@@ -791,20 +791,14 @@ class PostsViewTest(TestCase):
         self.assertEqual(response.obj[1]['id'], post_a['id'])
 
 
-from api.v2.chart_view import PopularWorksChartView
+from chart.utils import Week
 
 
 class PopularWorksChartViewTest(TestCase):
-    def setUp(self):
-        self._orig_range_func = PopularWorksChartView.range_func
-        from chart.utils import Week
-        PopularWorksChartView.range_func = staticmethod(Week.this)
+    @mock.patch('api.v2.chart_view.PopularWorksChartView')
+    def test_get_weekly(self, mock_chart_view):
+        mock_chart_view.range_func.return_value = Week.this()
 
-    def tearDown(self):
-        PopularWorksChartView.range_func = self._orig_range_func
-        del self._orig_range_func
-
-    def test_get_weekly(self):
         context = TestContext()
         record = context.new_record()
         context2 = TestContext()
