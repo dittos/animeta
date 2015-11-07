@@ -7,6 +7,7 @@ from django.utils.deconstruct import deconstructible
 from queryset_transform import TransformManager
 from work.models import Work, get_or_create_work
 
+
 @deconstructible
 class StatusType(object):
     def __init__(self, id, text):
@@ -18,15 +19,16 @@ class StatusType(object):
 
     def __eq__(self, other):
         if isinstance(other, str) or isinstance(other, unicode):
-        	return self.name == other
+            return self.name == other
         elif hasattr(other, 'name'):
-        	return self.name == other.name
+            return self.name == other.name
         else:
-        	return False
+            return False
 
     def __ne__(self, other):
         return not (self == other)
-    
+
+
 def organize_types(name, bases, dict):
     types = []
     for k, v in dict.iteritems():
@@ -37,6 +39,7 @@ def organize_types(name, bases, dict):
     dict['types'] = types
 
     return type(name, bases, dict)
+
 
 class StatusTypes:
     Finished = StatusType(0, u'완료')
@@ -65,7 +68,9 @@ class StatusTypes:
         else:
             return t
 
-from record.fields import StatusTypeField # circular dependency
+# circular dependency
+from record.fields import StatusTypeField
+
 
 class Uncategorized(object):
     def __init__(self, user):
@@ -74,7 +79,7 @@ class Uncategorized(object):
     @property
     def id(self):
         return 0
-    
+
     @property
     def name(self):
         return u'미분류'
@@ -82,10 +87,11 @@ class Uncategorized(object):
     @property
     def record_set(self):
         return self.user.record_set.filter(category=None)
-    
+
     @property
     def record_count(self):
         return self.record_set.count()
+
 
 class Category(models.Model):
     user = models.ForeignKey(User)
@@ -98,12 +104,17 @@ class Category(models.Model):
     def __unicode__(self):
         return self.name
 
+
 def allocate_next_position(sender, instance, **kwargs):
     if instance.id is None:
-        max = instance.user.category_set.aggregate(models.Max('position'))['position__max'] or 0
+        max = (instance.user.category_set
+               .aggregate(models.Max('position'))['position__max'])
+        if not max:
+            max = 0
         instance.position = max + 1
 
 pre_save.connect(allocate_next_position, sender=Category)
+
 
 class Record(models.Model):
     user = models.ForeignKey(User)
@@ -128,14 +139,18 @@ class Record(models.Model):
 
         try:
             n = int(self.status)
-            return History.objects.filter(work=self.work, status=str(n+1), updated_at__gt=self.updated_at).count() > 0
+            return History.objects.filter(
+                work=self.work,
+                status=str(n + 1),
+                updated_at__gt=self.updated_at
+            ).count() > 0
         except ValueError:
             return False
-    
+
     def delete(self, *args, **kwargs):
         self.history_set.delete()
         super(Record, self).delete(*args, **kwargs)
-    
+
     def update_title(self, title):
         work = get_or_create_work(title)
         self.history_set.update(work=work)
@@ -151,6 +166,7 @@ class Record(models.Model):
 
     class Meta:
         unique_together = ('user', 'work')
+
 
 class History(models.Model):
     user = models.ForeignKey(User, editable=False)
@@ -180,11 +196,14 @@ class History(models.Model):
         return status
 
     def deletable_by(self, user):
-        return self.user == user and self.record.history_set.count() > 1 # XXX: N+1 query problem
+        # XXX: N+1 query problem
+        return (self.user == user and
+                self.record.history_set.count() > 1)
 
     class Meta:
         ordering = ['-id']
         get_latest_by = 'updated_at'
+
 
 def include_records(qs):
     user_ids = set(history.user_id for history in qs)
@@ -196,8 +215,12 @@ def include_records(qs):
     for history in qs:
         history._record = dict[(history.user_id, history.work_id)]
 
+
 def sync_record(sender, instance, **kwargs):
-    record, created = Record.objects.get_or_create(user=instance.user, work=instance.work)
+    record, created = Record.objects.get_or_create(
+        user=instance.user,
+        work=instance.work
+    )
     if not created:
         try:
             history = record.history_set.latest()
@@ -213,11 +236,12 @@ def sync_record(sender, instance, **kwargs):
 post_save.connect(sync_record, sender=History)
 post_delete.connect(sync_record, sender=History)
 
+
 def get_episodes(work):
     result = {}
     q = (work.history_set.exclude(comment='')
-            .order_by('status').values('status')
-            .annotate(models.Count('status')))
+         .order_by('status').values('status')
+         .annotate(models.Count('status')))
     for row in q:
         try:
             number = int(row['status'])
@@ -228,8 +252,8 @@ def get_episodes(work):
             'post_count': row['status__count']
         }
     q2 = (work.history_set.filter(comment='')
-            .order_by('status').values('status')
-            .annotate(models.Count('status')))
+          .order_by('status').values('status')
+          .annotate(models.Count('status')))
     for row in q2:
         try:
             number = int(row['status'])

@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from api.v2 import BaseView
 from api.serializers import serialize_user
 
+
 class AccountsView(BaseView):
     def post(self, request):
         form = UserCreationForm(request.POST)

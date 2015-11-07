@@ -4,6 +4,7 @@ from api.v2 import BaseView
 from api.serializers import serialize_category
 from record.models import Category
 
+
 class CategoryView(BaseView):
     def delete(self, request, id):
         category = get_object_or_404(Category, id=id)
@@ -21,8 +22,8 @@ class CategoryView(BaseView):
             self.raise_error('Permission denied.', status=403)
         category_name = request.POST.get('name')
         if not category_name:
-            self.raise_error(u'분류 이름을 입력하세요.',
-                status=400) # 400 Bad Request
+            # 400 Bad Request
+            self.raise_error(u'분류 이름을 입력하세요.', status=400)
         category.name = category_name
         category.save()
         return serialize_category(category)

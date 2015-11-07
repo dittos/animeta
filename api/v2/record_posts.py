@@ -5,6 +5,7 @@ from api.serializers import serialize_record, serialize_post
 from record.models import Record, History, StatusTypes
 from connect import post_history
 
+
 class RecordPostsView(BaseView):
     def get(self, request, id):
         record = get_object_or_404(Record, id=id)

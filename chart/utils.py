@@ -3,16 +3,20 @@
 import datetime
 import calendar
 
+
 class ChartRange(object):
     @classmethod
     def last(cls):
         return cls.this().prev()
 
     @property
-    def start(self): return self.range[0]
+    def start(self):
+        return self.range[0]
 
     @property
-    def end(self): return self.range[1]
+    def end(self):
+        return self.range[1]
+
 
 class Month(ChartRange):
     def __init__(self, year, month):
@@ -36,6 +40,7 @@ class Month(ChartRange):
         return (datetime.date(self.year, self.month, 1),
                 datetime.date(self.year, self.month, ndays))
 
+
 class Week(ChartRange):
     def __init__(self, sunday):
         self.sunday = sunday
@@ -46,7 +51,8 @@ class Week(ChartRange):
         # datetime 모듈은 ISO weekday system을 사용하므로 월요일이 1, 일요일이 7
         # 일요일을 0, 토요일을 6으로 맞추기 위해 변환한다.
         weekday = today.isoweekday()
-        if weekday == 7: weekday = 0
+        if weekday == 7:
+            weekday = 0
         sunday = today - datetime.timedelta(days=weekday)
         return Week(sunday)
 

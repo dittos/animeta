@@ -3,6 +3,7 @@ from api.v2 import BaseView
 from api.serializers import serialize_work
 from work.models import Work, TitleMapping
 
+
 class WorkView(BaseView):
     def get(self, request, id, title=None):
         if id == '_':

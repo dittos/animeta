@@ -3,16 +3,19 @@ import simplejson as json
 from django.http import HttpResponse
 from django.views.generic import View
 
+
 class JsonResponse(HttpResponse):
     def __init__(self, obj, **kwargs):
         kwargs.setdefault('content_type', 'application/json')
-        self.obj = obj # For testing
+        self.obj = obj  # For testing
         data = json.dumps(obj, separators=(',', ':'))
         super(JsonResponse, self).__init__(data, **kwargs)
+
 
 class HttpException(Exception):
     def __init__(self, response):
         self.response = response
+
 
 class BaseView(View):
     def dispatch(self, request, *args, **kwargs):

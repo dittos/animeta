@@ -1,7 +1,6 @@
 import pytz
-from cStringIO import StringIO
-from django.http import Http404, HttpResponse
-from django.shortcuts import get_object_or_404, render_to_response
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -14,11 +13,14 @@ from record.templatetags.status import status_text
 from chart.models import PopularWorksChart, ActiveUsersChart, compare_charts
 from chart.utils import Week, Month
 
+
 def _serialize_datetime(dt):
     return pytz.timezone(settings.TIME_ZONE).localize(dt)
 
+
 def _serialize_status(history):
     return {'type': history.status_type_name, 'text': status_text(history), 'raw_text': history.status}
+
 
 def _history_as_dict(history):
     return {
@@ -30,6 +32,7 @@ def _history_as_dict(history):
         'updated_at': _serialize_datetime(history.updated_at),
         'url': 'http://animeta.net/-%d' % history.id
     }
+
 
 @api_response
 def auth(request):
@@ -48,6 +51,7 @@ def auth(request):
             return {'error': 'Incorrect username or password.', 'error_code': 403}
 
     return {'error': 'Only POST method is allowed.', 'error_code': 400}
+
 
 @api_response
 def get_records(request):
@@ -70,6 +74,7 @@ def get_records(request):
 
     return [_history_as_dict(h) for h in queryset]
 
+
 @api_response
 def get_record(request, id):
     history = get_object_or_404(History, id=id)
@@ -77,6 +82,7 @@ def get_record(request, id):
     if request.GET.get('include_related', 'true') == 'true':
         result['related'] = [_history_as_dict(h) for h in History.objects.filter(work=history.work, status=history.status).exclude(user=history.user)]
     return result
+
 
 @api_auth_required
 @api_response
@@ -89,8 +95,10 @@ def delete_record(request, id):
         history.record.delete()
     return True
 
+
 def _category_as_dict(category):
     return {'id': category.id, 'name': category.name}
+
 
 @api_response
 def get_user(request, name):
@@ -123,9 +131,11 @@ def get_user(request, name):
         } for record in user.record_set.order_by('-updated_at')]
     return result
 
+
 @api_auth_required
 def get_current_user(request):
     return get_user(request, request.user.username)
+
 
 def _work_as_dict(work, include_watchers=False):
     watchers = {'total': work.index.record_count}
@@ -145,6 +155,7 @@ def _work_as_dict(work, include_watchers=False):
         'rank': work.index.rank,
         'watchers': watchers,
     }
+
 
 @api_response
 def get_works(request):
@@ -177,10 +188,12 @@ def get_works(request):
 
     return [_work_as_dict(work) for work in queryset[:count]]
 
+
 @api_response
 def get_work_by_title(request, title):
     work = get_object_or_404(Work, title=title)
     return _work_as_dict(work, request.GET.get('include_watchers', 'false') == 'true')
+
 
 @api_auth_required
 @api_response
@@ -201,15 +214,16 @@ def create_record(request):
     record, created = request.user.record_set.get_or_create(work=work, defaults={'title': title})
 
     history = request.user.history_set.create(
-        work = work,
-        status = request.POST.get('status_text', ''),
-        status_type = status_type,
-        comment = request.POST.get('comment', ''),
+        work=work,
+        status=request.POST.get('status_text', ''),
+        status_type=status_type,
+        comment=request.POST.get('comment', ''),
     )
 
     result = _history_as_dict(history)
     result['record_id'] = record.id
     return result
+
 
 @api_response
 def get_chart(request, type):

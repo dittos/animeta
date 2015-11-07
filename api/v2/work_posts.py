@@ -3,6 +3,7 @@ from api.v2 import BaseView
 from api.serializers import serialize_post
 from work.models import Work
 
+
 class WorkPostsView(BaseView):
     def get(self, request, id):
         work = get_object_or_404(Work, id=id)
@@ -12,5 +13,7 @@ class WorkPostsView(BaseView):
         if 'episode' in request.GET:
             queryset = queryset.filter(status=request.GET['episode'])
         count = min(int(request.GET.get('count', 32)), 128)
-        return [serialize_post(post, include_user=True)
-            for post in queryset[:count]]
+        return [
+            serialize_post(post, include_user=True)
+            for post in queryset[:count]
+        ]

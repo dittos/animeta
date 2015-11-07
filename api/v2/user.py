@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from api.v2 import BaseView
 from api.serializers import serialize_user
 
+
 class UserView(BaseView):
     def get(self, request, name=None):
         if name:

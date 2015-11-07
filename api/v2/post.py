@@ -16,8 +16,8 @@ class PostView(BaseView):
         if request.user.id != history.user_id:
             self.raise_error('Permission denied.', status=403)
         if history.record.history_set.count() == 1:
-            self.raise_error(u'등록된 작품마다 최소 1개의 기록이 필요합니다.',
-                status=422) # 422 Unprocessable Entity
+            # 422 Unprocessable Entity
+            self.raise_error(u'등록된 작품마다 최소 1개의 기록이 필요합니다.', status=422)
         history.delete()
         return {
             'record': serialize_record(history.record)

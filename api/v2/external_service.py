@@ -26,7 +26,6 @@ class TwitterConnectView(BaseView):
         except TwitterSetting.DoesNotExist:
             pass
 
-        print request.build_absolute_uri(reverse('twitter-connect'))
         auth = tweepy.OAuthHandler(
             settings.TWITTER_CONSUMER_KEY,
             settings.TWITTER_CONSUMER_SECRET,
@@ -49,7 +48,10 @@ class TwitterConnectView(BaseView):
 
         try:
             redirect_url = auth.get_authorization_url()
-            request.session['request_token'] = (auth.request_token.key, auth.request_token.secret)
+            request.session['request_token'] = (
+                auth.request_token.key,
+                auth.request_token.secret
+            )
             return redirect(redirect_url)
         except tweepy.TweepError:
             return self._js_callback_response(False)

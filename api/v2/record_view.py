@@ -5,6 +5,7 @@ from api.v2 import BaseView
 from api.serializers import serialize_record
 from record.models import Record
 
+
 class RecordView(BaseView):
     def get(self, request, id):
         record = get_object_or_404(Record, id=id)
@@ -22,8 +23,11 @@ class RecordView(BaseView):
                 with transaction.atomic():
                     record.update_title(title)
             except:
-                self.raise_error(u'이미 같은 작품이 등록되어 있어 제목을 바꾸지 못했습니다.',
-                    status=422) # 422 Unprocessable Entity
+                # 422 Unprocessable Entity
+                self.raise_error(
+                    u'이미 같은 작품이 등록되어 있어 제목을 바꾸지 못했습니다.',
+                    status=422
+                )
 
         if 'category_id' in request.POST:
             category_id = request.POST.get('category_id')

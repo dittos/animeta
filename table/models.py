@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 import calendar
 import datetime
-import json
 import os.path
 import urllib
 import pytz
 import yaml
 from django.conf import settings
-from record.models import Record
-from work.models import Work, TitleMapping
 
 TZ = pytz.timezone('Asia/Seoul')
+
 
 class Period(object):
     def __init__(self, year, quarter):
@@ -39,6 +37,7 @@ class Period(object):
         assert 1 <= q <= 4
         return cls(int(y), q)
 
+
 def item_json(item, period):
     data = {'id': item['id']}
 
@@ -53,7 +52,8 @@ def item_json(item, period):
     if 'namu_ref' in item:
         data['links']['namu'] = namu_link(item['namu_ref'])
     if 'ann_id' in item:
-        data['links']['ann'] = 'http://www.animenewsnetwork.com/encyclopedia/anime.php?id=' + str(item['ann_id'])
+        prefix = 'http://www.animenewsnetwork.com/encyclopedia/anime.php?id='
+        data['links']['ann'] = prefix + str(item['ann_id'])
 
     studio = item.get('studio')
     if isinstance(studio, basestring):
@@ -61,9 +61,11 @@ def item_json(item, period):
     data['studios'] = studio
 
     data['source'] = item['source']
-    data['image_url'] = 'http://anitable.com/media/%s/images/thumb/%s' % (period, item['image'])
+    image_url_fmt = 'http://anitable.com/media/%s/images/thumb/%s'
+    data['image_url'] = image_url_fmt % (period, item['image'])
     data['schedule'] = get_schedule(item, period)
     return data
+
 
 def get_schedule(item, period):
     result = {'jp': _get_schedule(item.get('schedule'), period)}
@@ -71,6 +73,7 @@ def get_schedule(item, period):
     if kr:
         result['kr'] = kr
     return result
+
 
 def _get_schedule(schedule, period):
     if not schedule:
@@ -80,10 +83,12 @@ def _get_schedule(schedule, period):
         broadcasts = schedule[0]
     else:
         date, broadcasts = schedule
-        date = calendar.timegm(TZ.localize(parse_date(date, period)).utctimetuple()) * 1000
+        localized_date = TZ.localize(parse_date(date, period))
+        date = calendar.timegm(localized_date.utctimetuple()) * 1000
     if isinstance(broadcasts, basestring):
         broadcasts = [broadcasts]
     return {'date': date, 'broadcasts': broadcasts}
+
 
 def parse_date(s, period):
     # date is MM-DD HH:MM format
@@ -97,6 +102,7 @@ def parse_date(s, period):
     h, min = map(int, time.split(':'))
     return datetime.datetime(y, m, d, h, min)
 
+
 def namu_link(ref):
     t = ref.rsplit('#', 1)
     if len(t) == 2:
@@ -109,6 +115,7 @@ def namu_link(ref):
         url += '#' + urllib.quote(anchor.encode('utf-8'))
     return url
 
+
 def load_data(period):
     path = os.path.join(settings.ANITABLE_DATA_DIR, '%s/schedule.yml' % period)
     with open(path) as fp:
@@ -116,6 +123,7 @@ def load_data(period):
         for item in yaml.load_all(fp):
             data.append(item_json(item, period))
         return data
+
 
 def next_schedule(date):
     day = datetime.timedelta(days=1)

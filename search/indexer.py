@@ -3,6 +3,7 @@ from work.models import Work, TitleMapping
 from search.models import WorkIndex, WorkTitleIndex, \
     WorkPeriodIndex, make_key
 
+
 def add_ranks(objects):
     objects.sort(key=lambda obj: obj.record_count, reverse=True)
     rank = 0
@@ -12,6 +13,7 @@ def add_ranks(objects):
             rank = i + 1
         prev = obj.record_count
         obj.rank = rank
+
 
 @transaction.atomic
 def run():

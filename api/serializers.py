@@ -6,10 +6,13 @@ from record.models import get_episodes, Record
 from search.models import WorkIndex
 from table.models import item_json, Period
 
+
 def serialize_datetime(dt):
     if dt is None:
         return None
-    return int((time.mktime(dt.timetuple()) + dt.microsecond / 1000000.0) * 1000)
+    seconds = time.mktime(dt.timetuple()) + dt.microsecond / 1000000.0
+    return int(seconds * 1000)
+
 
 def serialize_user(user, viewer=None, include_categories=True):
     data = {
@@ -23,13 +26,17 @@ def serialize_user(user, viewer=None, include_categories=True):
         data['categories'] = map(serialize_category, user.category_set.all())
     return data
 
+
 def serialize_category(category):
     return {
         'id': category.id,
         'name': category.name,
     }
 
-def serialize_record(record, include_has_newer_episode=False, include_user=False):
+
+def serialize_record(record,
+                     include_has_newer_episode=False,
+                     include_user=False):
     data = {
         'id': record.id,
         'user_id': record.user_id,
@@ -46,6 +53,7 @@ def serialize_record(record, include_has_newer_episode=False, include_user=False
         data['user'] = serialize_user(record.user, include_categories=False)
     return data
 
+
 def serialize_post(post, include_record=False, include_user=False):
     data = {
         'id': post.id,
@@ -61,14 +69,16 @@ def serialize_post(post, include_record=False, include_user=False):
         data['user'] = serialize_user(post.user, include_categories=False)
     return data
 
+
 def serialize_work(work, viewer=None, full=False):
     data = {
         'id': work.id,
         'title': work.title,
     }
     if full:
-        data['alt_titles'] = list(TitleMapping.objects.filter(work=work) \
-                                  .exclude(title=work.title).values_list('title', flat=True))
+        data['alt_titles'] = list(TitleMapping.objects.filter(work=work)
+                                  .exclude(title=work.title)
+                                  .values_list('title', flat=True))
         data['episodes'] = get_episodes(work)
     try:
         data['record_count'] = work.index.record_count

@@ -22,7 +22,8 @@ class TablePeriodView(BaseView):
             cache.set(cache_key, data, 60 * 60)
         if request.user.is_authenticated():
             records = {}
-            for record in request.user.record_set.filter(work_id__in=[work['id'] for work in data]):
+            work_ids = [work['id'] for work in data]
+            for record in request.user.record_set.filter(work_id__in=work_ids):
                 records[record.work_id] = serialize_record(record)
             for work in data:
                 if work['id'] in records:

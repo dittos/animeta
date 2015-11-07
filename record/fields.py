@@ -1,6 +1,6 @@
 from django.db import models
-from django import forms
 from record.models import StatusType, StatusTypes
+
 
 class StatusTypeField(models.SmallIntegerField):
     __metaclass__ = models.SubfieldBase
@@ -9,7 +9,7 @@ class StatusTypeField(models.SmallIntegerField):
         kwargs['choices'] = [(t, t.text) for t in StatusTypes.types]
         kwargs['default'] = StatusTypes.Watching
         super(StatusTypeField, self).__init__(*args, **kwargs)
-    
+
     def to_python(self, value):
         if isinstance(value, StatusType):
             return value
