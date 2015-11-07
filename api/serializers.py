@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import time
-from connect import get_connected_services
+from connect.models import get_connected_services
 from work.models import TitleMapping
 from record.models import get_episodes, Record
 from search.models import WorkIndex

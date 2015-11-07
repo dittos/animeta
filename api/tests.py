@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 import uuid
+from django.contrib.auth.models import User
 from django.test import TestCase, Client
+import mock
+import tweepy
+from connect.models import TwitterSetting
 from search import indexer
 from work.models import Work
 
@@ -48,6 +52,15 @@ class TestContext(Client):
         data.update(kwargs)
         response = self.post(self.user_path + '/categories', data)
         return response.obj
+
+    def add_twitter_setting(self):
+        user = User.objects.get(username=self.username)
+        TwitterSetting.objects.create(
+            user=user,
+            key='key',
+            secret='secret',
+        )
+
 
 class AuthViewTest(TestCase):
     def test_post(self):
@@ -122,9 +135,11 @@ class AccountsViewTest(TestCase):
         self.assertFalse(response.obj['ok'])
         self.assertTrue('username' in response.obj['errors'])
 
+
 class UserViewTest(TestCase):
     def test_get(self):
         context = TestContext()
+        context.add_twitter_setting()  # Check connected_services
         response = self.client.get(context.user_path)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.obj, context.user)
@@ -618,7 +633,42 @@ class RecordPostsViewTest(TestCase):
         self.assertEqual(post['comment'], data['comment'])
         self.assertTrue('updated_at' in post)
 
-        # TODO: publish_twitter
+    def test_add_and_publish_twitter(self):
+        context = TestContext()
+        record = context.new_record(work_title='A')
+        path = '/api/v2/records/%s/posts' % record['id']
+        data = {
+            'status': 'b123',
+            'status_type': 'finished',
+            'comment': 'hello',
+            'publish_twitter': 'on',
+        }
+
+        # Not connected, but success silently
+        response = context.post(path, data)
+        self.assertEqual(response.status_code, 200)
+
+        # Connected
+        context.add_twitter_setting()
+
+        # Sane case
+        mock_twitter = mock.MagicMock()
+        with mock.patch('connect.twitter.get_api', return_value=mock_twitter):
+            response = context.post(path, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(mock_twitter.update_status.call_count, 1)
+        args, kwargs = mock_twitter.update_status.call_args
+        status = args[0]
+        post_id = response.obj['post']['id']
+        self.assertEqual(status, u'A b123화 (완료): hello http://animeta.net/-%s' % post_id)
+
+        # Twitter failure; success silently
+        failing_mock_twitter = mock.MagicMock()
+        failing_mock_twitter.update_status.side_effect = tweepy.TweepError('mock error')
+        with mock.patch('connect.twitter.get_api', return_value=failing_mock_twitter):
+            context.post(path, data)
+        self.assertEqual(response.status_code, 200)
+
 
 class WorkViewTest(TestCase):
     def test_get(self):

@@ -2,8 +2,8 @@
 from django.shortcuts import get_object_or_404
 from api.v2 import BaseView
 from api.serializers import serialize_record, serialize_post
+from connect.twitter import post_history_to_twitter
 from record.models import Record, History, StatusTypes
-from connect import post_history
 
 
 class RecordPostsView(BaseView):
@@ -27,11 +27,8 @@ class RecordPostsView(BaseView):
             comment=request.POST['comment'],
         )
 
-        services = []
         if request.POST.get('publish_twitter') == 'on':
-            services.append('twitter')
-
-        post_history(history, services)
+            post_history_to_twitter(request.user, history)
 
         return {
             'record': serialize_record(history.record),

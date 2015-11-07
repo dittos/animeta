@@ -1,26 +1,29 @@
-name = 'Twitter'
+import tweepy
+from django.conf import settings
+from record.templatetags.status import status_text
+from connect.models import TwitterSetting
 
-try:
-    import tweepy
-    available = True
-except:
-    available = False
-
-from models import TwitterSetting
-
-def get_setting(user):
-    try:
-        return TwitterSetting.objects.get(user=user)
-    except TwitterSetting.DoesNotExist:
-        return None
 
 def get_api(setting):
-    from django.conf import settings
-    auth = tweepy.OAuthHandler(settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET)
+    auth = tweepy.OAuthHandler(
+        settings.TWITTER_CONSUMER_KEY,
+        settings.TWITTER_CONSUMER_SECRET
+    )
     auth.set_access_token(setting.key, setting.secret)
     return tweepy.API(auth)
 
-def post_history(setting, title, status, url, comment):
+
+def post_history_to_twitter(user, history):
+    try:
+        setting = TwitterSetting.objects.get(user=user)
+    except TwitterSetting.DoesNotExist:
+        return False
+
+    title = history.record.title
+    status = status_text(history)
+    url = 'http://animeta.net/-%d' % history.id
+    comment = history.comment
+
     api = get_api(setting)
     try:
         body = u'%s %s' % (title, status)
@@ -32,5 +35,5 @@ def post_history(setting, title, status, url, comment):
         body += ' ' + url
         api.update_status(body)
         return True
-    except:
+    except tweepy.TweepError:
         return False
