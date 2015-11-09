@@ -78,6 +78,23 @@ server.register({
         throw err;
 });
 
+server.register(require('h2o2'), err => {
+    if (err)
+        throw err;
+
+    server.route({
+        method: '*',
+        path: '/api/{path*}',
+        handler: {
+            proxy: {
+                host: config.backend.host,
+                port: config.backend.port,
+                passThrough: true
+            }
+        }
+    });
+});
+
 if (DEBUG) {
     server.register(require('inert'), err => {
         if (err)
@@ -93,26 +110,9 @@ if (DEBUG) {
             }
         });
     });
-
-    server.register(require('h2o2'), err => {
-        if (err)
-            throw err;
-
-        server.route({
-            method: '*',
-            path: '/api/{path*}',
-            handler: {
-                proxy: {
-                    host: '127.0.0.1',
-                    port: 8000,
-                    passThrough: true
-                }
-            }
-        });
-    });
 }
 
-const backend = new Backend(config.apiEndpoint);
+const backend = new Backend(config.backend);
 
 function wrapHandler(handler) {
     return (request, reply) => {

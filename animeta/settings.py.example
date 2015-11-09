@@ -2,6 +2,7 @@ from animeta.default_settings import *
 
 # turn off this in production stage
 DEBUG = True
+ALLOWED_HOSTS = ['animeta.net', '127.0.0.1']
 
 # Make this unique, and don't share it with anybody.
 # Used as password hash salt
@@ -29,4 +30,3 @@ SESSION_COOKIE_DOMAIN = None
 #SESSION_COOKIE_DOMAIN = '.animeta.net'
 
 ANITABLE_DATA_DIR = '/path/to/anitable.com/data'
-API_ENDPOINT = 'http://127.0.0.1:8000/api/v2'

@@ -4,8 +4,12 @@ import Promise from 'bluebird';
 export const HttpNotFound = {};
 
 export default class {
-    constructor(endpoint) {
-        this.endpoint = endpoint;
+    constructor(options) {
+        var host = options.host;
+        if (options.port !== 80) {
+            host += ':' + options.port;
+        }
+        this.endpoint = `http://${host}/api/v2`;
     }
 
     async call(req, path, params) {
@@ -30,10 +34,9 @@ export default class {
                 baseUrl: this.endpoint,
                 url: path,
                 qs: params,
-forever: true,
+                forever: true,
                 headers: {
                     'Cookie': req.headers.cookie,
-                    'Host': req.headers.host,
                 },
             }, (err, response, body) => {
                 if (!err) {
