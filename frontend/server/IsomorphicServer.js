@@ -33,7 +33,7 @@ export function render(request, { routes }) {
                 .map(Container => Container._options.fetchData(requestBoundClient, renderProps))
             ).then(results => {
                 const preloadData = {};
-                const title = '';
+                var title = '';
                 for (var i = 0; i < results.length; i++) {
                     const result = results[i];
                     const {getPreloadKey, getTitle} = containers[i]._options;
@@ -50,7 +50,7 @@ export function render(request, { routes }) {
                         createElement={createElement}
                     />
                 );
-                resolve({html, preloadData, title: titles.join(' - ')});
+                resolve({html, preloadData, title});
             }).catch(e => reject(e));
         });
     });
