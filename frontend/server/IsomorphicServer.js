@@ -37,7 +37,10 @@ export function render(request, { routes }) {
                 for (var i = 0; i < results.length; i++) {
                     const result = results[i];
                     const {getPreloadKey, getTitle} = containers[i]._options;
-                    preloadData[getPreloadKey(renderProps)] = result;
+                    const key = getPreloadKey(renderProps);
+                    if (key) {
+                        preloadData[key] = result;
+                    }
                     if (getTitle) {
                         // Last title wins!
                         title = getTitle(renderProps, result);

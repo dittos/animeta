@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var React = require('react/addons');
+var {createContainer} = require('../Isomorphic');
 if (process.env.CLIENT) {
     require('../../less/signup.less');
 }
@@ -79,4 +80,6 @@ var SignupRoute = React.createClass({
     }
 });
 
-module.exports = SignupRoute;
+module.exports = createContainer(SignupRoute, {
+    getTitle: () => '회원 가입'
+});

@@ -1,5 +1,5 @@
 import React from "react";
-import {Router, Route, IndexRoute, Link} from 'react-router';
+import {Route, IndexRoute, Link} from 'react-router';
 import {createContainer} from './Isomorphic';
 import GlobalHeader from "./ui/GlobalHeader";
 import Layout from "./ui/Layout";
@@ -37,16 +37,13 @@ function renderDiff(item) {
     }
 }
 
-class App extends React.Component {
+class ChartLayout extends React.Component {
     render() {
         return (
-            <div>
-                <GlobalHeader currentUser={this.props.current_user} />
-                <Layout.CenteredFullWidth>
-                    <Header />
-                    {this.props.children}
-                </Layout.CenteredFullWidth>
-            </div>
+            <Layout.CenteredFullWidth>
+                <Header />
+                {this.props.children}
+            </Layout.CenteredFullWidth>
         );
     }
 }
@@ -88,16 +85,6 @@ class Chart extends React.Component {
     }
 }
 
-const AppContainer = createContainer(App, {
-    getPreloadKey: () => 'chartApp',
-
-    async fetchData(client) {
-        return {
-            current_user: await client.getCurrentUser(),
-        };
-    }
-});
-
 const CHART_TYPES = {
     'users': 'active-users',
     'works': 'popular-works',
@@ -121,10 +108,8 @@ const ChartContainer = createContainer(Chart, {
     }
 });
 
-var routes = <Route component={AppContainer} path="/charts/">
-    <Route component={ChartContainer} path=":type/:range/" />
-</Route>;
-
-module.exports = {
-    routes,
-};
+module.exports = (
+    <Route component={ChartLayout}>
+        <Route component={ChartContainer} path="/charts/:type/:range/" />
+    </Route>
+);

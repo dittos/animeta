@@ -5,12 +5,10 @@ var ReactDOMServer = require('react-dom/server');
 var createLocation = require('history/lib/createLocation');
 var Router = require('react-router');
 var workRoutes = require('../js/work.react.js');
-var indexRoutes = require('../js/index.react.js');
 var PostApp = require('../js/post.react.js');
 
 export default {
     work: createRoutesRenderer(workRoutes, true),
-    index: createRoutesRenderer(indexRoutes),
     post: createSimpleRenderer(PostApp),
 };
 

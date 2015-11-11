@@ -133,31 +133,40 @@ function wrapHandler(handler) {
     };
 }
 
+const indexHandler = wrapHandler(async(request, reply) => {
+    const Index = require('../js/Index');
+    const {html, preloadData, title} = await IsomorphicServer.render(request, Index);
+    reply.view('template', {
+        html,
+        preloadData,
+        title,
+        stylesheets: [`build/${assetFilenames.index.css}`],
+        scripts: [`build/${assetFilenames.index.js}`],
+    });
+});
+
 server.route({
     method: 'GET',
     path: '/',
-    handler: wrapHandler(async(request, reply) => {
-        const [currentUser, posts, chart] = await* [
-            backend.getCurrentUser(request),
-            backend.call(request, '/posts', {
-                min_record_count: 2,
-                count: 10
-            }),
-            backend.call(request, '/charts/works/weekly', {limit: 5}),
-        ];
-        const preloadData = {
-            current_user: currentUser,
-            chart,
-            posts
-        };
-        const html = renderers.index('/', preloadData);
-        reply.view('template', {
-            html,
-            preloadData,
-            stylesheets: [`build/${assetFilenames.index.css}`],
-            scripts: [`build/${assetFilenames.index.js}`],
-        });
-    })
+    handler: indexHandler,
+});
+
+server.route({
+    method: 'GET',
+    path: '/login/',
+    handler: indexHandler,
+});
+
+server.route({
+    method: 'GET',
+    path: '/signup/',
+    handler: indexHandler,
+});
+
+server.route({
+    method: 'GET',
+    path: '/charts/{type}/{range}/',
+    handler: indexHandler,
 });
 
 server.route({
@@ -167,34 +176,6 @@ server.route({
         reply.view('support', {
             title: '버그 제보 / 건의',
             preloadData: null,
-        });
-    }
-});
-
-server.route({
-    method: 'GET',
-    path: '/login/',
-    handler(request, reply) {
-        reply.view('template', {
-            html: '',
-            title: '로그인',
-            preloadData: null,
-            stylesheets: [`build/${assetFilenames.index.css}`],
-            scripts: [`build/${assetFilenames.index.js}`],
-        });
-    }
-});
-
-server.route({
-    method: 'GET',
-    path: '/signup/',
-    handler(request, reply) {
-        reply.view('template', {
-            html: '',
-            title: '회원 가입',
-            preloadData: null,
-            stylesheets: [`build/${assetFilenames.index.css}`],
-            scripts: [`build/${assetFilenames.index.js}`],
         });
     }
 });
@@ -434,26 +415,6 @@ server.route({
             title: `${year}년 ${month}월 신작`,
             scripts: [`build/${assetFilenames.table_period.js}`],
             useModernizr: true,
-        });
-    })
-});
-
-const CHART_TYPES = {
-    'users': 'active-users',
-    'works': 'popular-works',
-};
-
-server.route({
-    method: 'GET',
-    path: '/charts/{type}/{range}/',
-    handler: wrapHandler(async(request, reply) => {
-        const Chart = require('../js/Chart');
-        const {html, preloadData, title} = await IsomorphicServer.render(request, Chart);
-        reply.view('template', {
-            html,
-            preloadData,
-            title,
-            scripts: [`build/${assetFilenames.chart.js}`],
         });
     })
 });

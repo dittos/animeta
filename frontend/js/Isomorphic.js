@@ -16,15 +16,19 @@ export function isContainer(Component) {
 }
 
 export function createContainer(Component, options) {
+    options.fetchData = options.fetchData || async () => ({});
+    options.getPreloadKey = options.getPreloadKey || () => null;
+
     const { fetchData, getPreloadKey, getTitle } = options;
     class Container extends React.Component {
         constructor(initialProps, b, c) {
             super(initialProps, b, c);
             this._fetchID = 0;
             const id = getPreloadKey(initialProps);
-            if (initialProps.preloadData[id]) {
+            const data = initialProps.preloadData[id];
+            if (data) {
                 this.state = {
-                    data: initialProps.preloadData[id],
+                    data,
                     hasPreloadData: true,
                     isLoading: false,
                 };
@@ -37,7 +41,7 @@ export function createContainer(Component, options) {
 
         componentDidMount() {
             if (this.state.hasPreloadData) {
-                this._updateTitle();
+                this._updateTitle(this.props, this.state.data);
             } else {
                 this._load(this.props);
             }
@@ -67,7 +71,8 @@ export function createContainer(Component, options) {
                         data,
                         hasPreloadData: false,
                         isLoading: false,
-                    }, () => this._updateTitle());
+                    });
+                    this._updateTitle(props, data);
                 }
                 if (_progressListener) {
                     _progressListener.endFetch(fetchID);
@@ -79,10 +84,10 @@ export function createContainer(Component, options) {
             });
         }
 
-        _updateTitle() {
+        _updateTitle(props, data) {
             if (getTitle) {
                 // TODO: suffix
-                document.title = getTitle(this.props, this.state.data) + ' - 애니메타';
+                document.title = getTitle(props, data) + ' - 애니메타';
             }
         }
 
