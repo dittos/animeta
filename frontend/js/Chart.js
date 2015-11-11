@@ -1,0 +1,130 @@
+import React from "react";
+import {Router, Route, IndexRoute, Link} from 'react-router';
+import {createContainer} from './Isomorphic';
+import GlobalHeader from "./ui/GlobalHeader";
+import Layout from "./ui/Layout";
+
+class Header extends React.Component {
+    render() {
+        return <div className="chart-header">
+            <h1 className="chart-section-title">순위</h1>
+            <p className="chart-nav">{'인기 작품: '}
+                <Link to="/charts/works/overall/">전체</Link>{', '}
+                <Link to="/charts/works/monthly/">월간</Link>{', '}
+                <Link to="/charts/works/weekly/">주간</Link>
+            </p>
+            <p className="chart-nav">{'활발한 사용자: '}
+                <Link to="/charts/users/overall/">전체</Link>{', '}
+                <Link to="/charts/users/monthly/">월간</Link>{', '}
+                <Link to="/charts/users/weekly/">주간</Link>
+            </p>
+        </div>;
+    }
+}
+
+function renderDiff(item) {
+    if (!item.diff)
+        return null;
+    if (item.sign === 0)
+        return '-'
+    else {
+        var diff = [item.diff];
+        if (item.sign === -1)
+            diff.push(<span className="down">&darr;</span>);
+        else
+            diff.push(<span className="up">&uarr;</span>);
+        return diff;
+    }
+}
+
+class App extends React.Component {
+    render() {
+        return (
+            <div>
+                <GlobalHeader currentUser={this.props.current_user} />
+                <Layout.CenteredFullWidth>
+                    <Header />
+                    {this.props.children}
+                </Layout.CenteredFullWidth>
+            </div>
+        );
+    }
+}
+
+function getChartTitle(chart, range) {
+    var title = '';
+    if (range === 'weekly')
+        title = '주간 ';
+    else if (range === 'monthly')
+        title = '월간 ';
+    title += chart.title;
+    return title;
+}
+
+class Chart extends React.Component {
+    render() {
+        var chart = this.props.chart;
+        var {range} = this.props.params;
+        return (
+            <div className="chart-content">
+                <h2 className="chart-title">{getChartTitle(chart, range)}</h2>
+                {chart.start ?
+                    <p>{'기간: '}{chart.start} &ndash; {chart.end}</p>
+                    : <p>기간: 전체</p>}
+                <table className="chart-table">
+                    <tbody>
+                    {chart.items.map(item => <tr>
+                        <td className="rank">{item.rank}</td>
+                        {chart.has_diff &&
+                            <td className="diff">{renderDiff(item)}</td>}
+                        <td className="name"><a href={item.object.link}>{item.object.text}</a></td>
+                        <td className="bar"><div style={{width: item.factor_percent + '%'}} /></td>
+                        <td className="factor">{item.factor}</td>
+                    </tr>)}
+                    </tbody>
+                </table>
+            </div>
+        );
+    }
+}
+
+const AppContainer = createContainer(App, {
+    getPreloadKey: () => 'chartApp',
+
+    async fetchData(client) {
+        return {
+            current_user: await client.getCurrentUser(),
+        };
+    }
+});
+
+const CHART_TYPES = {
+    'users': 'active-users',
+    'works': 'popular-works',
+};
+
+const ChartContainer = createContainer(Chart, {
+    getPreloadKey({ params }) {
+        return `chart/${params.type}/${params.range}`;
+    },
+
+    async fetchData(client, props) {
+        const {type, range} = props.params;
+        const chart = await client.call(`/charts/${CHART_TYPES[type]}/${range}`, {limit: 100});
+        return {
+            chart,
+        };
+    },
+
+    getTitle(props, data) {
+        return getChartTitle(data.chart, props.params.range);
+    }
+});
+
+var routes = <Route component={AppContainer} path="/charts/">
+    <Route component={ChartContainer} path=":type/:range/" />
+</Route>;
+
+module.exports = {
+    routes,
+};

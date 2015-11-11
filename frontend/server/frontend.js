@@ -6,6 +6,7 @@ import Backend, {HttpNotFound} from './backend';
 import renderFeed from './renderFeed';
 import assetFilenames from '../assets.json';
 import config from '../config.json';
+import * as IsomorphicServer from './IsomorphicServer';
 
 const DEBUG = process.env.NODE_ENV !== 'production';
 
@@ -113,6 +114,7 @@ if (DEBUG) {
 }
 
 const backend = new Backend(config.backend);
+IsomorphicServer.injectBackend(backend);
 
 function wrapHandler(handler) {
     return (request, reply) => {
@@ -445,27 +447,10 @@ server.route({
     method: 'GET',
     path: '/charts/{type}/{range}/',
     handler: wrapHandler(async(request, reply) => {
-        const {type, range} = request.params;
-        const chartType = CHART_TYPES[type];
-        const [currentUser, chart] = await* [
-            backend.getCurrentUser(request),
-            backend.call(request, `/charts/${chartType}/${range}`,
-                {limit: 100}),
-        ];
-        var title = '';
-        if (range === 'weekly')
-            title = '주간 ';
-        else if (range === 'monthly')
-            title = '월간 ';
-        title += chart.title;
-        const preloadData = {
-            current_user: currentUser,
-            title,
-            chart,
-            has_diff: chart.has_diff,
-        };
+        const Chart = require('../js/Chart');
+        const {html, preloadData, title} = await IsomorphicServer.render(request, Chart);
         reply.view('template', {
-            html: '',
+            html,
             preloadData,
             title,
             scripts: [`build/${assetFilenames.chart.js}`],
