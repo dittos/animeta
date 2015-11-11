@@ -1,8 +1,5 @@
 {
-    "optional": [
-        "runtime",
-        "es7.objectRestSpread"
-    ],
+    "optional": [],
     "blacklist": [
         "es3.propertyLiterals"
     ],

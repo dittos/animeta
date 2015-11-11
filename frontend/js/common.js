@@ -1,3 +1,4 @@
+require('babel/polyfill');
 require('react/addons');
 
 var $ = require('jquery');
