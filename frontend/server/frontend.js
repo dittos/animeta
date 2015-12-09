@@ -7,6 +7,7 @@ import renderFeed from './renderFeed';
 import assetFilenames from '../assets.json';
 import config from '../config.json';
 import * as IsomorphicServer from './IsomorphicServer';
+import IndexSpec from '../js/Index';
 
 const DEBUG = process.env.NODE_ENV !== 'production';
 
@@ -133,22 +134,35 @@ function wrapHandler(handler) {
     };
 }
 
-const indexHandler = wrapHandler(async(request, reply) => {
-    const Index = require('../js/Index');
-    const {html, preloadData, title} = await IsomorphicServer.render(request, Index);
-    reply.view('template', {
-        html,
-        preloadData,
-        title,
-        stylesheets: [`build/${assetFilenames.index.css}`],
-        scripts: [`build/${assetFilenames.index.js}`],
+server.handler('isomorphic', (route, { spec, prerender = false }) => {
+    return wrapHandler(async(request, reply) => {
+        const {html, preloadData, title} = await IsomorphicServer.render(request, spec, prerender);
+        reply.view('template', {
+            html,
+            preloadData,
+            title,
+            stylesheets: [`build/${assetFilenames.index.css}`],
+            scripts: [`build/${assetFilenames.index.js}`],
+        });
     });
 });
+
+const indexHandler = {
+    isomorphic: {
+        spec: IndexSpec,
+        prerender: false
+    }
+};
 
 server.route({
     method: 'GET',
     path: '/',
-    handler: indexHandler,
+    handler: {
+        isomorphic: {
+            spec: IndexSpec,
+            prerender: true
+        }
+    },
 });
 
 server.route({
@@ -166,7 +180,12 @@ server.route({
 server.route({
     method: 'GET',
     path: '/charts/{type}/{range}/',
-    handler: indexHandler,
+    handler: {
+        isomorphic: {
+            spec: IndexSpec,
+            prerender: true
+        }
+    },
 });
 
 server.route({

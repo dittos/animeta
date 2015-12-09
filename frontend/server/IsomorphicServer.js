@@ -10,7 +10,7 @@ export function injectBackend(backend) {
     _backend = backend;
 }
 
-export function render(request, { routes }) {
+export function render(request, { routes }, prerender = false) {
     return new Promise((resolve, reject) => {
         const requestBoundClient = {
             call(path, params) {
@@ -46,13 +46,18 @@ export function render(request, { routes }) {
                         title = getTitle(renderProps, result);
                     }
                 }
-                const createElement = (Component, props) => <Component {...props} preloadData={preloadData} />;
-                const html = ReactDOMServer.renderToString(
-                    <RoutingContext
-                        {...renderProps}
-                        createElement={createElement}
-                    />
-                );
+                var html;
+                if (prerender) {
+                    const createElement = (Component, props) => <Component {...props} preloadData={preloadData} />;
+                    html = ReactDOMServer.renderToString(
+                        <RoutingContext
+                            {...renderProps}
+                            createElement={createElement}
+                        />
+                    );
+                } else {
+                    html = '';
+                }
                 resolve({html, preloadData, title});
             }).catch(e => reject(e));
         });
