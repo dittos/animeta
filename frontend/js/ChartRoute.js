@@ -1,7 +1,6 @@
 import React from "react";
-import {Route, IndexRoute, Link} from 'react-router';
+import {Route, Link} from 'react-router';
 import {createContainer} from './Isomorphic';
-import GlobalHeader from "./ui/GlobalHeader";
 import Layout from "./ui/Layout";
 
 class Header extends React.Component {

@@ -290,10 +290,12 @@ var WorkIndex = React.createClass({
         return {pageSize: 10};
     },
     getInitialState() {
-        return {isLoading: true, hasMore: true, posts: []};
+        return {isLoading: false, hasMore: this.props.hasMore, posts: this.props.initialPosts};
     },
     componentDidMount() {
-        this._loadMore();
+        if (!this.state.posts) {
+            this._loadMore();
+        }
     },
     render() {
         var loadMore;
@@ -307,14 +309,14 @@ var WorkIndex = React.createClass({
             videoQuery += ' ' + this.props.episode + '화';
         }
         var posts = this.state.posts;
-        if (this.props.excludePostID) {
+        if (posts && this.props.excludePostID) {
             posts = posts.filter(post => post.id != this.props.excludePostID);
         }
         return <div>
             <VideoSearchResult query={videoQuery} />
-            {posts.length > 0 && <div className="section section-post">
+            {posts && posts.length > 0 && <div className="section section-post">
                 <h2 className="section-title"><i className="fa fa-comment" /> 감상평</h2>
-                {posts.map(post => <Post post={post} />)}
+                {posts.map(post => <Post post={post} key={post.id} />)}
                 {loadMore}
             </div>}
         </div>;
@@ -322,7 +324,7 @@ var WorkIndex = React.createClass({
     _loadMore() {
         this.setState({isLoading: true});
         var params = {count: this.props.pageSize + 1};
-        if (this.state.posts.length > 0)
+        if (this.state.posts && this.state.posts.length > 0)
             params.before_id = this.state.posts[this.state.posts.length - 1].id;
         if (this.props.episode)
             params.episode = this.props.episode;
@@ -330,7 +332,7 @@ var WorkIndex = React.createClass({
             this.setState({
                 hasMore: data.length > this.props.pageSize,
                 isLoading: false,
-                posts: this.state.posts.concat(data)
+                posts: (this.state.posts || []).concat(data)
             });
         });
     }

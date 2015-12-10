@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
-import createLocation from 'history/lib/createLocation';
+import {createLocation} from 'history';
 import {match, RoutingContext} from 'react-router';
+import {HttpNotFound} from './backend';
 import {isContainer} from '../js/Isomorphic';
 
 var _backend;
@@ -28,15 +29,20 @@ export function render(request, { routes }, prerender = false) {
                 reject(error);
                 return;
             }
-            const containers = renderProps.components.filter(isContainer);
+            if (!renderProps) {
+                // No route matched.
+                throw HttpNotFound;
+            }
+            const containers = renderProps.components.filter(c => c && isContainer(c));
             Promise.all(containers
                 .map(Container => Container._options.fetchData(requestBoundClient, renderProps))
             ).then(results => {
                 const preloadData = {};
                 var title = '';
+                var meta = {};
                 for (var i = 0; i < results.length; i++) {
                     const result = results[i];
-                    const {getPreloadKey, getTitle} = containers[i]._options;
+                    const {getPreloadKey, getTitle, getMeta} = containers[i]._options;
                     const key = getPreloadKey(renderProps);
                     if (key) {
                         preloadData[key] = result;
@@ -44,6 +50,10 @@ export function render(request, { routes }, prerender = false) {
                     if (getTitle) {
                         // Last title wins!
                         title = getTitle(renderProps, result);
+                    }
+                    if (getMeta) {
+                        // Last meta wins!
+                        meta = getMeta(renderProps, result);
                     }
                 }
                 var html;
@@ -58,7 +68,7 @@ export function render(request, { routes }, prerender = false) {
                 } else {
                     html = '';
                 }
-                resolve({html, preloadData, title});
+                resolve({html, preloadData, title, meta});
             }).catch(e => reject(e));
         });
     });

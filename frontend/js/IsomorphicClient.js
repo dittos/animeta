@@ -1,8 +1,9 @@
+/* global _gaq */
 import $ from 'jquery';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Router, RoutingContext} from 'react-router';
-import createBrowserHistory from 'history/lib/createBrowserHistory';
+import {Router} from 'react-router';
+import {createHistory} from 'history';
 import nprogress from 'nprogress';
 import {injectClient, injectProgressListener} from './Isomorphic';
 import 'style!css!nprogress/nprogress.css';
@@ -58,11 +59,18 @@ function createElementWithPreloadData(Component, props) {
     />;
 }
 
+function onPageTransition() {
+    if (_gaq) {
+        _gaq.push(['_trackPageview']);
+    }
+}
+
 export function render(page) {
     const router = <Router
-        history={createBrowserHistory()}
+        history={createHistory()}
         createElement={createElementWithPreloadData}
         routes={page.routes}
+        onUpdate={onPageTransition}
     />;
     ReactDOM.render(router, document.getElementById('app'));
 }

@@ -1,4 +1,5 @@
 /* global PreloadData */
+/* global _gaq */
 var $ = require('jquery');
 var React = require('react/addons');
 var ReactDOM = require('react-dom');
@@ -111,6 +112,7 @@ $(document).ajaxError((event, jqXHR) => {
             alert(err.message);
             return;
         } catch (e) {
+            // ignore
         }
     }
     alert('서버 오류로 요청에 실패했습니다.');

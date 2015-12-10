@@ -1,7 +1,6 @@
 import querystring from 'querystring';
 import Hapi from 'hapi';
 import ejs from 'ejs';
-import renderers from './renderers';
 import Backend, {HttpNotFound} from './backend';
 import renderFeed from './renderFeed';
 import assetFilenames from '../assets.json';
@@ -17,8 +16,9 @@ server.connection({ port: process.env.PORT || 3000 });
 server.ext('onPreResponse', (request, reply) => {
     const response = request.response;
 
-    if (response.isBoom &&
-        response.output.statusCode === 404) {
+    if (response.statusCode === 404 ||
+        (response.isBoom &&
+        response.output.statusCode === 404)) {
         var path = request.path;
         // Strip slashes
         if (path.match(/\/{2,}/)) {
@@ -136,11 +136,13 @@ function wrapHandler(handler) {
 
 server.handler('isomorphic', (route, { spec, prerender = false }) => {
     return wrapHandler(async(request, reply) => {
-        const {html, preloadData, title} = await IsomorphicServer.render(request, spec, prerender);
+        const {html, preloadData, title, meta} = await IsomorphicServer.render(request, spec, prerender);
+        preloadData.daum_api_key = config.daumAPIKey; // XXX
         reply.view('template', {
             html,
             preloadData,
             title,
+            meta,
             stylesheets: [`build/${assetFilenames.index.css}`],
             scripts: [`build/${assetFilenames.index.js}`],
         });
@@ -180,6 +182,28 @@ server.route({
 server.route({
     method: 'GET',
     path: '/charts/{type}/{range}/',
+    handler: {
+        isomorphic: {
+            spec: IndexSpec,
+            prerender: true
+        }
+    },
+});
+
+server.route({
+    method: 'GET',
+    path: '/works/{path*}',
+    handler: {
+        isomorphic: {
+            spec: IndexSpec,
+            prerender: true
+        }
+    },
+});
+
+server.route({
+    method: 'GET',
+    path: '/-{id}',
     handler: {
         isomorphic: {
             spec: IndexSpec,
@@ -328,69 +352,6 @@ server.route({
     method: 'GET',
     path: '/settings/',
     handler: currentUserHandler
-});
-
-server.route({
-    method: 'GET',
-    path: '/works/{title}/',
-    handler: wrapHandler(async(request, reply) => {
-        const {title} = request.params;
-        const [currentUser, work, chart] = await* [
-            backend.getCurrentUser(request),
-            backend.call(request, '/works/_/' + encodeURIComponent(title)),
-            backend.call(request, '/charts/works/weekly', {limit: 5}),
-        ];
-        const preloadData = {
-            current_user: currentUser,
-            title,
-            work,
-            chart,
-            daum_api_key: config.daumAPIKey,
-        };
-        const html = renderers.work('/', preloadData);
-        reply.view('template', {
-            html,
-            preloadData,
-            title,
-            meta: {
-                og_url: `/works/${encodeURIComponent(title)}/`,
-                og_type: 'tv_show',
-                og_image: work.metadata && work.metadata.image_url,
-                tw_image: work.metadata && work.metadata.image_url,
-            },
-            stylesheets: [`build/${assetFilenames.work.css}`],
-            scripts: [`build/${assetFilenames.work.js}`],
-        });
-    })
-});
-
-server.route({
-    method: 'GET',
-    path: '/-{id}',
-    handler: wrapHandler(async(request, reply) => {
-        const {id} = request.params;
-        const post = await backend.call(request, `/posts/${id}`);
-        const [currentUser, work, chart] = await* [
-            backend.getCurrentUser(request),
-            backend.call(request, `/works/${post.record.work_id}`),
-            backend.call(request, '/charts/works/weekly', {limit: 5}),
-        ];
-        const preloadData = {
-            current_user: currentUser,
-            post,
-            work,
-            chart,
-            daum_api_key: config.daumAPIKey,
-        };
-        const html = renderers.post('/', preloadData);
-        reply.view('template', {
-            html,
-            preloadData,
-            title: post.record.title,
-            stylesheets: [`build/${assetFilenames.post.css}`],
-            scripts: [`build/${assetFilenames.post.js}`],
-        });
-    })
 });
 
 const CURRENT_PERIOD = '2015Q4';

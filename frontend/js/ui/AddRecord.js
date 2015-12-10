@@ -9,12 +9,6 @@ var Typeahead = require('./Typeahead');
 var CategorySelect = React.createClass({
     render() {
         var {selectedId, categoryList, ...props} = this.props;
-        var name = '지정 안함';
-        if (selectedId) {
-            name = categoryList.filter(
-                category => category.id == selectedId
-            )[0].name;
-        }
         return (
             <select {...props}
                 value={selectedId}

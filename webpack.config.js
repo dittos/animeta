@@ -16,8 +16,6 @@ module.exports = config = {
         table_index: './frontend/js/table-index.react.js',
         table_period: './frontend/js/table-period.react.js',
         library: './frontend/js/library.react.js',
-        work: './frontend/js/work.react.js',
-        post: './frontend/js/post.react.js',
         index: './frontend/js/index.react.js',
         common: './frontend/js/common.js'
     },
@@ -92,26 +90,11 @@ if (process.env.NODE_ENV == 'production') {
         new ExtractTextPlugin('[name].css')
     ].concat(config.plugins);
     config.devtool = 'cheap-source-map';
-    config.module.postLoaders = [
+    config.module.preLoaders = [
         {
             test: /\.js$/,
             exclude: /node_modules/,
-            loader: 'jshint'
+            loader: 'eslint-loader'
         }
     ];
-    config.jshint = {
-        browser: true,
-        es3: true,
-        undef: true,
-        unused: true,
-        predef: ['_gaq', 'alert'],
-
-        // Warnings
-        "-W058": false, // new A;
-
-        // Relaxing options
-        eqnull: true,
-        globalstrict: true,
-        proto: true
-    };
 }

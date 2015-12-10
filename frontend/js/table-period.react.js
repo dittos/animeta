@@ -209,11 +209,11 @@ var AppView = Container.create(React.createClass({
     }
 }), {pure: false});
 
-if (!PreloadData.current_user) {
-    function getLoginURL() {
-        return '/login/?next=' + encodeURIComponent(location.pathname);
-    }
+function getLoginURL() {
+    return '/login/?next=' + encodeURIComponent(location.pathname);
+}
 
+if (!PreloadData.current_user) {
     Notifications.show([
         '관심 등록은 로그인 후 가능합니다. ',
         <a href={getLoginURL()} className="btn btn-login" onClick={event => {

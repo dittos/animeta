@@ -137,6 +137,7 @@ var routes = <Route component={AppContainer} path="/">
     <Route component={() => <LoginDialog next="/" />} path="/login/" />
     <Route component={require('./ui/SignupRoute')} path="/signup/" />
     {require('./ChartRoute')}
+    {require('./WorkRoute')}
 </Route>;
 
 module.exports = {
