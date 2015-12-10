@@ -128,7 +128,7 @@ function wrapHandler(handler) {
             if (!(e instanceof Error)) {
                 e = new Error(e);
             }
-            console.trace(e);
+            console.trace(e.stack);
             reply(e);
         });
     };
