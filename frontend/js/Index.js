@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var React = require('react');
-var {Route, IndexRoute} = require('react-router');
+var {Route, IndexRoute, Link} = require('react-router');
 var {createContainer} = require('./Isomorphic');
 var util = require('./util');
 var GlobalHeader = require('./ui/GlobalHeader');
@@ -49,32 +49,6 @@ var Index = React.createClass({
             </Grid.Column>
         </Grid.Row>;
     },
-    _renderChart(chart) {
-        return <div className="weekly-chart">
-            <h2><i className="fa fa-bar-chart" /> 주간 인기 작품</h2>
-            {chart.map(item => {
-                var work = item.object;
-                var diff;
-                if (item.diff) {
-                    if (item.sign === -1) {
-                        diff = <span className="down"><i className="fa fa-arrow-down" /> {item.diff}</span>;
-                    } else if (item.sign === +1) {
-                        diff = <span className="up"><i className="fa fa-arrow-up" /> {item.diff}</span>;
-                    }
-                }
-                return <div className="chart-item">
-                    {work.metadata &&
-                        <a href={util.getWorkURL(work.title)} className="poster"><img src={work.metadata.image_url} /></a>}
-                    <h3 className="chart-item-heading">
-                        <span className="chart-item-rank">{item.rank}위</span>
-                        <a className="chart-item-title" href={util.getWorkURL(work.title)}>{work.title}</a>
-                        {diff}
-                    </h3>
-                    {item.posts.map(this._renderPost)}
-                </div>;
-            })}
-        </div>;
-    },
     _renderTimeline(posts) {
         var loadMore;
         if (this.state.isLoading) {
@@ -94,10 +68,10 @@ var Index = React.createClass({
             <div className="meta">
                 <a href={'/users/' + post.user.name + '/'} className="user">{post.user.name}</a>
                 <i className="fa fa-caret-right separator" />
-                <a href={util.getWorkURL(post.record.title)} className="work">{post.record.title}</a>
+                <Link to={util.getWorkURL(post.record.title)} className="work">{post.record.title}</Link>
                 {post.status &&
                     <span className="episode">{util.getStatusDisplay(post)}</span>}
-                <a href={util.getPostURL(post)} className="time"><TimeAgo time={new Date(post.updated_at)} /></a>
+                <Link to={util.getPostURL(post)} className="time"><TimeAgo time={new Date(post.updated_at)} /></Link>
             </div>
             <div className="comment">
                 {post.comment}

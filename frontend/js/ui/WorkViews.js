@@ -3,6 +3,7 @@ var $ = require('jquery');
 var React = require('react');
 var cx = require('classnames');
 var moment = require('moment');
+var {Link} = require('react-router');
 var TimeAgo = require('./TimeAgo');
 var Grid = require('./Grid');
 var Layout = require('./Layout');
@@ -276,7 +277,7 @@ var Post = React.createClass({
                     <i className="fa fa-caret-right separator" />}
                 {post.status &&
                     <span className="episode">{util.getStatusDisplay(post)}</span>}
-                <a href={util.getPostURL(post)} className="time"><TimeAgo time={new Date(post.updated_at)} /></a>
+                <Link to={util.getPostURL(post)} className="time"><TimeAgo time={new Date(post.updated_at)} /></Link>
             </div>
             <div className="comment">
                 {post.comment}

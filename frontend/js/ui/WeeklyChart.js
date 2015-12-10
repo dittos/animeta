@@ -1,4 +1,5 @@
 var React = require('react');
+var {Link} = require('react-router');
 var util = require('../util');
 
 var WeeklyChart = React.createClass({
@@ -15,7 +16,7 @@ var WeeklyChart = React.createClass({
                     }
                 }
                 var work = item.object;
-                return <a href={util.getWorkURL(work.title)}
+                return <Link to={util.getWorkURL(work.title)}
                     className="chart-item">
                     <div className="chart-item-text">
                         <span className="rank">{item.rank}위</span>
@@ -24,7 +25,7 @@ var WeeklyChart = React.createClass({
                     </div>
                     {work.metadata &&
                         <img src={work.metadata.image_url} />}
-                </a>;
+                </Link>;
             })}
         </div>;
     }
