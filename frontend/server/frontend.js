@@ -149,61 +149,9 @@ server.handler('isomorphic', (route, { spec, prerender = false }) => {
     });
 });
 
-const indexHandler = {
-    isomorphic: {
-        spec: IndexSpec,
-        prerender: false
-    }
-};
-
 server.route({
-    method: 'GET',
-    path: '/',
-    handler: {
-        isomorphic: {
-            spec: IndexSpec,
-            prerender: true
-        }
-    },
-});
-
-server.route({
-    method: 'GET',
-    path: '/login/',
-    handler: indexHandler,
-});
-
-server.route({
-    method: 'GET',
-    path: '/signup/',
-    handler: indexHandler,
-});
-
-server.route({
-    method: 'GET',
-    path: '/charts/{type}/{range}/',
-    handler: {
-        isomorphic: {
-            spec: IndexSpec,
-            prerender: true
-        }
-    },
-});
-
-server.route({
-    method: 'GET',
-    path: '/works/{path*}',
-    handler: {
-        isomorphic: {
-            spec: IndexSpec,
-            prerender: true
-        }
-    },
-});
-
-server.route({
-    method: 'GET',
-    path: '/-{id}',
+    method: '*',
+    path: '/{path*}',
     handler: {
         isomorphic: {
             spec: IndexSpec,

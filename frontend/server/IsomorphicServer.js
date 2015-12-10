@@ -44,14 +44,6 @@ function cachingClient(client) {
 
 export function render(request, { routes }, prerender = false) {
     return new Promise((resolve, reject) => {
-        const requestBoundClient = cachingClient({
-            call(path, params) {
-                return _backend.call(request, path, params);
-            },
-            getCurrentUser() {
-                return _backend.getCurrentUser(request);
-            },
-        });
         const location = createLocation(request.path);
         match({routes, location}, (error, redirectLocation, renderProps) => {
             // TODO: error check
@@ -64,6 +56,14 @@ export function render(request, { routes }, prerender = false) {
                 // No route matched.
                 throw HttpNotFound;
             }
+            const requestBoundClient = cachingClient({
+                call(path, params) {
+                    return _backend.call(request, path, params);
+                },
+                getCurrentUser() {
+                    return _backend.getCurrentUser(request);
+                },
+            });
             const containers = renderProps.components.filter(c => c && isContainer(c));
             Promise.all(containers
                 .map(Container => Container._options.fetchData(requestBoundClient, renderProps))
