@@ -1,12 +1,11 @@
 import querystring from 'querystring';
 import Hapi from 'hapi';
-import ejs from 'ejs';
 import Backend, {HttpNotFound} from './backend';
 import renderFeed from './renderFeed';
 import assetFilenames from '../assets.json';
 import config from '../config.json';
 import * as IsomorphicServer from './IsomorphicServer';
-import IndexSpec from '../js/Index';
+import routes from '../js/routes';
 
 const DEBUG = process.env.NODE_ENV !== 'production';
 
@@ -20,6 +19,18 @@ server.ext('onPreResponse', (request, reply) => {
         (response.isBoom &&
         response.output.statusCode === 404)) {
         var path = request.path;
+        if (path.match(/^\/[\w.@+-]+$/)) {
+            const username = path.substring(1);
+            backend.call(request, `/users/${username}`).then(user => {
+                reply.redirect(`/users/${user.name}/`);
+            }).catch(err => {
+                if (err === HttpNotFound) {
+                    const response = reply('Not found.');
+                    response.statusCode = 404;
+                }
+            });
+            return;
+        }
         // Strip slashes
         if (path.match(/\/{2,}/)) {
             path = path.replace(/\/{2,}/g, '/');
@@ -134,9 +145,9 @@ function wrapHandler(handler) {
     };
 }
 
-server.handler('isomorphic', (route, { spec, prerender = false }) => {
+server.handler('isomorphic', (route, { routes, prerender = false }) => {
     return wrapHandler(async(request, reply) => {
-        const {html, preloadData, title, meta} = await IsomorphicServer.render(request, spec, prerender);
+        const {html, preloadData, title, meta} = await IsomorphicServer.render(request, routes, prerender);
         preloadData.daum_api_key = config.daumAPIKey; // XXX
         reply.view('template', {
             html,
@@ -154,7 +165,7 @@ server.route({
     path: '/{path*}',
     handler: {
         isomorphic: {
-            spec: IndexSpec,
+            routes: routes,
             prerender: true
         }
     },
@@ -181,16 +192,6 @@ server.route({
         } else {
             reply.redirect(`/users/${currentUser.name}/`);
         }
-    })
-});
-
-server.route({
-    method: 'GET',
-    path: '/{username}',
-    handler: wrapHandler(async (request, reply) => {
-        const {username} = request.params;
-        const user = await backend.call(request, `/users/${username}`);
-        reply.redirect(`/users/${username}/`);
     })
 });
 

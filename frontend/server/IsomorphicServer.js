@@ -42,7 +42,7 @@ function cachingClient(client) {
     };
 }
 
-export function render(request, { routes }, prerender = false) {
+export function render(request, routes, prerender = false) {
     return new Promise((resolve, reject) => {
         const location = createLocation(request.path);
         match({routes, location}, (error, redirectLocation, renderProps) => {

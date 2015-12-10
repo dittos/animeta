@@ -339,8 +339,27 @@ var WorkIndex = React.createClass({
     }
 });
 
+var Episodes = React.createClass({
+    render() {
+        const {work} = this.props;
+        const title = encodeURIComponent(work.title);
+        return <div className="episodes">
+            <Link to={`/works/${title}/`} activeClassName="active" className="recent">최신</Link>
+            {work.episodes.map(ep =>
+                <Link to={`/works/${title}/ep/${ep.number}/`}
+                    activeClassName="active"
+                    className={cx({
+                        'has-post': ep.post_count > 0,
+                        'active': ep.number == this.props.activeEpisodeNumber
+                    })}
+                    key={ep.number}>{ep.number}화</Link>)}
+        </div>;
+    }
+});
+
 module.exports = {
     Post,
     Work,
-    WorkIndex
+    WorkIndex,
+    Episodes,
 };

@@ -1,31 +1,11 @@
-var $ = require('jquery');
-var React = require('react');
-var {Route, IndexRoute, Link} = require('react-router');
-var {createContainer} = require('./Isomorphic');
-var util = require('./util');
-var GlobalHeader = require('./ui/GlobalHeader');
-var Grid = require('./ui/Grid');
-var TimeAgo = require('./ui/TimeAgo');
-var WeeklyChart = require('./ui/WeeklyChart');
-var LoginDialog = require('./ui/LoginDialog');
-
-var App = React.createClass({
-    render() {
-        return <div>
-            <GlobalHeader currentUser={this.props.current_user} />
-            {this.props.children}
-        </div>;
-    }
-});
-const AppContainer = createContainer(App, {
-    getPreloadKey: () => 'chartApp',
-
-    async fetchData(client) {
-        return {
-            current_user: await client.getCurrentUser(),
-        };
-    }
-});
+import $ from 'jquery';
+import React from 'react';
+import {Link} from 'react-router';
+import {createContainer} from '../Isomorphic';
+import * as util from '../util';
+import Grid from '../ui/Grid';
+import TimeAgo from '../ui/TimeAgo';
+import WeeklyChart from '../ui/WeeklyChart';
 
 var Index = React.createClass({
     getInitialState() {
@@ -91,7 +71,8 @@ var Index = React.createClass({
         });
     }
 });
-const IndexContainer = createContainer(Index, {
+
+export default createContainer(Index, {
     getPreloadKey: () => 'index',
 
     async fetchData(client) {
@@ -105,15 +86,3 @@ const IndexContainer = createContainer(Index, {
         return {posts, chart};
     }
 });
-
-var routes = <Route component={AppContainer} path="/">
-    <IndexRoute component={IndexContainer} />
-    <Route component={() => <LoginDialog next="/" />} path="/login/" />
-    <Route component={require('./ui/SignupRoute')} path="/signup/" />
-    {require('./ChartRoute')}
-    {require('./WorkRoute')}
-</Route>;
-
-module.exports = {
-    routes
-};

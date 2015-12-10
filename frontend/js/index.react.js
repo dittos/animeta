@@ -1,7 +1,8 @@
 import {render} from './IsomorphicClient';
-import Index from './Index';
+import routes from './routes';
 import '../less/index.less?extract';
 import '../less/chart.less?extract';
 import '../less/work.less?extract';
+import '../less/signup.less?extract';
 
-render(Index);
+render(routes);

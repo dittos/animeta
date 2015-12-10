@@ -65,11 +65,11 @@ function onPageTransition() {
     }
 }
 
-export function render(page) {
+export function render(routes) {
     const router = <Router
         history={createHistory()}
         createElement={createElementWithPreloadData}
-        routes={page.routes}
+        routes={routes}
         onUpdate={onPageTransition}
     />;
     ReactDOM.render(router, document.getElementById('app'));

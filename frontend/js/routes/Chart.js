@@ -1,7 +1,7 @@
-import React from "react";
-import {Route, Link} from 'react-router';
-import {createContainer} from './Isomorphic';
-import Layout from "./ui/Layout";
+import React from 'react';
+import {Link} from 'react-router';
+import {createContainer} from '../Isomorphic';
+import Layout from '../ui/Layout';
 
 class Header extends React.Component {
     render() {
@@ -41,7 +41,9 @@ class ChartLayout extends React.Component {
         return (
             <Layout.CenteredFullWidth>
                 <Header />
-                {this.props.children}
+                <div className="chart-content">
+                    {this.props.children}
+                </div>
             </Layout.CenteredFullWidth>
         );
     }
@@ -61,26 +63,24 @@ class Chart extends React.Component {
     render() {
         var chart = this.props.chart;
         var {range} = this.props.params;
-        return (
-            <div className="chart-content">
-                <h2 className="chart-title">{getChartTitle(chart, range)}</h2>
-                {chart.start ?
-                    <p>{'기간: '}{chart.start} &ndash; {chart.end}</p>
-                    : <p>기간: 전체</p>}
-                <table className="chart-table">
-                    <tbody>
-                    {chart.items.map(item => <tr>
-                        <td className="rank">{item.rank}</td>
-                        {chart.has_diff &&
-                            <td className="diff">{renderDiff(item)}</td>}
-                        <td className="name"><a href={item.object.link}>{item.object.text}</a></td>
-                        <td className="bar"><div style={{width: item.factor_percent + '%'}} /></td>
-                        <td className="factor">{item.factor}</td>
-                    </tr>)}
-                    </tbody>
-                </table>
-            </div>
-        );
+        return <ChartLayout>
+            <h2 className="chart-title">{getChartTitle(chart, range)}</h2>
+            {chart.start ?
+                <p>{'기간: '}{chart.start} &ndash; {chart.end}</p>
+                : <p>기간: 전체</p>}
+            <table className="chart-table">
+                <tbody>
+                {chart.items.map(item => <tr>
+                    <td className="rank">{item.rank}</td>
+                    {chart.has_diff &&
+                        <td className="diff">{renderDiff(item)}</td>}
+                    <td className="name"><Link to={item.object.link}>{item.object.text}</Link></td>
+                    <td className="bar"><div style={{width: item.factor_percent + '%'}} /></td>
+                    <td className="factor">{item.factor}</td>
+                </tr>)}
+                </tbody>
+            </table>
+        </ChartLayout>;
     }
 }
 
@@ -89,7 +89,7 @@ const CHART_TYPES = {
     'works': 'popular-works',
 };
 
-const ChartContainer = createContainer(Chart, {
+export default createContainer(Chart, {
     getPreloadKey({ params }) {
         return `chart/${params.type}/${params.range}`;
     },
@@ -106,9 +106,3 @@ const ChartContainer = createContainer(Chart, {
         return getChartTitle(data.chart, props.params.range);
     }
 });
-
-module.exports = (
-    <Route component={ChartLayout}>
-        <Route component={ChartContainer} path="/charts/:type/:range/" />
-    </Route>
-);
