@@ -1,6 +1,6 @@
 import querystring from 'querystring';
 import Hapi from 'hapi';
-import Backend, {HttpNotFound, HttpRedirect} from './backend';
+import Backend, {HttpNotFound} from './backend';
 import renderFeed from './renderFeed';
 import assetFilenames from '../assets.json';
 import config from '../config.json';
@@ -135,8 +135,8 @@ function wrapHandler(handler) {
                 response.statusCode = 404;
                 return;
             }
-            if (e instanceof HttpRedirect) {
-                reply().redirect(e.uri);
+            if (e._redirect) {
+                reply().redirect(e._redirect);
                 return;
             }
             if (!(e instanceof Error)) {
