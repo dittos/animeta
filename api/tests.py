@@ -881,7 +881,7 @@ website: http://imas-cinderella.com/'''
         self.assertEqual(response.status_code, 200)
         self.assertEqual([work['id'] for work in response.obj], [work2_id, work3_id])
 
-        response = self.client.get(path, {'only_first_period': 1})
+        response = self.client.get(path, {'only_first_period': 'true'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual([work['id'] for work in response.obj], [work2_id])
 

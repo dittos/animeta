@@ -9,7 +9,7 @@ class TablePeriodView(BaseView):
     def get(self, request, period):
         period = Period.parse(period)
         cache_key = 'table:%s' % period
-        only_first_period = request.GET.get('only_first_period') == '1'
+        only_first_period = request.GET.get('only_first_period') == 'true'
         if only_first_period:
             cache_key += ':first_only'
         data = cache.get(cache_key)
