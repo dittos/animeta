@@ -225,7 +225,6 @@ var Library = Container.create(React.createClass({
                 categoryStats={categoryStats}
                 canEdit={this.props.canEdit}
                 onUpdateQuery={this.props.onUpdateQuery} />
-            {this._renderNotice()}
             {sort == 'title' && <p className="library-toc">
                 건너뛰기: {groups.map(group => <a href={'#group' + group.index}>{group.key}</a>)}
             </p>}
@@ -251,17 +250,6 @@ var Library = Container.create(React.createClass({
             {help}
         </div>;
     },
-
-    _renderNotice() {
-        var enableNotice = false;
-        if (enableNotice && this.props.canEdit) {
-            return <div className="notice notice-animetable">
-                2015년 7월 신작을 클릭 한번으로 관심 등록!{' '}
-                <a href={'/table/2015Q3/?utm_source=self&utm_medium=link&utm_campaign=library'}>2015년 7월 신작 보러가기</a>
-            </div>;
-        }
-        return null;
-    }
 }), {pure: false, withProps: true});
 
 var LibraryContainer = React.createClass({

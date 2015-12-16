@@ -69,7 +69,7 @@ var HeaderView = React.createClass({
             <div className="page-header">
                 <div className="settings">
                     <div className="settings-item prefer-kr">
-                        <label>정렬: </label>
+                        <label className="hide-mobile">정렬: </label>
                         <div className="switch">
                             {switches}
                         </div>

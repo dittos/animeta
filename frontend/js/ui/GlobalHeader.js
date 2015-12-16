@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var React = require('react');
+import {Link as RouterLink} from 'react-router';
 var Layout = require('./Layout');
 var Typeahead = require('./Typeahead');
 var LoginDialog = require('./LoginDialog');
@@ -67,6 +68,11 @@ var Search = React.createClass({
     }
 });
 
+function CompatLink(linkProps) {
+    var {href, ...props} = linkProps;
+    return <RouterLink to={href} {...props} />;
+}
+
 var GlobalHeader = React.createClass({
     getInitialState() {
         return {
@@ -75,40 +81,38 @@ var GlobalHeader = React.createClass({
         };
     },
     render() {
+        var Link = this.props.useRouterLink ? CompatLink : 'a';
         return <div className="header-container">
             <Layout.CenteredFullWidth className="header">
                 <Layout.LeftRight className="header-inner"
-                    left={this._renderLeft()}
-                    right={this._renderRight()} />
+                    left={this._renderLeft(Link)}
+                    right={this._renderRight(Link)} />
             </Layout.CenteredFullWidth>
         </div>;
     },
-    _renderLeft() {
+    _renderLeft(Link) {
         return <div>
             <div className={'menu-toggle ' + (this.state.showMenu ? 'active' : '')}
                 onClick={this._toggleMenu}>
                 <i className="fa fa-bars" />
             </div>
             <div className="logo">
-                <a href="/">애니메타</a>
+                <Link href="/">애니메타</Link>
             </div>
-            <a href="/table/" className="banner show-mobile">10월 신작 UP!</a>
+            <Link href="/table/" className="banner show-mobile">10월 신작 UP!</Link>
             <Search />
             <div className="menu-global"
                 style={this.state.showMenu ? {display: 'block'} : {}}>
-                <a href="/">홈</a>
-                <a href="/charts/works/weekly/">순위</a>
-                <a href="/table/">
-                    시간표
-                    <div className="banner hide-mobile">10월 신작 업데이트!</div>
-                </a>
+                <Link href="/">홈</Link>
+                <Link href="/charts/works/weekly/">순위</Link>
+                <Link href="/table/">시간표</Link>
             </div>
             <div className="menu-feedback">
                 <a href="/support/"><i className="fa fa-bullhorn" />{' '}버그 제보 / 건의</a>
             </div>
         </div>;
     },
-    _renderRight() {
+    _renderRight(Link) {
         var user = this.props.currentUser;
         if (user) {
             return <div className="account">
@@ -124,8 +128,8 @@ var GlobalHeader = React.createClass({
             </div>;
         } else {
             return <div className="account">
-                <a href="/login/" className="btn btn-login" onClick={this._openLogin}>로그인</a>
-                <a href="/signup/" className="btn btn-signup">회원 가입</a>
+                <Link href="/login/" className="btn btn-login" onClick={this._openLogin}>로그인</Link>
+                <Link href="/signup/" className="btn btn-signup">회원 가입</Link>
             </div>;
         }
     },

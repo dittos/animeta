@@ -5,7 +5,10 @@ import GlobalHeader from '../ui/GlobalHeader';
 var App = React.createClass({
     render() {
         return <div>
-            <GlobalHeader currentUser={this.props.current_user} />
+            <GlobalHeader
+                currentUser={this.props.current_user}
+                useRouterLink={true}
+            />
             {this.props.children}
         </div>;
     }
