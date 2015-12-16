@@ -99,7 +99,6 @@ var GlobalHeader = React.createClass({
             <div className="logo">
                 <Link href="/">애니메타</Link>
             </div>
-            <Link href="/table/" className="banner show-mobile">10월 신작 UP!</Link>
             <Search />
             <div className="menu-global"
                 style={this.state.showMenu ? {display: 'block'} : {}}>
