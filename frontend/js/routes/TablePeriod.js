@@ -1,5 +1,6 @@
 var React = require('react');
 var {Container} = require('flux/utils');
+var {Link} = require('react-router');
 var util = require('../util');
 var ScheduleStore = require('../table/ScheduleStore');
 var TableActions = require('../table/TableActions');
@@ -7,6 +8,7 @@ var Notifications = require('../table/Notifications');
 var LazyImageView = require('../ui/LazyImage');
 var LoginDialog = require('../ui/LoginDialog');
 var {createContainer} = require('../Isomorphic');
+var Periods = require('../Periods');
 
 function formatPeriod(period) {
     var parts = period.split('Q');
@@ -14,9 +16,37 @@ function formatPeriod(period) {
     return year + '년 ' + [1, 4, 7, 10][quarter - 1] + '월';
 }
 
+function offsetPeriod(period, offset) {
+    // move to API server?
+    var parts = period.split('Q');
+    var year = parseInt(parts[0], 10);
+    var quarter = parseInt(parts[1], 10);
+    quarter += offset;
+    if (quarter === 0) {
+        year--;
+        quarter = 4;
+    } else if (quarter === 5) {
+        year++;
+        quarter = 1;
+    }
+    return `${year}Q${quarter}`;
+}
+
+function PageTitle(props) {
+    var period = props.period;
+    var prevPeriod = period !== Periods.min && offsetPeriod(props.period, -1);
+    var nextPeriod = period !== Periods.current && offsetPeriod(props.period, +1);
+    return <h1 className="page-title">
+        {prevPeriod &&
+            <Link to={`/table/${prevPeriod}/`}><i className="fa fa-caret-left" /></Link>}
+        {formatPeriod(period)} 신작
+        {nextPeriod &&
+            <Link to={`/table/${nextPeriod}/`}><i className="fa fa-caret-right" /></Link>}
+    </h1>;
+}
+
 var HeaderView = React.createClass({
     render() {
-        var period = formatPeriod(this.props.period);
         var options;
         if (!this.props.excludeKR) {
             options = [
@@ -45,7 +75,7 @@ var HeaderView = React.createClass({
                         </div>
                     </div>
                 </div>
-                <h1 className="page-title">{period} 신작</h1>
+                <PageTitle period={this.props.period} />
             </div>
         );
     }

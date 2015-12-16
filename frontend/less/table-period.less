@@ -35,6 +35,11 @@
     font-size: 20px;
     text-align: center;
     margin: 0;
+    color: #444;
+    display: inline-block;
+    a {
+        padding: 5px;
+    }
 }
 .page-header {
     margin: 0 0 20px;
@@ -286,6 +291,9 @@ html.touch .btn-fav {
 @media screen and (max-width: 640px) {
     .page-title {
         text-align: left;
+    }
+    .page-header .settings label {
+        display: none;
     }
     .item { width: 50%; }
     .item-title { letter-spacing: -1px; font-size: 15px; }

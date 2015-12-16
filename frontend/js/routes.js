@@ -1,6 +1,7 @@
 import React from 'react';
 import {Route, IndexRoute, IndexRedirect} from 'react-router';
 import LoginDialog from './ui/LoginDialog';
+import Periods from './Periods';
 
 export default (
     <Route component={require('./routes/App')} path="/">
@@ -14,7 +15,7 @@ export default (
             <Route component={require('./routes/WorkPosts')} path="/works/**/" />
         </Route>
         <Route path="/table/">
-            <IndexRedirect to="2015Q4/" />
+            <IndexRedirect to={Periods.current + '/'} />
             <Route component={require('./routes/TablePeriod')} path=":period/" />
         </Route>
     </Route>
