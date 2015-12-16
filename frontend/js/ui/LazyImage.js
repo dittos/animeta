@@ -5,7 +5,7 @@ var BLANK_IMG_URI = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABA
 
 var blazy = null;
 // Disable lazy loading on mobile browsers.
-if (!/i(Phone|Pad|Pod)|Android|Safari/.test(navigator.userAgent)) {
+if (process.env.CLIENT && !/i(Phone|Pad|Pod)|Android|Safari/.test(navigator.userAgent)) {
     document.documentElement.className += ' b-fade';
     blazy = new Blazy;
 }

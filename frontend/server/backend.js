@@ -3,6 +3,12 @@ import Promise from 'bluebird';
 
 export const HttpNotFound = {};
 
+export class HttpRedirect {
+    constructor(uri) {
+        this.uri = uri;
+    }
+};
+
 export default class {
     constructor(options) {
         var host = options.host;

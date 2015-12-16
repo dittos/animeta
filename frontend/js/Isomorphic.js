@@ -41,6 +41,9 @@ export function createContainer(Component, options) {
 
         componentDidMount() {
             if (this.state.hasPreloadData) {
+                if (options.onLoad) {
+                    options.onLoad(this.props, this.state.data);
+                }
                 this._updateTitle(this.props, this.state.data);
             } else {
                 this._load(this.props);
@@ -71,6 +74,10 @@ export function createContainer(Component, options) {
                         data,
                         hasPreloadData: false,
                         isLoading: false,
+                    }, () => {
+                        if (options.onLoad) {
+                            options.onLoad(props, data);
+                        }
                     });
                     this._updateTitle(props, data);
                 }

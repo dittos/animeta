@@ -1,15 +1,12 @@
-/* global PreloadData */
 var React = require('react');
-var ReactDOM = require('react-dom');
 var {Container} = require('flux/utils');
-var util = require('./util');
-var ScheduleStore = require('./table/ScheduleStore');
-var TableActions = require('./table/TableActions');
-var Notifications = require('./table/Notifications');
-var GlobalHeader = require('./ui/GlobalHeader');
-var LazyImageView = require('./ui/LazyImage');
-var LoginDialog = require('./ui/LoginDialog');
-require('../less/table-period.less');
+var util = require('../util');
+var ScheduleStore = require('../table/ScheduleStore');
+var TableActions = require('../table/TableActions');
+var Notifications = require('../table/Notifications');
+var LazyImageView = require('../ui/LazyImage');
+var LoginDialog = require('../ui/LoginDialog');
+var {createContainer} = require('../Isomorphic');
 
 function formatPeriod(period) {
     var parts = period.split('Q');
@@ -129,7 +126,7 @@ var ItemView = React.createClass({
     },
 
     handleFavButtonClick() {
-        if (!PreloadData.current_user) {
+        if (!this.props.currentUser) {
             alert('로그인 후 관심 등록할 수 있습니다.');
             LoginDialog.open();
             return;
@@ -173,7 +170,7 @@ var NotificationView = React.createClass({
     }
 });
 
-var AppView = Container.create(React.createClass({
+var TablePeriod = Container.create(React.createClass({
     statics: {
         getStores() {
             return [ScheduleStore];
@@ -191,15 +188,14 @@ var AppView = Container.create(React.createClass({
     render() {
         return (
             <div>
-                <GlobalHeader currentUser={PreloadData.current_user} />
                 <div className="table-container">
-                    <HeaderView period={this.props.period}
+                    <HeaderView period={this.props.params.period}
                         ordering={this.state.ordering}
                         excludeKR={this.state.excludeKR} />
 
                     <div className="items">
                     {this.state.items.map((item) =>
-                        <ItemView item={item} key={item.id} />
+                        <ItemView item={item} key={item.id} currentUser={this.props.current_user} />
                     )}
                     </div>
                 </div>
@@ -213,17 +209,39 @@ function getLoginURL() {
     return '/login/?next=' + encodeURIComponent(location.pathname);
 }
 
-if (!PreloadData.current_user) {
-    Notifications.show([
-        '관심 등록은 로그인 후 가능합니다. ',
-        <a href={getLoginURL()} className="btn btn-login" onClick={event => {
-            event.preventDefault();
-            LoginDialog.open();
-        }}>로그인</a>
-    ]);
-}
+export default createContainer(TablePeriod, {
+    getPreloadKey(props) {
+        return `table/${props.params.period}`;
+    },
 
-TableActions.initialize(PreloadData.schedule);
+    async fetchData(client, props) {
+        var [current_user, schedule] = await *[
+            client.getCurrentUser(),
+            client.call(`/table/periods/${props.params.period}`, {
+                only_first_period: JSON.stringify(true)
+            })
+        ];
+        return {
+            current_user,
+            schedule
+        };
+    },
 
-ReactDOM.render(<AppView period={PreloadData.period} />,
-    document.getElementById('app'));
+    getTitle(props) {
+        return `${formatPeriod(props.params.period)} 신작`;
+    },
+
+    onLoad(props, data) {
+        TableActions.initialize(data.schedule);
+
+        if (!data.current_user) {
+            Notifications.show([
+                '관심 등록은 로그인 후 가능합니다. ',
+                <a href={getLoginURL()} className="btn btn-login" onClick={event => {
+                    event.preventDefault();
+                    LoginDialog.open();
+                }}>로그인</a>
+            ]);
+        }
+    }
+});

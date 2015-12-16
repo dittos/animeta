@@ -1,6 +1,6 @@
 import querystring from 'querystring';
 import Hapi from 'hapi';
-import Backend, {HttpNotFound} from './backend';
+import Backend, {HttpNotFound, HttpRedirect} from './backend';
 import renderFeed from './renderFeed';
 import assetFilenames from '../assets.json';
 import config from '../config.json';
@@ -19,18 +19,6 @@ server.ext('onPreResponse', (request, reply) => {
         (response.isBoom &&
         response.output.statusCode === 404)) {
         var path = request.path;
-        if (path.match(/^\/[\w.@+-]+$/)) {
-            const username = path.substring(1);
-            backend.call(request, `/users/${username}`).then(user => {
-                reply.redirect(`/users/${user.name}/`);
-            }).catch(err => {
-                if (err === HttpNotFound) {
-                    const response = reply('Not found.');
-                    response.statusCode = 404;
-                }
-            });
-            return;
-        }
         // Strip slashes
         if (path.match(/\/{2,}/)) {
             path = path.replace(/\/{2,}/g, '/');
@@ -50,6 +38,18 @@ server.ext('onPreResponse', (request, reply) => {
                 url += '?' + query;
             }
             return reply().redirect(url);
+        }
+        if (path.match(/^\/[\w.@+-]+$/)) {
+            const username = path.substring(1);
+            backend.call(request, `/users/${username}`).then(user => {
+                reply.redirect(`/users/${user.name}/`);
+            }).catch(err => {
+                if (err === HttpNotFound) {
+                    const response = reply('Not found.');
+                    response.statusCode = 404;
+                }
+            });
+            return;
         }
     }
     return reply.continue();
@@ -74,8 +74,7 @@ server.register(require('vision'), err => {
             title: '',
             meta: {},
             stylesheets: [],
-            scripts: [],
-            useModernizr: false
+            scripts: []
         },
         isCached: !DEBUG,
     });
@@ -134,6 +133,10 @@ function wrapHandler(handler) {
             if (e === HttpNotFound) {
                 const response = reply('Not found.');
                 response.statusCode = 404;
+                return;
+            }
+            if (e instanceof HttpRedirect) {
+                reply().redirect(e.uri);
                 return;
             }
             if (!(e instanceof Error)) {
@@ -301,51 +304,6 @@ server.route({
     method: 'GET',
     path: '/settings/',
     handler: currentUserHandler
-});
-
-const CURRENT_PERIOD = '2015Q4';
-
-server.route({
-    method: 'GET',
-    path: '/table/',
-    handler(request, reply) {
-        reply.redirect(`/table/${CURRENT_PERIOD}/`);
-    }
-});
-
-server.route({
-    method: 'GET',
-    path: '/table/{period}/',
-    handler: wrapHandler(async (request, reply) => {
-        const {period} = request.params;
-        const matches = period.match(/([0-9]{4})Q([1-4])/);
-        if (!matches) {
-            const response = reply('Not found.');
-            response.statusCode = 404;
-            return;
-        }
-        const year = matches[1];
-        const quarter = matches[2];
-        const month = [1, 4, 7, 10][quarter - 1];
-        const [currentUser, schedule] = await* [
-            backend.getCurrentUser(request),
-            backend.call(request, `/table/periods/${period}`, {
-                only_first_period: JSON.stringify(true)
-            }),
-        ];
-        const preloadData = {
-            current_user: currentUser,
-            period,
-            schedule,
-        };
-        reply.view('template', {
-            html: '',
-            preloadData,
-            title: `${year}년 ${month}월 신작`,
-            scripts: [`build/${assetFilenames.table_period.js}`],
-            useModernizr: true,
-        });
-    })
 });
 
 export default server;

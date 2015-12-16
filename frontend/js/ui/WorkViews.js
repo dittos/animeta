@@ -162,7 +162,8 @@ var Sidebar = React.createClass({
             return <div className="work-sidebar">
                 <img className="poster" src={metadata.image_url} />
                 <p>
-                    <b>{metadata.studios.join(', ')}</b> 제작
+                    {metadata.studios &&
+                        [<b>{metadata.studios.join(', ')}</b>, ' 제작']}
                     {metadata.source &&
                         ' / ' + util.SOURCE_TYPE_MAP[metadata.source]}
                 </p>

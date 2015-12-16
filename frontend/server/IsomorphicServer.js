@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import {createLocation} from 'history';
 import {match, RoutingContext} from 'react-router';
-import {HttpNotFound} from './backend';
+import {HttpNotFound, HttpRedirect} from './backend';
 import RequestCache from './RequestCache';
 import {isContainer} from '../js/Isomorphic';
 
@@ -54,6 +54,10 @@ export function render(request, routes, prerender = false) {
                 console.trace(request, error, redirectLocation, renderProps);
                 reject(error);
                 return;
+            }
+            if (redirectLocation) {
+                // TODO: support params, hash, ...
+                throw new HttpRedirect(redirectLocation.pathname);
             }
             if (!renderProps) {
                 // No route matched.

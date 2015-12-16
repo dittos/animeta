@@ -14,7 +14,6 @@ module.exports = config = {
     ],
     entry: {
         table_index: './frontend/js/table-index.react.js',
-        table_period: './frontend/js/table-period.react.js',
         library: './frontend/js/library.react.js',
         index: './frontend/js/index.react.js',
         common: './frontend/js/common.js'

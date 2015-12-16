@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route, IndexRoute} from 'react-router';
+import {Route, IndexRoute, IndexRedirect} from 'react-router';
 import LoginDialog from './ui/LoginDialog';
 
 export default (
@@ -12,6 +12,10 @@ export default (
         <Route component={require('./routes/Work')}>
             <Route component={require('./routes/WorkPosts')} path="/works/**/ep/:episode/" />
             <Route component={require('./routes/WorkPosts')} path="/works/**/" />
+        </Route>
+        <Route path="/table/">
+            <IndexRedirect to="2015Q4/" />
+            <Route component={require('./routes/TablePeriod')} path=":period/" />
         </Route>
     </Route>
 );
