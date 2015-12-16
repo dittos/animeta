@@ -2,32 +2,46 @@
 
 http://animeta.net/
 
-## 필요한 것들
+크게 백엔드 API 서버 (Django)와 프론트엔드 서버 (Node.js, Hapi) 및 프론트엔드 (React)로 구성되어 있습니다.
+
+## 백엔드 API 서버
+
+### 필요한 것들
 
 * Python 2.7.x
 * pip
-* Node.js
-* NPM
-* Webpack (`npm install -g webpack`)
 
-## 의존성 설치
+### 의존성 설치
 
-    cd animeta
     virtualenv env
     . env/bin/activate
     pip install -r ./requirements.txt
-    npm install
 
-## 설정
+### 설정
 
     cp animeta/settings.py.example animeta/settings.py
     python manage.py syncdb
 
-## 개발 서버 시작
+### 개발 서버 실행
 
-    webpack --watch & # asset build
     python manage.py runserver
 
-## 배포용 어셋 빌드
+## 프론트엔드 / 프론트엔드 서버
 
-    NODE_ENV=production webpack
+* Node.js
+* NPM
+* Webpack (`npm install -g webpack`)
+
+### 의존성 설치
+
+    npm install -g webpack
+    npm install .
+
+### 설정
+
+    cp frontend/config.json.sample frontend/config.json
+
+### 개발 서버 시작
+
+    webpack --watch & # asset build
+    node frontend/frontendServer.js # frontend server
