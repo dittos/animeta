@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var AssetsPlugin = require('assets-webpack-plugin');
 
 var clientDefinePlugin = new webpack.DefinePlugin({
     'process.env.CLIENT': JSON.stringify(true),
@@ -9,7 +10,7 @@ var clientDefinePlugin = new webpack.DefinePlugin({
 
 module.exports = config = {
     plugins: [
-        versionMapPlugin,
+        new AssetsPlugin({filename: 'frontend/assets.json'}),
         clientDefinePlugin
     ],
     entry: {
@@ -33,27 +34,6 @@ module.exports = config = {
         ]
     }
 };
-
-function versionMapPlugin() {
-    this.plugin('done', function(stats) {
-        var assets = stats.toJson().assetsByChunkName;
-        Object.keys(assets).forEach(function (key) {
-            if (!Array.isArray(assets[key]))
-                assets[key] = [assets[key]];
-            var value = {};
-            assets[key].forEach(function (name) {
-                var ext = name.split('.').pop();
-                if (ext == 'map')
-                    return;
-                value[ext] = name;
-            });
-            assets[key] = value;
-        });
-        var source = JSON.stringify(assets);
-        fs.writeFileSync(path.join(__dirname, 'frontend/assets.json'),
-            source);
-    });
-}
 
 if (process.env.NODE_ENV == 'production') {
     console.log('* Production Build');

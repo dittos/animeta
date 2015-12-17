@@ -157,8 +157,8 @@ server.handler('isomorphic', (route, { routes, prerender = false }) => {
             preloadData,
             title,
             meta,
-            stylesheets: [`build/${assetFilenames.index.css}`],
-            scripts: [`build/${assetFilenames.index.js}`],
+            stylesheets: [assetFilenames.index.css],
+            scripts: [assetFilenames.index.js],
         });
     });
 });
@@ -217,7 +217,7 @@ async function userHandler(request, reply, username, currentUser) {
         html: '',
         title: `${owner.name} 사용자`,
         preloadData,
-        scripts: [`build/${assetFilenames.library.js}`],
+        scripts: [assetFilenames.library.js],
     });
 }
 
