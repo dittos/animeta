@@ -1,5 +1,21 @@
 require('babel/polyfill');
 require('babel/register');
+var less = require('less');
+require('css-modules-require-hook')({
+    extensions: ['.less'],
+    generateScopedName: '[hash:base64]', // same with css-loader
+    mode: 'global',
+    preprocessCss: function(css, filename) {
+        var _result;
+        less.render(css, {syncImport: true, filename: filename}, function(err, result) {
+            if (err) {
+                throw err;
+            }
+            _result = result.css;
+        });
+        return _result;
+    }
+});
 require('moment').locale('ko');
 var server = require('./server/frontend');
 
