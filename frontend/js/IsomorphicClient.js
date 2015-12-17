@@ -6,7 +6,7 @@ import {Router} from 'react-router';
 import {createHistory} from 'history';
 import nprogress from 'nprogress';
 import {injectClient, injectProgressListener} from './Isomorphic';
-import 'style!css!nprogress/nprogress.css';
+import '!style!css!nprogress/nprogress.css';
 
 if (!process.env.CLIENT) {
     throw new Error('IsomorphicClient should be imported from browser side')
