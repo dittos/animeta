@@ -83,4 +83,4 @@ var LoginDialog = React.createClass({
     }
 });
 
-module.exports = LoginDialog;
+export default LoginDialog;

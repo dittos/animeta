@@ -1,0 +1,231 @@
+@import "./variables.less";
+
+// Push down body
+:local(.container) {
+    height: @nav-height;
+}
+
+:local(.header) {
+    background-color: @color-primary;
+    line-height: 1;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: @z-header;
+}
+
+:local(.headerInner) {
+    position: relative; // this is needed by .userMenu
+    height: @nav-height;
+}
+
+:local(.logo) {
+    float: left;
+    line-height: @nav-height;
+    a {
+        color: #fff;
+        font-size: 18px;
+        font-weight: bold;
+        text-shadow: 0 1px 0 rgba(0, 0, 0, 40%);
+        text-decoration: none;
+    }
+}
+
+:local(.accountMenu) {
+    line-height: @nav-height;
+}
+
+:local(.button) {
+    display: inline-block;
+    border: 1px solid;
+    border-radius: 2px;
+    font-size: 12px;
+    height: @button-height - 1px * 2;
+    line-height: @button-height - 1px * 2;
+    padding: 0 @button-hpadding;
+    cursor: pointer;
+    vertical-align: middle;
+    text-decoration: none;
+    margin-left: 8px;
+}
+
+:local(.userButton) {
+    composes: button;
+    border-color: @color-primary-muted;
+    color: @color-primary-muted;
+    .fa-user { margin-right: 5px; }
+    .fa-caret-down { margin-left: 10px; }
+}
+
+:local(.loginButton) {
+    composes: button;
+    border-color: @color-primary-muted;
+    color: @color-primary-muted;
+}
+
+:local(.signUpButton) {
+    composes: button;
+    border-color: #fff;
+    background: #fff;
+    color: @color-primary;
+}
+
+.mixin-dropdown {
+    position: absolute;
+    z-index: @z-overlay;
+    margin-top: -8px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    width: 140px;
+
+    a {
+        line-height: 1;
+        padding: 10px;
+        display: block;
+        color: #666;
+        text-decoration: none;
+        font-size: 14px;
+        &:hover {
+            background-color: #f4f4f4;
+        }
+    }
+}
+
+:local(.dropdown) {
+    .mixin-dropdown;
+}
+
+:local(.feedbackMenu) {
+    position: fixed;
+    bottom: 8px;
+    right: 10px;
+    line-height: 1;
+    z-index: @z-overlay;
+    a {
+        float: right;
+        padding: 8px 10px;
+        text-decoration: none;
+        color: #444;
+        font-size: 13px;
+        border-radius: 5px;
+        background: #f4f4f4;
+        border: 1px solid #aaa;
+        &:hover {
+            border-color: #333;
+        }
+    }
+}
+
+:local(.search) {
+    @media (max-width: 480px) {
+        display: none;
+    }
+
+    float: left;
+    margin-left: 20px;
+    padding-top: (@nav-height - @button-height) / 2;
+    line-height: 1;
+    height: @button-height;
+
+    width: 200px;
+    font-size: 14px;
+
+    .twitter-typeahead {
+        width: 100%;
+    }
+
+    .tt-hint, .tt-input {
+        height: @button-height;
+        padding: 5px;
+        border: 1px solid #bbb;
+        width: 100%;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+}
+
+:global(.tt-dropdown-menu) {
+    display: block;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    max-height: 300px;
+    width: 300px;
+    overflow-y: auto;
+    margin-top: -1px;
+}
+
+:global(.tt-suggestion) {
+    display: block;
+    padding: 5px !important;
+    cursor: pointer;
+
+    .count {
+        font-size: 11px;
+        color: #999;
+        white-space: nowrap;
+        display: inline-block;
+    }
+
+    &.tt-cursor {
+        background-color: #f4f4f4;
+    }
+}
+
+:local(.userMenu) {
+    composes: dropdown;
+    right: 0;
+}
+
+:local(.menuToggle) {
+    @media (max-width: 480px) {
+        float: left;
+        width: 30px;
+        height: 30px;
+        line-height: @nav-height;
+        margin-right: 10px;
+        text-align: center;
+        cursor: pointer;
+        position: relative;
+    }
+    @media (min-width: 481px) {
+        display: none;
+    }
+}
+
+:local(.menuToggleNormal) {
+    composes: menuToggle;
+    color: @color-primary-muted;
+}
+
+:local(.menuToggleActive) {
+    composes: menuToggle;
+    color: #fff;
+}
+
+:local(.globalMenu) {
+    @media (max-width: 480px) {
+        .mixin-dropdown;
+        left: 0;
+        top: 30px + 16px;
+        width: 150px;
+        display: none;
+    }
+
+    @media (min-width: 481px) {
+        float: left;
+        margin-left: 20px;
+        line-height: @nav-height;
+        a {
+            color: @color-primary-muted;
+            text-decoration: none;
+            margin-right: 1em;
+            font-size: 14px;
+            font-weight: bold;
+            &:hover {
+                color: #fff;
+            }
+        }
+    }
+}

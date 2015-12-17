@@ -3,7 +3,8 @@ var React = require('react');
 import {Link as RouterLink} from 'react-router';
 var Layout = require('./Layout');
 var Typeahead = require('./Typeahead');
-var LoginDialog = require('./LoginDialog');
+import LoginDialog from './LoginDialog';
+import Styles from '../../less/global-header.less';
 
 var DropdownUserMenu = React.createClass({
     componentDidMount() {
@@ -13,7 +14,7 @@ var DropdownUserMenu = React.createClass({
         $(document).off('click', this._onClose);
     },
     render() {
-        return <div className="menu-user"
+        return <div className={Styles.userMenu}
             onClick={e => e.stopPropagation()}>
             <a href="/library/">기록 관리</a>
             <a href="/settings/">설정</a>
@@ -62,7 +63,7 @@ var Search = React.createClass({
             });
     },
     render() {
-        return <div className="global-search">
+        return <div className={Styles.search}>
             <input type="search" placeholder="작품 검색" ref="input" />
         </div>;
     }
@@ -82,9 +83,9 @@ var GlobalHeader = React.createClass({
     },
     render() {
         var Link = this.props.useRouterLink ? CompatLink : 'a';
-        return <div className="header-container">
-            <Layout.CenteredFullWidth className="header">
-                <Layout.LeftRight className="header-inner"
+        return <div className={Styles.container}>
+            <Layout.CenteredFullWidth className={Styles.header}>
+                <Layout.LeftRight className={Styles.headerInner}
                     left={this._renderLeft(Link)}
                     right={this._renderRight(Link)} />
             </Layout.CenteredFullWidth>
@@ -92,21 +93,21 @@ var GlobalHeader = React.createClass({
     },
     _renderLeft(Link) {
         return <div>
-            <div className={'menu-toggle ' + (this.state.showMenu ? 'active' : '')}
+            <div className={this.state.showMenu ? Styles.menuToggleActive : Styles.menuToggleNormal}
                 onClick={this._toggleMenu}>
                 <i className="fa fa-bars" />
             </div>
-            <div className="logo">
+            <div className={Styles.logo}>
                 <Link href="/">애니메타</Link>
             </div>
             <Search />
-            <div className="menu-global"
+            <div className={Styles.globalMenu}
                 style={this.state.showMenu ? {display: 'block'} : {}}>
                 <Link href="/">홈</Link>
                 <Link href="/charts/works/weekly/">순위</Link>
                 <Link href="/table/">시간표</Link>
             </div>
-            <div className="menu-feedback">
+            <div className={Styles.feedbackMenu}>
                 <a href="/support/"><i className="fa fa-bullhorn" />{' '}버그 제보 / 건의</a>
             </div>
         </div>;
@@ -114,8 +115,8 @@ var GlobalHeader = React.createClass({
     _renderRight(Link) {
         var user = this.props.currentUser;
         if (user) {
-            return <div className="account">
-                <a href="/library/" className="btn btn-user"
+            return <div className={Styles.accountMenu}>
+                <a href="/library/" className={Styles.userButton}
                     onClick={this._toggleUserMenu}>
                     <i className="fa fa-user" />
                     {user.name}
@@ -126,9 +127,9 @@ var GlobalHeader = React.createClass({
                         onClose={() => this.setState({showUserMenu: false})} />}
             </div>;
         } else {
-            return <div className="account">
-                <Link href="/login/" className="btn btn-login" onClick={this._openLogin}>로그인</Link>
-                <Link href="/signup/" className="btn btn-signup">회원 가입</Link>
+            return <div className={Styles.account}>
+                <Link href="/login/" className={Styles.loginButton} onClick={this._openLogin}>로그인</Link>
+                <Link href="/signup/" className={Styles.signUpButton}>회원 가입</Link>
             </div>;
         }
     },

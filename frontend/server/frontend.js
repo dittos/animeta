@@ -217,6 +217,7 @@ async function userHandler(request, reply, username, currentUser) {
         html: '',
         title: `${owner.name} 사용자`,
         preloadData,
+        stylesheets: [assetFilenames.library.css],
         scripts: [assetFilenames.library.js],
     });
 }

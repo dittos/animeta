@@ -1,9 +1,9 @@
 import {render} from './IsomorphicClient';
 import routes from './routes';
-import '../less/index.less?extract';
-import '../less/chart.less?extract';
-import '../less/work.less?extract';
-import '../less/signup.less?extract';
-import '../less/table-period.less?extract';
+import '../less/index.less';
+import '../less/chart.less';
+import '../less/work.less';
+import '../less/signup.less';
+import '../less/table-period.less';
 
 render(routes);

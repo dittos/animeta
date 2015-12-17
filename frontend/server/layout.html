@@ -43,6 +43,9 @@
     })();
     </script>
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+<% if (assetFilenames.common) { %>
+    <link href="<%= assetFilenames.common.css %>" rel="stylesheet">
+<% } %>
 <% stylesheets.forEach(path => { %>
     <link href="<%= path %>" rel="stylesheet">
 <% }) %>

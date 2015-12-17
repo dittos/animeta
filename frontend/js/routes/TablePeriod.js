@@ -6,7 +6,7 @@ var ScheduleStore = require('../table/ScheduleStore');
 var TableActions = require('../table/TableActions');
 var Notifications = require('../table/Notifications');
 var LazyImageView = require('../ui/LazyImage');
-var LoginDialog = require('../ui/LoginDialog');
+import LoginDialog from '../ui/LoginDialog';
 var {createContainer} = require('../Isomorphic');
 var Periods = require('../Periods');
 

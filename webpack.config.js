@@ -28,8 +28,7 @@ module.exports = config = {
         loaders: [
             { test: /\.js[x]?$/, exclude: /node_modules/, loader: 'babel-loader' },
             { test: /\.json$/, loader: 'json-loader' },
-            { test: /\.less$/, loader: 'style!css!autoprefixer!less' },
-            { test: /\.less\?extract$/, loader: ExtractTextPlugin.extract('style', 'css!autoprefixer!less') },
+            { test: /\.less$/, loader: ExtractTextPlugin.extract('style', 'css!autoprefixer!less') },
             { test: /\.(png|gif|svg)$/, loader: 'url' }
         ]
     }
