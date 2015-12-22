@@ -29,6 +29,7 @@ module.exports = config = {
             { test: /\.js[x]?$/, exclude: /node_modules/, loader: 'babel-loader' },
             { test: /\.json$/, loader: 'json-loader' },
             { test: /\.less$/, loader: ExtractTextPlugin.extract('style', 'css!autoprefixer!less') },
+            { test: /\.css$/, loader: ExtractTextPlugin.extract('style', 'css!autoprefixer') },
             { test: /\.(png|gif|svg)$/, loader: 'url' }
         ]
     }
