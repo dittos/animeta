@@ -22,10 +22,10 @@ export default createContainer(Work, {
 
     async fetchData(client, props) {
         const {splat: title} = props.params;
-        const [work, chart] = await* [
+        const [work, chart] = await Promise.all([
             client.call('/works/_/' + encodeURIComponent(title)),
             client.call('/charts/works/weekly', {limit: 5}),
-        ];
+        ]);
         return {
             work,
             chart

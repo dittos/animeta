@@ -1,19 +1,7 @@
 {
-    "optional": [],
-    "blacklist": [
-        "es3.propertyLiterals"
-    ],
-    "env": {
-        "production": {
-            "optional": [
-                "optimisation.react.inlineElements"
-            ]
-        },
-        "server": {
-            "optional": [
-                "bluebirdCoroutines",
-                "optimisation.react.inlineElements"
-            ]
-        }
-    }
+    "presets": [
+        "es2015",
+        "stage-2",
+        "react"
+    ]
 }

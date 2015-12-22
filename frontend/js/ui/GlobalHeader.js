@@ -127,7 +127,7 @@ var GlobalHeader = React.createClass({
                         onClose={() => this.setState({showUserMenu: false})} />}
             </div>;
         } else {
-            return <div className={Styles.account}>
+            return <div className={Styles.accountMenu}>
                 <Link href="/login/" className={Styles.loginButton} onClick={this._openLogin}>로그인</Link>
                 <Link href="/signup/" className={Styles.signUpButton}>회원 가입</Link>
             </div>;

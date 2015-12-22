@@ -76,13 +76,13 @@ export default createContainer(Index, {
     getPreloadKey: () => 'index',
 
     async fetchData(client) {
-        const [posts, chart] = await* [
+        const [posts, chart] = await Promise.all([
             client.call('/posts', {
                 min_record_count: 2,
                 count: 10
             }),
             client.call('/charts/works/weekly', {limit: 5}),
-        ];
+        ]);
         return {posts, chart};
     }
 });

@@ -16,8 +16,8 @@ export function isContainer(Component) {
 }
 
 export function createContainer(Component, options) {
-    options.fetchData = options.fetchData || async () => ({});
-    options.getPreloadKey = options.getPreloadKey || () => null;
+    options.fetchData = options.fetchData || (async () => ({}));
+    options.getPreloadKey = options.getPreloadKey || (() => null);
 
     const { fetchData, getPreloadKey, getTitle } = options;
     class Container extends React.Component {

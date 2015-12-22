@@ -35,10 +35,10 @@ export default createContainer(Post, {
     async fetchData(client, props) {
         const {id} = props.params;
         const post = await client.call(`/posts/${id}`);
-        const [work, chart] = await* [
+        const [work, chart] = await Promise.all([
             client.call(`/works/${post.record.work_id}`),
             client.call('/charts/works/weekly', {limit: 5}),
-        ];
+        ]);
         return {
             work,
             chart,

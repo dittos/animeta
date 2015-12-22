@@ -202,12 +202,12 @@ async function userHandler(request, reply, username, currentUser) {
     if (!currentUser) {
         currentUser = await backend.getCurrentUser(request);
     }
-    const [owner, records] = await* [
+    const [owner, records] = await Promise.all([
         backend.call(request, `/users/${username}`),
         backend.call(request, `/users/${username}/records`, {
             include_has_newer_episode: JSON.stringify(true)
         }),
-    ];
+    ]);
     const preloadData = {
         current_user: currentUser,
         owner,
@@ -253,10 +253,10 @@ server.route({
     path: '/users/{username}/feed/',
     handler: wrapHandler(async (request, reply) => {
         const {username} = request.params;
-        const [owner, posts] = await* [
+        const [owner, posts] = await Promise.all([
             backend.call(request, `/users/${username}`),
             backend.call(request, `/users/${username}/posts`),
-        ];
+        ]);
         reply(renderFeed(owner, posts))
             .type('application/atom+xml; charset=UTF-8');
     })
@@ -307,4 +307,4 @@ server.route({
     handler: currentUserHandler
 });
 
-export default server;
+module.exports = server;

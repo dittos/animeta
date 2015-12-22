@@ -245,12 +245,12 @@ export default createContainer(TablePeriod, {
     },
 
     async fetchData(client, props) {
-        var [current_user, schedule] = await *[
+        var [current_user, schedule] = await Promise.all([
             client.getCurrentUser(),
             client.call(`/table/periods/${props.params.period}`, {
                 only_first_period: JSON.stringify(true)
             })
-        ];
+        ]);
         return {
             current_user,
             schedule

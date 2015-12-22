@@ -1,5 +1,5 @@
-require('babel/polyfill');
-require('babel/register');
+require('babel-polyfill');
+require('babel-register');
 var less = require('less');
 require('css-modules-require-hook')({
     extensions: ['.less'],
@@ -19,6 +19,10 @@ require('css-modules-require-hook')({
 require('moment').locale('ko');
 var server = require('./server/frontend');
 
-server.start(() => {
+server.start(err => {
+    if (err) {
+        console.error(err);
+        return;
+    }
     console.log('Server running at:', server.info.uri);
 });
