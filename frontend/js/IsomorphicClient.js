@@ -47,6 +47,17 @@ class IsomorphicRoutingContext extends React.Component {
         this._fetchID = 0;
     }
 
+    componentDidMount() {
+        var containers = this.props.components.filter(c => c && isContainer(c));
+        containers.forEach(c => {
+            var data = this.state.data[c._options.getPreloadKey(this.props)];
+            var {onLoad} = c._options;
+            if (data && onLoad) {
+                onLoad(this.props, data);
+            }
+        });
+    }
+
     componentWillReceiveProps(nextProps) {
         var containers = nextProps.components.filter(c => c && isContainer(c));
         var readyState = {};
