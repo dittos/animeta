@@ -2,7 +2,7 @@
 
 // Push down body
 :local(.container) {
-    height: @nav-height;
+    padding-top: @nav-height;
 }
 
 :local(.header) {
@@ -18,6 +18,32 @@
 :local(.headerInner) {
     position: relative; // this is needed by .userMenu
     height: @nav-height;
+}
+
+:local(.notice) {
+    padding: 8px 0;
+    font-size: 13px;
+    color: @color-text-dark;
+    border-bottom: 1px solid @color-border;
+    text-align: center;
+}
+
+:local(.noticeLabel) {
+    font-weight: bold;
+    margin-right: 0.5em;
+}
+
+:local(.noticeText) {
+    color: @color-text-dark;
+    text-decoration: none;
+}
+
+:local(.noticeAction) {
+    font-weight: bold;
+    color: @color-primary;
+    margin-left: 0.5em;
+    text-decoration: none;
+    border-bottom: 1px solid @color-primary;
 }
 
 :local(.logo) {

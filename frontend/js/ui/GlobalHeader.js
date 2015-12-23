@@ -89,6 +89,17 @@ var GlobalHeader = React.createClass({
                     left={this._renderLeft(Link)}
                     right={this._renderRight(Link)} />
             </Layout.CenteredFullWidth>
+            <Layout.CenteredFullWidth className={Styles.notice}>
+                <span className={Styles.noticeLabel}>
+                    <i className="fa fa-bell" />
+                </span>
+                <Link href="/table/" className={Styles.noticeText}>
+                    <b>2016년 1월 신작</b>이 업데이트 됐습니다.
+                </Link>
+                <Link href="/table/" className={Styles.noticeAction}>
+                    보러가기!
+                </Link>
+            </Layout.CenteredFullWidth>
         </div>;
     },
     _renderLeft(Link) {
@@ -105,7 +116,7 @@ var GlobalHeader = React.createClass({
                 style={this.state.showMenu ? {display: 'block'} : {}}>
                 <Link href="/">홈</Link>
                 <Link href="/charts/works/weekly/">순위</Link>
-                <Link href="/table/">시간표</Link>
+                <Link href="/table/">분기별 신작</Link>
             </div>
             <div className={Styles.feedbackMenu}>
                 <a href="/support/"><i className="fa fa-bullhorn" />{' '}버그 제보 / 건의</a>
