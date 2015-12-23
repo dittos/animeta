@@ -63,11 +63,20 @@ class IsomorphicRoutingContext extends React.Component {
         var readyState = {};
         var staleData = {};
         var keys = containers.map(c => c._options.getPreloadKey(nextProps));
-        keys.forEach(key => {
+        var freshContainers = [];
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
             var data = this.state.data[key];
             staleData[key] = data;
-            readyState[key] = data ? 'stale' : 'loading';
-        });
+            var isStale = typeof data !== 'undefined';
+            readyState[key] = isStale ? 'stale' : 'loading';
+            if (!isStale) {
+                freshContainers.push({
+                    key,
+                    container: containers[i]
+                });
+            }
+        }
         this.setState({
             readyState,
             data: staleData
@@ -75,7 +84,22 @@ class IsomorphicRoutingContext extends React.Component {
         var fetchID = ++this._fetchID;
         nprogress.start();
         var wrappedClient = dedupeClient(client);
-        Promise.all(containers.map(c => c._options.fetchData(wrappedClient, nextProps))).then(results => {
+        Promise.all(freshContainers.map(({container}) => container._options.fetchData(wrappedClient, nextProps))).then(results => {
+            if (this._fetchID !== fetchID) {
+                // this fetch was aborted
+                return;
+            }
+            for (var i = 0; i < results.length; i++) {
+                var key = freshContainers[i].key;
+                delete readyState[key];
+                staleData[key] = results[i];
+                this.setState({
+                    readyState,
+                    data: staleData
+                });
+            }
+            return Promise.all(containers.map(c => c._options.fetchData(wrappedClient, nextProps)));
+        }).then(results => {
             if (this._fetchID !== fetchID) {
                 // this fetch was aborted
                 return;
