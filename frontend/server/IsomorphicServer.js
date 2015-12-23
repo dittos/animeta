@@ -3,46 +3,13 @@ import ReactDOMServer from 'react-dom/server';
 import {createLocation} from 'history';
 import {match, RoutingContext} from 'react-router';
 import {HttpNotFound} from './backend';
-import RequestCache from './RequestCache';
+import dedupeClient from '../js/dedupeClient';
 import {isContainer} from '../js/Isomorphic';
 
 var _backend;
 
 export function injectBackend(backend) {
     _backend = backend;
-}
-
-function cachingClient(client) {
-    const ongoingRequests = new RequestCache();
-    const cache = new RequestCache();
-    const callWithCache = (f, path, params) => {
-        const cachedResult = cache.getIfPresent(path, params);
-        if (cachedResult) {
-            return Promise.resolve(cachedResult);
-        }
-        var promise = ongoingRequests.getIfPresent(path, params);
-        if (!promise) {
-            promise = f().then(result => {
-                ongoingRequests.remove(path, params);
-                cache.put(path, params, result);
-                return result;
-            }).catch(err => {
-                ongoingRequests.remove(path, params);
-                return Promise.reject(err);
-            });
-            ongoingRequests.put(path, params, promise);
-        }
-        return promise;
-    };
-    return {
-        call(path, params) {
-            return callWithCache(() => client.call(path, params), path, params);
-        },
-
-        getCurrentUser() {
-            return callWithCache(() => client.getCurrentUser(), '__current_user__');
-        }
-    };
 }
 
 export function render(request, routes, prerender = false) {
@@ -63,7 +30,7 @@ export function render(request, routes, prerender = false) {
                 // No route matched.
                 throw HttpNotFound;
             }
-            const requestBoundClient = cachingClient({
+            const requestBoundClient = dedupeClient({
                 call(path, params) {
                     return _backend.call(request, path, params);
                 },

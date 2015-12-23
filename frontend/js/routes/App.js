@@ -15,7 +15,7 @@ var App = React.createClass({
 });
 
 export default createContainer(App, {
-    getPreloadKey: () => 'chartApp',
+    getPreloadKey: () => 'app',
 
     async fetchData(client) {
         return {

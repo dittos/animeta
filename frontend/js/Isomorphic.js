@@ -1,15 +1,5 @@
 import React from 'react';
-
-var _client;
-var _progressListener;
-
-export function injectClient(client) {
-    _client = client;
-}
-
-export function injectProgressListener(listener) {
-    _progressListener = listener;
-}
+import {findDOMNode} from 'react-dom';
 
 export function isContainer(Component) {
     return Component._isContainer;
@@ -19,91 +9,32 @@ export function createContainer(Component, options) {
     options.fetchData = options.fetchData || (async () => ({}));
     options.getPreloadKey = options.getPreloadKey || (() => null);
 
-    const { fetchData, getPreloadKey, getTitle } = options;
     class Container extends React.Component {
-        constructor(initialProps, b, c) {
-            super(initialProps, b, c);
-            this._fetchID = 0;
-            const id = getPreloadKey(initialProps);
-            const data = initialProps.preloadData[id];
-            if (data) {
-                this.state = {
-                    data,
-                    hasPreloadData: true,
-                    isLoading: false,
-                };
-            } else {
-                this.state = {
-                    isLoading: true,
-                };
-            }
+        componentDidUpdate() {
+            this._updateFreshness();
         }
 
         componentDidMount() {
-            if (this.state.hasPreloadData) {
-                if (options.onLoad) {
-                    options.onLoad(this.props, this.state.data);
-                }
-                this._updateTitle(this.props, this.state.data);
-            } else {
-                this._load(this.props);
-            }
-        }
-
-        componentWillReceiveProps(props) {
-            this._load(props);
-        }
-
-        componentWillUnmount() {
-            if (_progressListener) {
-                _progressListener.cancelFetch(this._fetchID);
-            }
-        }
-
-        _load(props) {
-            this.setState({isLoading: true});
-            const prevFetchID = this._fetchID;
-            const fetchID = ++this._fetchID;
-            if (_progressListener) {
-                _progressListener.cancelFetch(prevFetchID);
-                _progressListener.startFetch(fetchID);
-            }
-            fetchData(_client, props).then(data => {
-                if (fetchID === this._fetchID) {
-                    this.setState({
-                        data,
-                        hasPreloadData: false,
-                        isLoading: false,
-                    }, () => {
-                        if (options.onLoad) {
-                            options.onLoad(props, data);
-                        }
-                    });
-                    this._updateTitle(props, data);
-                }
-                if (_progressListener) {
-                    _progressListener.endFetch(fetchID);
-                }
-            }, () => {
-                if (_progressListener) {
-                    _progressListener.endFetch(fetchID);
-                }
-            });
-        }
-
-        _updateTitle(props, data) {
-            if (getTitle) {
-                // TODO: suffix
-                document.title = getTitle(props, data) + ' - 애니메타';
-            }
+            this._updateFreshness();
         }
 
         render() {
-            if (this.state.isLoading) {
+            var preloadKey = options.getPreloadKey(this.props);
+            var readyState = this.props.readyState;
+            if (readyState && readyState[preloadKey] === 'loading') {
                 return null;
             }
+            var data = this.props.preloadData[preloadKey];
+            return <Component {...this.props} {...data} />;
+        }
 
-            return <Component {...this.props} {...this.state.data} />;
+        _updateFreshness() {
+            var preloadKey = options.getPreloadKey(this.props);
+            var readyState = this.props.readyState[preloadKey];
+            var node = findDOMNode(this);
+            if (node) {
+                node.style.opacity = readyState === 'stale' ? 0.5 : 1.0;
+            }
         }
     }
     Container._options = options;
