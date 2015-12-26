@@ -1,11 +1,10 @@
 var $ = require('jquery');
-var Dispatcher = require('./Dispatcher');
 
 var _pendingPostID = 0;
 
 function fetchRecordPosts(recordID) {
-    return $.get('/api/v2/records/' + recordID + '/posts').then(result => {
-        Dispatcher.dispatch({
+    return dispatch => $.get('/api/v2/records/' + recordID + '/posts').then(result => {
+        dispatch({
             type: 'loadRecordPosts',
             recordID: recordID,
             posts: result.posts
@@ -14,32 +13,34 @@ function fetchRecordPosts(recordID) {
 }
 
 function createPost(recordID, post, publishOptions) {
-    var context = _pendingPostID++;
-    Dispatcher.dispatch({
-        type: 'createPendingPost',
-        recordID, post, context, publishOptions
-    });
-    // TODO: handle failure case
-    return $.post('/api/v2/records/' + recordID + '/posts', {
-        ...post,
-        publish_twitter: publishOptions.has('twitter') ? 'on' : 'off'
-    }).then(result => {
-        Dispatcher.dispatch({
-            type: 'resolvePendingPost',
-            context: context,
-            updatedRecord: result.record,
-            post: result.post,
-            publishOptions
+    return dispatch => {
+        var context = _pendingPostID++;
+        dispatch({
+            type: 'createPendingPost',
+            recordID, post, context, publishOptions
         });
-    });
+        // TODO: handle failure case
+        return $.post('/api/v2/records/' + recordID + '/posts', {
+            ...post,
+            publish_twitter: publishOptions.has('twitter') ? 'on' : 'off'
+        }).then(result => {
+            dispatch({
+                type: 'resolvePendingPost',
+                context: context,
+                updatedRecord: result.record,
+                post: result.post,
+                publishOptions
+            });
+        });
+    };
 }
 
 function deletePost(postID) {
-    return $.ajax({
+    return dispatch => $.ajax({
         url: '/api/v2/posts/' + postID,
         type: 'DELETE'
     }).then(result => {
-        Dispatcher.dispatch({
+        dispatch({
             type: 'deletePost',
             postID: postID,
             updatedRecord: result.record

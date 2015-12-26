@@ -1,6 +1,3 @@
-var Dispatcher = require('./Dispatcher');
-var {ReduceStore} = require('flux/utils');
-
 var reducers = {
     loadCategories(_, {categories}) {
         return categories;
@@ -18,30 +15,19 @@ var reducers = {
                 break;
             }
         }
-        return _categories;
+        return _categories.slice();
     }
 };
 
-class CategoryStore extends ReduceStore {
-    getInitialState() {
-        return [];
-    }
-
-    getAll() {
-        return this.getState();
-    }
-
-    reduce(state, action) {
-        const reducer = reducers[action.type];
-        if (reducer)
-            state = reducer(state, action);
-        return state;
-    }
-
-    areEqual() {
-        // Currently mutated in-place
-        return false;
-    }
+function categoryReducer(state = [], action) {
+    const reducer = reducers[action.type];
+    if (reducer)
+        return reducer(state, action);
+    return state;
 }
 
-module.exports = new CategoryStore(Dispatcher);
+module.exports = Object.assign(categoryReducer, {
+    getAll(state) {
+        return state.category;
+    }
+});

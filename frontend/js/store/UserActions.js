@@ -1,8 +1,6 @@
-var Dispatcher = require('./Dispatcher');
-
 export function loadCurrentUser(user) {
-    Dispatcher.dispatch({
+    return {
         type: 'loadCurrentUser',
         user: user
-    });
+    };
 }

@@ -1,6 +1,4 @@
 var _ = require('lodash');
-var {ReduceStore} = require('flux/utils');
-var Dispatcher = require('./Dispatcher');
 
 var reducers = {
     loadRecords(_records, {records}) {
@@ -41,25 +39,28 @@ var reducers = {
     }
 };
 
-class RecordStore extends ReduceStore {
-    getInitialState() {
-        return {};
-    }
+function recordReducer(state = {}, action) {
+    const reducer = reducers[action.type];
+    if (reducer)
+        reducer(state, action);
+    return state;
+}
 
-    getCount() {
-        return _.size(this.getState());
-    }
+module.exports = Object.assign(recordReducer, {
+    getCount(state) {
+        return _.size(state.record);
+    },
 
-    getCategoryStats() {
-        return _.countBy(this.getState(), record => record.category_id || 0);
-    }
+    getCategoryStats(state) {
+        return _.countBy(state.record, record => record.category_id || 0);
+    },
 
-    getStatusTypeStats() {
-        return _.countBy(this.getState(), 'status_type');
-    }
+    getStatusTypeStats(state) {
+        return _.countBy(state.record, 'status_type');
+    },
 
-    query(statusType, categoryId, sortBy) {
-        var chain = _(this.getState());
+    query(state, statusType, categoryId, sortBy) {
+        var chain = _(state.record);
         if (statusType) {
             chain = chain.filter(record => record.status_type == statusType);
         }
@@ -73,23 +74,9 @@ class RecordStore extends ReduceStore {
             chain = chain.sortBy('title');
         }
         return chain.value();
-    }
+    },
 
-    get(id) {
-        return this.getState()[id];
-    }
-
-    reduce(state, action) {
-        const reducer = reducers[action.type];
-        if (reducer)
-            reducer(state, action);
-        return state;
-    }
-
-    areEqual() {
-        // Currently mutated in-place
-        return false;
-    }
-}
-
-module.exports = new RecordStore(Dispatcher);
+    get(state, id) {
+        return state.record[id];
+    },
+});

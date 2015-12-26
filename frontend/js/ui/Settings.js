@@ -1,22 +1,18 @@
-import React from "react";
-import {Container} from "flux/utils";
 import $ from "jquery";
+import React from "react";
+import {connect} from "react-redux";
 import * as ExternalServiceActions from "../store/ExternalServiceActions";
 import ExternalServiceStore from "../store/ExternalServiceStore";
 
-export default Container.create(class extends React.Component {
-    static getStores() {
-        return [ExternalServiceStore];
-    }
+function select(state) {
+    return {
+        connectedServices: ExternalServiceStore.getConnectedServices(state),
+    };
+}
 
-    static calculateState() {
-        return {
-            connectedServices: ExternalServiceStore.getConnectedServices()
-        };
-    }
-
-    constructor() {
-        super();
+export default connect(select)(class extends React.Component {
+    constructor(a, b) {
+        super(a, b);
         this.state = {
             isChangingPassword: false
         };
@@ -55,18 +51,18 @@ export default Container.create(class extends React.Component {
             </table>
 
             <h2>트위터 연동</h2>
-            {this.state.connectedServices.has('twitter') ?
-                <button onClick={this._disconnectTwitter}>연결 끊기</button>
-                : <button onClick={this._connectTwitter}>연결하기</button>}
+            {this.props.connectedServices.has('twitter') ?
+                <button onClick={this._disconnectTwitter.bind(this)}>연결 끊기</button>
+                : <button onClick={this._connectTwitter.bind(this)}>연결하기</button>}
         </div>;
     }
 
     _connectTwitter() {
-        ExternalServiceActions.connectTwitter();
+        this.props.dispatch(ExternalServiceActions.connectTwitter());
     }
 
     _disconnectTwitter() {
-        ExternalServiceActions.disconnectService('twitter');
+        this.props.dispatch(ExternalServiceActions.disconnectService('twitter'));
     }
 
     _changePassword() {

@@ -1,16 +1,15 @@
 var $ = require('jquery');
-var Dispatcher = require('./Dispatcher');
 
 function loadCategories(categories) {
-    Dispatcher.dispatch({
+    return {
         type: 'loadCategories',
         categories
-    });
+    };
 }
 
 function addCategory(userName, categoryName) {
-    return $.post('/api/v2/users/' + userName + '/categories', {name: categoryName}).then(category => {
-        Dispatcher.dispatch({
+    return dispatch => $.post('/api/v2/users/' + userName + '/categories', {name: categoryName}).then(category => {
+        dispatch({
             type: 'addCategory',
             category
         });
@@ -18,12 +17,12 @@ function addCategory(userName, categoryName) {
 }
 
 function renameCategory(categoryID, categoryName) {
-    return $.ajax({
+    return dispatch => $.ajax({
         url: '/api/v2/categories/' + categoryID,
         type: 'POST',
         data: {name: categoryName}
     }).then(category => {
-        Dispatcher.dispatch({
+        dispatch({
             type: 'updateCategory',
             category
         });
@@ -31,11 +30,11 @@ function renameCategory(categoryID, categoryName) {
 }
 
 function removeCategory(categoryID) {
-    return $.ajax({
+    return dispatch => $.ajax({
         url: '/api/v2/categories/' + categoryID,
         type: 'DELETE'
     }).then(() => {
-        Dispatcher.dispatch({
+        dispatch({
             type: 'removeCategory',
             categoryID
         });
@@ -43,13 +42,13 @@ function removeCategory(categoryID) {
 }
 
 function updateCategoryOrder(userName, categoryIDs) {
-    return $.ajax({
+    return dispatch => $.ajax({
         url: '/api/v2/users/' + userName + '/categories',
         type: 'PUT',
         data: {ids: categoryIDs}
     }).then(categories => {
         // TODO: distinguish with initial load
-        loadCategories(categories);
+        dispatch(loadCategories(categories));
     });
 }
 

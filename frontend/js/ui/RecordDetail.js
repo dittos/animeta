@@ -1,7 +1,7 @@
 /* global confirm */
 var React = require('react');
 var cx = require('classnames');
-var {Container} = require('flux/utils');
+var {connect} = require('react-redux');
 var Router = require('react-router');
 var util = require('../util');
 var TimeAgo = require('./TimeAgo');
@@ -68,7 +68,7 @@ var CategoryEditView = React.createClass({
 
     _onChange(event) {
         var categoryId = event.target.value;
-        RecordActions.updateCategory(this.props.recordId, categoryId);
+        this.props.onChange(categoryId);
     }
 });
 
@@ -81,7 +81,6 @@ var HeaderView = React.createClass({
         var titleEditor, editTitleButton;
         if (this.state.isEditingTitle) {
             titleEditor = <TitleEditView
-                recordId={this.props.recordId}
                 originalTitle={this.props.title}
                 onSave={this._onTitleSave}
                 onCancel={() => this.setState({isEditingTitle: false})} />;
@@ -102,9 +101,10 @@ var HeaderView = React.createClass({
                     {editTitleButton}
                     <Router.Link to={`/records/${this.props.recordId}/delete/`} className="btn btn-delete">삭제</Router.Link>
                     <CategoryEditView
-                        recordId={this.props.recordId}
                         categoryList={this.props.categoryList}
-                        selectedId={this.props.categoryId} />
+                        selectedId={this.props.categoryId}
+                        onChange={id => this.props.dispatch(RecordActions.updateCategory(this.props.recordId, id))}
+                    />
                 </div>
             );
         }
@@ -123,7 +123,7 @@ var HeaderView = React.createClass({
     },
 
     _onTitleSave(title) {
-        RecordActions.updateTitle(this.props.recordId, title).then(() => {
+        this.props.dispatch(RecordActions.updateTitle(this.props.recordId, title)).then(() => {
             if (this.isMounted()) {
                 this.setState({isEditingTitle: false});
             }
@@ -150,39 +150,18 @@ var PostView = React.createClass({
     },
     _onDelete() {
         if (confirm('삭제 후에는 복구할 수 없습니다.\n기록을 정말로 삭제하시겠습니까?'))
-            PostActions.deletePost(this.props.post.id);
+            this.props.onDelete();
     }
 });
 
-var RecordDetail = Container.create(React.createClass({
-    statics: {
-        getStores() {
-            return [
-                RecordStore,
-                PostStore,
-                CategoryStore,
-                ExternalServiceStore
-            ];
-        },
-        calculateState(_, props) {
-            var {recordId} = props;
-            return {
-                connectedServices: ExternalServiceStore.getConnectedServices(),
-                lastPublishOptions: ExternalServiceStore.getLastPublishOptions(),
-                record: RecordStore.get(recordId),
-                posts: PostStore.findByRecordId(recordId),
-                categoryList: CategoryStore.getAll()
-            };
-        }
-    },
-
+var RecordDetail = React.createClass({
     componentDidMount() {
         this.loadPosts();
     },
 
     loadPosts() {
         this.setState({isLoading: true});
-        PostActions.fetchRecordPosts(this.state.record.id).then(() => {
+        this.props.dispatch(PostActions.fetchRecordPosts(this.props.record.id)).then(() => {
             if (this.isMounted()) {
                 this.setState({isLoading: false});
             }
@@ -194,57 +173,72 @@ var RecordDetail = Container.create(React.createClass({
         if (this.props.canEdit) {
             composer = (
                 <PostComposer
-                    key={'post-composer-' + this.state.record.updated_at}
-                    recordId={this.state.record.id}
-                    currentStatus={this.state.record.status}
-                    initialStatusType={this.state.record.status_type}
-                    connectedServices={this.state.connectedServices}
-                    initialPublishOptions={this.state.lastPublishOptions}
-                    onSave={this._onSave} />
+                    key={'post-composer-' + this.props.record.updated_at}
+                    recordId={this.props.record.id}
+                    currentStatus={this.props.record.status}
+                    initialStatusType={this.props.record.status_type}
+                    connectedServices={this.props.connectedServices}
+                    initialPublishOptions={this.props.lastPublishOptions}
+                    onSave={this._onSave}
+                    dispatch={this.props.dispatch}
+                />
             );
         }
         return <div className="view-record-detail">
             <HeaderView
                 canEdit={this.props.canEdit}
-                recordId={this.state.record.id}
-                title={this.state.record.title}
-                categoryId={this.state.record.category_id}
-                categoryList={this.state.categoryList} />
+                recordId={this.props.record.id}
+                title={this.props.record.title}
+                categoryId={this.props.record.category_id}
+                categoryList={this.props.categoryList}
+                dispatch={this.props.dispatch}
+            />
             {composer}
             <div className="record-detail-posts">
-                {this.state.posts.map(post => {
-                    var canDelete = post.id && this.props.canEdit && this.state.posts.length > 1;
-                    return <PostView post={post}
+                {this.props.posts.map(post => {
+                    var canDelete = post.id && this.props.canEdit && this.props.posts.length > 1;
+                    return <PostView
+                        post={post}
                         key={post.tempID || post.id}
                         canDelete={canDelete}
                         isPending={!post.id}
-                        user={this.props.user} />;
+                        user={this.props.user}
+                        onDelete={() => this.props.dispatch(PostActions.deletePost(post.id))}
+                    />;
                 })}
             </div>
         </div>;
     },
 
     _onSave(post, publishOptions) {
-        PostActions.createPost(this.state.record.id, post, publishOptions);
+        this.props.dispatch(PostActions.createPost(this.props.record.id, post, publishOptions));
         this.props.onSave();
     }
-}), {pure: false, withProps: true});
+});
 
-var RecordDetailContainer = React.createClass({
-    mixins: [Router.History],
-
+var RecordDetailRoute = React.createClass({
     render() {
         return <RecordDetail
             {...this.props}
-            recordId={this.props.params.recordId}
             onSave={this._onSave}
         />;
     },
 
     _onSave() {
         // TODO: preserve sort mode
-        this.history.pushState(null, this.history.libraryPath);
+        this.props.history.pushState(null, this.props.history.libraryPath);
     }
 });
 
-module.exports = RecordDetailContainer;
+function select(state, props) {
+    var {recordId} = props.params;
+    return {
+        connectedServices: ExternalServiceStore.getConnectedServices(state),
+        lastPublishOptions: ExternalServiceStore.getLastPublishOptions(state),
+        record: RecordStore.get(state, recordId),
+        posts: PostStore.findByRecordId(state, recordId),
+        categoryList: CategoryStore.getAll(state)
+    };
+}
+
+module.exports = connect(select, null, null, {pure: false})(RecordDetailRoute);

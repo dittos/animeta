@@ -3,19 +3,24 @@
 var $ = require('jquery');
 var React = require('react/addons');
 var ReactDOM = require('react-dom');
-var {Router, Route, IndexRoute, Link, History} = require('react-router');
+var Redux = require('redux');
+var thunk = require('redux-thunk');
+var {Provider} = require('react-redux');
+var {Router, Route, IndexRoute, Link} = require('react-router');
 var createBrowserHistory = require('history/lib/createBrowserHistory');
 var createHashHistory = require('history/lib/createHashHistory');
 var RecordActions = require('./store/RecordActions');
 var CategoryActions = require('./store/CategoryActions');
 var UserActions = require('./store/UserActions');
 var PostStore = require('./store/PostStore');
+var RecordStore = require('./store/RecordStore');
+var ExternalServiceStore = require('./store/ExternalServiceStore');
+var CategoryStore = require('./store/CategoryStore');
 var Layout = require('./ui/Layout');
 var GlobalHeader = require('./ui/GlobalHeader');
 require('../less/library.less');
 
 var App = React.createClass({
-    mixins: [History],
     render() {
         var user = this.props.owner;
         var canEdit = this.props.currentUser && this.props.currentUser.id == user.id;
@@ -23,10 +28,10 @@ var App = React.createClass({
             <GlobalHeader currentUser={this.props.currentUser} />
             <Layout.CenteredFullWidth className="user-container">
                 <div className="nav-user">
-                    <h1><Link to={this.history.libraryPath}>{user.name} 사용자</Link></h1>
+                    <h1><Link to={this.props.history.libraryPath}>{user.name} 사용자</Link></h1>
                     <p>
-                        <Link to={this.history.libraryPath}>작품 목록</Link>
-                        <Link to={`${this.history.libraryPath}history/`}>기록 내역</Link>
+                        <Link to={this.props.history.libraryPath}>작품 목록</Link>
+                        <Link to={`${this.props.history.libraryPath}history/`}>기록 내역</Link>
                         {canEdit && <Link to="/records/add/" className="add-record">작품 추가</Link>}
                     </p>
                 </div>
@@ -38,7 +43,7 @@ var App = React.createClass({
     }
 });
 
-var AppContainer = React.createClass({
+var AppRoute = React.createClass({
     render() {
         var user = PreloadData.owner;
         var canEdit = PreloadData.current_user && PreloadData.current_user.id == user.id;
@@ -85,21 +90,35 @@ function runApp() {
     }
 
     var routes = (
-        <Route path={locationStrategy.libraryPath} component={AppContainer}>
+        <Route path={locationStrategy.libraryPath} component={AppRoute}>
             <IndexRoute component={require('./ui/Library')} />
             <Route path="/records/add/(:title/)" component={require('./ui/AddRecord')} />
             <Route path="/records/category/" component={require('./ui/ManageCategory')} />
             <Route path="/records/:recordId/delete/" component={require('./ui/DeleteRecord')} />
             <Route path="/records/:recordId/" component={require('./ui/RecordDetail')} />
             <Route path={locationStrategy.libraryPath + "history/"} component={require('./ui/LibraryHistory')} />
-            <Route path="/settings/" component={require('./ui/Settings')} />
+            <Route path="/settings/" component={require('./ui/Settings').default} />
         </Route>
     );
-    RecordActions.loadRecords(PreloadData.records);
-    CategoryActions.loadCategories(PreloadData.owner.categories);
+
+    var reducers = Redux.combineReducers({
+        record: RecordStore,
+        post: PostStore,
+        externalService: ExternalServiceStore,
+        category: CategoryStore
+    });
+    var store = Redux.applyMiddleware(thunk)(Redux.createStore)(reducers);
+    store.dispatch(RecordActions.loadRecords(PreloadData.records));
+    store.dispatch(CategoryActions.loadCategories(PreloadData.owner.categories));
     if (PreloadData.current_user)
-        UserActions.loadCurrentUser(PreloadData.current_user);
-    ReactDOM.render(<Router history={locationStrategy} onUpdate={onPageTransition}>{routes}</Router>,
+        store.dispatch(UserActions.loadCurrentUser(PreloadData.current_user));
+    ReactDOM.render(
+        <Provider store={store}>
+            <Router
+                history={locationStrategy}
+                onUpdate={onPageTransition}
+                routes={routes} />
+        </Provider>,
         document.getElementById('app'));
 }
 

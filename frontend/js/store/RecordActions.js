@@ -1,16 +1,15 @@
 var $ = require('jquery');
-var Dispatcher = require('./Dispatcher');
 
 function loadRecords(records) {
-    Dispatcher.dispatch({
+    return {
         type: 'loadRecords',
         records
-    });
+    };
 }
 
 function addRecord(userName, record) {
-    return $.post('/api/v2/users/' + userName + '/records', record).then(result => {
-        Dispatcher.dispatch({
+    return dispatch => $.post('/api/v2/users/' + userName + '/records', record).then(result => {
+        dispatch({
             type: 'addRecord',
             record: result.record
         });
@@ -26,8 +25,8 @@ function updateRecord(recordID, updates) {
 }
 
 function updateCategory(recordID, categoryID) {
-    return updateRecord(recordID, {category_id: categoryID}).then(() => {
-        Dispatcher.dispatch({
+    return dispatch => updateRecord(recordID, {category_id: categoryID}).then(() => {
+        dispatch({
             type: 'updateRecordCategory',
             recordID, categoryID
         });
@@ -35,8 +34,8 @@ function updateCategory(recordID, categoryID) {
 }
 
 function updateTitle(recordID, title) {
-    return updateRecord(recordID, {title: title}).then(() => {
-        Dispatcher.dispatch({
+    return dispatch => updateRecord(recordID, {title: title}).then(() => {
+        dispatch({
             type: 'updateRecordTitle',
             recordID, title
         });
@@ -44,11 +43,11 @@ function updateTitle(recordID, title) {
 }
 
 function deleteRecord(recordID) {
-    return $.ajax({
+    return dispatch => $.ajax({
         url: getRecordEndpoint(recordID),
         type: 'DELETE'
     }).then(() => {
-        Dispatcher.dispatch({
+        dispatch({
             type: 'deleteRecord',
             recordID
         });

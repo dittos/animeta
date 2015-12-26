@@ -1,6 +1,3 @@
-var Dispatcher = require('./Dispatcher');
-var {ReduceStore} = require('flux/utils');
-
 var reducers = {
     loadRecordPosts(state, {recordID, posts}) {
         return {
@@ -62,18 +59,25 @@ var reducers = {
     }
 };
 
-class PostStore extends ReduceStore {
-    getInitialState() {
-        return {
+function postReducer(state, action) {
+    if (!state) {
+        state = {
             posts: {},
             pendingPosts: {},
-            pendingPostCount: 0
+            pendingPostCount: 0,
         };
     }
 
-    findByRecordId(recordId) {
-        var posts = this.getState().posts[recordId] || [];
-        var pendingPosts = this.getState().pendingPosts[recordId] || [];
+    const reducer = reducers[action.type];
+    if (reducer)
+        state = reducer(state, action);
+    return state;
+}
+
+module.exports = Object.assign(postReducer, {
+    findByRecordId(state, recordId) {
+        var posts = state.post.posts[recordId] || [];
+        var pendingPosts = state.post.pendingPosts[recordId] || [];
         if (pendingPosts) {
             // Exclude already saved pending posts
             pendingPosts = pendingPosts.filter(pendingPost => {
@@ -88,23 +92,9 @@ class PostStore extends ReduceStore {
             });
         }
         return pendingPosts.concat(posts);
-    }
+    },
 
-    hasPendingPosts() {
-        return this.getState().pendingPostCount > 0;
+    hasPendingPosts(state) {
+        return state.post.pendingPostCount > 0;
     }
-
-    reduce(state, action) {
-        const reducer = reducers[action.type];
-        if (reducer)
-            state = reducer(state, action);
-        return state;
-    }
-
-    areEqual() {
-        // Currently mutated in-place
-        return false;
-    }
-}
-
-module.exports = new PostStore(Dispatcher);
+});

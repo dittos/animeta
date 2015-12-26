@@ -64,7 +64,7 @@ var PostComposer = React.createClass({
 
     _onPublishTwitterChange(event) {
         if (!this._isTwitterConnected()) {
-            ExternalServiceActions.connectTwitter().then(() => {
+            this.props.dispatch(ExternalServiceActions.connectTwitter()).then(() => {
                 this.setState({publishOptions: this.state.publishOptions.add('twitter')});
             });
         } else {

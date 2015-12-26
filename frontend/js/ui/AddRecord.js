@@ -1,7 +1,7 @@
 var $ = require('jquery');
-var React = require('react/addons');
+var React = require('react');
 var ReactDOM = require('react-dom');
-var Router = require('react-router');
+var {connect} = require('react-redux');
 var RecordActions = require('../store/RecordActions');
 var CategoryStore = require('../store/CategoryStore');
 var Typeahead = require('./Typeahead');
@@ -61,7 +61,7 @@ var AddRecord = React.createClass({
                     <th>분류</th>
                     <td>
                         <CategorySelect name="category_id"
-                            categoryList={CategoryStore.getAll()}
+                            categoryList={this.props.categoryList}
                             selectedId={this.state.selectedCategoryId}
                             onChange={this._onCategoryChange} />
                     </td>
@@ -93,7 +93,7 @@ var AddRecord = React.createClass({
             return;
         this.setState({isRequesting: true});
         var data = $(ReactDOM.findDOMNode(this)).serialize();
-        RecordActions.addRecord(this.props.user.name, data).then(() => {
+        this.props.dispatch(RecordActions.addRecord(this.props.user.name, data)).then(() => {
             this.props.onSave();
         }).always(() => {
             if (this.isMounted())
@@ -102,8 +102,7 @@ var AddRecord = React.createClass({
     }
 });
 
-var AddRecordContainer = React.createClass({
-    mixins: [Router.History],
+var AddRecordRoute = React.createClass({
     render() {
         // XXX: decode one more time due to react-router bug
         // https://github.com/rackt/react-router/issues/650
@@ -115,8 +114,14 @@ var AddRecordContainer = React.createClass({
         />;
     },
     _onSave() {
-        this.history.pushState(null, this.history.libraryPath);
+        this.props.history.pushState(null, this.props.history.libraryPath);
     }
 });
 
-module.exports = AddRecordContainer;
+function select(state) {
+    return {
+        categoryList: CategoryStore.getAll(state),
+    };
+}
+
+module.exports = connect(select)(AddRecordRoute);

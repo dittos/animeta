@@ -1,7 +1,8 @@
 /* global confirm */
+/* eslint no-console:0 */
 var React = require('react');
 var cx = require('classnames');
-var {Container} = require('flux/utils');
+var {connect} = require('react-redux');
 var Sortable = require('./Sortable');
 var CategoryStore = require('../store/CategoryStore');
 var CategoryActions = require('../store/CategoryActions');
@@ -49,32 +50,32 @@ var CategoryItem = React.createClass({
     },
     _onRemove() {
         if (confirm('분류를 삭제해도 기록은 삭제되지 않습니다.\n분류를 삭제하시려면 [확인]을 누르세요.'))
-            CategoryActions.removeCategory(this.props.category.id);
+            this.props.onRemove();
     },
     _onSubmit(event) {
         event.preventDefault();
-        CategoryActions.renameCategory(this.props.category.id, this.state.name).then(() => this._endEditing());
+        this.props.onRename(this.state.name).then(() => this._endEditing());
     }
 });
 
-var ManageCategory = Container.create(React.createClass({
-    statics: {
-        getStores() {
-            return [CategoryStore];
-        },
-        calculateState() {
-            return {categoryList: CategoryStore.getAll()};
-        }
-    },
-
+var ManageCategory = React.createClass({
     getInitialState() {
-        return {isSorting: false};
+        return {
+            isSorting: false,
+            categoryList: this.props.categoryList,
+        };
+    },
+    componentWillReceiveProps(nextProps) {
+        this.setState({categoryList: nextProps.categoryList});
     },
     render() {
         var items = this.state.categoryList.map(category =>
             <CategoryItem key={category.id}
                 category={category}
-                isSorting={this.state.isSorting} />);
+                isSorting={this.state.isSorting}
+                onRemove={() => this.props.dispatch(CategoryActions.removeCategory(category.id))}
+                onRename={(name) => this.props.dispatch(CategoryActions.renameCategory(category.id, name))}
+            />);
         if (this.state.isSorting) {
             items = <Sortable onSwap={this._onSwap} onDrop={this._onDrop}>
                 {items}
@@ -115,14 +116,20 @@ var ManageCategory = Container.create(React.createClass({
     },
     _onDrop() {
         var categoryIDs = this.state.categoryList.map(c => c.id);
-        CategoryActions.updateCategoryOrder(this.props.user.name, categoryIDs);
+        this.props.dispatch(CategoryActions.updateCategoryOrder(this.props.user.name, categoryIDs));
     },
     _onAdd(event) {
         event.preventDefault();
         var input = this.refs.nameInput;
-        CategoryActions.addCategory(this.props.user.name, input.value);
+        this.props.dispatch(CategoryActions.addCategory(this.props.user.name, input.value));
         input.value = '';
     }
-}), {pure: false});
+});
 
-module.exports = ManageCategory;
+function select(state) {
+    return {
+        categoryList: CategoryStore.getAll(state),
+    };
+}
+
+module.exports = connect(select, null, null, {pure: false})(ManageCategory);
