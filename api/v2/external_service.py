@@ -29,7 +29,7 @@ class TwitterConnectView(BaseView):
         auth = tweepy.OAuthHandler(
             settings.TWITTER_CONSUMER_KEY,
             settings.TWITTER_CONSUMER_SECRET,
-            callback=request.build_absolute_uri(reverse('twitter-connect')),
+            callback='http://animeta.net' + reverse('twitter-connect'),  # TODO: config
         )
 
         if 'request_token' in request.session:
