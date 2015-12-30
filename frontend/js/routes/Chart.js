@@ -2,6 +2,7 @@ import React from 'react';
 import {Link} from 'react-router';
 import {createContainer} from '../Isomorphic';
 import Layout from '../ui/Layout';
+import {fetch} from '../store/FetchActions';
 
 class Header extends React.Component {
     render() {
@@ -90,19 +91,22 @@ const CHART_TYPES = {
 };
 
 export default createContainer(Chart, {
-    getPreloadKey({ params }) {
-        return `chart/${params.type}/${params.range}`;
-    },
-
-    async fetchData(client, props) {
+    select(state, props) {
         const {type, range} = props.params;
-        const chart = await client.call(`/charts/${CHART_TYPES[type]}/${range}`, {limit: 100});
         return {
-            chart,
+            chart: state.fetches[`chart/${type}/${range}`]
         };
     },
 
-    getTitle(props, data) {
-        return getChartTitle(data.chart, props.params.range);
+    fetchData(getState, dispatch, props) {
+        const {type, range} = props.params;
+        return dispatch(fetch(`chart/${type}/${range}`,
+            `/charts/${CHART_TYPES[type]}/${range}`, {limit: 100}));
+    },
+
+    getTitle(parentTitle, state, props) {
+        const {type, range} = props.params;
+        const chart = state.fetches[`chart/${type}/${range}`];
+        return getChartTitle(chart, range);
     }
 });

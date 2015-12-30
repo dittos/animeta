@@ -2,6 +2,8 @@ import React from 'react';
 import {createContainer} from '../Isomorphic';
 import WorkViews from '../ui/WorkViews';
 import {getStatusDisplay} from '../util';
+import {fetch} from '../store/FetchActions';
+import {loadSidebarChart} from '../store/AppActions';
 
 var Post = React.createClass({
     render() {
@@ -27,26 +29,38 @@ var Post = React.createClass({
     }
 });
 
-export default createContainer(Post, {
-    getPreloadKey({ params }) {
-        return `post/${params.id}`;
-    },
+function fetchPostByIDWithWork(id) {
+    return (dispatch) => {
+        return dispatch(fetch(`posts/${id}`, `/posts/${id}`)).then(post => {
+            return dispatch(fetch(`work?id/${post.record.work_id}`, `/works/${post.record.work_id}`));
+        });
+    };
+}
 
-    async fetchData(client, props) {
+export default createContainer(Post, {
+    select(state, props) {
         const {id} = props.params;
-        const post = await client.call(`/posts/${id}`);
-        const [work, chart] = await Promise.all([
-            client.call(`/works/${post.record.work_id}`),
-            client.call('/charts/works/weekly', {limit: 5}),
-        ]);
+        const post = state.fetches[`posts/${id}`];
+        const work = state.fetches[`work?id/${post.record.work_id}`];
         return {
+            post,
             work,
-            chart,
-            post
+            chart: state.app.sidebarChart,
         };
     },
 
-    getTitle(props, data) {
-        return `${data.post.user.name} 사용자 > ${data.work.title} ${getStatusDisplay(data.post)}`;
+    fetchData(getState, dispatch, props) {
+        const {id} = props.params;
+        return Promise.all([
+            dispatch(fetchPostByIDWithWork(id)),
+            dispatch(loadSidebarChart()),
+        ]);
+    },
+
+    getTitle(parentTitle, state, props) {
+        const {id} = props.params;
+        const post = state.fetches[`posts/${id}`];
+        const work = state.fetches[`work?id/${post.record.work_id}`];
+        return `${post.user.name} 사용자 > ${work.title} ${getStatusDisplay(post)}`;
     }
 });

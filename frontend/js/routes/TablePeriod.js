@@ -1,14 +1,14 @@
 var React = require('react');
-var {Container} = require('flux/utils');
 var {Link} = require('react-router');
 var util = require('../util');
-var ScheduleStore = require('../table/ScheduleStore');
-var TableActions = require('../table/TableActions');
+var ScheduleStore = require('../store/ScheduleStore');
+var TableActions = require('../store/TableActions');
 var Notifications = require('../table/Notifications');
 var LazyImageView = require('../ui/LazyImage');
 import LoginDialog from '../ui/LoginDialog';
 var {createContainer} = require('../Isomorphic');
 var Periods = require('../Periods');
+import {loadCurrentUserFromClient} from '../store/AppActions';
 
 function formatPeriod(period) {
     var parts = period.split('Q');
@@ -63,7 +63,7 @@ var HeaderView = React.createClass({
         var switches = options.map((option) => {
             return <span className={this.props.ordering == option.value ? 'active' : ''}
                 key={option.value}
-                onClick={() => TableActions.sort(option.value)}>{option.label}</span>;
+                onClick={() => this.props.onSort(option.value)}>{option.label}</span>;
         });
         return (
             <div className="page-header">
@@ -166,7 +166,7 @@ var ItemView = React.createClass({
         if (record) {
             window.open('/records/' + record.id + '/');
         } else {
-            TableActions.favoriteItem(this.props.item)
+            this.props.onFavorite()
                 .then(data => Notifications.show(['관심 등록 완료 — ', <b>{data.title}</b>], 3000));
         }
     }
@@ -200,71 +200,9 @@ var NotificationView = React.createClass({
     }
 });
 
-var TablePeriod = Container.create(React.createClass({
-    statics: {
-        getStores() {
-            return [ScheduleStore];
-        },
-
-        calculateState() {
-            return {
-                items: ScheduleStore.getAllItems(),
-                ordering: ScheduleStore.getOrdering(),
-                excludeKR: !ScheduleStore.containsKRSchedule()
-            };
-        }
-    },
-
-    render() {
-        return (
-            <div>
-                <div className="table-container">
-                    <HeaderView period={this.props.params.period}
-                        ordering={this.state.ordering}
-                        excludeKR={this.state.excludeKR} />
-
-                    <div className="items">
-                    {this.state.items.map((item) =>
-                        <ItemView item={item} key={item.id} currentUser={this.props.current_user} />
-                    )}
-                    </div>
-                </div>
-                <NotificationView />
-            </div>
-        );
-    }
-}), {pure: false});
-
-function getLoginURL() {
-    return '/login/?next=' + encodeURIComponent(location.pathname);
-}
-
-export default createContainer(TablePeriod, {
-    getPreloadKey(props) {
-        return `table/${props.params.period}`;
-    },
-
-    async fetchData(client, props) {
-        var [current_user, schedule] = await Promise.all([
-            client.getCurrentUser(),
-            client.call(`/table/periods/${props.params.period}`, {
-                only_first_period: JSON.stringify(true)
-            })
-        ]);
-        return {
-            current_user,
-            schedule
-        };
-    },
-
-    getTitle(props) {
-        return `${formatPeriod(props.params.period)} 신작`;
-    },
-
-    onLoad(props, data) {
-        TableActions.initialize(data.schedule);
-
-        if (!data.current_user) {
+var TablePeriod = React.createClass({
+    componentDidMount() {
+        if (!this.props.currentUser) {
             Notifications.show([
                 '관심 등록은 로그인 후 가능합니다. ',
                 <a href={getLoginURL()} className="btn btn-login" onClick={event => {
@@ -273,5 +211,59 @@ export default createContainer(TablePeriod, {
                 }}>로그인</a>
             ]);
         }
+    },
+
+    render() {
+        return (
+            <div>
+                <div className="table-container">
+                    <HeaderView period={this.props.params.period}
+                        ordering={this.props.ordering}
+                        excludeKR={this.props.excludeKR}
+                        onSort={sort => this.props.dispatch(TableActions.sort(sort))}
+                    />
+
+                    <div className="items">
+                    {this.props.items.map((item) =>
+                        <ItemView
+                            item={item}
+                            key={item.id}
+                            currentUser={this.props.currentUser}
+                            onFavorite={() => this.props.dispatch(TableActions.favoriteItem(item))}
+                        />
+                    )}
+                    </div>
+                </div>
+                <NotificationView />
+            </div>
+        );
+    }
+});
+
+function getLoginURL() {
+    return '/login/?next=' + encodeURIComponent(location.pathname);
+}
+
+export default createContainer(TablePeriod, {
+    reduxOptions: {pure: false},
+
+    fetchData(getState, dispatch, props) {
+        return Promise.all([
+            dispatch(loadCurrentUserFromClient()),
+            dispatch(TableActions.load(props.params.period))
+        ]);
+    },
+
+    select(state) {
+        return {
+            currentUser: state.app.currentUser,
+            items: ScheduleStore.getAllItems(state),
+            ordering: ScheduleStore.getOrdering(state),
+            excludeKR: !ScheduleStore.containsKRSchedule(state)
+        };
+    },
+
+    getTitle(parentTitle, state, props) {
+        return `${formatPeriod(props.params.period)} 신작`;
     }
 });

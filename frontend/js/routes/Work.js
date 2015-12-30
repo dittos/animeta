@@ -1,6 +1,8 @@
 import React from 'react';
 import {createContainer} from '../Isomorphic';
 import WorkViews from '../ui/WorkViews';
+import {fetch} from '../store/FetchActions';
+import {loadSidebarChart} from '../store/AppActions';
 
 var Work = React.createClass({
     render() {
@@ -15,20 +17,30 @@ var Work = React.createClass({
     }
 });
 
+function fetchWorkByTitle(title) {
+    return fetch(`work/${title}`,
+        `/works/_/${encodeURIComponent(title)}`);
+}
+
 export default createContainer(Work, {
-    getPreloadKey({ params }) {
-        return `work/${params.splat}`;
+    select(state, props) {
+        const {splat: title} = props.params;
+        return {
+            work: state.fetches[`work/${title}`],
+            chart: state.app.sidebarChart,
+        };
     },
 
-    async fetchData(client, props) {
+    fetchData(getState, dispatch, props) {
         const {splat: title} = props.params;
-        const [work, chart] = await Promise.all([
-            client.call('/works/_/' + encodeURIComponent(title)),
-            client.call('/charts/works/weekly', {limit: 5}),
+        return Promise.all([
+            dispatch(fetchWorkByTitle(title)),
+            dispatch(loadSidebarChart()),
         ]);
-        return {
-            work,
-            chart
-        };
+    },
+
+    hasCachedData(state, props) {
+        const {splat: title} = props.params;
+        return state.fetches[`work/${title}`] && state.app.sidebarChart;
     }
 });

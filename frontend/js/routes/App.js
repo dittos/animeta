@@ -1,12 +1,13 @@
 import React from 'react';
 import {createContainer} from '../Isomorphic';
 import GlobalHeader from '../ui/GlobalHeader';
+import {loadCurrentUserFromClient} from '../store/AppActions';
 
 var App = React.createClass({
     render() {
         return <div>
             <GlobalHeader
-                currentUser={this.props.current_user}
+                currentUser={this.props.currentUser}
                 useRouterLink={true}
             />
             {this.props.children}
@@ -15,11 +16,17 @@ var App = React.createClass({
 });
 
 export default createContainer(App, {
-    getPreloadKey: () => 'app',
-
-    async fetchData(client) {
+    select(state) {
         return {
-            current_user: await client.getCurrentUser(),
+            currentUser: state.app.currentUser,
         };
+    },
+
+    fetchData(getState, dispatch) {
+        return dispatch(loadCurrentUserFromClient());
+    },
+
+    hasCachedData(state) {
+        return state.app.isCurrentUserLoaded;
     }
 });

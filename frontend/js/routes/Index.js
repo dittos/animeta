@@ -6,6 +6,8 @@ import * as util from '../util';
 import Grid from '../ui/Grid';
 import TimeAgo from '../ui/TimeAgo';
 import WeeklyChart from '../ui/WeeklyChart';
+import {fetch} from '../store/FetchActions';
+import {loadSidebarChart} from '../store/AppActions';
 
 var Index = React.createClass({
     getInitialState() {
@@ -72,17 +74,23 @@ var Index = React.createClass({
     }
 });
 
-export default createContainer(Index, {
-    getPreloadKey: () => 'index',
+const KEY_POSTS = 'index/posts';
 
-    async fetchData(client) {
-        const [posts, chart] = await Promise.all([
-            client.call('/posts', {
+export default createContainer(Index, {
+    select(state) {
+        return {
+            posts: state.fetches[KEY_POSTS],
+            chart: state.app.sidebarChart,
+        };
+    },
+
+    fetchData(getState, dispatch) {
+        return Promise.all([
+            dispatch(fetch(KEY_POSTS, '/posts', {
                 min_record_count: 2,
                 count: 10
-            }),
-            client.call('/charts/works/weekly', {limit: 5}),
+            })),
+            dispatch(loadSidebarChart()),
         ]);
-        return {posts, chart};
-    }
+    },
 });

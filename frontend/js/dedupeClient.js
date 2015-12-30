@@ -29,6 +29,11 @@ export default function dedupeClient(client) {
 
         getCurrentUser() {
             return callWithCache(() => client.getCurrentUser(), '__current_user__');
+        },
+
+        clearCache() {
+            ongoingRequests.clear();
+            cache.clear();
         }
     };
 }

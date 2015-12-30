@@ -42,4 +42,8 @@ export default class {
             }
         }
     }
+
+    clear() {
+        this._cache = {};
+    }
 }

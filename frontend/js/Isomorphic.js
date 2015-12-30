@@ -1,40 +1,25 @@
 import React from 'react';
-import {findDOMNode} from 'react-dom';
+import {connect} from 'react-redux';
 
 export function isContainer(Component) {
     return Component._isContainer;
 }
 
 export function createContainer(Component, options) {
-    options.fetchData = options.fetchData || (async () => ({}));
-    options.getPreloadKey = options.getPreloadKey || (() => null);
+    if (options.select) {
+        Component = connect(options.select, null, null, options.reduxOptions)(Component);
+    }
+    if (!options.fetchData) {
+        options.fetchData = () => Promise.resolve();
+    }
 
     class Container extends React.Component {
-        componentDidUpdate() {
-            this._updateFreshness();
-        }
-
-        componentDidMount() {
-            this._updateFreshness();
-        }
-
         render() {
-            var preloadKey = options.getPreloadKey(this.props);
-            var readyState = this.props.readyState;
-            if (readyState && readyState[preloadKey] === 'loading') {
+            var {readyState, ...props} = this.props;
+            if (readyState === 'loading') {
                 return null;
             }
-            var data = this.props.preloadData[preloadKey];
-            return <Component {...this.props} {...data} />;
-        }
-
-        _updateFreshness() {
-            var preloadKey = options.getPreloadKey(this.props);
-            var readyState = this.props.readyState[preloadKey];
-            var node = findDOMNode(this);
-            if (node) {
-                node.style.opacity = readyState === 'stale' ? 0.5 : 1.0;
-            }
+            return <Component {...props} />;
         }
     }
     Container._options = options;

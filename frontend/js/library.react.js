@@ -11,7 +11,7 @@ var createBrowserHistory = require('history/lib/createBrowserHistory');
 var createHashHistory = require('history/lib/createHashHistory');
 var RecordActions = require('./store/RecordActions');
 var CategoryActions = require('./store/CategoryActions');
-var UserActions = require('./store/UserActions');
+var AppActions = require('./store/AppActions');
 var PostStore = require('./store/PostStore');
 var RecordStore = require('./store/RecordStore');
 var ExternalServiceStore = require('./store/ExternalServiceStore');
@@ -111,7 +111,7 @@ function runApp() {
     store.dispatch(RecordActions.loadRecords(PreloadData.records));
     store.dispatch(CategoryActions.loadCategories(PreloadData.owner.categories));
     if (PreloadData.current_user)
-        store.dispatch(UserActions.loadCurrentUser(PreloadData.current_user));
+        store.dispatch(AppActions.loadCurrentUser(PreloadData.current_user));
     ReactDOM.render(
         <Provider store={store}>
             <Router
