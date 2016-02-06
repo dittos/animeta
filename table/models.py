@@ -61,7 +61,7 @@ def item_json(item, period):
     data['studios'] = studio
 
     data['source'] = item['source']
-    image_url_fmt = 'http://anitable.com/media/%s/images/thumb/%s'
+    image_url_fmt = 'https://animeta.net/media/%s/images/thumb/%s'
     data['image_url'] = image_url_fmt % (period, item['image'])
     data['schedule'] = get_schedule(item, period)
     return data
