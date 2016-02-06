@@ -60,7 +60,7 @@ var VideoSearchResult = React.createClass({
     _loadMore() {
         var page = (this.state.page || 0) + 1;
         this.setState({isLoading: true});
-        $.getJSON('http://apis.daum.net/search/vclip?callback=?', {
+        $.getJSON('https://apis.daum.net/search/vclip?callback=?', {
             apikey: PreloadData.daum_api_key,
             output: 'json',
             result: this.state.itemsPerRow * 2,

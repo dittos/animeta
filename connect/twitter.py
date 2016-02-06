@@ -21,7 +21,7 @@ def post_history_to_twitter(user, history):
 
     title = history.record.title
     status = status_text(history)
-    url = 'http://animeta.net/-%d' % history.id
+    url = 'https://animeta.net/-%d' % history.id
     comment = history.comment
 
     api = get_api(setting)
