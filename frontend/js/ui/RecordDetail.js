@@ -139,7 +139,7 @@ var PostView = React.createClass({
         return (
             <div className={cx({[Styles.post]: true, 'no-comment': !post.comment, 'pending': this.props.isPending})}>
                 <div className="progress">{util.getStatusText(post)}</div>
-                <PostComment post={post} className="comment" />
+                <PostComment post={post} className="comment" showSpoiler={this.props.canEdit} />
                 <div className="meta">
                     {post.contains_spoiler &&
                         <span className={Styles.spoilerMark}><i className="fa fa-microphone-slash" /></span>}

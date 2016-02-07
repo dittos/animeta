@@ -22,7 +22,7 @@ export default class PostComment extends React.Component {
             return null;
 
         return <div className={this.props.className}>
-            {contains_spoiler && !this.state.showSpoiler ?
+            {contains_spoiler && !this.state.showSpoiler && !this.props.showSpoiler ?
                 <span className={Styles.spoilerAlert}>
                     <i className="fa fa-microphone-slash" />
                     내용 누설 가림
