@@ -660,7 +660,7 @@ class RecordPostsViewTest(TestCase):
         args, kwargs = mock_twitter.update_status.call_args
         status = args[0]
         post_id = response.obj['post']['id']
-        self.assertEqual(status, u'A b123화 (완료): hello http://animeta.net/-%s' % post_id)
+        self.assertEqual(status, u'A b123화 (완료): hello https://animeta.net/-%s' % post_id)
 
         # Twitter failure; success silently
         failing_mock_twitter = mock.MagicMock()
@@ -668,6 +668,32 @@ class RecordPostsViewTest(TestCase):
         with mock.patch('connect.twitter.get_api', return_value=failing_mock_twitter):
             context.post(path, data)
         self.assertEqual(response.status_code, 200)
+
+    def test_add_spoiler(self):
+        context = TestContext()
+        record = context.new_record(work_title='A')
+        path = '/api/v2/records/%s/posts' % record['id']
+        data = {
+            'status': 'b123',
+            'status_type': 'finished',
+            'comment': 'hello',
+            'contains_spoiler': 'true',
+            'publish_twitter': 'on',
+        }
+
+        context.add_twitter_setting()
+
+        mock_twitter = mock.MagicMock()
+        with mock.patch('connect.twitter.get_api', return_value=mock_twitter):
+            response = context.post(path, data)
+        self.assertEqual(response.status_code, 200)
+        post = response.obj['post']
+        self.assertTrue(post['contains_spoiler'])
+        self.assertEqual(mock_twitter.update_status.call_count, 1)
+        args, kwargs = mock_twitter.update_status.call_args
+        status = args[0]
+        post_id = post['id']
+        self.assertEqual(status, u'A b123화 (완료): [\U0001F507 내용 누설 가림] https://animeta.net/-%s' % post_id)
 
 
 class WorkViewTest(TestCase):

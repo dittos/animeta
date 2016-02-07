@@ -2,6 +2,7 @@ var React = require('react/addons');
 var StatusInput = require('./StatusInput');
 var util = require('../util');
 var ExternalServiceActions = require('../store/ExternalServiceActions');
+var Styles = require('../../less/post-composer.less');
 
 var PostComposer = React.createClass({
     mixins: [React.addons.LinkedStateMixin],
@@ -11,17 +12,18 @@ var PostComposer = React.createClass({
             statusType: this.props.initialStatusType,
             status: util.plusOne(this.props.currentStatus),
             comment: '',
-            publishOptions: this.props.initialPublishOptions
+            publishOptions: this.props.initialPublishOptions,
+            containsSpoiler: false,
         };
     },
 
     render() {
         var currentStatus;
         if (this.props.currentStatus) {
-            currentStatus = <span className="progress-current">{this.props.currentStatus} &rarr; </span>;
+            currentStatus = <span className={Styles.currentProgress}>{this.props.currentStatus} &rarr; </span>;
         }
-        return <form className="record-detail-update">
-            <div className="progress">
+        return <form className={Styles.postComposer}>
+            <div className={Styles.progress}>
                 <select name="status_type"
                     valueLink={this.linkState('statusType')}>
                     <option value="watching">보는 중</option>
@@ -37,7 +39,12 @@ var PostComposer = React.createClass({
             </div>
             <textarea name="comment" rows={3} cols={30} autoFocus
                 valueLink={this.linkState('comment')} />
-            <div className="actions">
+            <div className={Styles.actions}>
+                <label>
+                    <input type="checkbox" name="contains_spoiler"
+                        checkedLink={this.linkState('containsSpoiler')} />
+                    {' 내용 누설 포함'}
+                </label>
                 <label>
                     <input type="checkbox" name="publish_twitter"
                         checked={this._isTwitterConnected() && this.state.publishOptions.has('twitter')}
@@ -54,7 +61,8 @@ var PostComposer = React.createClass({
         this.props.onSave({
             status: this.state.status,
             status_type: this.state.statusType,
-            comment: this.state.comment
+            comment: this.state.comment,
+            contains_spoiler: this.state.containsSpoiler,
         }, this.state.publishOptions.intersect(this.props.connectedServices));
     },
 

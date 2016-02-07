@@ -1,0 +1,48 @@
+:local(.posts) {
+
+}
+
+:local(.post) {
+    clear: both;
+    margin: 16px 0;
+    line-height: 1.8;
+
+    &.no-comment {
+        .meta {
+            display: inline;
+        }
+    }
+
+    .progress {
+        font-weight: bold;
+        margin-right: 8px;
+        display: inline;
+    }
+    .comment {
+        display: inline;
+    }
+    .meta {
+        font-size: 12px;
+    }
+    .time {
+        color: #666;
+        text-decoration: none;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+    .btn-delete {
+        margin-left: 8px;
+        color: #f00;
+        text-decoration: none;
+        cursor: pointer;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+:local(.spoilerMark) {
+    color: #666;
+    margin-right: 8px;
+}

@@ -25,6 +25,7 @@ class RecordPostsView(BaseView):
             status=request.POST['status'],
             status_type=StatusTypes.from_name(request.POST['status_type']),
             comment=request.POST['comment'],
+            contains_spoiler=request.POST.get('contains_spoiler') == 'true',
         )
 
         if request.POST.get('publish_twitter') == 'on':

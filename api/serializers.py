@@ -62,6 +62,7 @@ def serialize_post(post, include_record=False, include_user=False):
         'status_type': post.status_type.name,
         'comment': post.comment,
         'updated_at': serialize_datetime(post.updated_at),
+        'contains_spoiler': post.contains_spoiler,
     }
     if include_record:
         data['record'] = serialize_record(post.record)

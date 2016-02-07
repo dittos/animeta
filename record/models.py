@@ -175,6 +175,7 @@ class History(models.Model):
     status_type = StatusTypeField()
     comment = models.TextField(blank=True, verbose_name=u'감상평')
     updated_at = models.DateTimeField(auto_now=True, null=True)
+    contains_spoiler = models.BooleanField(default=False)
 
     objects = TransformManager()
 

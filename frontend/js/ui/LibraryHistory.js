@@ -3,6 +3,7 @@ var React = require('react');
 var cx = require('classnames');
 var TimeAgo = require('./TimeAgo');
 var util = require('../util');
+import PostComment from './PostComment';
 
 function getDateHeader(post) {
     var date = new Date(post.updated_at);
@@ -18,7 +19,7 @@ var Post = React.createClass({
             <div className="meta">
                 <a href={util.getPostURL(post)} className="time"><TimeAgo time={new Date(post.updated_at)} /></a>
             </div>
-            {post.comment && <div className="comment">{post.comment}</div>}
+            <PostComment post={post} className="comment" />
         </div>;
     }
 });

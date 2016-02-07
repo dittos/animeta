@@ -9,6 +9,7 @@ var Grid = require('./Grid');
 var Layout = require('./Layout');
 var WeeklyChart = require('./WeeklyChart');
 var util = require('../util');
+import PostComment from './PostComment';
 
 function fixTitle(title) {
     // &lt;b&gt;...&lt;b&gt; -> <b>...</b>
@@ -280,9 +281,7 @@ var Post = React.createClass({
                     <span className="episode">{util.getStatusDisplay(post)}</span>}
                 <Link to={util.getPostURL(post)} className="time"><TimeAgo time={new Date(post.updated_at)} /></Link>
             </div>
-            <div className="comment">
-                {post.comment}
-            </div>
+            <PostComment post={post} className="comment" />
         </div>;
     }
 });

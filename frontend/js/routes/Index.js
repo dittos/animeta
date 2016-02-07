@@ -6,6 +6,7 @@ import * as util from '../util';
 import Grid from '../ui/Grid';
 import TimeAgo from '../ui/TimeAgo';
 import WeeklyChart from '../ui/WeeklyChart';
+import PostComment from '../ui/PostComment';
 import {fetch} from '../store/FetchActions';
 import {loadSidebarChart} from '../store/AppActions';
 
@@ -55,9 +56,7 @@ var Index = React.createClass({
                     <span className="episode">{util.getStatusDisplay(post)}</span>}
                 <Link to={util.getPostURL(post)} className="time"><TimeAgo time={new Date(post.updated_at)} /></Link>
             </div>
-            <div className="comment">
-                {post.comment}
-            </div>
+            <PostComment post={post} className="comment" />
         </div>;
     },
     _loadMore() {

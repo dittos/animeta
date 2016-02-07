@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import tweepy
 from django.conf import settings
 from record.templatetags.status import status_text
@@ -23,6 +24,8 @@ def post_history_to_twitter(user, history):
     status = status_text(history)
     url = 'https://animeta.net/-%d' % history.id
     comment = history.comment
+    if history.contains_spoiler:
+        comment = u'[\U0001F507 내용 누설 가림]'
 
     api = get_api(setting)
     try:

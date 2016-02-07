@@ -7,12 +7,14 @@ var util = require('../util');
 var TimeAgo = require('./TimeAgo');
 var PostComposer = require('./PostComposer');
 var Typeahead = require('./Typeahead');
+import PostComment from './PostComment';
 var RecordActions = require('../store/RecordActions');
 var PostActions = require('../store/PostActions');
 var RecordStore = require('../store/RecordStore');
 var PostStore = require('../store/PostStore');
 var CategoryStore = require('../store/CategoryStore');
 var ExternalServiceStore = require('../store/ExternalServiceStore');
+var Styles = require('../../less/record-detail.less');
 
 var TitleEditView = React.createClass({
     componentDidMount() {
@@ -135,10 +137,12 @@ var PostView = React.createClass({
     render() {
         var post = this.props.post;
         return (
-            <div className={cx({'post-item': true, 'no-comment': !post.comment, 'pending': this.props.isPending})}>
+            <div className={cx({[Styles.post]: true, 'no-comment': !post.comment, 'pending': this.props.isPending})}>
                 <div className="progress">{util.getStatusText(post)}</div>
-                {post.comment && <div className="comment">{post.comment}</div>}
+                <PostComment post={post} className="comment" />
                 <div className="meta">
+                    {post.contains_spoiler &&
+                        <span className={Styles.spoilerMark}><i className="fa fa-microphone-slash" /></span>}
                     {!this.props.isPending ?
                         <a href={util.getPostURL(post)} className="time"><TimeAgo time={new Date(post.updated_at)} /></a>
                         : '저장 중...'}
@@ -194,12 +198,13 @@ var RecordDetail = React.createClass({
                 dispatch={this.props.dispatch}
             />
             {composer}
-            <div className="record-detail-posts">
+            <div className={Styles.posts}>
                 {this.props.posts.map(post => {
                     var canDelete = post.id && this.props.canEdit && this.props.posts.length > 1;
                     return <PostView
                         post={post}
                         key={post.tempID || post.id}
+                        canEdit={this.props.canEdit}
                         canDelete={canDelete}
                         isPending={!post.id}
                         user={this.props.user}
