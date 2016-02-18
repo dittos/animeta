@@ -27,7 +27,7 @@ server.ext('onPreResponse', (request, reply) => {
             path = path.substring(0, path.length - 1);
         }
         // Add slashes
-        if (path.match(/^\/(works|table|login|signup|settings|records|support|charts|users|library)/) &&
+        if (path.match(/^\/(works|table|login|signup|settings|records|support|charts|users|library|compare)/) &&
             !path.match(/\/$/)) {
             path = path + '/';
         }

@@ -10,6 +10,7 @@ import PostRoute from './routes/Post';
 import WorkRoute from './routes/Work';
 import WorkPostsRoute from './routes/WorkPosts';
 import TablePeriodRoute from './routes/TablePeriod';
+import CompareRoute from './routes/Compare';
 
 export default (
     <Route component={AppRoute} path="/">
@@ -26,5 +27,6 @@ export default (
             <IndexRedirect to={Periods.current + '/'} />
             <Route component={TablePeriodRoute} path=":period/" />
         </Route>
+        <Route component={CompareRoute} path="/compare/" />
     </Route>
 );
