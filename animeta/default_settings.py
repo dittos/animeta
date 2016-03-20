@@ -131,6 +131,7 @@ INSTALLED_APPS = (
     'api',
     'moderation',
     'search',
+    'table',
 )
 
 LOGIN_URL = '/login/'
