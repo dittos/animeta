@@ -23,7 +23,10 @@ class Command(BaseCommand):
             indexer.run()  # Ensure indexes
 
         basepath = os.path.join(options['data_dir'], period, 'images')
-        os.makedirs(basepath)
+        try:
+            os.makedirs(basepath)
+        except:
+            pass
 
         for index in WorkPeriodIndex.objects.filter(period=period):
             work = index.work
@@ -53,3 +56,5 @@ class Command(BaseCommand):
             if os.path.exists(imgpath):
                 work.raw_metadata = work.raw_metadata.rstrip() + '\nimage: ' + fn
                 work.save()
+            else:
+                print 'failed', work.id
