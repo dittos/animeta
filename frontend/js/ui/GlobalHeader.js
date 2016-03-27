@@ -4,7 +4,7 @@ import {Link as RouterLink} from 'react-router';
 var Layout = require('./Layout');
 var Typeahead = require('./Typeahead');
 import LoginDialog from './LoginDialog';
-import Styles from '../../less/global-header.less';
+import Styles from './GlobalHeader.less';
 
 var DropdownUserMenu = React.createClass({
     componentDidMount() {

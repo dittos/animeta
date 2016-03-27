@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router';
 import {getWorkURL} from '../util';
-import Styles from '../../less/weekly-chart.less';
+import Styles from './WeeklyChart.less';
 
 function WeeklyChart({ data }) {
     return <div>

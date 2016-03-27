@@ -1,5 +1,5 @@
 import React from 'react';
-import Styles from '../../less/post-comment.less';
+import Styles from './PostComment.less';
 
 export default class PostComment extends React.Component {
     constructor(...args) {

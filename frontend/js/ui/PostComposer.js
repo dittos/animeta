@@ -2,7 +2,7 @@ var React = require('react/addons');
 var StatusInput = require('./StatusInput');
 var util = require('../util');
 var ExternalServiceActions = require('../store/ExternalServiceActions');
-var Styles = require('../../less/post-composer.less');
+var Styles = require('./PostComposer.less');
 
 var PostComposer = React.createClass({
     mixins: [React.addons.LinkedStateMixin],

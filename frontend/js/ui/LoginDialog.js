@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Styles from '../../less/dialog.less';
+import Styles from './LoginDialog.less';
 
 var LoginDialog = React.createClass({
     statics: {

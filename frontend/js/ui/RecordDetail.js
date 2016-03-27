@@ -14,7 +14,7 @@ var RecordStore = require('../store/RecordStore');
 var PostStore = require('../store/PostStore');
 var CategoryStore = require('../store/CategoryStore');
 var ExternalServiceStore = require('../store/ExternalServiceStore');
-var Styles = require('../../less/record-detail.less');
+var Styles = require('./RecordDetail.less');
 
 var TitleEditView = React.createClass({
     componentDidMount() {
