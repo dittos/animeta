@@ -14,7 +14,6 @@
 }
 
 .table-container {
-    color: #444;
     font-size: 14px;
     line-height: 1;
     max-width: @page-width;
@@ -35,7 +34,6 @@
     font-size: 20px;
     text-align: center;
     margin: 0;
-    color: #444;
     display: inline-block;
     a {
         padding: 5px;
@@ -54,22 +52,22 @@
     }
 }
 .settings .switch {
-    border: 1px solid #27ae60;
+    border: 1px solid @color-primary;
     line-height: 20px;
     display: inline-block;
 
     span {
         padding: 0 5px;
-        color: #666;
+        color: @color-text-dark;
         display: inline-block;
         cursor: pointer;
     }
     span:hover {
-        color: #27ae60;
+        color: @color-primary;
     }
     .active {
         font-weight: bold;
-        background-color: #27ae60;
+        background-color: @color-primary;
         color: #fff !important;
     }
 }
@@ -159,7 +157,7 @@ html.cssgradients .item-overlay {
     padding: 10px;
     .btn-fav { cursor: pointer; }
 }
-.btn-hover-border (@color, @text-color: #444) {
+.btn-hover-border (@color, @text-color: @color-text-dark) {
     background: #fff;
     color: @text-color;
     border: 3px solid #fff;
@@ -178,7 +176,7 @@ html.cssgradients .item-overlay {
     text-decoration: none;
     box-shadow: 0 2px 8px #222;
     font-size: 18px;
-    .btn-hover-border (#27ae60);
+    .btn-hover-border (@color-primary);
     position: relative;
     input {
         position: absolute;
@@ -253,8 +251,8 @@ html.touch .btn-fav {
 .panel-inner { max-width: @page-width; margin: 0 auto; }
 .panel {
     box-shadow: 0 2px 8px #222;
-    background: #27ae60;
-    background: fadeout(#27ae60, 5%);
+    background: @color-primary;
+    background: fadeout(@color-primary, 5%);
     padding: 30px 10px;
     position: fixed;
     left: 0;
