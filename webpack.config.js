@@ -28,7 +28,7 @@ module.exports = config = {
         loaders: [
             { test: /\.js[x]?$/, exclude: /node_modules/, loader: 'babel-loader' },
             { test: /\.json$/, loader: 'json-loader' },
-            { test: /\.less$/, loader: ExtractTextPlugin.extract('style', 'css!autoprefixer!less') },
+            { test: /\.less$/, loader: ExtractTextPlugin.extract('style', 'css?localIdentName=[name]_[local]_[hash:base64:5]!autoprefixer!less') },
             { test: /\.css$/, loader: ExtractTextPlugin.extract('style', 'css!autoprefixer') },
             { test: /\.(png|gif|svg)$/, loader: 'url' }
         ]

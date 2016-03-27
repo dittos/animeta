@@ -3,7 +3,7 @@ require('babel-register');
 var less = require('less');
 require('css-modules-require-hook')({
     extensions: ['.less'],
-    generateScopedName: '[hash:base64]', // same with css-loader
+    generateScopedName: '[name]_[local]_[hash:base64:5]', // same with css-loader
     mode: 'global',
     preprocessCss: function(css, filename) {
         var _result;
