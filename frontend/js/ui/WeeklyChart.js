@@ -1,34 +1,32 @@
-var React = require('react');
-var {Link} = require('react-router');
-var util = require('../util');
+import React from 'react';
+import {Link} from 'react-router';
+import {getWorkURL} from '../util';
+import Styles from '../../less/weekly-chart.less';
 
-var WeeklyChart = React.createClass({
-    render() {
-        return <div className="weekly-chart">
-            <h3 className="section-title">주간 인기 작품</h3>
-            {this.props.data.map(item => {
-                var diff;
-                if (item.diff) {
-                    if (item.sign === -1) {
-                        diff = <span className="down"><i className="fa fa-arrow-down" /> {item.diff}</span>;
-                    } else if (item.sign === +1) {
-                        diff = <span className="up"><i className="fa fa-arrow-up" /> {item.diff}</span>;
-                    }
+function WeeklyChart({ data }) {
+    return <div>
+        {data.map(item => {
+            var diff;
+            if (item.diff) {
+                if (item.sign === -1) {
+                    diff = <span className="down"><i className="fa fa-arrow-down" /> {item.diff}</span>;
+                } else if (item.sign === +1) {
+                    diff = <span className="up"><i className="fa fa-arrow-up" /> {item.diff}</span>;
                 }
-                var work = item.object;
-                return <Link to={util.getWorkURL(work.title)}
-                    className="chart-item">
-                    <div className="chart-item-text">
-                        <span className="rank">{item.rank}위</span>
-                        <span className="title">{work.title}</span>
-                        {diff}
-                    </div>
-                    {work.metadata &&
-                        <img src={work.metadata.image_url} />}
-                </Link>;
-            })}
-        </div>;
-    }
-});
+            }
+            var work = item.object;
+            return <Link to={getWorkURL(work.title)}
+                className={Styles.item}>
+                <div className="chart-item-text">
+                    <span className="rank">{item.rank}위</span>
+                    <span className="title">{work.title}</span>
+                    {diff}
+                </div>
+                {work.metadata &&
+                    <img src={work.metadata.image_url} />}
+            </Link>;
+        })}
+    </div>;
+}
 
 module.exports = WeeklyChart;

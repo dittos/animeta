@@ -7,8 +7,10 @@ import Grid from '../ui/Grid';
 import TimeAgo from '../ui/TimeAgo';
 import WeeklyChart from '../ui/WeeklyChart';
 import PostComment from '../ui/PostComment';
+import LoadMore from '../ui/LoadMore';
 import {fetch} from '../store/FetchActions';
 import {loadSidebarChart} from '../store/AppActions';
+import Styles from '../../less/index.less';
 
 var Index = React.createClass({
     getInitialState() {
@@ -27,27 +29,21 @@ var Index = React.createClass({
             <Grid.Column size={8} pull="left">
                 {this._renderTimeline(this.state.posts)}
             </Grid.Column>
-            <Grid.Column size={4} pull="right">
+            <Grid.Column size={4} pull="right" className={Styles.sidebar}>
+                <h2 className={Styles.sectionTitle}>주간 인기 작품</h2>
                 <WeeklyChart data={this.props.chart} />
             </Grid.Column>
         </Grid.Row>;
     },
     _renderTimeline(posts) {
-        var loadMore;
-        if (this.state.isLoading) {
-            loadMore = <div className="load-more loading">로드 중...</div>;
-        } else {
-            loadMore = <div className="load-more" onClick={this._loadMore}>더 보기</div>;
-        }
-
-        return <div className="timeline">
-            <h2 className="section-title">최근 감상평</h2>
+        return <div className={Styles.timeline}>
+            <h2 className={Styles.sectionTitle}>최근 감상평</h2>
             {posts.map(this._renderPost)}
-            {loadMore}
+            <LoadMore onClick={this._loadMore} isLoading={this.state.isLoading} />
         </div>;
     },
     _renderPost(post) {
-        return <div className="post-item">
+        return <div className={Styles.post}>
             <div className="meta">
                 <a href={'/users/' + post.user.name + '/'} className="user">{post.user.name}</a>
                 <i className="fa fa-caret-right separator" />

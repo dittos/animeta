@@ -1,54 +1,19 @@
 @import "base.less";
 
-.section-title {
+:local(.sidebar),
+:local(.timeline) {
+    padding-bottom: 16px;
+}
+
+:local(.sectionTitle) {
+    line-height: 1;
     font-size: 1.2em;
     font-weight: normal;
     margin-bottom: 0;
     padding-bottom: 8px;
 }
 
-.weekly-chart {
-    padding-bottom: 16px;
-
-    .chart-item {
-        position: relative;
-        display: block;
-        height: 140px;
-        overflow: hidden;
-        margin-top: 8px;
-        text-decoration: none;
-        font-size: 14px;
-        background-color: @color-main;
-        img {
-            display: block;
-            width: 100%;
-            margin-top: -10%;
-        }
-        .chart-item-text {
-            position: absolute;
-            bottom: 0;
-            padding: 8px;
-            background-color: @color-main;
-            color: #fff;
-        }
-        .rank {
-            color: #eee;
-            font-size: 0.9em;
-            margin-right: 8px;
-        }
-        .title {
-            font-weight: bold;
-        }
-        .down, .up {
-            font-size: 0.8em;
-            margin-left: 8px;
-        }
-        .down { color: blue; }
-        .up { color: red; }
-    }
-}
-
-.post-item {
+:local(.post) {
     font-size: 14px;
     line-height: 1.8;
     padding: 8px 0;
@@ -89,13 +54,5 @@
     .comment {
         padding-top: 4px;
         line-height: 1.6;
-    }
-}
-
-.timeline {
-    padding-bottom: 16px;
-
-    .load-more {
-        .mixin-load-more;
     }
 }

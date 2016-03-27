@@ -4,6 +4,7 @@ var cx = require('classnames');
 var TimeAgo = require('./TimeAgo');
 var util = require('../util');
 import PostComment from './PostComment';
+import LoadMore from './LoadMore';
 
 function getDateHeader(post) {
     var date = new Date(post.updated_at);
@@ -35,13 +36,6 @@ var LibraryHistory = React.createClass({
         this._loadMore();
     },
     render() {
-        var loadMore;
-        if (this.state.isLoading) {
-            loadMore = <div className="load-more loading">로드 중...</div>;
-        } else if (this.state.hasMore) {
-            loadMore = <div className="load-more" onClick={this._loadMore}>더 보기</div>;
-        }
-
         var groups = [];
         var unknownGroup = [];
         var lastKey, group;
@@ -70,7 +64,8 @@ var LibraryHistory = React.createClass({
                     <div className="library-history-group-title">{group.key}</div>
                     {group.items.map(post => <Post post={post} />)}
                 </div>)}
-            {loadMore}
+            {this.state.hasMore &&
+                <LoadMore isLoading={this.state.isLoading} onClick={this._loadMore} />}
         </div>;
     },
     _loadMore() {

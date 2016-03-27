@@ -10,6 +10,7 @@ var Layout = require('./Layout');
 var WeeklyChart = require('./WeeklyChart');
 var util = require('../util');
 import PostComment from './PostComment';
+import LoadMore from './LoadMore';
 
 function fixTitle(title) {
     // &lt;b&gt;...&lt;b&gt; -> <b>...</b>
@@ -107,17 +108,12 @@ var VideoSearchResult = React.createClass({
             rows.push(<div className="video-row">{currentRow}</div>);
         }
 
-        var loadMore;
-        if (this.state.isLoading) {
-            loadMore = <div className="load-more loading">로드 중...</div>;
-        } else if (this.state.hasMore) {
-            loadMore = <div className="load-more" onClick={this._loadMore}>검색 결과 더 보기</div>;
-        }
-
         return <div className="section section-video">
             <h2 className="section-title"><i className="fa fa-film" /> 동영상</h2>
             {rows}
-            {loadMore}
+            <div style={{ clear: 'both' }} />
+            {this.state.hasMore &&
+                <LoadMore isLoading={this.state.isLoading} loadMoreText="검색 결과 더 보기" onClick={this._loadMore} />}
         </div>;
     },
 
@@ -178,11 +174,13 @@ var Sidebar = React.createClass({
                 {metadata.links.ann &&
                     <p><i className="fa fa-globe" /> <a href={metadata.links.ann} target="_blank">AnimeNewsNetwork (영문)</a></p>}
                 </div>
+                <h3 className="section-title">주간 인기 작품</h3>
                 <WeeklyChart data={this.props.chart} />
             </div>;
         } else {
             return <div className="work-sidebar">
                 <div className="poster poster-empty">No Image</div>
+                <h3 className="section-title">주간 인기 작품</h3>
                 <WeeklyChart data={this.props.chart} />
             </div>;
         }
@@ -248,6 +246,8 @@ var Work = React.createClass({
                         className="work-content">
                         {this.props.children}
                         {!this.state.showSidebar &&
+                            <h3 className="section-title">주간 인기 작품</h3>}
+                        {!this.state.showSidebar &&
                             <WeeklyChart data={this.props.chart} />}
                     </Grid.Column>
                 </Grid.Row>
@@ -299,12 +299,6 @@ var WorkIndex = React.createClass({
         }
     },
     render() {
-        var loadMore;
-        if (this.state.isLoading) {
-            loadMore = <div className="load-more loading">로드 중...</div>;
-        } else if (this.state.hasMore) {
-            loadMore = <div className="load-more" onClick={this._loadMore}>더 보기</div>;
-        }
         var videoQuery = this.props.work.title;
         if (this.props.episode) {
             videoQuery += ' ' + this.props.episode + '화';
@@ -318,7 +312,8 @@ var WorkIndex = React.createClass({
             {posts && posts.length > 0 && <div className="section section-post">
                 <h2 className="section-title"><i className="fa fa-comment" /> 감상평</h2>
                 {posts.map(post => <Post post={post} key={post.id} />)}
-                {loadMore}
+                {this.state.hasMore &&
+                    <LoadMore isLoading={this.state.isLoading} onClick={this._loadMore} />}
             </div>}
         </div>;
     },
