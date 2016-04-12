@@ -6,9 +6,11 @@ from api.serializers import serialize_user
 
 
 class UserView(BaseView):
-    def get(self, request, name=None):
+    def get(self, request, name=None, id=None):
         if name:
             user = get_object_or_404(User, username=name)
+        elif id:
+            user = get_object_or_404(User, id=id)
         else:
             user = request.user
             if not user.is_authenticated():

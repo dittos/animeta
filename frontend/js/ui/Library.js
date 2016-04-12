@@ -1,14 +1,12 @@
-var _ = require('lodash');
-var React = require('react');
-var moment = require('moment');
-var {connect} = require('react-redux');
-var {Link} = require('react-router');
+import _ from 'lodash';
+import moment from 'moment';
+import React from 'react';
+import Relay from 'react-relay';
+import {Link} from 'react-router';
 var util = require('../util');
-var RecordStore = require('../store/RecordStore');
-var CategoryStore = require('../store/CategoryStore');
 
 function getDateHeader(record) {
-    var date = moment(record.updated_at).startOf('day');
+    var date = moment(Number(record.updated_at)).startOf('day');
     var today = moment().startOf('day');
     var days = today.diff(date, 'days');
     if (days <= 60) {
@@ -75,7 +73,7 @@ function groupRecordsByTitle(records) {
 }
 
 function groupRecordsByDate(records) {
-    records = _.sortBy(records, record => -record.updated_at);
+    records = _.sortBy(records, record => -Number(record.updated_at));
     var groups = [];
     var unknownGroup = [];
     var lastKey, group;
@@ -102,19 +100,30 @@ function groupRecordsByDate(records) {
     return groups;
 }
 
-var LibraryItemView = React.createClass({
-    render() {
-        var record = this.props.record;
-        var content;
-        content = (
-            <Link to={`/records/${record.id}/`}>
-                <span className="item-title">{record.title}</span>
-                <span className="item-status">{util.getStatusText(record)}</span>
-                {record.has_newer_episode &&
-                    <span className="item-updated">up!</span>}
-            </Link>
-        );
-        return <li className={'library-group-item item-' + record.status_type}>{content}</li>;
+function LibraryItem({record}) {
+    var id = record.id.split(':')[1];
+    var content;
+    content = (
+        <Link to={`/records/${id}/`}>
+            <span className="item-title">{record.title}</span>
+            <span className="item-status">{util.getStatusText(record)}</span>
+            {record.has_newer_episode &&
+                <span className="item-updated">up!</span>}
+        </Link>
+    );
+    return <li className={'library-group-item item-' + record.status_type}>{content}</li>;
+}
+
+const LibraryItemView = Relay.createContainer(LibraryItem, {
+    fragments: {
+        record: () => Relay.QL`
+            fragment on Record {
+                id
+                title
+                status
+                status_type
+            }
+        `
     }
 });
 
@@ -180,26 +189,26 @@ var Library = React.createClass({
         if (!sort) sort = 'date';
         var {
             count,
-            records,
+            filteredRecords,
             categoryStats,
             statusTypeStats,
-            categoryList
+            user
         } = this.props;
         var groups;
         if (sort == 'date') {
-            groups = groupRecordsByDate(records);
+            groups = groupRecordsByDate(filteredRecords);
         } else if (sort == 'title') {
-            groups = groupRecordsByTitle(records);
+            groups = groupRecordsByTitle(filteredRecords);
         }
         return <div className="library">
             <LibraryHeader
                 count={count}
-                filteredCount={records.length}
+                filteredCount={filteredRecords.length}
                 sortBy={sort}
                 statusTypeFilter={type}
                 statusTypeStats={statusTypeStats}
                 categoryFilter={category}
-                categoryList={categoryList}
+                categoryList={user.categories}
                 categoryStats={categoryStats}
                 canEdit={this.props.canEdit}
                 onUpdateQuery={this._onUpdateQuery} />
@@ -234,21 +243,62 @@ var Library = React.createClass({
     }
 });
 
-function select(state, props) {
-    var count = RecordStore.getCount(state);
-    if (count === 0) {
-        return {count};
-    }
+function LibraryRoute({user, location, ...props}) {
+    const recordEdges = user.records.edges;
+    const count = recordEdges.length;
 
-    var {type, category, sort} = props.location.query;
+    const categoryStats = _.countBy(recordEdges, edge => edge.node.category_id);
+    const statusTypeStats = _.countBy(recordEdges, edge => edge.node.status_type);
+
+    let {type, category, sort} = location.query;
     if (!sort) sort = 'date';
-    return {
-        count,
-        records: RecordStore.query(state, type, category, sort),
-        categoryStats: RecordStore.getCategoryStats(state),
-        statusTypeStats: RecordStore.getStatusTypeStats(state),
-        categoryList: CategoryStore.getAll(state)
-    };
+    var chain = _(recordEdges).map(edge => edge.node);
+    if (type) {
+        chain = chain.filter(record => record.status_type == type);
+    }
+    if (category === 0 || category) {
+        chain = chain.filter(record => (record.category_id || 0) == category);
+    }
+    const filteredRecords = chain.value();
+
+    const canEdit = props.viewer && user.id === props.viewer.id;
+
+    return <Library
+        {...props}
+        location={location}
+        user={user}
+        count={count}
+        filteredRecords={filteredRecords}
+        statusTypeStats={statusTypeStats}
+        categoryStats={categoryStats}
+        canEdit={canEdit}
+    />;
 }
 
-module.exports = connect(select, null, null, {pure: false})(Library);
+export default Relay.createContainer(LibraryRoute, {
+    fragments: {
+        user: () => Relay.QL`
+            fragment on User {
+                id
+                records(first: 100000) {
+                    edges {
+                        node {
+                            ${LibraryItemView.getFragment('record')}
+
+                            # For sorting/grouping
+                            title
+                            updated_at
+                            category_id
+                            status_type
+                        }
+                    }
+                }
+                categories {
+                    id
+                    name
+                }
+            }
+        `,
+        viewer: () => Relay.QL`fragment on User { id }`
+    }
+});

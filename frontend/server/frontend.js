@@ -105,6 +105,18 @@ server.register(require('h2o2'), err => {
             }
         }
     });
+
+    server.route({
+        method: '*',
+        path: '/graphql',
+        handler: {
+            proxy: {
+                host: 'localhost',
+                port: 3100,
+                passThrough: true
+            }
+        }
+    });
 });
 
 if (DEBUG) {
@@ -199,24 +211,25 @@ server.route({
 });
 
 async function userHandler(request, reply, username, currentUser) {
-    if (!currentUser) {
-        currentUser = await backend.getCurrentUser(request);
-    }
-    const [owner, records] = await Promise.all([
-        backend.call(request, `/users/${username}`),
-        backend.call(request, `/users/${username}/records`, {
-            include_has_newer_episode: JSON.stringify(true)
-        }),
-    ]);
-    const preloadData = {
-        current_user: currentUser,
-        owner,
-        records
-    };
+//    if (!currentUser) {
+//        currentUser = await backend.getCurrentUser(request);
+//    }
+//    const [owner, records] = await Promise.all([
+//        backend.call(request, `/users/${username}`),
+//        backend.call(request, `/users/${username}/records`, {
+//            include_has_newer_episode: JSON.stringify(true)
+//        }),
+//    ]);
+//    const preloadData = {
+//        current_user: currentUser,
+//        owner,
+//        records
+//    };
+    const owner = await backend.call(request, `/users/${username}`)
     reply.view('template', {
         html: '',
         title: `${owner.name} 사용자`,
-        preloadData,
+        preloadData: {username},
         stylesheets: [assetFilenames.library.css],
         scripts: [assetFilenames.library.js],
     });

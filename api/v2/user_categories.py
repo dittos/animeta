@@ -6,9 +6,9 @@ from record.models import Category, Record
 
 
 class UserCategoriesView(BaseView):
-    def post(self, request, name):
+    def post(self, request, name=None):
         self.check_login()
-        if request.user.username != name:
+        if name and request.user.username != name:
             self.raise_error('Permission denied.', status=403)
         category_name = request.POST.get('name')
         if not category_name:
@@ -23,9 +23,9 @@ class UserCategoriesView(BaseView):
             .update(category=category)
         return serialize_category(category)
 
-    def put(self, request, name):
+    def put(self, request, name=None):
         self.check_login()
-        if request.user.username != name:
+        if name and request.user.username != name:
             self.raise_error('Permission denied.', status=403)
         # Django doesn't parse request body in PUT request
         # See: http://stackoverflow.com/a/22294734

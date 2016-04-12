@@ -1,11 +1,8 @@
 /* global confirm */
-/* eslint no-console:0 */
 var React = require('react');
+import Relay from 'react-relay';
 var cx = require('classnames');
-var {connect} = require('react-redux');
 var Sortable = require('./Sortable');
-var CategoryStore = require('../store/CategoryStore');
-var CategoryActions = require('../store/CategoryActions');
 
 var CategoryItem = React.createClass({
     getInitialState() {
@@ -54,7 +51,8 @@ var CategoryItem = React.createClass({
     },
     _onSubmit(event) {
         event.preventDefault();
-        this.props.onRename(this.state.name).then(() => this._endEditing());
+        this.props.onRename(this.state.name);
+        this._endEditing();
     }
 });
 
@@ -62,19 +60,24 @@ var ManageCategory = React.createClass({
     getInitialState() {
         return {
             isSorting: false,
-            categoryList: this.props.categoryList,
+            categoryList: this.props.viewer.categories,
         };
     },
     componentWillReceiveProps(nextProps) {
-        this.setState({categoryList: nextProps.categoryList});
+        this.setState({categoryList: nextProps.viewer.categories});
     },
     render() {
         var items = this.state.categoryList.map(category =>
             <CategoryItem key={category.id}
                 category={category}
                 isSorting={this.state.isSorting}
-                onRemove={() => this.props.dispatch(CategoryActions.removeCategory(category.id))}
-                onRename={(name) => this.props.dispatch(CategoryActions.renameCategory(category.id, name))}
+                onRemove={() => Relay.Store.commitUpdate(new DeleteCategoryMutation({
+                    category,
+                    viewer: this.props.viewer
+                }))}
+                onRename={(categoryName) => Relay.Store.commitUpdate(new RenameCategoryMutation({
+                    category, categoryName
+                }))}
             />);
         if (this.state.isSorting) {
             items = <Sortable onSwap={this._onSwap} onDrop={this._onDrop}>
@@ -115,21 +118,159 @@ var ManageCategory = React.createClass({
         this.setState({categoryList: nextList});
     },
     _onDrop() {
-        var categoryIDs = this.state.categoryList.map(c => c.id);
-        this.props.dispatch(CategoryActions.updateCategoryOrder(this.props.user.name, categoryIDs));
+        Relay.Store.commitUpdate(new ChangeCategoryOrderMutation({
+            categories: this.state.categoryList,
+            viewer: this.props.viewer
+        }));
     },
     _onAdd(event) {
         event.preventDefault();
         var input = this.refs.nameInput;
-        this.props.dispatch(CategoryActions.addCategory(this.props.user.name, input.value));
+        Relay.Store.commitUpdate(new AddCategoryMutation({
+            categoryName: input.value,
+            viewer: this.props.viewer
+        }));
         input.value = '';
     }
 });
 
-function select(state) {
-    return {
-        categoryList: CategoryStore.getAll(state),
-    };
+class AddCategoryMutation extends Relay.Mutation {
+    getMutation() {
+        return Relay.QL`mutation {addCategory}`;
+    }
+    getVariables() {
+        return {categoryName: this.props.categoryName};
+    }
+    getFatQuery() {
+        return Relay.QL`
+            fragment on AddCategoryPayload {
+                user {
+                    categories
+                }
+            }
+        `;
+    }
+    getConfigs() {
+        return [{
+            type: 'FIELDS_CHANGE',
+            fieldIDs: {
+                user: this.props.viewer.id
+            }
+        }];
+    }
 }
+AddCategoryMutation.fragments = {
+    viewer: () => Relay.QL`fragment on User { id }`
+};
 
-module.exports = connect(select, null, null, {pure: false})(ManageCategory);
+class ChangeCategoryOrderMutation extends Relay.Mutation {
+    getMutation() {
+        return Relay.QL`mutation {changeCategoryOrder}`;
+    }
+    getVariables() {
+        return {categoryIds: this.props.categories.map(category => category.id)};
+    }
+    getFatQuery() {
+        return Relay.QL`
+            fragment on ChangeCategoryOrderPayload {
+                user {
+                    categories
+                }
+            }
+        `;
+    }
+    getConfigs() {
+        return [{
+            type: 'FIELDS_CHANGE',
+            fieldIDs: {
+                user: this.props.viewer.id
+            }
+        }];
+    }
+}
+ChangeCategoryOrderMutation.fragments = {
+    viewer: () => Relay.QL`fragment on User { id }`,
+    category: () => Relay.QL`fragment on Category { id }`
+};
+
+class RenameCategoryMutation extends Relay.Mutation {
+    getMutation() {
+        return Relay.QL`mutation {renameCategory}`;
+    }
+    getVariables() {
+        return {
+            categoryId: this.props.category.id,
+            categoryName: this.props.categoryName
+        };
+    }
+    getFatQuery() {
+        return Relay.QL`
+            fragment on RenameCategoryPayload {
+                category
+            }
+        `;
+    }
+    getConfigs() {
+        return [{
+            type: 'FIELDS_CHANGE',
+            fieldIDs: {
+                category: this.props.category.id
+            }
+        }];
+    }
+}
+RenameCategoryMutation.fragments = {
+    category: () => Relay.QL`fragment on Category { id }`
+};
+
+class DeleteCategoryMutation extends Relay.Mutation {
+    getMutation() {
+        return Relay.QL`mutation {deleteCategory}`;
+    }
+    getVariables() {
+        return {categoryId: this.props.category.id};
+    }
+    getFatQuery() {
+        return Relay.QL`
+            fragment on DeleteCategoryPayload {
+                user {
+                    categories
+                    records
+                }
+            }
+        `;
+    }
+    getConfigs() {
+        // FIXME: since User.categories is not a connection, not using NODE_DELETE
+        // would have orphaned Category record left
+        return [{
+            type: 'FIELDS_CHANGE',
+            fieldIDs: {
+                user: this.props.viewer.id
+            }
+        }];
+    }
+}
+DeleteCategoryMutation.fragments = {
+    category: () => Relay.QL`fragment on Category { id }`,
+    viewer: () => Relay.QL`fragment on User { id }`
+};
+
+export default Relay.createContainer(ManageCategory, {
+    fragments: {
+        viewer: () => Relay.QL`
+            fragment on User {
+                categories {
+                    id
+                    name
+                    ${ChangeCategoryOrderMutation.getFragment('category')}
+                    ${RenameCategoryMutation.getFragment('category')}
+                    ${DeleteCategoryMutation.getFragment('category')}
+                }
+                ${AddCategoryMutation.getFragment('viewer')}
+                ${ChangeCategoryOrderMutation.getFragment('viewer')}
+                ${DeleteCategoryMutation.getFragment('viewer')}
+            }
+        `
+    }
+});
