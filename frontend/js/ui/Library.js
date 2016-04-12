@@ -157,8 +157,9 @@ var LibraryHeader = React.createClass({
                 <select value={this.props.categoryFilter}
                     onChange={this._onCategoryFilterChange}>
                     <option value="">전체 ({this.props.count})</option>
-                {[{id: 0, name: '미분류'}].concat(this.props.categoryList).map(category => {
-                    return <option value={category.id}>{category.name} ({this.props.categoryStats[category.id] || 0})</option>;
+                {[{id: 'Category:0', name: '미분류'}].concat(this.props.categoryList).map(category => {
+                    const simpleId = category.id.split(':')[1];
+                    return <option value={simpleId}>{category.name} ({this.props.categoryStats[simpleId] || 0})</option>;
                 })}
                 </select>
                 {' '}{this.props.canEdit && <Link to="/records/category/">관리</Link>}

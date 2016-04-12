@@ -88,8 +88,7 @@ export const recordType = new GraphQLObjectType({
             type: GraphQLString
         },
         category_id: {
-            type: GraphQLString,
-            resolve: (record) => 'Category:' + record.category_id
+            type: GraphQLString
         },
         posts: {
             type: postConnection.connectionType,
