@@ -62,5 +62,17 @@ export default createContainer(Post, {
         const post = state.fetches[`posts/${id}`];
         const work = state.fetches[`work?id/${post.record.work_id}`];
         return `${post.user.name} 사용자 > ${work.title} ${getStatusDisplay(post)}`;
+    },
+
+    getMeta(state, props) {
+        const {id} = props.params;
+        const post = state.fetches[`posts/${id}`];
+        const work = state.fetches[`work?id/${post.record.work_id}`];
+        return {
+            og_url: `/-${post.id}`,
+            og_type: 'article',
+            og_image: work.metadata && work.metadata.image_url,
+            tw_image: work.metadata && work.metadata.image_url,
+        }
     }
 });
