@@ -1,11 +1,12 @@
-var graphql = require('graphql');
-var utils = require('graphql/utilities');
-var schema = require('./schema');
+import fs from 'fs';
+import {graphql} from 'graphql';
+import {introspectionQuery} from 'graphql/utilities';
+import schema from './schema';
 
-graphql.graphql(schema, utils.introspectionQuery).then(function(result) {
+graphql(schema, introspectionQuery).then(result => {
     if (result.errors) {
         console.error('ERROR: ', JSON.stringify(result.errors, null, 2));
     } else {
-        console.log(JSON.stringify(result, null, 2));
+        fs.writeFileSync('../schema.json', JSON.stringify(result, null, 2));
     }
 });
