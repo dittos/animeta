@@ -101,10 +101,8 @@ function groupRecordsByDate(records) {
 }
 
 function LibraryItem({record}) {
-    var id = record.id.split(':')[1];
-    var content;
-    content = (
-        <Link to={`/records/${id}/`}>
+    var content = (
+        <Link to={`/records/${record.simple_id}/`}>
             <span className="item-title">{record.title}</span>
             <span className="item-status">{util.getStatusText(record)}</span>
             {record.has_newer_episode &&
@@ -118,7 +116,7 @@ const LibraryItemView = Relay.createContainer(LibraryItem, {
     fragments: {
         record: () => Relay.QL`
             fragment on Record {
-                id
+                simple_id
                 title
                 status
                 status_type
@@ -126,6 +124,13 @@ const LibraryItemView = Relay.createContainer(LibraryItem, {
         `
     }
 });
+
+const NULL_CATEGORY_ID = 'NO_CATEGORY_ID';
+const NULL_CATEGORY = {
+    id: NULL_CATEGORY_ID,
+    simple_id: 0,
+    name: '미분류',
+};
 
 var LibraryHeader = React.createClass({
     render() {
@@ -157,9 +162,10 @@ var LibraryHeader = React.createClass({
                 <select value={this.props.categoryFilter}
                     onChange={this._onCategoryFilterChange}>
                     <option value="">전체 ({this.props.count})</option>
-                {[{id: 'Category:0', name: '미분류'}].concat(this.props.categoryList).map(category => {
-                    const simpleId = category.id.split(':')[1];
-                    return <option value={simpleId}>{category.name} ({this.props.categoryStats[simpleId] || 0})</option>;
+                {[NULL_CATEGORY].concat(this.props.categoryList).map(category => {
+                    return <option value={category.simple_id}>
+                        {category.name} ({this.props.categoryStats[category.id] || 0})
+                    </option>;
                 })}
                 </select>
                 {' '}{this.props.canEdit && <Link to="/records/category/">관리</Link>}
@@ -248,7 +254,7 @@ function LibraryRoute({user, location, ...props}) {
     const recordEdges = user.records.edges;
     const count = recordEdges.length;
 
-    const categoryStats = _.countBy(recordEdges, edge => edge.node.category_id);
+    const categoryStats = _.countBy(recordEdges, edge => edge.node.category_id || NULL_CATEGORY_ID);
     const statusTypeStats = _.countBy(recordEdges, edge => edge.node.status_type);
 
     let {type, category, sort} = location.query;
@@ -257,8 +263,9 @@ function LibraryRoute({user, location, ...props}) {
     if (type) {
         chain = chain.filter(record => record.status_type == type);
     }
-    if (category === 0 || category) {
-        chain = chain.filter(record => (record.category_id || 0) == category);
+    if (category) {
+        const categoryID = category === '0' ? NULL_CATEGORY_ID : `Category:${category}`;
+        chain = chain.filter(record => (record.category_id || NULL_CATEGORY_ID) == categoryID);
     }
     const filteredRecords = chain.value();
 
@@ -284,6 +291,7 @@ export default Relay.createContainer(LibraryRoute, {
                 records(first: 100000) {
                     edges {
                         node {
+                            id
                             ${LibraryItemView.getFragment('record')}
 
                             # For sorting/grouping
@@ -296,6 +304,7 @@ export default Relay.createContainer(LibraryRoute, {
                 }
                 categories {
                     id
+                    simple_id
                     name
                 }
             }

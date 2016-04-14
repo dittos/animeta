@@ -29,6 +29,8 @@ const {nodeInterface, nodeField} = nodeDefinitions(
             return loaders.user.load(id);
         } else if (type === 'Record') {
             return loaders.record.load(id);
+        } else if (type === 'Category') {
+            return loaders.category.load(id);
         }
     },
     obj => obj.__type
@@ -39,6 +41,10 @@ export const userType = new GraphQLObjectType({
     interfaces: [nodeInterface],
     fields: () => ({
         id: globalIdField(),
+        simple_id: {
+            type: GraphQLString,
+            resolve: obj => obj.id
+        },
         name: {
             type: GraphQLString
         },
@@ -59,11 +65,15 @@ export const userType = new GraphQLObjectType({
     })
 });
 
-const categoryType = new GraphQLObjectType({
+export const categoryType = new GraphQLObjectType({
     name: 'Category',
     interfaces: [nodeInterface],
     fields: {
         id: globalIdField(),
+        simple_id: {
+            type: GraphQLString,
+            resolve: obj => obj.id
+        },
         name: {
             type: GraphQLString
         }
@@ -75,6 +85,10 @@ export const recordType = new GraphQLObjectType({
     interfaces: [nodeInterface],
     fields: () => ({
         id: globalIdField(),
+        simple_id: {
+            type: GraphQLString,
+            resolve: obj => obj.id
+        },
         title: {
             type: GraphQLString
         },
@@ -88,7 +102,12 @@ export const recordType = new GraphQLObjectType({
             type: GraphQLString
         },
         category_id: {
-            type: GraphQLString
+            type: GraphQLString,
+            resolve: ({category_id}) => category_id && `Category:${category_id}`
+        },
+        user_id: {
+            type: GraphQLString,
+            resolve: ({user_id}) => `User:${user_id}`
         },
         posts: {
             type: postConnection.connectionType,
@@ -102,11 +121,15 @@ export const recordType = new GraphQLObjectType({
     })
 });
 
-const postType = new GraphQLObjectType({
+export const postType = new GraphQLObjectType({
     name: 'Post',
     interfaces: [nodeInterface],
     fields: {
         id: globalIdField(),
+        simple_id: {
+            type: GraphQLString,
+            resolve: obj => obj.id
+        },
         status: {
             type: GraphQLString
         },
@@ -150,7 +173,7 @@ const addCategoryMutation = mutationWithClientMutationId({
             method: 'POST',
             body: form
         });
-        const user = await info.rootValue.fetch('/api/v2/me');
+        const user = await info.rootValue.loaders.viewer.load(1);
         return {category, user};
     }
 });
@@ -173,7 +196,7 @@ const changeCategoryOrderMutation = mutationWithClientMutationId({
             method: 'PUT',
             body: body.join('&')
         });
-        const user = await info.rootValue.fetch('/api/v2/me');
+        const user = await info.rootValue.loaders.viewer.load(1);
         return {user};
     }
 });
@@ -222,7 +245,7 @@ const deleteCategoryMutation = mutationWithClientMutationId({
         await info.rootValue.fetch('/api/v2/categories/' + id, {
             method: 'DELETE'
         });
-        const user = await info.rootValue.fetch('/api/v2/me');
+        const user = await info.rootValue.loaders.viewer.load(1);
         return {user};
     }
 });
@@ -244,15 +267,7 @@ const queryType = new GraphQLObjectType({
 
         viewer: {
             type: userType,
-            resolve: ({loaders, fetch}, args) => fetch('/api/v2/me')
-                .then(d => {
-                    if (d) {
-                        d.__type = userType;
-                        loaders.user.prime(d.id, d);
-                        loaders.username.prime(d.name, d);
-                    }
-                    return d
-                })
+            resolve: ({loaders}) => loaders.viewer.load(1)
         }
     }
 });

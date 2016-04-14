@@ -6,6 +6,10 @@ from record.models import Category
 
 
 class CategoryView(BaseView):
+    def get(self, request, id):
+        category = get_object_or_404(Category, id=id)
+        return serialize_category(category)
+
     def delete(self, request, id):
         category = get_object_or_404(Category, id=id)
         self.check_login()
