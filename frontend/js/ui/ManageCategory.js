@@ -147,7 +147,7 @@ export default Relay.createContainer(ManageCategory, {
                 categories {
                     id
                     name
-                    ${ChangeCategoryOrderMutation.getFragment('category')}
+                    ${ChangeCategoryOrderMutation.getFragment('categories')}
                     ${RenameCategoryMutation.getFragment('category')}
                     ${DeleteCategoryMutation.getFragment('category')}
                 }

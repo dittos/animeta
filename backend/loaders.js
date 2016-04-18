@@ -1,5 +1,5 @@
 import DataLoader from 'dataloader';
-import {userType, recordType, categoryType} from './schema';
+import {userType, recordType, categoryType} from './nodes';
 
 function Loader(fetch) {
     this.user = new DataLoader(keys => Promise.all(

@@ -56,7 +56,7 @@ export class ChangeCategoryOrderMutation extends Relay.Mutation {
 }
 ChangeCategoryOrderMutation.fragments = {
     viewer: () => Relay.QL`fragment on User { id }`,
-    category: () => Relay.QL`fragment on Category { id }`
+    categories: () => Relay.QL`fragment on Category @relay(plural: true) { id }`
 };
 
 export class RenameCategoryMutation extends Relay.Mutation {

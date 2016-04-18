@@ -1,0 +1,269 @@
+import FormData from 'form-data';
+import {
+    GraphQLObjectType,
+    GraphQLInputObjectType,
+    GraphQLList,
+    GraphQLNonNull,
+    GraphQLString,
+    GraphQLBoolean,
+    GraphQLID,
+} from 'graphql';
+import {
+    userType,
+    categoryType,
+    recordType,
+    postConnection,
+} from './nodes';
+import {mutationWithClientMutationId} from 'graphql-relay';
+import {fromGlobalId} from './relayNode';
+
+const addCategory = mutationWithClientMutationId({
+    name: 'AddCategory',
+    inputFields: {
+        categoryName: {
+            type: new GraphQLNonNull(GraphQLString)
+        }
+    },
+    outputFields: {
+        category: {
+            type: categoryType
+        },
+        user: {
+            type: userType
+        }
+    },
+    async mutateAndGetPayload({categoryName}, {fetch, loaders}) {
+        const form = new FormData();
+        form.append('name', categoryName);
+        const category = await fetch('/api/v2/users/_/categories', {
+            method: 'POST',
+            body: form
+        });
+        const user = await loaders.viewer.load(1);
+        return {category, user};
+    }
+});
+
+const changeCategoryOrder = mutationWithClientMutationId({
+    name: 'ChangeCategoryOrder',
+    inputFields: {
+        categoryIds: {
+            type: new GraphQLList(GraphQLID)
+        }
+    },
+    outputFields: {
+        user: {
+            type: userType
+        }
+    },
+    async mutateAndGetPayload({categoryIds}, {fetch, loaders}) {
+        const body = categoryIds.map(fromGlobalId).map(({id}) => 'ids[]=' + id);
+        await fetch('/api/v2/users/_/categories', {
+            method: 'PUT',
+            body: body.join('&')
+        });
+        const user = await loaders.viewer.load(1);
+        return {user};
+    }
+});
+
+const renameCategory = mutationWithClientMutationId({
+    name: 'RenameCategory',
+    inputFields: {
+        categoryId: {
+            type: new GraphQLNonNull(GraphQLID)
+        },
+        categoryName: {
+            type: new GraphQLNonNull(GraphQLString)
+        }
+    },
+    outputFields: {
+        category: {
+            type: categoryType
+        }
+    },
+    async mutateAndGetPayload({categoryId, categoryName}, {fetch}) {
+        const {id} = fromGlobalId(categoryId);
+        const form = new FormData();
+        form.append('name', categoryName);
+        const category = await fetch('/api/v2/categories/' + id, {
+            method: 'POST',
+            body: form
+        });
+        return {category};
+    }
+});
+
+const deleteCategory = mutationWithClientMutationId({
+    name: 'DeleteCategory',
+    inputFields: {
+        categoryId: {
+            type: new GraphQLNonNull(GraphQLID)
+        }
+    },
+    outputFields: {
+        user: {
+            type: userType
+        }
+    },
+    async mutateAndGetPayload({categoryId}, {fetch, loaders}) {
+        const {id} = fromGlobalId(categoryId);
+        await fetch('/api/v2/categories/' + id, {
+            method: 'DELETE'
+        });
+        const user = await loaders.viewer.load(1);
+        return {user};
+    }
+});
+
+const changeRecordCategory = mutationWithClientMutationId({
+    name: 'ChangeRecordCategory',
+    inputFields: {
+        recordId: {
+            type: new GraphQLNonNull(GraphQLID)
+        },
+        categoryId: {
+            type: GraphQLID
+        }
+    },
+    outputFields: {
+        record: {
+            type: recordType
+        }
+    },
+    async mutateAndGetPayload({recordId, categoryId}, {fetch}) {
+        const {id: simpleRecordId} = fromGlobalId(recordId);
+        let simpleCategoryId = '';
+        if (categoryId) {
+            simpleCategoryId = fromGlobalId(categoryId).id;
+        }
+        const form = new FormData();
+        form.append('category_id', simpleCategoryId);
+        const record = await fetch('/api/v2/records/' + simpleRecordId, {
+            method: 'POST',
+            body: form
+        });
+        return {record};
+    }
+});
+
+const changeRecordTitle = mutationWithClientMutationId({
+    name: 'ChangeRecordTitle',
+    inputFields: {
+        recordId: {
+            type: new GraphQLNonNull(GraphQLID)
+        },
+        title: {
+            type: new GraphQLNonNull(GraphQLString)
+        }
+    },
+    outputFields: {
+        record: {
+            type: recordType
+        }
+    },
+    async mutateAndGetPayload({recordId, title}, {fetch}) {
+        const {id: simpleRecordId} = fromGlobalId(recordId);
+        const form = new FormData();
+        form.append('title', title);
+        const record = await fetch('/api/v2/records/' + simpleRecordId, {
+            method: 'POST',
+            body: form
+        });
+        // TODO: error handling
+        return {record};
+    }
+});
+
+const deletePost = mutationWithClientMutationId({
+    name: 'DeletePost',
+    inputFields: {
+        postId: {
+            type: new GraphQLNonNull(GraphQLID)
+        }
+    },
+    outputFields: {
+        deletedPostId: {
+            type: GraphQLID
+        },
+        record: {
+            type: recordType
+        }
+    },
+    async mutateAndGetPayload({postId}, {fetch}) {
+        const {id} = fromGlobalId(postId);
+        const {record} = await fetch('/api/v2/posts/' + id, {
+            method: 'DELETE'
+        });
+        return {
+            deletedPostId: postId,
+            record
+        };
+    }
+});
+
+const createPost = mutationWithClientMutationId({
+    name: 'CreatePost',
+    inputFields: {
+        recordId: {
+            type: new GraphQLNonNull(GraphQLID)
+        },
+        data: {
+            type: new GraphQLInputObjectType({
+                name: 'CreatePostInputData',
+                fields: {
+                    status: {type: GraphQLString},
+                    status_type: {type: new GraphQLNonNull(GraphQLString)},
+                    comment: {type: GraphQLString},
+                    contains_spoiler: {type: GraphQLBoolean},
+                }
+            })
+        }
+    },
+    outputFields: {
+        createdPostEdge: {
+            type: postConnection.edgeType
+        },
+        record: {
+            type: recordType
+        }
+    },
+    async mutateAndGetPayload({recordId, data}, {fetch}) {
+        const {id} = fromGlobalId(recordId);
+        const form = new FormData();
+        form.append('status', data.status);
+        form.append('status_type', data.status_type);
+        form.append('comment', data.comment);
+        if (data.contains_spoiler) {
+            form.append('contains_spoiler', 'true');
+        }
+        // TODO: publish_twitter
+        const {post, record} = await fetch('/api/v2/records/' + id + '/posts', {
+            method: 'POST',
+            body: form
+        });
+        return {
+            createdPostEdge: {
+                node: post,
+                cursor: null // TODO
+            },
+            record
+        };
+    }
+});
+
+export default new GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+        addCategory,
+        changeCategoryOrder,
+        renameCategory,
+        deleteCategory,
+
+        changeRecordCategory,
+        changeRecordTitle,
+
+        deletePost,
+        createPost,
+    }
+});

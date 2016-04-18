@@ -1,4 +1,3 @@
-import FormData from 'form-data';
 import {
     GraphQLSchema,
     GraphQLObjectType,
@@ -9,246 +8,10 @@ import {
     GraphQLID,
 } from 'graphql';
 import {
-    connectionArgs,
-    connectionDefinitions,
-    connectionFromPromisedArray,
-    mutationWithClientMutationId,
-} from 'graphql-relay';
-import {
-    nodeDefinitions,
-    globalIdField,
-    fromGlobalId,
-    toGlobalId,
-} from './relayNode';
-
-const {nodeInterface, nodeField} = nodeDefinitions(
-    (globalId, info) => {
-        const loaders = info.rootValue.loaders;
-        const {type, id} = fromGlobalId(globalId);
-        if (type === 'User') {
-            return loaders.user.load(id);
-        } else if (type === 'Record') {
-            return loaders.record.load(id);
-        } else if (type === 'Category') {
-            return loaders.category.load(id);
-        }
-    },
-    obj => obj.__type
-);
-
-export const userType = new GraphQLObjectType({
-    name: 'User',
-    interfaces: [nodeInterface],
-    fields: () => ({
-        id: globalIdField(),
-        simple_id: {
-            type: GraphQLString,
-            resolve: obj => obj.id
-        },
-        name: {
-            type: GraphQLString
-        },
-        records: {
-            type: recordConnection.connectionType,
-            args: connectionArgs,
-            resolve: (user, args, info) => connectionFromPromisedArray(
-                info.rootValue.fetch('/api/v2/users/' + user.name + '/records'),
-                args
-            )
-        },
-        categories: {
-            type: new GraphQLList(categoryType)
-        },
-        connected_services: {
-            type: new GraphQLList(GraphQLString)
-        }
-    })
-});
-
-export const categoryType = new GraphQLObjectType({
-    name: 'Category',
-    interfaces: [nodeInterface],
-    fields: {
-        id: globalIdField(),
-        simple_id: {
-            type: GraphQLString,
-            resolve: obj => obj.id
-        },
-        name: {
-            type: GraphQLString
-        }
-    }
-});
-
-export const recordType = new GraphQLObjectType({
-    name: 'Record',
-    interfaces: [nodeInterface],
-    fields: () => ({
-        id: globalIdField(),
-        simple_id: {
-            type: GraphQLString,
-            resolve: obj => obj.id
-        },
-        title: {
-            type: GraphQLString
-        },
-        status: {
-            type: GraphQLString
-        },
-        status_type: {
-            type: GraphQLString
-        },
-        updated_at: {
-            type: GraphQLString
-        },
-        category_id: {
-            type: GraphQLString,
-            resolve: ({category_id}) => category_id && `Category:${category_id}`
-        },
-        user_id: {
-            type: GraphQLString,
-            resolve: ({user_id}) => `User:${user_id}`
-        },
-        posts: {
-            type: postConnection.connectionType,
-            args: connectionArgs,
-            resolve: (record, args, info) => connectionFromPromisedArray(
-                info.rootValue.fetch('/api/v2/records/' + record.id + '/posts')
-                    .then(d => d.posts),
-                args
-            )
-        }
-    })
-});
-
-export const postType = new GraphQLObjectType({
-    name: 'Post',
-    interfaces: [nodeInterface],
-    fields: {
-        id: globalIdField(),
-        simple_id: {
-            type: GraphQLString,
-            resolve: obj => obj.id
-        },
-        status: {
-            type: GraphQLString
-        },
-        status_type: {
-            type: GraphQLString
-        },
-        updated_at: {
-            type: GraphQLString
-        },
-        comment: {
-            type: GraphQLString
-        },
-        contains_spoiler: {
-            type: GraphQLBoolean
-        }
-    }
-});
-
-const recordConnection = connectionDefinitions({nodeType: recordType});
-const postConnection = connectionDefinitions({nodeType: postType});
-
-const addCategoryMutation = mutationWithClientMutationId({
-    name: 'AddCategory',
-    inputFields: {
-        categoryName: {
-            type: new GraphQLNonNull(GraphQLString)
-        }
-    },
-    outputFields: {
-        category: {
-            type: categoryType
-        },
-        user: {
-            type: userType
-        }
-    },
-    async mutateAndGetPayload({categoryName}, info) {
-        const form = new FormData();
-        form.append('name', categoryName);
-        const category = await info.rootValue.fetch('/api/v2/users/_/categories', {
-            method: 'POST',
-            body: form
-        });
-        const user = await info.rootValue.loaders.viewer.load(1);
-        return {category, user};
-    }
-});
-
-const changeCategoryOrderMutation = mutationWithClientMutationId({
-    name: 'ChangeCategoryOrder',
-    inputFields: {
-        categoryIds: {
-            type: new GraphQLList(GraphQLID)
-        }
-    },
-    outputFields: {
-        user: {
-            type: userType
-        }
-    },
-    async mutateAndGetPayload({categoryIds}, info) {
-        const body = categoryIds.map(fromGlobalId).map(({id}) => 'ids[]=' + id);
-        await info.rootValue.fetch('/api/v2/users/_/categories', {
-            method: 'PUT',
-            body: body.join('&')
-        });
-        const user = await info.rootValue.loaders.viewer.load(1);
-        return {user};
-    }
-});
-
-const renameCategoryMutation = mutationWithClientMutationId({
-    name: 'RenameCategory',
-    inputFields: {
-        categoryId: {
-            type: new GraphQLNonNull(GraphQLID)
-        },
-        categoryName: {
-            type: new GraphQLNonNull(GraphQLString)
-        }
-    },
-    outputFields: {
-        category: {
-            type: categoryType
-        }
-    },
-    async mutateAndGetPayload({categoryId, categoryName}, info) {
-        const {id} = fromGlobalId(categoryId);
-        const form = new FormData();
-        form.append('name', categoryName);
-        const category = await info.rootValue.fetch('/api/v2/categories/' + id, {
-            method: 'POST',
-            body: form
-        });
-        return {category};
-    }
-});
-
-const deleteCategoryMutation = mutationWithClientMutationId({
-    name: 'DeleteCategory',
-    inputFields: {
-        categoryId: {
-            type: new GraphQLNonNull(GraphQLID)
-        }
-    },
-    outputFields: {
-        user: {
-            type: userType
-        }
-    },
-    async mutateAndGetPayload({categoryId}, info) {
-        const {id} = fromGlobalId(categoryId);
-        await info.rootValue.fetch('/api/v2/categories/' + id, {
-            method: 'DELETE'
-        });
-        const user = await info.rootValue.loaders.viewer.load(1);
-        return {user};
-    }
-});
+    nodeField,
+    userType,
+} from './nodes';
+import mutationType from './mutations';
 
 const queryType = new GraphQLObjectType({
     name: 'Query',
@@ -262,23 +25,13 @@ const queryType = new GraphQLObjectType({
                     type: GraphQLString
                 }
             },
-            resolve: ({loaders}, args) => loaders.username.load(args.name)
+            resolve: (root, args, {loaders}) => loaders.username.load(args.name)
         },
 
         viewer: {
             type: userType,
-            resolve: ({loaders}) => loaders.viewer.load(1)
+            resolve: (root, args, {loaders}) => loaders.viewer.load(1)
         }
-    }
-});
-
-const mutationType = new GraphQLObjectType({
-    name: 'Mutation',
-    fields: {
-        addCategory: addCategoryMutation,
-        changeCategoryOrder: changeCategoryOrderMutation,
-        renameCategory: renameCategoryMutation,
-        deleteCategory: deleteCategoryMutation,
     }
 });
 

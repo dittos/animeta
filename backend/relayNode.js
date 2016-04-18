@@ -58,9 +58,9 @@ function nodeDefinitions(idFetcher, typeResolver) {
         description: 'The ID of an object'
       }
     },
-    resolve: function resolve(obj, _ref, info) {
+    resolve: function resolve(obj, _ref, context, info) {
       var id = _ref.id;
-      return idFetcher(id, info);
+      return idFetcher(id, context, info);
     }
   };
 
@@ -102,8 +102,8 @@ function globalIdField(typeName, idFetcher) {
     name: 'id',
     description: 'The ID of an object',
     type: new _graphql.GraphQLNonNull(_graphql.GraphQLID),
-    resolve: function resolve(obj, args, info) {
-      return toGlobalId(typeName != null ? typeName : info.parentType.name, idFetcher ? idFetcher(obj, info) : obj.id);
+    resolve: function resolve(obj, args, context, info) {
+      return toGlobalId(typeName != null ? typeName : info.parentType.name, idFetcher ? idFetcher(obj, context, info) : obj.id);
     }
   };
 }

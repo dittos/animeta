@@ -17,7 +17,7 @@ app.use('/graphql', graphqlHttp(request => {
     };
     return {
         schema,
-        rootValue: {
+        context: {
             fetch: requestFetch,
             loaders: createLoaders(requestFetch)
         },
