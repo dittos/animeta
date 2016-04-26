@@ -12,6 +12,7 @@ import {
     userType,
 } from './nodes';
 import mutationType from './mutations';
+import {lazyRootResolver} from './backend';
 
 const queryType = new GraphQLObjectType({
     name: 'Query',
@@ -25,12 +26,12 @@ const queryType = new GraphQLObjectType({
                     type: GraphQLString
                 }
             },
-            resolve: (root, args, {loaders}) => loaders.username.load(args.name)
+            resolve: lazyRootResolver,
         },
 
         viewer: {
             type: userType,
-            resolve: (root, args, {loaders}) => loaders.viewer.load(1)
+            resolve: lazyRootResolver,
         }
     }
 });

@@ -15,7 +15,11 @@ import {
     postConnection,
 } from './nodes';
 import {mutationWithClientMutationId} from 'graphql-relay';
-import {fromGlobalId} from './relayNode';
+
+function fromGlobalId(globalId) {
+    const [typename, id] = globalId.split(':');
+    return {typename, id};
+}
 
 const addCategory = mutationWithClientMutationId({
     name: 'AddCategory',
@@ -32,14 +36,14 @@ const addCategory = mutationWithClientMutationId({
             type: userType
         }
     },
-    async mutateAndGetPayload({categoryName}, {fetch, loaders}) {
+    async mutateAndGetPayload({categoryName}, {fetch, call}) {
         const form = new FormData();
         form.append('name', categoryName);
         const category = await fetch('/api/v2/users/_/categories', {
             method: 'POST',
             body: form
         });
-        const user = await loaders.viewer.load(1);
+        const user = await call({type: 'root', field: 'viewer'});
         return {category, user};
     }
 });
@@ -56,13 +60,13 @@ const changeCategoryOrder = mutationWithClientMutationId({
             type: userType
         }
     },
-    async mutateAndGetPayload({categoryIds}, {fetch, loaders}) {
+    async mutateAndGetPayload({categoryIds}, {fetch, call}) {
         const body = categoryIds.map(fromGlobalId).map(({id}) => 'ids[]=' + id);
         await fetch('/api/v2/users/_/categories', {
             method: 'PUT',
             body: body.join('&')
         });
-        const user = await loaders.viewer.load(1);
+        const user = await call({type: 'root', field: 'viewer'});
         return {user};
     }
 });
@@ -106,12 +110,12 @@ const deleteCategory = mutationWithClientMutationId({
             type: userType
         }
     },
-    async mutateAndGetPayload({categoryId}, {fetch, loaders}) {
+    async mutateAndGetPayload({categoryId}, {fetch, call}) {
         const {id} = fromGlobalId(categoryId);
         await fetch('/api/v2/categories/' + id, {
             method: 'DELETE'
         });
-        const user = await loaders.viewer.load(1);
+        const user = await call({type: 'root', field: 'viewer'});
         return {user};
     }
 });

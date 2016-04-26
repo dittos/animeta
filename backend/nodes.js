@@ -11,26 +11,12 @@ import {
     connectionDefinitions,
     connectionFromPromisedArray,
     mutationWithClientMutationId,
-} from 'graphql-relay';
-import {
     nodeDefinitions,
-    globalIdField,
-    fromGlobalId,
-    toGlobalId,
-} from './relayNode';
+} from 'graphql-relay';
+import {fetchNode, lazyFieldResolver} from './backend';
 
 const {nodeInterface, nodeField: _nodeField} = nodeDefinitions(
-    (globalId, {loaders}) => {
-        const {type, id} = fromGlobalId(globalId);
-        if (type === 'User') {
-            return loaders.user.load(id);
-        } else if (type === 'Record') {
-            return loaders.record.load(id);
-        } else if (type === 'Category') {
-            return loaders.category.load(id);
-        }
-    },
-    obj => obj.__type
+    (globalId, context, info) => fetchNode(context, globalId)
 );
 
 export const nodeField = _nodeField;
@@ -38,28 +24,25 @@ export const nodeField = _nodeField;
 export const userType = new GraphQLObjectType({
     name: 'User',
     interfaces: [nodeInterface],
+    isTypeOf: value => value.__typename === 'User',
     fields: () => ({
-        id: globalIdField(),
-        simple_id: {
-            type: GraphQLString,
-            resolve: obj => obj.id
-        },
+        id: {type: new GraphQLNonNull(GraphQLID)},
+        simple_id: {type: GraphQLID},
         name: {
             type: GraphQLString
         },
         records: {
             type: recordConnection.connectionType,
             args: connectionArgs,
-            resolve: (user, args, {fetch}) => connectionFromPromisedArray(
-                fetch('/api/v2/users/' + user.name + '/records'),
-                args
-            )
+            resolve: lazyFieldResolver,
         },
         categories: {
-            type: new GraphQLList(categoryType)
+            type: new GraphQLList(categoryType),
+            resolve: lazyFieldResolver,
         },
         connected_services: {
-            type: new GraphQLList(GraphQLString)
+            type: new GraphQLList(GraphQLString),
+            resolve: lazyFieldResolver,
         }
     })
 });
@@ -67,14 +50,15 @@ export const userType = new GraphQLObjectType({
 export const categoryType = new GraphQLObjectType({
     name: 'Category',
     interfaces: [nodeInterface],
+    isTypeOf: value => value.__typename === 'Category',
     fields: {
-        id: globalIdField(),
-        simple_id: {
-            type: GraphQLString,
-            resolve: obj => obj.id
-        },
+        id: {type: new GraphQLNonNull(GraphQLID)},
+        simple_id: {type: GraphQLID},
         name: {
             type: GraphQLString
+        },
+        user_id: {
+            type: GraphQLID
         }
     }
 });
@@ -82,12 +66,10 @@ export const categoryType = new GraphQLObjectType({
 export const recordType = new GraphQLObjectType({
     name: 'Record',
     interfaces: [nodeInterface],
+    isTypeOf: value => value.__typename === 'Record',
     fields: () => ({
-        id: globalIdField(),
-        simple_id: {
-            type: GraphQLString,
-            resolve: obj => obj.id
-        },
+        id: {type: new GraphQLNonNull(GraphQLID)},
+        simple_id: {type: GraphQLID},
         title: {
             type: GraphQLString
         },
@@ -100,22 +82,12 @@ export const recordType = new GraphQLObjectType({
         updated_at: {
             type: GraphQLString
         },
-        category_id: {
-            type: GraphQLString,
-            resolve: ({category_id}) => category_id && `Category:${category_id}`
-        },
-        user_id: {
-            type: GraphQLString,
-            resolve: ({user_id}) => `User:${user_id}`
-        },
+        category_id: {type: GraphQLID},
+        user_id: {type: GraphQLID},
         posts: {
             type: postConnection.connectionType,
             args: connectionArgs,
-            resolve: (record, args, {fetch}) => connectionFromPromisedArray(
-                fetch('/api/v2/records/' + record.id + '/posts')
-                    .then(d => d.posts),
-                args
-            )
+            resolve: lazyFieldResolver
         }
     })
 });
@@ -123,12 +95,11 @@ export const recordType = new GraphQLObjectType({
 export const postType = new GraphQLObjectType({
     name: 'Post',
     interfaces: [nodeInterface],
+    isTypeOf: value => value.__typename === 'Post',
     fields: {
-        id: globalIdField(),
-        simple_id: {
-            type: GraphQLString,
-            resolve: obj => obj.id
-        },
+        id: {type: new GraphQLNonNull(GraphQLID)},
+        simple_id: {type: GraphQLID},
+        user_id: {type: GraphQLID},
         status: {
             type: GraphQLString
         },

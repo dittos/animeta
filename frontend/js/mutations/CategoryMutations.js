@@ -98,10 +98,10 @@ export class DeleteCategoryMutation extends Relay.Mutation {
     }
     getFatQuery() {
         return Relay.QL`
-            fragment on DeleteCategoryPayload {
+            fragment on DeleteCategoryPayload @relay(pattern: true) {
                 user {
                     categories
-                    records
+                    records { edges { node { category_id } } }
                 }
             }
         `;
