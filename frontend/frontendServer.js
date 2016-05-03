@@ -1,5 +1,4 @@
 require('babel-polyfill');
-require('babel-register');
 var less = require('less');
 require('css-modules-require-hook')({
     extensions: ['.less'],
