@@ -101,7 +101,7 @@ def _get_user_records(user_id, args, request):
     return {
         'edges': [{
             'node': _make_node_result(record_type, node, request),
-            'cursor': 'arbitary',  # XXX
+            'cursor': str(node.id),
         } for node in Record.objects.filter(user_id=user_id)],
         'pageInfo': {
             'hasPreviousPage': False,
@@ -117,9 +117,9 @@ def _get_record_posts(record_id, args, request):
     post_type = node_types['Post']
     return {
         'edges': [{
-                      'node': _make_node_result(post_type, node, request),
-                      'cursor': 'arbitary',
-                  } for node in record.history_set],
+            'node': _make_node_result(post_type, node, request),
+            'cursor': str(node.id),
+        } for node in record.history_set],
         'pageInfo': {
             'hasPreviousPage': False,
             'hasNextPage': False
@@ -131,7 +131,6 @@ field_resolvers[('Record', 'posts')] = _get_record_posts
 
 def batch_call(request):
     queries = simplejson.load(request)
-    print queries
     results = []
     for query in queries:
         results.append(resolvers[query['type']](request, query))

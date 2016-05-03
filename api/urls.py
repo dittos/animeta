@@ -70,5 +70,5 @@ urlpatterns += [
     # deprecated
     url(r'^v2/charts/works/weekly$', PopularWorksChartView.as_view()),
 
-    url(r'^batch/$', 'api.batch_views.batch_call'),
+    url(r'^batch/$', 'api.batch.views.batch_call'),
 ]
