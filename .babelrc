@@ -4,7 +4,7 @@
         "react",
         {
             "plugins": [
-                "./babelRelayPlugin"
+                "react-relay"
             ]
         },
         "es2015",
