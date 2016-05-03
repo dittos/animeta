@@ -1,76 +1,18 @@
-import datetime
 import simplejson
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 
-from api import serializers
 from connect.models import TwitterSetting
-from record.models import Record, Category, History
-
-
-class NodeType(object):
-    def __init__(self, model, serializer):
-        self.model = model
-        self.serializer = serializer
-
-
-def make_serializer(fields, aliases=None, edges=None):
-    if aliases is None:
-        aliases = {}
-    if edges is None:
-        edges = {}
-
-    def _serializer(obj, request):
-        data = {}
-        for field in fields:
-            value = getattr(obj, aliases.get(field, field))
-            if isinstance(value, datetime.datetime):
-                value = serializers.serialize_datetime(value)
-            data[field] = value
-        for field, typename in edges.items():
-            simple_id = getattr(obj, field)
-            if simple_id is not None:
-                data[field] = typename + ':' + str(simple_id)
-        return data
-
-    return _serializer
-
-
-def make_record_serializer():
-    serializer = make_serializer(['title', 'status', 'updated_at'],
-                                 edges={'user_id': 'User', 'work_id': 'Work', 'category_id': 'Category'})
-
-    def _serializer(obj, request):
-        data = serializer(obj, request)
-        data['status_type'] = obj.status_type.name
-        return data
-
-    return _serializer
-
-
-def make_post_serializer():
-    serializer = make_serializer(['status', 'comment', 'updated_at', 'contains_spoiler'])
-
-    def _serializer(obj, request):
-        data = serializer(obj, request)
-        data['status_type'] = obj.status_type.name
-        data['record_id'] = 'Record:' + str(obj.record.id)
-        return data
-
-    return _serializer
-
-
-resolvers = {}
+from record.models import Record, Category
+from . import nodes
 
 node_types = {
-    'User': NodeType(User, make_serializer(['name', 'date_joined'], aliases={'name': 'username'})),
-    'Record': NodeType(Record, make_record_serializer()),
-    'Category': NodeType(Category, make_serializer(['name'], edges={'user_id': 'User'})),
-    'Post': NodeType(History, make_post_serializer()),
+    'User': nodes.UserNode,
+    'Record': nodes.RecordNode,
+    'Category': nodes.CategoryNode,
+    'Post': nodes.PostNode,
 }
-for name, node_type in node_types.items():
-    node_type.name = name
-
+resolvers = {}
 field_resolvers = {}
 root_resolvers = {}
 
@@ -78,7 +20,7 @@ root_resolvers = {}
 def _get_user_categories(user_id, args, request):
     result = []
     for category in Category.objects.filter(user_id=user_id):
-        result.append(_make_node_result(node_types['Category'], category, request))
+        result.append(nodes.CategoryNode.serialize(category, request))
     return result
 
 field_resolvers[('User', 'categories')] = _get_user_categories
@@ -97,10 +39,9 @@ field_resolvers[('User', 'connected_services')] = _get_user_connected_services
 
 
 def _get_user_records(user_id, args, request):
-    record_type = node_types['Record']
     return {
         'edges': [{
-            'node': _make_node_result(record_type, node, request),
+            'node': nodes.RecordNode.serialize(node, request),
             'cursor': str(node.id),
         } for node in Record.objects.filter(user_id=user_id)],
         'pageInfo': {
@@ -114,10 +55,9 @@ field_resolvers[('User', 'records')] = _get_user_records
 
 def _get_record_posts(record_id, args, request):
     record = Record.objects.get(pk=record_id)
-    post_type = node_types['Post']
     return {
         'edges': [{
-            'node': _make_node_result(post_type, node, request),
+            'node': nodes.PostNode.serialize(node, request),
             'cursor': str(node.id),
         } for node in record.history_set],
         'pageInfo': {
@@ -147,7 +87,7 @@ def get_node(request, query):
         node = node_type.model.objects.get(pk=id)
     except node_type.model.DoesNotExist:
         return None
-    return _make_node_result(node_type, node, request)
+    return node_type.serialize(node, request)
 
 resolvers['node'] = get_node
 
@@ -171,7 +111,7 @@ resolvers['root'] = get_root
 
 def get_user_by_name(args, request):
     user = User.objects.get(username=args['name'])
-    return _make_node_result(node_types['User'], user, request)
+    return nodes.UserNode.serialize(user, request)
 
 root_resolvers['user'] = get_user_by_name
 
@@ -179,7 +119,7 @@ root_resolvers['user'] = get_user_by_name
 def get_viewer(args, request):
     if not request.user.is_authenticated():
         return None
-    return _make_node_result(node_types['User'], request.user, request)
+    return nodes.UserNode.serialize(request.user, request)
 
 root_resolvers['viewer'] = get_viewer
 
@@ -187,11 +127,3 @@ root_resolvers['viewer'] = get_viewer
 def _parse_node_id(node_id):
     typename, id = node_id.split(':', 1)
     return typename, id
-
-
-def _make_node_result(node_type, node, request):
-    result = node_type.serializer(node, request)
-    result['__typename'] = node_type.name
-    result['id'] = '{}:{}'.format(node_type.name, node.id)
-    result['simple_id'] = node.id
-    return result
