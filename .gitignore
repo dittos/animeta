@@ -17,3 +17,4 @@ frontend/assets.json
 frontend/config.json
 .idea
 *.iml
+frontend-dist/

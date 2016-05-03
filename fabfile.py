@@ -11,6 +11,9 @@ def deploy():
         run('env/bin/python manage.py migrate')
         put('animeta/static/build/*', 'animeta/static/build/')
         put('frontend/assets.json', 'frontend/')
+        run('rm -rf frontend-dist')
+        run('cp -r frontend frontend-dist')
+        run('./node_modules/.bin/babel frontend -d frontend-dist')
         run('touch ~/uwsgi-services/animeta.ini')
         run('pm2 gracefulReload animeta')
 

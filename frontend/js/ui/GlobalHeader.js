@@ -89,6 +89,7 @@ var GlobalHeader = React.createClass({
                     left={this._renderLeft(Link)}
                     right={this._renderRight(Link)} />
             </Layout.CenteredFullWidth>
+            {/*
             <Layout.CenteredFullWidth className={Styles.notice}>
                 <span className={Styles.noticeLabel}>
                     <i className="fa fa-bell" />
@@ -100,6 +101,7 @@ var GlobalHeader = React.createClass({
                     보러가기!
                 </Link>
             </Layout.CenteredFullWidth>
+            */}
         </div>;
     },
     _renderLeft(Link) {
