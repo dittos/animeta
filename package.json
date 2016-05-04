@@ -15,7 +15,7 @@
     "cookie": "^0.1.3",
     "core-js": "^1.1.1",
     "crumb": "^5.0.0",
-    "css-modules-require-hook": "^2.1.0",
+    "css-modules-require-hook": "^4.0.0",
     "ejs": "^2.3.4",
     "h2o2": "^4.0.2",
     "hapi": "^11.0.2",
