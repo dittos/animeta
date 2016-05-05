@@ -4,6 +4,7 @@ require('css-modules-require-hook')({
     extensions: ['.less'],
     generateScopedName: '[name]_[local]_[hash:base64:5]', // same with css-loader
     mode: 'global',
+    rootDir: __dirname,
     preprocessCss: function(css, filename) {
         var _result;
         less.render(css, {syncImport: true, filename: filename}, function(err, result) {

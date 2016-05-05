@@ -9,15 +9,16 @@ var clientDefinePlugin = new webpack.DefinePlugin({
 });
 
 module.exports = config = {
+    context: __dirname + '/frontend',
     plugins: [
         new AssetsPlugin({filename: 'frontend/assets.json'}),
         clientDefinePlugin
     ],
     entry: {
-        table_index: './frontend/js/table-index.react.js',
-        library: './frontend/js/library.react.js',
-        index: './frontend/js/index.react.js',
-        common: './frontend/js/common.js'
+        table_index: './js/table-index.react.js',
+        library: './js/library.react.js',
+        index: './js/index.react.js',
+        common: './js/common.js'
     },
     output: {
         path: 'animeta/static/build',
