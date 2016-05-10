@@ -71,7 +71,7 @@ export function getWorkURL(title) {
 }
 
 export function getPostURL(post) {
-    return '/-' + post.id;
+    return '/-' + (post.simple_id || post.id);
 }
 
 export function getPostDeleteURL(user, post) {

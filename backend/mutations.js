@@ -15,11 +15,29 @@ import {
     postConnection,
 } from './nodes';
 import {mutationWithClientMutationId} from 'graphql-relay';
+import {fetchNode} from './backend';
 
 function fromGlobalId(globalId) {
     const [typename, id] = globalId.split(':');
     return {typename, id};
 }
+
+const refreshViewerConnectedServices = mutationWithClientMutationId({
+    name: 'RefreshViewerConnectedServices',
+    inputFields: {},
+    outputFields: {
+        viewer: {
+            type: userType,
+        }
+    },
+    async mutateAndGetPayload(input, context) {
+        const viewer = await context.call({
+            type: 'root',
+            field: 'viewer'
+        });
+        return {viewer};
+    }
+});
 
 const addCategory = mutationWithClientMutationId({
     name: 'AddCategory',
@@ -194,11 +212,12 @@ const deletePost = mutationWithClientMutationId({
             type: recordType
         }
     },
-    async mutateAndGetPayload({postId}, {fetch}) {
+    async mutateAndGetPayload({postId}, context) {
         const {id} = fromGlobalId(postId);
-        const {record} = await fetch('/api/v2/posts/' + id, {
+        let {record} = await context.fetch('/api/v2/posts/' + id, {
             method: 'DELETE'
         });
+        record = await fetchNode(context, 'Record:' + record.id);
         return {
             deletedPostId: postId,
             record
@@ -222,6 +241,9 @@ const createPost = mutationWithClientMutationId({
                     contains_spoiler: {type: GraphQLBoolean},
                 }
             })
+        },
+        publishOptions: {
+            type: new GraphQLList(GraphQLString), // TODO: enum
         }
     },
     outputFields: {
@@ -232,7 +254,8 @@ const createPost = mutationWithClientMutationId({
             type: recordType
         }
     },
-    async mutateAndGetPayload({recordId, data}, {fetch}) {
+    async mutateAndGetPayload({recordId, data}, context) {
+        const {fetch} = context;
         const {id} = fromGlobalId(recordId);
         const form = new FormData();
         form.append('status', data.status);
@@ -242,14 +265,16 @@ const createPost = mutationWithClientMutationId({
             form.append('contains_spoiler', 'true');
         }
         // TODO: publish_twitter
-        const {post, record} = await fetch('/api/v2/records/' + id + '/posts', {
+        let {post, record} = await fetch('/api/v2/records/' + id + '/posts', {
             method: 'POST',
             body: form
         });
+        post = await fetchNode(context, 'Post:' + post.id);
+        record = await fetchNode(context, 'Record:' + record.id);
         return {
             createdPostEdge: {
                 node: post,
-                cursor: null // TODO
+                cursor: String(post.simple_id), // TODO: move to backend
             },
             record
         };
@@ -259,6 +284,8 @@ const createPost = mutationWithClientMutationId({
 export default new GraphQLObjectType({
     name: 'Mutation',
     fields: {
+        refreshViewerConnectedServices,
+
         addCategory,
         changeCategoryOrder,
         renameCategory,

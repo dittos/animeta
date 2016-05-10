@@ -1,26 +1,38 @@
-var React = require('react/addons');
-var StatusInput = require('./StatusInput');
-var util = require('../util');
-var ExternalServiceActions = require('../store/ExternalServiceActions');
-var Styles = require('./PostComposer.less');
+import React from 'react';
+import LinkedStateMixin from 'react-addons-linked-state-mixin';
+import Relay from 'react-relay';
+import {
+    connectTwitter,
+    getLastPublishOptions,
+    setLastPublishOptions,
+} from '../ExternalServices';
+import {plusOne} from '../util';
+import {
+    CreatePostMutation,
+} from '../mutations/PostMutations';
+import {
+    RefreshViewerConnectedServicesMutation,
+} from '../mutations/UserMutations';
+import StatusInput from './StatusInput';
+import Styles from './PostComposer.less';
 
 var PostComposer = React.createClass({
-    mixins: [React.addons.LinkedStateMixin],
+    mixins: [LinkedStateMixin],
 
     getInitialState() {
         return {
-            statusType: this.props.initialStatusType,
-            status: util.plusOne(this.props.currentStatus),
+            statusType: this.props.record.status_type,
+            status: plusOne(this.props.record.status),
             comment: '',
-            publishOptions: this.props.initialPublishOptions,
+            publishOptions: getLastPublishOptions(),
             containsSpoiler: false,
         };
     },
 
     render() {
         var currentStatus;
-        if (this.props.currentStatus) {
-            currentStatus = <span className={Styles.currentProgress}>{this.props.currentStatus} &rarr; </span>;
+        if (this.props.record.status) {
+            currentStatus = <span className={Styles.currentProgress}>{this.props.record.status} &rarr; </span>;
         }
         return <form className={Styles.postComposer}>
             <div className={Styles.progress}>
@@ -58,12 +70,20 @@ var PostComposer = React.createClass({
 
     _onSubmit(event) {
         event.preventDefault();
-        this.props.onSave({
-            status: this.state.status,
-            status_type: this.state.statusType,
-            comment: this.state.comment,
-            contains_spoiler: this.state.containsSpoiler,
-        }, this.state.publishOptions.intersect(this.props.connectedServices));
+        var publishOptions = this.state.publishOptions;
+        setLastPublishOptions(publishOptions);
+        Relay.Store.commitUpdate(new CreatePostMutation({
+            record: this.props.record,
+            data: {
+                status: this.state.status,
+                status_type: this.state.statusType,
+                comment: this.state.comment,
+                contains_spoiler: this.state.containsSpoiler,
+            },
+            publishOptions: publishOptions.toJS(),
+        }), {
+            onSuccess: this.props.onSave
+        });
     },
 
     _onStatusChange(newValue) {
@@ -72,7 +92,8 @@ var PostComposer = React.createClass({
 
     _onPublishTwitterChange(event) {
         if (!this._isTwitterConnected()) {
-            this.props.dispatch(ExternalServiceActions.connectTwitter()).then(() => {
+            connectTwitter().then(() => {
+                Relay.Store.commitUpdate(new RefreshViewerConnectedServicesMutation({viewer: this.props.viewer}));
                 this.setState({publishOptions: this.state.publishOptions.add('twitter')});
             });
         } else {
@@ -87,8 +108,24 @@ var PostComposer = React.createClass({
     },
 
     _isTwitterConnected() {
-        return this.props.connectedServices.has('twitter');
+        return this.props.viewer.connected_services.filter(s => s === 'twitter').length > 0;
     }
 });
 
-module.exports = PostComposer;
+export default Relay.createContainer(PostComposer, {
+    fragments: {
+        viewer: () => Relay.QL`
+            fragment on User {
+                connected_services
+                ${RefreshViewerConnectedServicesMutation.getFragment('viewer')}
+            }
+        `,
+        record: () => Relay.QL`
+            fragment on Record {
+                status
+                status_type
+                ${CreatePostMutation.getFragment('record')}
+            }
+        `
+    }
+});

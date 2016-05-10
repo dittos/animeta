@@ -34,6 +34,7 @@
     "postcss-modules-scope": "^1.0.0",
     "postcss-modules-values": "^1.1.1",
     "react": "^0.14.2",
+    "react-addons-linked-state-mixin": "^0.14.8",
     "react-dom": "^0.14.2",
     "react-redux": "^4.0.5",
     "react-relay": "^0.8.0",
@@ -68,7 +69,8 @@
     "webpack": "^1.12.9"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "start": "babel-node ./frontend/frontendServer.js"
   },
   "jest": {
     "testPathDirs": [

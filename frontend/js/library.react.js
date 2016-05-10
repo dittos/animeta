@@ -8,6 +8,7 @@ import Relay from 'react-relay';
 import {RelayRouter} from 'react-router-relay';
 import LibraryRoute from './ui/Library';
 import ManageCategoryRoute from './ui/ManageCategory';
+import RecordDetailRoute from './ui/RecordDetail';
 var createBrowserHistory = require('history/lib/createBrowserHistory');
 var createHashHistory = require('history/lib/createHashHistory');
 var Layout = require('./ui/Layout');
@@ -112,9 +113,9 @@ function runApp() {
             <Route path="/records/:recordId/delete/" component={require('./ui/DeleteRecord')} />
             <Route
                 path="/records/:recordId/"
-                component={require('./ui/RecordDetail')}
+                component={RecordDetailRoute}
                 queries={RecordQueries}
-                prepareParams={(params) => ({...params, recordId: 'Record:' + params.recordId})}
+                prepareParams={params => ({recordId: 'Record:' + params.recordId})}
             />
             <Route path={locationStrategy.libraryPath + "history/"} component={require('./ui/LibraryHistory')} />
             <Route path="/settings/" component={require('./ui/Settings').default} />
