@@ -9,6 +9,8 @@ import {RelayRouter} from 'react-router-relay';
 import LibraryRoute from './ui/Library';
 import ManageCategoryRoute from './ui/ManageCategory';
 import RecordDetailRoute from './ui/RecordDetail';
+import AddRecordRoute from './ui/AddRecord';
+import DeleteRecordRoute from './ui/DeleteRecord';
 var createBrowserHistory = require('history/lib/createBrowserHistory');
 var createHashHistory = require('history/lib/createHashHistory');
 var Layout = require('./ui/Layout');
@@ -72,50 +74,56 @@ function runApp() {
         locationStrategy.libraryPath = libraryPath;
     }
 
-    const AppQueries = {
-        user: () => Relay.QL`query { user(name: $name) }`,
-        viewer: () => Relay.QL`query { viewer }`
-    };
     const UserQueries = {
         user: () => Relay.QL`query { user(name: $name) }`,
-        viewer: () => Relay.QL`query { viewer }`
     };
     const ViewerQueries = {
         viewer: () => Relay.QL`query { viewer }`
     };
     const RecordQueries = {
         record: () => Relay.QL`query { node(id: $recordId) }`,
-        viewer: () => Relay.QL`query { viewer }`
     };
 
     function usernamePreparer() {
         return {name: PreloadData.username};
+    }
+    function recordIdPreparer({recordId}) {
+        return {recordId: `Record:${recordId}`};
     }
 
     var routes = (
         <Route
             path={locationStrategy.libraryPath}
             component={AppRoute}
-            queries={AppQueries}
+            queries={{...UserQueries, ...ViewerQueries}}
             prepareParams={usernamePreparer}
         >
             <IndexRoute
                 component={LibraryRoute}
-                queries={UserQueries}
+                queries={{...UserQueries, ...ViewerQueries}}
                 prepareParams={usernamePreparer}
             />
-            <Route path="/records/add/(:title/)" component={require('./ui/AddRecord')} />
+            <Route
+                path="/records/add/(:title/)"
+                component={AddRecordRoute}
+                queries={ViewerQueries}
+            />
             <Route
                 path="/records/category/"
                 component={ManageCategoryRoute}
                 queries={ViewerQueries}
             />
-            <Route path="/records/:recordId/delete/" component={require('./ui/DeleteRecord')} />
+            <Route
+                path="/records/:recordId/delete/"
+                component={DeleteRecordRoute}
+                queries={RecordQueries}
+                prepareParams={recordIdPreparer}
+            />
             <Route
                 path="/records/:recordId/"
                 component={RecordDetailRoute}
-                queries={RecordQueries}
-                prepareParams={params => ({recordId: 'Record:' + params.recordId})}
+                queries={{...ViewerQueries, ...RecordQueries}}
+                prepareParams={recordIdPreparer}
             />
             <Route path={locationStrategy.libraryPath + "history/"} component={require('./ui/LibraryHistory')} />
             <Route path="/settings/" component={require('./ui/Settings').default} />

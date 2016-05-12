@@ -1040,6 +1040,33 @@
               "deprecationReason": null
             },
             {
+              "name": "addRecord",
+              "description": null,
+              "args": [
+                {
+                  "name": "input",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "AddRecordInput",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "AddRecordPayload",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "changeRecordCategory",
               "description": null,
               "args": [
@@ -1094,7 +1121,7 @@
               "deprecationReason": null
             },
             {
-              "name": "deletePost",
+              "name": "deleteRecord",
               "description": null,
               "args": [
                 {
@@ -1105,7 +1132,7 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
-                      "name": "DeletePostInput",
+                      "name": "DeleteRecordInput",
                       "ofType": null
                     }
                   },
@@ -1114,7 +1141,7 @@
               ],
               "type": {
                 "kind": "OBJECT",
-                "name": "DeletePostPayload",
+                "name": "DeleteRecordPayload",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -1142,6 +1169,33 @@
               "type": {
                 "kind": "OBJECT",
                 "name": "CreatePostPayload",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "deletePost",
+              "description": null,
+              "args": [
+                {
+                  "name": "input",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "DeletePostInput",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "DeletePostPayload",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -1557,6 +1611,130 @@
         },
         {
           "kind": "INPUT_OBJECT",
+          "name": "AddRecordInput",
+          "description": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "username",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "title",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "statusType",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "categoryId",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "clientMutationId",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "AddRecordPayload",
+          "description": null,
+          "fields": [
+            {
+              "name": "user",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "User",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "newRecordEdge",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "RecordEdge",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "clientMutationId",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
           "name": "ChangeRecordCategoryInput",
           "description": null,
           "fields": null,
@@ -1737,12 +1915,12 @@
         },
         {
           "kind": "INPUT_OBJECT",
-          "name": "DeletePostInput",
+          "name": "DeleteRecordInput",
           "description": null,
           "fields": null,
           "inputFields": [
             {
-              "name": "postId",
+              "name": "recordId",
               "description": null,
               "type": {
                 "kind": "NON_NULL",
@@ -1776,11 +1954,11 @@
         },
         {
           "kind": "OBJECT",
-          "name": "DeletePostPayload",
+          "name": "DeleteRecordPayload",
           "description": null,
           "fields": [
             {
-              "name": "deletedPostId",
+              "name": "deletedRecordId",
               "description": null,
               "args": [],
               "type": {
@@ -1792,12 +1970,12 @@
               "deprecationReason": null
             },
             {
-              "name": "record",
+              "name": "user",
               "description": null,
               "args": [],
               "type": {
                 "kind": "OBJECT",
-                "name": "Record",
+                "name": "User",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -1955,6 +2133,96 @@
               "type": {
                 "kind": "OBJECT",
                 "name": "PostEdge",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "record",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Record",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "clientMutationId",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "DeletePostInput",
+          "description": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "postId",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "clientMutationId",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "DeletePostPayload",
+          "description": null,
+          "fields": [
+            {
+              "name": "deletedPostId",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "ID",
                 "ofType": null
               },
               "isDeprecated": false,

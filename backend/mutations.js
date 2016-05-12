@@ -13,6 +13,7 @@ import {
     categoryType,
     recordType,
     postConnection,
+    recordConnection,
 } from './nodes';
 import {mutationWithClientMutationId} from 'graphql-relay';
 import {fetchNode} from './backend';
@@ -138,6 +139,55 @@ const deleteCategory = mutationWithClientMutationId({
     }
 });
 
+const addRecord = mutationWithClientMutationId({
+    name: 'AddRecord',
+    inputFields: {
+        username: {
+            type: new GraphQLNonNull(GraphQLString)
+        },
+        title: {
+            type: new GraphQLNonNull(GraphQLString)
+        },
+        statusType: {
+            type: GraphQLString // TODO: enum
+        },
+        categoryId: {
+            type: GraphQLID
+        }
+    },
+    outputFields: {
+        user: {
+            type: userType
+        },
+        newRecordEdge: {
+            type: recordConnection.edgeType
+        }
+    },
+    async mutateAndGetPayload(input, context) {
+        let simpleCategoryId = '';
+        if (input.categoryId) {
+            simpleCategoryId = fromGlobalId(input.categoryId).id;
+        }
+        const form = new FormData();
+        form.append('work_title', input.title);
+        form.append('status_type', input.statusType);
+        form.append('category_id', simpleCategoryId);
+        let {record} = await context.fetch('/api/v2/users/' + input.username + '/records', {
+            method: 'POST',
+            body: form
+        });
+        record = await fetchNode(context, 'Record:' + record.id);
+        const user = await fetchNode(context, record.user_id);
+        return {
+            user,
+            newRecordEdge: {
+                node: record,
+                cursor: String(record.simple_id), // TODO: move to backend
+            }
+        };
+    }
+});
+
 const changeRecordCategory = mutationWithClientMutationId({
     name: 'ChangeRecordCategory',
     inputFields: {
@@ -194,6 +244,37 @@ const changeRecordTitle = mutationWithClientMutationId({
         });
         // TODO: error handling
         return {record};
+    }
+});
+
+const deleteRecord = mutationWithClientMutationId({
+    name: 'DeleteRecord',
+    inputFields: {
+        recordId: {
+            type: new GraphQLNonNull(GraphQLID)
+        }
+    },
+    outputFields: {
+        deletedRecordId: {
+            type: GraphQLID
+        },
+        user: {
+            type: userType
+        }
+    },
+    async mutateAndGetPayload({recordId}, context) {
+        const {id} = fromGlobalId(recordId);
+        await context.fetch('/api/v2/records/' + id, {
+            method: 'DELETE'
+        });
+        const user = await context.call({
+            type: 'root',
+            field: 'viewer'
+        });
+        return {
+            deletedRecordId: recordId,
+            user
+        };
     }
 });
 
@@ -291,10 +372,12 @@ export default new GraphQLObjectType({
         renameCategory,
         deleteCategory,
 
+        addRecord,
         changeRecordCategory,
         changeRecordTitle,
+        deleteRecord,
 
-        deletePost,
         createPost,
+        deletePost,
     }
 });

@@ -1,5 +1,43 @@
 import Relay from 'react-relay';
 
+export class AddRecordMutation extends Relay.Mutation {
+    getMutation() {
+        return Relay.QL`mutation {addRecord}`;
+    }
+    getVariables() {
+        return {
+            username: this.props.user.name,
+            title: this.props.title,
+            statusType: this.props.statusType,
+            categoryId: this.props.category && this.props.category.id
+        };
+    }
+    getFatQuery() {
+        return Relay.QL`
+            fragment on AddRecordPayload {
+                user {records}
+                newRecordEdge
+            }
+        `;
+    }
+    getConfigs() {
+        return [{
+            type: 'RANGE_ADD',
+            parentName: 'user',
+            parentID: this.props.user.id,
+            connectionName: 'records',
+            edgeName: 'newRecordEdge',
+            rangeBehaviors: {
+                '': 'prepend'
+            }
+        }];
+    }
+}
+AddRecordMutation.fragments = {
+    user: () => Relay.QL`fragment on User { id, name }`,
+    category: () => Relay.QL`fragment on Category { id }`
+};
+
 export class ChangeRecordCategoryMutation extends Relay.Mutation {
     getMutation() {
         return Relay.QL`mutation {changeRecordCategory}`;
@@ -62,5 +100,36 @@ export class ChangeRecordTitleMutation extends Relay.Mutation {
     }
 }
 ChangeRecordTitleMutation.fragments = {
+    record: () => Relay.QL`fragment on Record { id }`
+};
+
+export class DeleteRecordMutation extends Relay.Mutation {
+    getMutation() {
+        return Relay.QL`mutation {deleteRecord}`;
+    }
+    getVariables() {
+        return {
+            recordId: this.props.record.id
+        };
+    }
+    getFatQuery() {
+        return Relay.QL`
+            fragment on DeleteRecordPayload {
+                deletedRecordId
+                user { records }
+            }
+        `;
+    }
+    getConfigs() {
+        return [{
+            type: 'NODE_DELETE',
+            parentName: 'user',
+            parentID: this.props.record.user_id,
+            connectionName: 'records',
+            deletedIDFieldName: 'deletedRecordId'
+        }];
+    }
+}
+DeleteRecordMutation.fragments = {
     record: () => Relay.QL`fragment on Record { id }`
 };

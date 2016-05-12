@@ -1,10 +1,9 @@
-var $ = require('jquery');
-var React = require('react');
-var ReactDOM = require('react-dom');
-var {connect} = require('react-redux');
-var RecordActions = require('../store/RecordActions');
-var CategoryStore = require('../store/CategoryStore');
-var Typeahead = require('./Typeahead');
+import React from 'react';
+import Typeahead from './Typeahead';
+import Relay from 'react-relay';
+import {AddRecordMutation} from '../mutations/RecordMutations';
+
+const NULL_CATEGORY_ID = 'NO_CATEGORY_ID';
 
 var CategorySelect = React.createClass({
     render() {
@@ -13,7 +12,7 @@ var CategorySelect = React.createClass({
             <select {...props}
                 value={selectedId}
                 onChange={this._onChange}>
-                <option value="">지정 안함</option>
+                <option value={NULL_CATEGORY_ID}>지정 안함</option>
                 {categoryList.map(category =>
                     <option value={category.id}>{category.name}</option>
                 )}
@@ -30,7 +29,7 @@ var CategorySelect = React.createClass({
 var AddRecord = React.createClass({
     getInitialState() {
         return {
-            selectedCategoryId: 0,
+            selectedCategoryId: NULL_CATEGORY_ID,
             statusType: 'watching',
             isRequesting: false
         };
@@ -39,6 +38,7 @@ var AddRecord = React.createClass({
     render() {
         return <form className="record-add-form">
             <table>
+            <tbody>
                 <tr>
                     <th>작품 제목</th>
                     <td><input name="work_title" ref="title"
@@ -61,11 +61,12 @@ var AddRecord = React.createClass({
                     <th>분류</th>
                     <td>
                         <CategorySelect name="category_id"
-                            categoryList={this.props.categoryList}
+                            categoryList={this.props.viewer.categories}
                             selectedId={this.state.selectedCategoryId}
                             onChange={this._onCategoryChange} />
                     </td>
                 </tr>
+            </tbody>
             </table>
             <button type="button"
                 disabled={this.state.isRequesting}
@@ -92,12 +93,19 @@ var AddRecord = React.createClass({
         if (this.state.isRequesting)
             return;
         this.setState({isRequesting: true});
-        var data = $(ReactDOM.findDOMNode(this)).serialize();
-        this.props.dispatch(RecordActions.addRecord(this.props.user.name, data)).then(() => {
-            this.props.onSave();
-        }).always(() => {
-            if (this.isMounted())
-                this.setState({isRequesting: false});
+        Relay.Store.commitUpdate(new AddRecordMutation({
+            user: this.props.viewer,
+            title: this.refs.title.value,
+            statusType: this.state.statusType,
+            category: this.state.selectedCategoryId != NULL_CATEGORY_ID ?
+                this.props.viewer.categories.filter(c => c.id === this.state.selectedCategoryId)[0] :
+                null
+        }), {
+            onSuccess: () => {
+                this.props.onSave();
+                if (this.isMounted())
+                    this.setState({isRequesting: false});
+            }
         });
     }
 });
@@ -118,10 +126,17 @@ var AddRecordRoute = React.createClass({
     }
 });
 
-function select(state) {
-    return {
-        categoryList: CategoryStore.getAll(state),
-    };
-}
-
-module.exports = connect(select)(AddRecordRoute);
+export default Relay.createContainer(AddRecordRoute, {
+    fragments: {
+        viewer: () => Relay.QL`
+            fragment on User {
+                ${AddRecordMutation.getFragment('user')}
+                categories {
+                    id
+                    name
+                    ${AddRecordMutation.getFragment('category')}
+                }
+            }
+        `
+    }
+});

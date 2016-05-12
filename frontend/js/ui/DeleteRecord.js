@@ -1,7 +1,6 @@
-var React = require('react');
-var {connect} = require('react-redux');
-var RecordActions = require('../store/RecordActions');
-var RecordStore = require('../store/RecordStore');
+import React from 'react';
+import Relay from 'react-relay';
+import {DeleteRecordMutation} from '../mutations/RecordMutations';
 
 var DeleteRecord = React.createClass({
     render() {
@@ -13,8 +12,8 @@ var DeleteRecord = React.createClass({
         </div>;
     },
     _onDelete() {
-        this.props.dispatch(RecordActions.deleteRecord(this.props.record.id)).then(() => {
-            this.props.onDelete();
+        Relay.Store.commitUpdate(new DeleteRecordMutation({record: this.props.record}), {
+            onSuccess: () => this.props.onDelete()
         });
     }
 });
@@ -31,10 +30,13 @@ var DeleteRecordRoute = React.createClass({
     }
 });
 
-function select(state, props) {
-    return {
-        record: RecordStore.get(state, props.params.recordId),
-    };
-}
-
-module.exports = connect(select)(DeleteRecordRoute);
+export default Relay.createContainer(DeleteRecordRoute, {
+    fragments: {
+        record: () => Relay.QL`
+            fragment on Record {
+                title
+                ${DeleteRecordMutation.getFragment('record')}
+            }
+        `
+    }
+});
