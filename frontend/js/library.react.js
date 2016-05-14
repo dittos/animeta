@@ -120,6 +120,12 @@ function runApp() {
                 routes={routes} />
         </Provider>,
         document.getElementById('app'));
+
+    $(window).on('beforeunload', () => {
+        if (PostStore.hasPendingPosts(store.getState())) {
+            return '아직 저장 중인 기록이 있습니다.';
+        }
+    });
 }
 
 runApp();
@@ -135,10 +141,4 @@ $(document).ajaxError((event, jqXHR) => {
         }
     }
     alert('서버 오류로 요청에 실패했습니다.');
-});
-
-$(window).on('beforeunload', () => {
-    if (PostStore.hasPendingPosts()) {
-        return '아직 저장 중인 기록이 있습니다.';
-    }
 });
