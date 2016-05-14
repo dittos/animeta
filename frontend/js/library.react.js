@@ -6,9 +6,8 @@ var ReactDOM = require('react-dom');
 var Redux = require('redux');
 var thunk = require('redux-thunk');
 var {Provider} = require('react-redux');
-var {Router, Route, IndexRoute, Link} = require('react-router');
-var createBrowserHistory = require('history/lib/createBrowserHistory');
-var createHashHistory = require('history/lib/createHashHistory');
+var {Router, Route, IndexRoute, Link, browserHistory, useRouterHistory, withRouter} = require('react-router');
+var {createHashHistory} = require('history');
 var RecordActions = require('./store/RecordActions');
 var CategoryActions = require('./store/CategoryActions');
 var AppActions = require('./store/AppActions');
@@ -20,7 +19,7 @@ var Layout = require('./ui/Layout');
 var GlobalHeader = require('./ui/GlobalHeader');
 require('../less/library.less');
 
-var App = React.createClass({
+var App = withRouter(React.createClass({
     render() {
         var user = this.props.owner;
         var canEdit = this.props.currentUser && this.props.currentUser.id == user.id;
@@ -28,10 +27,10 @@ var App = React.createClass({
             <GlobalHeader currentUser={this.props.currentUser} />
             <Layout.CenteredFullWidth className="user-container">
                 <div className="nav-user">
-                    <h1><Link to={this.props.history.libraryPath}>{user.name} 사용자</Link></h1>
+                    <h1><Link to={this.props.router.libraryPath}>{user.name} 사용자</Link></h1>
                     <p>
-                        <Link to={this.props.history.libraryPath}>작품 목록</Link>
-                        <Link to={`${this.props.history.libraryPath}history/`}>기록 내역</Link>
+                        <Link to={this.props.router.libraryPath}>작품 목록</Link>
+                        <Link to={`${this.props.router.libraryPath}history/`}>기록 내역</Link>
                         {canEdit && <Link to="/records/add/" className="add-record">작품 추가</Link>}
                     </p>
                 </div>
@@ -41,7 +40,7 @@ var App = React.createClass({
             </Layout.CenteredFullWidth>
         </div>;
     }
-});
+}));
 
 var AppRoute = React.createClass({
     render() {
@@ -82,10 +81,10 @@ function runApp() {
             location.href = libraryPath + '#' + path;
             return;
         }
-        locationStrategy = createHashHistory({queryKey: false});
+        locationStrategy = useRouterHistory(createHashHistory)({queryKey: false});
         locationStrategy.libraryPath = '/';
     } else {
-        locationStrategy = createBrowserHistory();
+        locationStrategy = browserHistory;
         locationStrategy.libraryPath = libraryPath;
     }
 

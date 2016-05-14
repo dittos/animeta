@@ -1,4 +1,5 @@
 var React = require('react');
+var {withRouter} = require('react-router');
 var {connect} = require('react-redux');
 var RecordActions = require('../store/RecordActions');
 var RecordStore = require('../store/RecordStore');
@@ -19,7 +20,7 @@ var DeleteRecord = React.createClass({
     }
 });
 
-var DeleteRecordRoute = React.createClass({
+var DeleteRecordRoute = withRouter(React.createClass({
     render() {
         return <DeleteRecord
             {...this.props}
@@ -27,9 +28,9 @@ var DeleteRecordRoute = React.createClass({
         />;
     },
     _onDelete() {
-        this.props.history.pushState(null, this.props.history.libraryPath);
+        this.props.router.push(this.props.router.libraryPath);
     }
-});
+}));
 
 function select(state, props) {
     return {

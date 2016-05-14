@@ -2,7 +2,7 @@ var _ = require('lodash');
 var React = require('react');
 var moment = require('moment');
 var {connect} = require('react-redux');
-var {Link} = require('react-router');
+var {Link, withRouter} = require('react-router');
 var util = require('../util');
 var RecordStore = require('../store/RecordStore');
 var CategoryStore = require('../store/CategoryStore');
@@ -230,7 +230,10 @@ var Library = React.createClass({
     },
 
     _onUpdateQuery(updates) {
-        this.props.history.pushState(null, this.props.location.pathname, {...this.props.location.query, ...updates});
+        this.props.router.push({
+            pathname: this.props.location.pathname,
+            query: {...this.props.location.query, ...updates}
+        })
     }
 });
 
@@ -251,4 +254,4 @@ function select(state, props) {
     };
 }
 
-module.exports = connect(select, null, null, {pure: false})(Library);
+module.exports = withRouter(connect(select, null, null, {pure: false})(Library));

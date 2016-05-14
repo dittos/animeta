@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var React = require('react');
 var ReactDOM = require('react-dom');
+var {withRouter} = require('react-router');
 var {connect} = require('react-redux');
 var RecordActions = require('../store/RecordActions');
 var CategoryStore = require('../store/CategoryStore');
@@ -39,6 +40,7 @@ var AddRecord = React.createClass({
     render() {
         return <form className="record-add-form">
             <table>
+                <tbody>
                 <tr>
                     <th>작품 제목</th>
                     <td><input name="work_title" ref="title"
@@ -66,6 +68,7 @@ var AddRecord = React.createClass({
                             onChange={this._onCategoryChange} />
                     </td>
                 </tr>
+                </tbody>
             </table>
             <button type="button"
                 disabled={this.state.isRequesting}
@@ -102,7 +105,7 @@ var AddRecord = React.createClass({
     }
 });
 
-var AddRecordRoute = React.createClass({
+var AddRecordRoute = withRouter(React.createClass({
     render() {
         // XXX: decode one more time due to react-router bug
         // https://github.com/rackt/react-router/issues/650
@@ -114,9 +117,9 @@ var AddRecordRoute = React.createClass({
         />;
     },
     _onSave() {
-        this.props.history.pushState(null, this.props.history.libraryPath);
+        this.props.router.push(this.props.router.libraryPath);
     }
-});
+}));
 
 function select(state) {
     return {

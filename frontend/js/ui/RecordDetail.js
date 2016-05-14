@@ -221,7 +221,7 @@ var RecordDetail = React.createClass({
     }
 });
 
-var RecordDetailRoute = React.createClass({
+var RecordDetailRoute = Router.withRouter(React.createClass({
     render() {
         return <RecordDetail
             {...this.props}
@@ -231,9 +231,9 @@ var RecordDetailRoute = React.createClass({
 
     _onSave() {
         // TODO: preserve sort mode
-        this.props.history.pushState(null, this.props.history.libraryPath);
+        this.props.router.push(this.props.router.libraryPath);
     }
-});
+}));
 
 function select(state, props) {
     var {recordId} = props.params;

@@ -1,8 +1,7 @@
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import {Provider} from 'react-redux';
-import {createLocation} from 'history';
-import {match, RoutingContext} from 'react-router';
+import {match, RouterContext} from 'react-router';
 import {HttpNotFound} from './backend';
 import dedupeClient from '../js/dedupeClient';
 import {isContainer} from '../js/Isomorphic';
@@ -16,8 +15,7 @@ export function injectBackend(backend) {
 
 export function render(request, routes, prerender = false) {
     return new Promise((resolve, reject) => {
-        const location = createLocation(request.path);
-        match({routes, location}, (error, redirectLocation, renderProps) => {
+        match({routes, location: request.path}, (error, redirectLocation, renderProps) => {
             // TODO: error check
             if (error) {
                 console.trace(request, error, redirectLocation, renderProps);
@@ -63,7 +61,7 @@ export function render(request, routes, prerender = false) {
                 if (prerender) {
                     html = ReactDOMServer.renderToString(
                         <Provider store={store}>
-                            <RoutingContext {...renderProps} />
+                            <RouterContext {...renderProps} />
                         </Provider>
                     );
                 } else {

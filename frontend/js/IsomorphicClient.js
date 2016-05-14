@@ -3,8 +3,7 @@ import $ from 'jquery';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
-import {Router, RoutingContext} from 'react-router';
-import {createHistory} from 'history';
+import {Router, RouterContext, browserHistory} from 'react-router';
 import nprogress from 'nprogress';
 import {isContainer} from './Isomorphic';
 import dedupeClient from './dedupeClient';
@@ -38,7 +37,7 @@ function onPageTransition() {
     }
 }
 
-class IsomorphicRoutingContext extends React.Component {
+class IsomorphicRouterContext extends React.Component {
     constructor(initialProps) {
         super(initialProps);
         this.state = {
@@ -119,7 +118,7 @@ class IsomorphicRoutingContext extends React.Component {
     }
 
     render() {
-        return <RoutingContext
+        return <RouterContext
             {...this.props}
             createElement={this._createElement}
         />;
@@ -137,16 +136,16 @@ class IsomorphicRoutingContext extends React.Component {
     }
 }
 
-IsomorphicRoutingContext.contextTypes = {
+IsomorphicRouterContext.contextTypes = {
     store: React.PropTypes.object
 };
 
 export function render(routes) {
     const router = <Router
-        history={createHistory()}
+        history={browserHistory}
         routes={routes}
         onUpdate={onPageTransition}
-        RoutingContext={IsomorphicRoutingContext}
+        render={props => <IsomorphicRouterContext {...props} />}
     />;
     const store = createStore(client, global.PreloadData.redux);
     ReactDOM.render(<Provider store={store}>{router}</Provider>, document.getElementById('app'));
