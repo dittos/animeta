@@ -15,7 +15,6 @@ module.exports = config = {
         clientDefinePlugin
     ],
     entry: {
-        table_index: './js/table-index.react.js',
         library: './js/library.react.js',
         index: './js/index.react.js',
         common: './js/common.js'

@@ -1,5 +1,5 @@
 require('babel-polyfill');
-require('react/addons');
+require('react');
 
 var $ = require('jquery');
 var moment = require('moment');

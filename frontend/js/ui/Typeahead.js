@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var $ = require('jquery');
 var React = require('react');
+var ReactDOM = require('react-dom');
 if (process.env.CLIENT) {
     var _jQuery = global.jQuery;
     global.jQuery = $;
@@ -47,7 +48,7 @@ function initSuggest(node) {
 
 var templates = {
     suggestion: function(item) {
-        return React.renderToStaticMarkup(<div>
+        return ReactDOM.renderToStaticMarkup(<div>
             <span className="title">{item.title}</span>
             {' '}
             <span className="count">{item.n}명 기록</span>
