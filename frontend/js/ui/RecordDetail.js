@@ -14,15 +14,16 @@ import {
 
 var PostView = React.createClass({
     render() {
-        var post = this.props.post;
+        const post = this.props.post;
+        const isPending = this.props.relay.hasOptimisticUpdate(post);
         return (
-            <div className={cx({[Styles.post]: true, 'no-comment': !post.comment, 'pending': this.props.isPending})}>
+            <div className={cx({[Styles.post]: true, 'no-comment': !post.comment, 'pending': isPending})}>
                 <div className="progress">{util.getStatusText(post)}</div>
                 <PostComment post={post} className="comment" showSpoiler={this.props.canEdit} />
                 <div className="meta">
                     {post.contains_spoiler &&
                         <span className={Styles.spoilerMark}><i className="fa fa-microphone-slash" /></span>}
-                    {!this.props.isPending ?
+                    {!isPending ?
                         <a href={util.getPostURL(post)} className="time"><TimeAgo time={new Date(Number(post.updated_at))} /></a>
                         : '저장 중...'}
                     {this.props.canDelete &&
@@ -96,8 +97,6 @@ var RecordDetail = React.createClass({
                         post={post}
                         canEdit={canEdit}
                         canDelete={canDelete}
-                        isPending={!post.id}
-                        user={this.props.user}
                         record={this.props.record} />
                 })}
             </div>
@@ -106,7 +105,7 @@ var RecordDetail = React.createClass({
 
     _onSave() {
         // TODO: preserve sort mode
-//        this.props.history.pushState(null, this.props.history.libraryPath);
+        this.props.history.pushState(null, this.props.history.libraryPath);
     }
 });
 
@@ -117,13 +116,7 @@ export default Relay.createContainer(RecordDetail, {
     fragments: {
         record: () => Relay.QL`
             fragment on Record {
-                id
-                simple_id
-                title
-                status
-                status_type
                 user_id
-                category_id
                 updated_at
                 posts(first: 10000) @include(if: $showPosts) {
                     edges {
