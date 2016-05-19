@@ -1,15 +1,12 @@
 import $ from 'jquery';
 import React from 'react';
-import {Link} from 'react-router';
-import {createContainer} from '../Isomorphic';
+import {Link} from '../Isomorphic';
 import * as util from '../util';
 import Grid from '../ui/Grid';
 import TimeAgo from '../ui/TimeAgo';
 import WeeklyChart from '../ui/WeeklyChart';
 import PostComment from '../ui/PostComment';
 import LoadMore from '../ui/LoadMore';
-import {fetch} from '../store/FetchActions';
-import {loadSidebarChart} from '../store/AppActions';
 import Styles from '../../less/index.less';
 
 var Index = React.createClass({
@@ -69,23 +66,19 @@ var Index = React.createClass({
     }
 });
 
-const KEY_POSTS = 'index/posts';
+Index.fetchData = async ({ client }) => {
+    const [currentUser, posts, chart] = await Promise.all([
+        client.getCurrentUser(),
+        client.call('/posts', {min_record_count: 2, count: 10}),
+        client.call('/charts/works/weekly', {limit: 5}),
+    ]);
+    return {
+        props: {
+            currentUser,
+            posts,
+            chart,
+        }
+    };
+};
 
-export default createContainer(Index, {
-    select(state) {
-        return {
-            posts: state.fetches[KEY_POSTS],
-            chart: state.app.sidebarChart,
-        };
-    },
-
-    fetchData(getState, dispatch) {
-        return Promise.all([
-            dispatch(fetch(KEY_POSTS, '/posts', {
-                min_record_count: 2,
-                count: 10
-            })),
-            dispatch(loadSidebarChart()),
-        ]);
-    },
-});
+export default Index;

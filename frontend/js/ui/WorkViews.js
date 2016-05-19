@@ -3,12 +3,12 @@ var $ = require('jquery');
 var React = require('react');
 var cx = require('classnames');
 var moment = require('moment');
-var {Link} = require('react-router');
 var TimeAgo = require('./TimeAgo');
 var Grid = require('./Grid');
 var Layout = require('./Layout');
 var WeeklyChart = require('./WeeklyChart');
 var util = require('../util');
+import {Link} from '../Isomorphic';
 import PostComment from './PostComment';
 import LoadMore from './LoadMore';
 
@@ -339,10 +339,12 @@ var Episodes = React.createClass({
         const {work} = this.props;
         const title = encodeURIComponent(work.title);
         return <div className="episodes">
-            <Link to={`/works/${title}/`} activeClassName="active" className="recent">최신</Link>
+            <Link to={`/works/${title}/`} className={cx({
+                active: !this.props.activeEpisodeNumber,
+                recent: true
+            })}>최신</Link>
             {work.episodes.map(ep =>
                 <Link to={`/works/${title}/ep/${ep.number}/`}
-                    activeClassName="active"
                     className={cx({
                         'has-post': ep.post_count > 0,
                         'active': ep.number == this.props.activeEpisodeNumber

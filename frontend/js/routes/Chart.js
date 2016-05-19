@@ -1,8 +1,6 @@
 import React from 'react';
-import {Link} from 'react-router';
-import {createContainer} from '../Isomorphic';
+import {Link} from '../Isomorphic';
 import Layout from '../ui/Layout';
-import {fetch} from '../store/FetchActions';
 
 class Header extends React.Component {
     render() {
@@ -90,23 +88,20 @@ const CHART_TYPES = {
     'works': 'popular-works',
 };
 
-export default createContainer(Chart, {
-    select(state, props) {
-        const {type, range} = props.params;
-        return {
-            chart: state.fetches[`chart/${type}/${range}`]
-        };
-    },
+Chart.fetchData = async ({ params, client }) => {
+    const {type, range} = params;
+    const [currentUser, chart] = await Promise.all([
+        client.getCurrentUser(),
+        client.call(`/charts/${CHART_TYPES[type]}/${range}`, {limit: 100}),
+    ]);
+    return {
+        pageTitle: getChartTitle(chart, range),
+        props: {
+            currentUser,
+            chart,
+            params,
+        }
+    };
+};
 
-    fetchData(getState, dispatch, props) {
-        const {type, range} = props.params;
-        return dispatch(fetch(`chart/${type}/${range}`,
-            `/charts/${CHART_TYPES[type]}/${range}`, {limit: 100}));
-    },
-
-    getTitle(parentTitle, state, props) {
-        const {type, range} = props.params;
-        const chart = state.fetches[`chart/${type}/${range}`];
-        return getChartTitle(chart, range);
-    }
-});
+export default Chart;

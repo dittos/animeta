@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link} from 'react-router';
+import {Link} from '../Isomorphic';
 import {getWorkURL} from '../util';
 import Styles from './WeeklyChart.less';
 

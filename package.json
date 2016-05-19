@@ -27,6 +27,7 @@
     "lodash": "^3.10.1",
     "moment": "^2.10.3",
     "nprogress": "^0.2.0",
+    "path-to-regexp": "^1.3.0",
     "postcss": "^5.0.13",
     "postcss-modules-extract-imports": "^1.0.0",
     "postcss-modules-local-by-default": "^1.0.0",

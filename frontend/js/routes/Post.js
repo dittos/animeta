@@ -1,9 +1,6 @@
 import React from 'react';
-import {createContainer} from '../Isomorphic';
 import WorkViews from '../ui/WorkViews';
 import {getStatusDisplay} from '../util';
-import {fetch} from '../store/FetchActions';
-import {loadSidebarChart} from '../store/AppActions';
 
 var Post = React.createClass({
     render() {
@@ -29,50 +26,29 @@ var Post = React.createClass({
     }
 });
 
-function fetchPostByIDWithWork(id) {
-    return (dispatch) => {
-        return dispatch(fetch(`posts/${id}`, `/posts/${id}`)).then(post => {
-            return dispatch(fetch(`work?id/${post.record.work_id}`, `/works/${post.record.work_id}`));
-        });
-    };
-}
-
-export default createContainer(Post, {
-    select(state, props) {
-        const {id} = props.params;
-        const post = state.fetches[`posts/${id}`];
-        const work = state.fetches[`work?id/${post.record.work_id}`];
-        return {
-            post,
-            work,
-            chart: state.app.sidebarChart,
-        };
-    },
-
-    fetchData(getState, dispatch, props) {
-        const {id} = props.params;
-        return Promise.all([
-            dispatch(fetchPostByIDWithWork(id)),
-            dispatch(loadSidebarChart()),
-        ]);
-    },
-
-    getTitle(parentTitle, state, props) {
-        const {id} = props.params;
-        const post = state.fetches[`posts/${id}`];
-        const work = state.fetches[`work?id/${post.record.work_id}`];
-        return `${post.user.name} 사용자 > ${work.title} ${getStatusDisplay(post)}`;
-    },
-
-    getMeta(state, props) {
-        const {id} = props.params;
-        const post = state.fetches[`posts/${id}`];
-        const work = state.fetches[`work?id/${post.record.work_id}`];
-        return {
+Post.fetchData = async ({ params, client }) => {
+    const {id} = params;
+    const [currentUser, post, chart] = await Promise.all([
+        client.getCurrentUser(),
+        client.call(`/posts/${id}`),
+        client.call('/charts/works/weekly', {limit: 5}),
+    ]);
+    const work = await client.call(`/works/${post.record.work_id}`);
+    return {
+        pageTitle: `${post.user.name} 사용자 > ${work.title} ${getStatusDisplay(post)}`,
+        pageMeta: {
             og_url: `/-${post.id}`,
             og_type: 'article',
             og_image: work.metadata && work.metadata.image_url,
             tw_image: work.metadata && work.metadata.image_url,
+        },
+        props: {
+            currentUser,
+            post,
+            chart,
+            work,
         }
-    }
-});
+    };
+};
+
+export default Post;

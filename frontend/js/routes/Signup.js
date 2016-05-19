@@ -1,6 +1,5 @@
 import $ from 'jquery';
 import React from 'react';
-import {createContainer} from '../Isomorphic';
 
 var Signup = React.createClass({
     getInitialState() {
@@ -77,6 +76,4 @@ var Signup = React.createClass({
     }
 });
 
-export default createContainer(Signup, {
-    getTitle: () => '회원 가입'
-});
+export default Signup;

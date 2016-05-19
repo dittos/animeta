@@ -5,7 +5,7 @@ import renderFeed from './renderFeed';
 import assetFilenames from '../assets.json';
 import config from '../config.json';
 import * as IsomorphicServer from './IsomorphicServer';
-import routes from '../js/routes';
+import app from '../js/routes';
 
 const DEBUG = process.env.NODE_ENV !== 'production';
 
@@ -148,9 +148,9 @@ function wrapHandler(handler) {
     };
 }
 
-server.handler('isomorphic', (route, { routes, prerender = false }) => {
+server.handler('isomorphic', (route, { app, prerender = false }) => {
     return wrapHandler(async(request, reply) => {
-        const {html, preloadData, title, meta} = await IsomorphicServer.render(request, routes, prerender);
+        const {html, preloadData, title, meta} = await IsomorphicServer.render(app, request, prerender);
         preloadData.daum_api_key = config.daumAPIKey; // XXX
         reply.view('template', {
             html,
@@ -168,7 +168,7 @@ server.route({
     path: '/{path*}',
     handler: {
         isomorphic: {
-            routes: routes,
+            app,
             prerender: true
         }
     },
