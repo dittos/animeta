@@ -2,7 +2,7 @@ var _ = require('lodash');
 var React = require('react');
 var moment = require('moment');
 var {connect} = require('react-redux');
-var {Link, withRouter} = require('react-router');
+var {Link} = require('../Isomorphic');
 var util = require('../util');
 var RecordStore = require('../store/RecordStore');
 var CategoryStore = require('../store/CategoryStore');
@@ -175,8 +175,7 @@ var Library = React.createClass({
         if (this.props.count === 0) {
             return this._renderEmpty();
         }
-
-        var {type, category, sort} = this.props.location.query;
+        var {type, category, sort} = this.props.query;
         if (!sort) sort = 'date';
         var {
             count,
@@ -237,21 +236,4 @@ var Library = React.createClass({
     }
 });
 
-function select(state, props) {
-    var count = RecordStore.getCount(state);
-    if (count === 0) {
-        return {count};
-    }
-
-    var {type, category, sort} = props.location.query;
-    if (!sort) sort = 'date';
-    return {
-        count,
-        records: RecordStore.query(state, type, category, sort),
-        categoryStats: RecordStore.getCategoryStats(state),
-        statusTypeStats: RecordStore.getStatusTypeStats(state),
-        categoryList: CategoryStore.getAll(state)
-    };
-}
-
-module.exports = withRouter(connect(select, null, null, {pure: false})(Library));
+export default Library;

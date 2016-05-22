@@ -9,6 +9,7 @@ import ChartRoute from './routes/Chart';
 import PostRoute from './routes/Post';
 import WorkRoute from './routes/Work';
 import TableRoute from './routes/Table';
+import UserRoute from './routes/User';
 
 function Layout(Component) {
     const Wrapped = (props) => <div>
@@ -32,5 +33,6 @@ app.route('/works/:title+/ep/:episode/', Layout(WorkRoute));
 app.route('/works/:title+/', Layout(WorkRoute));
 app.route('/table/', null, () => ({redirect: `/table/${Periods.current}/`}));
 app.route('/table/:period/', Layout(TableRoute));
+app.route('/users2/:username/', Layout(UserRoute));
 
 export default app;

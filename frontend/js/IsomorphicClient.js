@@ -2,7 +2,7 @@
 import $ from 'jquery';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {createHistory} from 'history';
+import {createHistory, useQueries} from 'history';
 import nprogress from 'nprogress';
 import {matchRoute} from './Isomorphic';
 import dedupeClient from './dedupeClient';
@@ -39,7 +39,7 @@ function onPageTransition() {
 }
 
 export function render(app, container) {
-    const history = createHistory();
+    const history = useQueries(createHistory)();
 
     const renderRoute = (Component, props, done) => {
         ReactDOM.render(
@@ -73,6 +73,7 @@ export function render(app, container) {
                 app,
                 client: createClient(),
                 params: match.params,
+                query: location.query,
             };
             nprogress.start();
             Promise.resolve(fetchData(request)).then(data => {
@@ -104,12 +105,13 @@ export function render(app, container) {
                     if (location.action === 'PUSH')
                         window.scrollTo(0, 0)
                 });
-            }, e => {
+            }).catch(e => {
                 // TODO: show error
+                console.error(e)
             })
         }
     };
 
     history.listenBefore(listener);
-    listener(window.location, () => {});
+    listener(history.createLocation(window.location), () => {});
 }
