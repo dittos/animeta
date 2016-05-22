@@ -191,7 +191,7 @@ function nullslast(val) {
     return [!val, val];
 }
 
-var TablePeriod = React.createClass({
+var Table = React.createClass({
     getInitialState() {
         const {items} = this.props;
         return {
@@ -253,7 +253,7 @@ var TablePeriod = React.createClass({
     }
 });
 
-TablePeriod.fetchData = async ({ params, client }) => {
+Table.fetchData = async ({ params, client }) => {
     const {period} = params;
     const [currentUser, items] = await Promise.all([
         client.getCurrentUser(),
@@ -271,4 +271,4 @@ TablePeriod.fetchData = async ({ params, client }) => {
     };
 };
 
-export default TablePeriod;
+export default Table;

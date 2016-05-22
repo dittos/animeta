@@ -7,8 +7,8 @@ import IndexRoute from './routes/Index';
 import SignupRoute from './routes/Signup';
 import ChartRoute from './routes/Chart';
 import PostRoute from './routes/Post';
-import WorkPostsRoute from './routes/WorkPosts';
-import TablePeriodRoute from './routes/TablePeriod';
+import WorkRoute from './routes/Work';
+import TableRoute from './routes/Table';
 
 function Layout(Component) {
     const Wrapped = (props) => <div>
@@ -28,9 +28,9 @@ app.route('/login/', Layout(() => <LoginDialog next="/" />), () => ({pageTitle: 
 app.route('/signup/', Layout(SignupRoute), () => ({pageTitle: '회원 가입'}));
 app.route('/charts/:type/:range/', Layout(ChartRoute));
 app.route('/-:id', Layout(PostRoute));
-app.route('/works/:title+/ep/:episode/', Layout(WorkPostsRoute));
-app.route('/works/:title+/', Layout(WorkPostsRoute));
+app.route('/works/:title+/ep/:episode/', Layout(WorkRoute));
+app.route('/works/:title+/', Layout(WorkRoute));
 app.route('/table/', null, () => ({redirect: `/table/${Periods.current}/`}));
-app.route('/table/:period/', Layout(TablePeriodRoute));
+app.route('/table/:period/', Layout(TableRoute));
 
 export default app;

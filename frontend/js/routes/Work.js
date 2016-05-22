@@ -3,34 +3,31 @@ import WorkViews from '../ui/WorkViews';
 
 const POSTS_PER_PAGE = 10;
 
-var WorkPosts = React.createClass({
-    render() {
-        const {
-            work,
-            chart,
-            episode,
-            posts,
-        } = this.props;
-        return <WorkViews.Work
+function Work({
+    work,
+    chart,
+    episode,
+    posts,
+}) {
+    return <WorkViews.Work
+        work={work}
+        chart={chart}
+    >
+        <WorkViews.Episodes
             work={work}
-            chart={chart}
-        >
-            <WorkViews.Episodes
-                work={work}
-                activeEpisodeNumber={episode}
-            />
-            <WorkViews.WorkIndex
-                pageSize={POSTS_PER_PAGE}
-                work={work}
-                initialPosts={posts}
-                hasMore={posts.length > POSTS_PER_PAGE}
-                episode={episode}
-            />
-        </WorkViews.Work>;
-    }
-});
+            activeEpisodeNumber={episode}
+        />
+        <WorkViews.WorkIndex
+            pageSize={POSTS_PER_PAGE}
+            work={work}
+            initialPosts={posts}
+            hasMore={posts.length > POSTS_PER_PAGE}
+            episode={episode}
+        />
+    </WorkViews.Work>;
+}
 
-WorkPosts.fetchData = async ({ params, client }) => {
+Work.fetchData = async ({ params, client }) => {
     const {title, episode} = params;
     const [currentUser, work, chart] = await Promise.all([
         client.getCurrentUser(),
@@ -63,4 +60,4 @@ WorkPosts.fetchData = async ({ params, client }) => {
     };
 };
 
-export default WorkPosts;
+export default Work;
