@@ -127,7 +127,7 @@ function runApp() {
     });
 }
 
-runApp();
+window.startApp = runApp;
 
 $(document).ajaxError((event, jqXHR) => {
     if (jqXHR.responseText) {

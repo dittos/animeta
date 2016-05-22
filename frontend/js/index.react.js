@@ -4,4 +4,6 @@ import '../less/chart.less';
 import '../less/work.less';
 import '../less/signup.less';
 
-render(app, document.getElementById('app'));
+window.startApp = () => {
+    render(app, document.getElementById('app'));
+};

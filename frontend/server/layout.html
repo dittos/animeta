@@ -64,18 +64,21 @@ Raven.config('http://fb3fd1fc77c94c4799d9fc7228260818@sentry.sapzil.org/3', {
 }).install();
 </script>
 <% } %>
-<script>
-<% if (preloadData) { %>
-var PreloadData = <%- JSON.stringify(preloadData) %>;
-<% } else { %>
-var PreloadData = {};
-<% } %>
-</script>
 <% if (assetFilenames.common) { %>
 <script type="text/javascript" src="<%= assetFilenames.common.js %>"></script>
 <% } %>
 <% scripts.forEach(path => { %>
 <script type="text/javascript" src="<%= path %>"></script>
 <% }) %>
+<script>
+<% if (preloadData) { %>
+var PreloadData = <%- JSON.stringify(preloadData) %>;
+<% } else { %>
+var PreloadData = {};
+<% } %>
+if (window.startApp) {
+    window.startApp();
+}
+</script>
 </body>
 </html>
