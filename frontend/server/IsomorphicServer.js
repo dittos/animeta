@@ -30,7 +30,6 @@ export function render(app, serverRequest, prerender = false) {
             app,
             client: requestBoundClient,
             params: match.params,
-            query: serverRequest.query || {},
         };
         Promise.resolve(fetchData(request)).then(data => {
             if (data.redirect)
@@ -55,6 +54,6 @@ export function render(app, serverRequest, prerender = false) {
                 title: pageTitle,
                 meta: pageMeta
             });
-        }).catch(e => resolve({html: '', preloadData: {}, title: '', meta: {}}));
+        }).catch(e => reject(e));
     });
 }
