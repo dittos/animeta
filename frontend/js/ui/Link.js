@@ -36,5 +36,5 @@ export default function Link({ to, onClick, ...props }, { history }) {
 }
 
 Link.contextTypes = {
-    history: React.PropTypes.object.isRequired
+    history: React.PropTypes.object
 };

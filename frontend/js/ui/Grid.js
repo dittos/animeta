@@ -11,10 +11,12 @@ var Row = React.createClass({
 
 var Column = React.createClass({
     render() {
-        var {className, children, size, smallSize, style, pull, ...props} = this.props;
+        var {className, children, size, midSize, smallSize, style, pull, ...props} = this.props;
         if (!className) className = '';
+        if (!midSize) midSize = size;
         if (!smallSize) smallSize = getColumns();
         className += ' grid-column-' + size;
+        className += ' grid-column-md-' + midSize;
         className += ' grid-column-sm-' + smallSize;
         return <div {...props}
             className={className}

@@ -1,14 +1,14 @@
-var React = require('react');
-var {Link} = require('react-router');
-var util = require('../util');
-var ScheduleStore = require('../store/ScheduleStore');
-var TableActions = require('../store/TableActions');
-var Notifications = require('../table/Notifications');
-var LazyImageView = require('../ui/LazyImage');
+import React from 'react';
+import $ from 'jquery';
+import _ from 'lodash';
+import {Link} from '../Isomorphic';
+import * as util from '../util';
+import LazyImageView from '../ui/LazyImage';
 import LoginDialog from '../ui/LoginDialog';
-var {createContainer} = require('../Isomorphic');
-var Periods = require('../Periods');
-import {loadCurrentUserFromClient} from '../store/AppActions';
+import Layout from '../ui/Layout';
+import Grid from '../ui/Grid';
+import Periods from '../Periods';
+import Styles from '../../less/table-period.less';
 
 function formatPeriod(period) {
     var parts = period.split('Q');
@@ -36,50 +36,49 @@ function PageTitle(props) {
     var period = props.period;
     var prevPeriod = period !== Periods.min && offsetPeriod(props.period, -1);
     var nextPeriod = period !== Periods.current && offsetPeriod(props.period, +1);
-    return <h1 className="page-title">
+    return <div className={Styles.pageTitle}>
         {prevPeriod &&
             <Link to={`/table/${prevPeriod}/`}><i className="fa fa-caret-left" /></Link>}
         {formatPeriod(period)} 신작
         {nextPeriod &&
             <Link to={`/table/${nextPeriod}/`}><i className="fa fa-caret-right" /></Link>}
-    </h1>;
+    </div>;
 }
 
-var HeaderView = React.createClass({
-    render() {
-        var options;
-        if (!this.props.excludeKR) {
-            options = [
-                {value: 'schedule', label: '날짜 (日)'},
-                {value: 'schedule.kr', label: '날짜 (韓)'},
-                {value: 'recordCount', label: '인기'}
-            ];
-        } else {
-            options = [
-                {value: 'schedule', label: '날짜'},
-                {value: 'recordCount', label: '인기'}
-            ];
-        }
-        var switches = options.map((option) => {
-            return <span className={this.props.ordering == option.value ? 'active' : ''}
-                key={option.value}
-                onClick={() => this.props.onSort(option.value)}>{option.label}</span>;
-        });
-        return (
-            <div className="page-header">
-                <div className="settings">
-                    <div className="settings-item prefer-kr">
-                        <label className="hide-mobile">정렬: </label>
-                        <div className="switch">
-                            {switches}
-                        </div>
+function Header({excludeKR, ordering, onSort, period}) {
+    var options;
+    if (!excludeKR) {
+        options = [
+            {value: 'schedule', label: '날짜 (日)'},
+            {value: 'schedule.kr', label: '날짜 (韓)'},
+            {value: 'recordCount', label: '인기'}
+        ];
+    } else {
+        options = [
+            {value: 'schedule', label: '날짜'},
+            {value: 'recordCount', label: '인기'}
+        ];
+    }
+    var switches = options.map(option => {
+        return <span className={ordering == option.value ? 'active' : ''}
+            key={option.value}
+            onClick={() => onSort(option.value)}>{option.label}</span>;
+    });
+    return (
+        <Layout.LeftRight
+            className={Styles.header}
+            left={<PageTitle period={period} />}
+            right={<div className={Styles.settings}>
+                <div className={Styles.settingsItem}>
+                    <label className="hide-mobile">정렬: </label>
+                    <div className={Styles.settingsSwitch}>
+                        {switches}
                     </div>
                 </div>
-                <PageTitle period={this.props.period} />
-            </div>
-        );
-    }
-});
+            </div>}
+        />
+    );
+}
 
 var WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -88,182 +87,188 @@ function getDate(value) {
     return util.zerofill(value.getMonth() + 1) + '/' + util.zerofill(value.getDate()) + ' (' + weekday + ')';
 }
 
-var FavButton = React.createClass({
+var StatusButton = React.createClass({
     render() {
-        return (
-            <label className={'btn-fav' + (this.props.active ? ' active' : '')}
-                onClick={this.props.onClick}>
-                <i className="fa fa-check"></i>
-                {' ' + this.props.count}
-            </label>
-        );
+        var {record} = this.props.item;
+        if (record) {
+            return <a className={Styles.favoriteButtonActive}
+                href={'/records/' + record.id}>
+                <i className="fa fa-pencil" />
+                {util.STATUS_TYPE_TEXT[record.status_type]}
+                {record.status && <span className="episode">@ {util.getStatusDisplay(record)}</span>}
+            </a>;
+        } else {
+            return <a className={Styles.favoriteButtonNormal}
+                href={'/records/add/' + encodeURIComponent(this.props.item.title) + '/'}
+                onClick={this._onFavorite}>
+                <i className="fa fa-plus" />
+                작품 추가
+            </a>;
+        }
+    },
+
+    _onFavorite(event) {
+        event.preventDefault();
+        this.props.onFavorite(this.props.item);
     }
 });
 
-var ItemView = React.createClass({
-    render() {
-        var item = this.props.item;
-        var {links, studios, source, schedule} = item.metadata;
-        return (
-            <div className="item">
-                <div className="item-inner">
-                    <div className="item-poster-wrap">
-                        <LazyImageView src={item.metadata.image_url} width={233} height={318} className="item-poster" />
-                    </div>
-                    <div className="item-frame">
-                        <div className="item-overlay">
-                            <h3 className="item-title">{item.metadata.title}</h3>
-                            <div className="item-info">
-                                <span className="studio">{studios ? studios.join(', ') : '제작사 미정'}</span>
-                                {source && [' / ', <span className="source">{util.SOURCE_TYPE_MAP[source]}</span>]}
-                            </div>
-                            {this._renderSchedule('jp', schedule.jp)}
-                            {schedule.kr && this._renderSchedule('kr', schedule.kr)}
-                        </div>
-                    </div>
-                    <div className="item-links">
-                        {links.website &&
-                            <a href={links.website} className="link link-official" target="_blank">공식 사이트</a>}
-                        {links.namu &&
-                            <a href={links.namu} className="link link-namu" target="_blank">나무위키</a>}
-                        {links.ann &&
-                            <a href={links.ann} className="link link-ann" target="_blank">ANN (en)</a>}
-                    </div>
-                    <div className="item-actions">
-                        <FavButton active={item.record != null}
-                            count={item.record_count}
-                            onClick={this.handleFavButtonClick} />
-                    </div>
+function Poster({item}) {
+    return <div className={Styles.poster}>
+        <LazyImageView src={item.metadata.image_url} className={Styles.posterImage} />
+        <div className={Styles.posterOverlay}>
+            <i className="fa fa-check" /> {item.record_count}
+        </div>
+    </div>;
+}
+
+function Item({item, onFavorite}) {
+    var {links, studios, source, schedule} = item.metadata;
+    return (
+        <div className={Styles.item}>
+            <Link to={util.getWorkURL(item.title)}>
+                <Poster item={item} />
+            </Link>
+            <div className={Styles.itemContent}>
+                <h3 className={Styles.title}>{item.metadata.title}</h3>
+                <div className={Styles.info}>
+                    <span className="studio">{studios ? studios.join(', ') : '제작사 미정'}</span>
+                    {source && [' / ', <span className="source">{util.SOURCE_TYPE_MAP[source]}</span>]}
                 </div>
+                <div className={Styles.actions}>
+                    <StatusButton item={item} onFavorite={onFavorite} />
+                </div>
+                <div className={Styles.schedules}>
+                    {renderSchedule('jp', schedule.jp)}
+                    {schedule.kr && renderSchedule('kr', schedule.kr)}
+                </div>
+                <div className={Styles.links}>
+                    {links.website &&
+                        <a href={links.website} className="link link-official" target="_blank">공식 사이트</a>}
+                    {links.namu &&
+                        <a href={links.namu} className="link link-namu" target="_blank">나무위키</a>}
+                    {links.ann &&
+                        <a href={links.ann} className="link link-ann" target="_blank">ANN (en)</a>}
+                </div>
+            </div>
+            <div style={{clear: 'left'}} />
+        </div>
+    );
+}
+
+function renderSchedule(country, schedule) {
+    var {date, broadcasts} = schedule;
+    if (date) {
+        date = new Date(date);
+    }
+    return <div className={Styles.schedule + " item-schedule-" + country}>
+        {date ? [
+            <span className="date">{getDate(date)}</span>,
+            ' ',
+            <span className="time">{util.formatTime(date)}</span>
+        ] : <span className="date">미정</span>}
+        {broadcasts &&
+            [' ', <span className="broadcasts">({broadcasts.join(', ')})</span>]}
+    </div>;
+}
+
+const scheduleComparator = (item) =>
+    nullslast(item.metadata.schedule.jp && item.metadata.schedule.jp.date);
+
+const preferKRScheduleComparator = (item) =>
+    nullslast(item.metadata.schedule.kr && item.metadata.schedule.kr.date ||
+        item.metadata.schedule.jp && item.metadata.schedule.jp.date);
+
+const recordCountComparator = (item) => -item.record_count;
+
+const comparatorMap = {
+    'schedule': scheduleComparator,
+    'schedule.kr': preferKRScheduleComparator,
+    'recordCount': recordCountComparator
+};
+
+function nullslast(val) {
+    return [!val, val];
+}
+
+var TablePeriod = React.createClass({
+    getInitialState() {
+        const {items} = this.props;
+        return {
+            items: _.sortBy(items, scheduleComparator),
+            ordering: 'schedule',
+            containsKRSchedule: _.some(items, i => i.metadata.schedule.kr && i.metadata.schedule.kr.date),
+        };
+    },
+
+    render() {
+        return (
+            <div className={Styles.container}>
+                <Layout.CenteredFullWidth>
+                    <Header
+                        period={this.props.period}
+                        ordering={this.state.ordering}
+                        excludeKR={!this.state.containsKRSchedule}
+                        onSort={this._onSort}
+                    />
+                </Layout.CenteredFullWidth>
+
+                <Grid.Row className={Styles.items}>
+                    {this.state.items.map(item =>
+                        <Grid.Column size={6} midSize={12} pull="left">
+                            <Item
+                                key={item.id}
+                                item={item}
+                                onFavorite={this._onFavorite}
+                            />
+                        </Grid.Column>
+                    )}
+                </Grid.Row>
             </div>
         );
     },
 
-    _renderSchedule(country, schedule) {
-        var {date, broadcasts} = schedule;
-        if (date) {
-            date = new Date(date);
-        }
-        return <div className={"item-schedule item-schedule-" + country}>
-            {date ? [
-                <span className="date">{getDate(date)}</span>,
-                ' ',
-                <span className="time">{util.formatTime(date)}</span>
-            ] : <span className="date">미정</span>}
-            {broadcasts &&
-                [' ', <span className="broadcasts">({broadcasts.join(', ')})</span>]}
-        </div>;
+    _onSort(sort) {
+        this.setState({
+            items: _.sortBy(this.props.items, comparatorMap[sort]),
+            ordering: sort,
+        });
     },
 
-    handleFavButtonClick() {
+    _onFavorite(item) {
         if (!this.props.currentUser) {
             alert('로그인 후 관심 등록할 수 있습니다.');
             LoginDialog.open();
             return;
         }
 
-        var record = this.props.item.record;
-        if (record) {
-            window.open('/records/' + record.id + '/');
-        } else {
-            this.props.onFavorite()
-                .then(data => Notifications.show(['관심 등록 완료 — ', <b>{data.title}</b>], 3000));
+        $.post(`/api/v2/users/${encodeURIComponent(this.props.currentUser.name)}/records`, {
+            work_title: item.title,
+            status_type: 'interested',
+        }).then(result => {
+            item.record = result.record;
+            item.record_count++;
+            this.forceUpdate();
+        });
+    }
+});
+
+TablePeriod.fetchData = async ({ params, client }) => {
+    const {period} = params;
+    const [currentUser, items] = await Promise.all([
+        client.getCurrentUser(),
+        client.call(`/table/periods/${period}`, {
+            only_first_period: JSON.stringify(true)
+        }),
+    ]);
+    return {
+        pageTitle: `${formatPeriod(period)} 신작`,
+        props: {
+            currentUser,
+            items,
+            period,
         }
-    }
-});
+    };
+};
 
-var NotificationView = React.createClass({
-    getInitialState() {
-        return Notifications.getState();
-    },
-
-    componentWillMount() {
-        Notifications.setListener(this._onChange);
-    },
-
-    componentWillUnmount() {
-        Notifications.clearListener(this._onChange);
-    },
-
-    _onChange() {
-        this.setState(Notifications.getState());
-    },
-
-    render() {
-        return (
-            <div className={"panel" + (this.state.hidden ? ' hidden' : '')}>
-                <div className="panel-inner">
-                {this.state.message}
-                </div>
-            </div>
-        );
-    }
-});
-
-var TablePeriod = React.createClass({
-    componentDidMount() {
-        if (!this.props.currentUser) {
-            Notifications.show([
-                '관심 등록은 로그인 후 가능합니다. ',
-                <a href={getLoginURL()} className="btn btn-login" onClick={event => {
-                    event.preventDefault();
-                    LoginDialog.open();
-                }}>로그인</a>
-            ]);
-        }
-    },
-
-    render() {
-        return (
-            <div>
-                <div className="table-container">
-                    <HeaderView period={this.props.params.period}
-                        ordering={this.props.ordering}
-                        excludeKR={this.props.excludeKR}
-                        onSort={sort => this.props.dispatch(TableActions.sort(sort))}
-                    />
-
-                    <div className="items">
-                    {this.props.items.map((item) =>
-                        <ItemView
-                            item={item}
-                            key={item.id}
-                            currentUser={this.props.currentUser}
-                            onFavorite={() => this.props.dispatch(TableActions.favoriteItem(item))}
-                        />
-                    )}
-                    </div>
-                </div>
-                <NotificationView />
-            </div>
-        );
-    }
-});
-
-function getLoginURL() {
-    return '/login/?next=' + encodeURIComponent(location.pathname);
-}
-
-export default createContainer(TablePeriod, {
-    reduxOptions: {pure: false},
-
-    fetchData(getState, dispatch, props) {
-        return Promise.all([
-            dispatch(loadCurrentUserFromClient()),
-            dispatch(TableActions.load(props.params.period))
-        ]);
-    },
-
-    select(state) {
-        return {
-            currentUser: state.app.currentUser,
-            items: ScheduleStore.getAllItems(state),
-            ordering: ScheduleStore.getOrdering(state),
-            excludeKR: !ScheduleStore.containsKRSchedule(state)
-        };
-    },
-
-    getTitle(parentTitle, state, props) {
-        return `${formatPeriod(props.params.period)} 신작`;
-    }
-});
+export default TablePeriod;
