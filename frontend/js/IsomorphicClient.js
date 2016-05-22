@@ -52,6 +52,7 @@ export function render(app, container) {
     };
 
     var lastRequestID = 0;
+    const initialRouteProps = global.PreloadData.routeProps;
 
     const listener = (location, callback) => {
         const done = () => callback();
@@ -64,8 +65,8 @@ export function render(app, container) {
         const {Component, fetchData} = match.route;
         const requestID = ++lastRequestID;
 
-        if (requestID === 1 && global.PreloadData.routeProps) {
-            renderRoute(Component, global.PreloadData.routeProps, done);
+        if (requestID === 1 && initialRouteProps) {
+            renderRoute(Component, initialRouteProps, done);
             global.PreloadData.routeProps = null;
         } else {
             const request = {

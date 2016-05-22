@@ -1,4 +1,6 @@
-require('babel-polyfill');
+if (!global._babelPolyfill) {
+    require('babel-polyfill');
+}
 var less = require('less');
 require('css-modules-require-hook')({
     extensions: ['.less'],

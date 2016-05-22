@@ -46,7 +46,15 @@ export function render(app, serverRequest, prerender = false) {
             } else {
                 html = '';
             }
-            resolve({html, preloadData: {routeProps: props}, title: pageTitle, meta: pageMeta});
+            resolve({
+                html,
+                preloadData: {
+                    routeProps: props,
+                    cache,
+                },
+                title: pageTitle,
+                meta: pageMeta
+            });
         }).catch(e => reject(e));
     });
 }
