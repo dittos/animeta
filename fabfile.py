@@ -24,3 +24,17 @@ def deploy_api():
         run('env/bin/pip install -r ./requirements.txt')
         run('env/bin/python manage.py migrate')
         run('touch ~/uwsgi-services/animeta.ini')
+
+def deploy_frontend():
+    local('git push')
+    with cd('/home/ditto/animeta'):
+        run('git pull') # To get password prompt first
+        local('rm -f animeta/static/build/*')
+        local('NODE_ENV=production ./node_modules/.bin/webpack')
+        run('npm install')
+        put('animeta/static/build/*', 'animeta/static/build/')
+        put('frontend/assets.json', 'frontend/')
+        run('rm -rf frontend-dist')
+        run('cp -r frontend frontend-dist')
+        run('./node_modules/.bin/babel frontend -d frontend-dist')
+        run('pm2 gracefulReload animeta')

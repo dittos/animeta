@@ -50,7 +50,6 @@ export function render(app, serverRequest, prerender = false) {
                 html,
                 preloadData: {
                     routeProps: props,
-                    cache,
                 },
                 title: pageTitle,
                 meta: pageMeta
