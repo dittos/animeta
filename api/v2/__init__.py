@@ -1,15 +1,6 @@
 # -*- coding: utf-8 -*-
-import simplejson as json
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.generic import View
-
-
-class JsonResponse(HttpResponse):
-    def __init__(self, obj, **kwargs):
-        kwargs.setdefault('content_type', 'application/json')
-        self.obj = obj  # For testing
-        data = json.dumps(obj, separators=(',', ':'))
-        super(JsonResponse, self).__init__(data, **kwargs)
 
 
 class HttpException(Exception):
@@ -24,7 +15,7 @@ class BaseView(View):
         except HttpException as e:
             return e.response
         if not isinstance(response, HttpResponse):
-            response = JsonResponse(response)
+            response = JsonResponse(response, safe=False)
         return response
 
     def check_login(self):

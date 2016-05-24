@@ -31,11 +31,11 @@
 {% block content %}
 
 {% if work %}
-<p><a href="{% url 'moderation.views.index' %}">홈</a></p>
+<p><a href="{% url 'moderation-index' %}">홈</a></p>
 {% endif %}
 
 <h1>작품 추가</h1>
-<form method="post" action="{% url 'moderation.views.create_work' %}">
+<form method="post" action="{% url 'moderation-works' %}">
 {% csrf_token %}
 <input name="title"> <button type="submit">추가</button>
 </form>
@@ -76,9 +76,9 @@
         {% if mapping.title == work.title %}
             <b>대표 제목</b>
         {% else %}
-            <a href="{% url 'moderation.views.set_primary_title' mapping_id=mapping.id %}">대표 제목으로 설정</a>
+            <a href="{% url 'moderation-mapping-set-primary-title' mapping_id=mapping.id %}">대표 제목으로 설정</a>
             {% if mapping.count == 0 %}
-                / <a href="{% url 'moderation.views.delete_mapping' mapping_id=mapping.id %}">삭제</a>
+                / <a href="{% url 'moderation-mapping-delete' mapping_id=mapping.id %}">삭제</a>
             {% endif %}
         {% endif %}
         </td>
@@ -86,14 +86,14 @@
 {% endfor %}
 </table>
 
-<form method="post" action="{% url 'moderation.views.add_mapping' work_id=work.id %}">
+<form method="post" action="{% url 'moderation-work-mappings' work_id=work.id %}">
 {% csrf_token %}
     <input type="text" name="title"> <button type="submit">제목 추가</button>
 </form>
 
 <br>
 <h2>병합</h2>
-<form method="post" action="{% url 'moderation.views.merge_work' work_id=work.id %}" onsubmit="return checkConflicts(this)">
+<form method="post" action="{% url 'moderation-work-merge' work_id=work.id %}" onsubmit="return checkConflicts(this)">
 {% csrf_token %}
     선택한 작품을 현재 작품에 병합합니다.<br>
     <input type="hidden" name="other_id" class="merge-work-other-id">
@@ -106,7 +106,7 @@
 
 <br>
 <h2>Metadata</h2>
-<form method="post" action="{% url 'moderation.views.edit_metadata' work_id=work.id %}">
+<form method="post" action="{% url 'moderation-work-metadata' work_id=work.id %}">
 {% csrf_token %}
 <textarea name="metadata" rows="10" cols="50">{{work.raw_metadata}}</textarea><br>
 <button type="submit">Save</button>
@@ -126,9 +126,9 @@
 <ul>
 {% for work in recent_works %}
     <li>
-        <a href="{% url 'moderation.views.work_detail' work_id=work.id %}">{{ work.title }}</a> ({{ work.index.record_count }}명 기록)
+        <a href="{% url 'moderation-work' work_id=work.id %}">{{ work.title }}</a> ({{ work.index.record_count }}명 기록)
         {% if work.index.record_count == 0 %}
-            <a href="{% url 'moderation.views.delete_work' work_id=work.id %}?return_url={{ request.get_full_path|urlencode }}">Delete</a>
+            <a href="{% url 'moderation-work-delete' work_id=work.id %}?return_url={{ request.get_full_path|urlencode }}">Delete</a>
         {% endif %}
     </li>
 {% endfor %}

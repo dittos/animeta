@@ -33,7 +33,7 @@ def index(request):
 def create_work(request):
     title = request.POST['title'].strip()
     work = get_or_create_work(title)
-    return redirect('moderation.views.work_detail', work_id=work.id)
+    return redirect('moderation-work', work_id=work.id)
 
 
 @user_passes_test(test_is_staff)
@@ -101,7 +101,7 @@ def set_primary_title(request, mapping_id):
     mapping = TitleMapping.objects.get(pk=mapping_id)
     mapping.work.title = mapping.title
     mapping.work.save()
-    return redirect('moderation.views.work_detail', work_id=mapping.work.id)
+    return redirect('moderation-work', work_id=mapping.work.id)
 
 
 @user_passes_test(test_is_staff)
@@ -116,7 +116,7 @@ def add_mapping(request, work_id):
         title=title,
         key=normalize_title(title),
     )
-    return redirect('moderation.views.work_detail', work_id=work.id)
+    return redirect('moderation-work', work_id=work.id)
 
 
 @user_passes_test(test_is_staff)
@@ -124,7 +124,7 @@ def delete_mapping(request, mapping_id):
     mapping = TitleMapping.objects.get(pk=mapping_id)
     if mapping.record_count == 0:
         mapping.delete()
-    return redirect('moderation.views.work_detail', work_id=mapping.work.id)
+    return redirect('moderation-work', work_id=mapping.work.id)
 
 
 @user_passes_test(test_is_staff)
@@ -134,4 +134,4 @@ def edit_metadata(request, work_id):
     yaml.load(request.POST['metadata'])
     work.raw_metadata = request.POST['metadata']
     work.save()
-    return redirect('moderation.views.work_detail', work_id=work.id)
+    return redirect('moderation-work', work_id=work.id)

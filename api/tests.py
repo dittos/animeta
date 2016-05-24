@@ -345,8 +345,8 @@ class PostViewTest(TestCase):
         path = '/api/v2/posts/%s' % post['id']
 
         response = self.client.get(path)
-        post['user'] = self.client.get(context.user_path).obj
-        post['record'] = self.client.get('/api/v2/records/%s' % record['id']).obj
+        post['user'] = self.client.get(context.user_path).json()
+        post['record'] = self.client.get('/api/v2/records/%s' % record['id']).json()
         del post['user']['categories']
         del post['record']['user']
         self.assertEqual(response.json(), post)
@@ -395,7 +395,7 @@ class UserPostsViewTest(TestCase):
         record = context.new_record()
         post1 = context.new_post(record['id'])
         post2 = context.new_post(record['id'])
-        record = self.client.get('/api/v2/records/%s' % record['id']).obj
+        record = self.client.get('/api/v2/records/%s' % record['id']).json()
 
         response = self.client.get(context.user_path + '/posts')
         self.assertEqual(response.status_code, 200)
