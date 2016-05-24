@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.views.decorators.csrf import csrf_exempt
 from api.decorators import route_by_method
 from api.v2.auth import AuthView
@@ -22,21 +22,20 @@ from api.v2.work_posts import WorkPostsView
 import api.views as v1
 from chart.models import PopularWorksChart, ActiveUsersChart
 
-urlpatterns = patterns(
-    'api.views',
-    (r'^v1/records/(?P<id>[0-9]+)$',
+urlpatterns = [
+    # v1
+    url(r'^v1/records/(?P<id>[0-9]+)$',
      route_by_method(GET=v1.get_record, DELETE=v1.delete_record)),
-    (r'^v1/records$',
+    url(r'^v1/records$',
      route_by_method(GET=v1.get_records, POST=v1.create_record)),
-    (r'^v1/users/(?P<name>[\w.@+-]+)$', 'get_user'),
-    (r'^v1/me$', 'get_current_user'),
-    (r'^v1/works$', 'get_works'),
-    (r'^v1/works/(?P<title>.+)$', 'get_work_by_title'),
-    (r'^v1/charts/(?P<type>.+)$', 'get_chart'),
-    (r'^auth/sessions/', 'auth'),
-)
+    url(r'^v1/users/(?P<name>[\w.@+-]+)$', v1.get_user),
+    url(r'^v1/me$', v1.get_current_user),
+    url(r'^v1/works$', v1.get_works),
+    url(r'^v1/works/(?P<title>.+)$', v1.get_work_by_title),
+    url(r'^v1/charts/(?P<type>.+)$', v1.get_chart),
+    url(r'^auth/sessions/', v1.auth),
 
-urlpatterns += [
+    # v2
     url(r'^v2/auth$', csrf_exempt(AuthView.as_view())),
     url(r'^v2/accounts$', AccountsView.as_view()),
     url(r'^v2/me$', UserView.as_view()),

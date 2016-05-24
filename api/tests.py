@@ -19,7 +19,7 @@ class TestContext(Client):
             'password1': password,
             'password2': password
         })
-        self.user = response.obj['user']
+        self.user = response.json()['user']
         self.login(username=self.username, password=password)
 
     @property
@@ -33,7 +33,7 @@ class TestContext(Client):
         }
         data.update(kwargs)
         response = self.post(self.user_path + '/records', data)
-        return response.obj['record']
+        return response.json()['record']
 
     def new_post(self, record_id, **kwargs):
         data = {
@@ -43,7 +43,7 @@ class TestContext(Client):
         }
         data.update(kwargs)
         response = self.post('/api/v2/records/%s/posts' % record_id, data)
-        return response.obj['post']
+        return response.json()['post']
 
     def new_category(self, **kwargs):
         data = {
@@ -51,7 +51,7 @@ class TestContext(Client):
         }
         data.update(kwargs)
         response = self.post(self.user_path + '/categories', data)
-        return response.obj
+        return response.json()
 
     def add_twitter_setting(self):
         user = User.objects.get(username=self.username)
@@ -69,71 +69,72 @@ class AuthViewTest(TestCase):
             'password1': 'a',
             'password2': 'a',
         })
-        self.assertTrue(response.obj['ok'])
+        self.assertTrue(response.json()['ok'])
 
         response = self.client.post('/api/v2/auth', {
             'username': 'ditto',
             'password': 'wrong',
         })
-        self.assertFalse(response.obj['ok'])
+        self.assertFalse(response.json()['ok'])
 
         response = self.client.get('/api/v2/auth')
-        self.assertFalse(response.obj['ok'])
+        self.assertFalse(response.json()['ok'])
 
         response = self.client.post('/api/v2/auth', {
             'username': 'ditto',
             'password': 'a',
         })
-        self.assertTrue(response.obj['ok'])
+        self.assertTrue(response.json()['ok'])
 
         response = self.client.get('/api/v2/auth')
-        self.assertTrue(response.obj['ok'])
+        self.assertTrue(response.json()['ok'])
 
     def test_delete(self):
         response = self.client.delete('/api/v2/auth')
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get('/api/v2/auth')
-        self.assertFalse(response.obj['ok'])
+        self.assertFalse(response.json()['ok'])
+
 
 class AccountsViewTest(TestCase):
     def test_post(self):
         response = self.client.post('/api/v2/accounts')
-        self.assertFalse(response.obj['ok'])
+        self.assertFalse(response.json()['ok'])
 
         response = self.client.post('/api/v2/accounts', {
             'username': '',
         })
-        self.assertFalse(response.obj['ok'])
+        self.assertFalse(response.json()['ok'])
 
         response = self.client.post('/api/v2/accounts', {
             'username': 'a' * 31,
         })
-        self.assertFalse(response.obj['ok'])
+        self.assertFalse(response.json()['ok'])
 
         response = self.client.post('/api/v2/accounts', {
             'username': 'a/b',
         })
-        self.assertFalse(response.obj['ok'])
+        self.assertFalse(response.json()['ok'])
 
         response = self.client.post('/api/v2/accounts', {
             'username': 'ditto',
             'password1': 'a',
             'password2': 'a',
         })
-        self.assertTrue(response.obj['ok'])
+        self.assertTrue(response.json()['ok'])
 
         # Logged in automatically
         response = self.client.get('/api/v2/auth')
-        self.assertTrue(response.obj['ok'])
+        self.assertTrue(response.json()['ok'])
 
         response = self.client.post('/api/v2/accounts', {
             'username': 'ditto',
             'password1': 'a',
             'password2': 'a',
         })
-        self.assertFalse(response.obj['ok'])
-        self.assertTrue('username' in response.obj['errors'])
+        self.assertFalse(response.json()['ok'])
+        self.assertTrue('username' in response.json()['errors'])
 
 
 class UserViewTest(TestCase):
@@ -142,7 +143,7 @@ class UserViewTest(TestCase):
         context.add_twitter_setting()  # Check connected_services
         response = self.client.get(context.user_path)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.obj, context.user)
+        self.assertEqual(response.json(), context.user)
 
     def test_get_current_user(self):
         context = TestContext()
@@ -155,7 +156,7 @@ class UserViewTest(TestCase):
         # Logged in
         response = context.get(path)
         expected_response = context.get(context.user_path)
-        self.assertEqual(response.obj, expected_response.obj)
+        self.assertEqual(response.json(), expected_response.json())
 
 
 class UserPasswordViewTest(TestCase):
@@ -194,21 +195,21 @@ class UserPasswordViewTest(TestCase):
             'new_password2': 'new-secret',
         })
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.obj['ok'])
+        self.assertTrue(response.json()['ok'])
 
         # Old password -> fail
         response = self.client.post('/api/v2/auth', {
             'username': context.username,
             'password': 'secret',
         })
-        self.assertFalse(response.obj['ok'])
+        self.assertFalse(response.json()['ok'])
 
         # New password -> pass
         response = self.client.post('/api/v2/auth', {
             'username': context.username,
             'password': 'new-secret',
         })
-        self.assertTrue(response.obj['ok'])
+        self.assertTrue(response.json()['ok'])
 
 
 class UserCategoriesViewTest(TestCase):
@@ -233,13 +234,13 @@ class UserCategoriesViewTest(TestCase):
         # Normal case
         response = context.post(path, {'name': name})
         self.assertEqual(response.status_code, 200)
-        category = response.obj
+        category = response.json()
         self.assertTrue('id' in category)
         self.assertEqual(category['name'], name)
 
         response = context.get(context.user_path)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.obj['categories'], [category])
+        self.assertEqual(response.json()['categories'], [category])
 
     def test_reorder(self):
         context = TestContext()
@@ -262,11 +263,11 @@ class UserCategoriesViewTest(TestCase):
         # Try swapping order
         response = context.put(path, data='ids[]=%s&ids[]=%s' % (categories[1]['id'], categories[0]['id']))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.obj, [categories[1], categories[0]])
+        self.assertEqual(response.json(), [categories[1], categories[0]])
 
         response = context.get(context.user_path)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.obj['categories'], [categories[1], categories[0]])
+        self.assertEqual(response.json()['categories'], [categories[1], categories[0]])
 
         # Try specifing partial order (should fail)
         response = context.put(path, data='ids[]=%s' % categories[1]['id'])
@@ -300,11 +301,11 @@ class CategoryViewTest(TestCase):
         
         # Should disappear from categories
         response = context.get(context.user_path)
-        self.assertEqual(response.obj['categories'], [])
+        self.assertEqual(response.json()['categories'], [])
 
         # Should unset record's category
         response = context.get('/api/v2/records/%s' % record['id'])
-        self.assertEqual(response.obj['category_id'], None)
+        self.assertEqual(response.json()['category_id'], None)
 
     def test_edit_name(self):
         context = TestContext()
@@ -327,10 +328,10 @@ class CategoryViewTest(TestCase):
         response = context.post(path, {'name': name2})
         self.assertEqual(response.status_code, 200)
         category['name'] = name2
-        self.assertEqual(response.obj, category)
+        self.assertEqual(response.json(), category)
         
         response = context.get(context.user_path)
-        self.assertEqual(response.obj['categories'], [category])
+        self.assertEqual(response.json()['categories'], [category])
 
         # Should not accept empty name
         response = context.post(path, {'name': ''})
@@ -348,7 +349,7 @@ class PostViewTest(TestCase):
         post['record'] = self.client.get('/api/v2/records/%s' % record['id']).obj
         del post['user']['categories']
         del post['record']['user']
-        self.assertEqual(response.obj, post)
+        self.assertEqual(response.json(), post)
 
     def test_delete(self):
         context = TestContext()
@@ -369,18 +370,18 @@ class PostViewTest(TestCase):
         # Normal case
         response = context.delete(path)
         self.assertEqual(response.status_code, 200)
-        updated_record = response.obj['record']
+        updated_record = response.json()['record']
         self.assertEqual(updated_record['status'], post1['status'])
         self.assertEqual(updated_record['status_type'], post1['status_type'])
 
         # The post should be removed from record
         response = context.get('/api/v2/records/%s/posts' % record['id'])
-        post_ids = [str(post['id']) for post in response.obj['posts']]
+        post_ids = [str(post['id']) for post in response.json()['posts']]
         self.assertTrue(str(post2['id']) not in post_ids)
 
         # The post should be removed from user posts
         response = context.get(context.user_path + '/posts')
-        post_ids = [str(post['id']) for post in response.obj]
+        post_ids = [str(post['id']) for post in response.json()]
         self.assertTrue(str(post2['id']) not in post_ids)
 
         # Should not allow deleting the last one post of a record
@@ -398,15 +399,15 @@ class UserPostsViewTest(TestCase):
 
         response = self.client.get(context.user_path + '/posts')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.obj), 3)
+        self.assertEqual(len(response.json()), 3)
         del record['user']
         post1['record'] = post2['record'] = record
-        self.assertEqual(response.obj[0], post2)
-        self.assertEqual(response.obj[1], post1)
+        self.assertEqual(response.json()[0], post2)
+        self.assertEqual(response.json()[1], post1)
 
         response = self.client.get(context.user_path + '/posts', {'before_id': post2['id']})
         self.assertEqual(response.status_code, 200)
-        result = response.obj
+        result = response.json()
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0]['id'], post1['id'])
 
@@ -418,9 +419,9 @@ class UserRecordsViewTest(TestCase):
 
         response = self.client.get(context.user_path + '/records')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.obj), 2)
-        self.assertEqual(response.obj[0], record2)
-        self.assertEqual(response.obj[1], record1)
+        self.assertEqual(len(response.json()), 2)
+        self.assertEqual(response.json()[0], record2)
+        self.assertEqual(response.json()[1], record1)
 
     def test_get_with_has_newer_episode_flag(self):
         context1 = TestContext()
@@ -435,37 +436,37 @@ class UserRecordsViewTest(TestCase):
         response = context1.get(context1.user_path + '/records',
                                 data={'include_has_newer_episode': 'true'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.obj), 2)
-        self.assertEqual(response.obj[0]['id'], unaffected_record['id'])
-        self.assertFalse('has_newer_episode' in response.obj[0])
-        self.assertEqual(response.obj[1]['id'], record1['id'])
-        self.assertTrue(response.obj[1]['has_newer_episode'])
+        self.assertEqual(len(response.json()), 2)
+        self.assertEqual(response.json()[0]['id'], unaffected_record['id'])
+        self.assertFalse('has_newer_episode' in response.json()[0])
+        self.assertEqual(response.json()[1]['id'], record1['id'])
+        self.assertTrue(response.json()[1]['has_newer_episode'])
 
         # Default is false
         response = context1.get(context1.user_path + '/records')
         self.assertEqual(response.status_code, 200)
-        for record in response.obj:
+        for record in response.json():
             self.assertFalse('has_newer_episode' in record)
 
         # Non-true value is assumed as false
         response = context1.get(context1.user_path + '/records',
                                 data={'include_has_newer_episode': 'falsey'})
         self.assertEqual(response.status_code, 200)
-        for record in response.obj:
+        for record in response.json():
             self.assertFalse('has_newer_episode' in record)
 
         # Not allowed for unauthenticated user
         response = self.client.get(context1.user_path + '/records',
                                    data={'include_has_newer_episode': 'true'})
         self.assertEqual(response.status_code, 200)
-        for record in response.obj:
+        for record in response.json():
             self.assertFalse('has_newer_episode' in record)
 
         # Not allowed for unauthenticated user
         response = context2.get(context1.user_path + '/records',
                                 data={'include_has_newer_episode': 'true'})
         self.assertEqual(response.status_code, 200)
-        for record in response.obj:
+        for record in response.json():
             self.assertFalse('has_newer_episode' in record)
 
     def test_post(self):
@@ -492,8 +493,8 @@ class UserRecordsViewTest(TestCase):
         # Normal case
         response = context.post(path, data)
         self.assertEqual(response.status_code, 200)
-        record = response.obj['record']
-        post = response.obj['post']
+        record = response.json()['record']
+        post = response.json()['post']
 
         self.assertTrue('id' in record)
         self.assertEqual(record['user_id'], context.user['id'])
@@ -520,9 +521,10 @@ class RecordViewTest(TestCase):
         record = context.new_record()
 
         response = self.client.get('/api/v2/records/%s' % record['id'])
-        del response.obj['user']
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.obj, record)
+        obj = response.json()
+        del obj['user']
+        self.assertEqual(obj, record)
 
     def test_edit(self):
         context = TestContext()
@@ -546,8 +548,8 @@ class RecordViewTest(TestCase):
         # Normal case
         response = context.post(path, data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.obj['title'], data['title'])
-        self.assertEqual(response.obj['category_id'], data['category_id'])
+        self.assertEqual(response.json()['title'], data['title'])
+        self.assertEqual(response.json()['category_id'], data['category_id'])
 
         # Update to already existing record title is not allowed
         record2 = context.new_record()
@@ -556,11 +558,11 @@ class RecordViewTest(TestCase):
 
         # Updating without category field should not unset category
         response = context.post(path, {})
-        self.assertEqual(response.obj['category_id'], category['id'])
+        self.assertEqual(response.json()['category_id'], category['id'])
 
         # Updating with null category field should unset category
         response = context.post(path, {'category_id': ''})
-        self.assertEqual(response.obj['category_id'], None)
+        self.assertEqual(response.json()['category_id'], None)
 
     def test_delete(self):
         context = TestContext()
@@ -588,7 +590,7 @@ class RecordPostsViewTest(TestCase):
 
         response = self.client.get('/api/v2/records/%s/posts' % record['id'])
         self.assertEqual(response.status_code, 200)
-        posts = response.obj['posts']
+        posts = response.json()['posts']
         self.assertEqual(len(posts), 2)
         self.assertEqual(posts[0], post)
         self.assertEqual(posts[1]['record_id'], record['id'])
@@ -615,8 +617,8 @@ class RecordPostsViewTest(TestCase):
         # Normal case
         response = context.post(path, data)
         self.assertEqual(response.status_code, 200)
-        updated_record = response.obj['record']
-        post = response.obj['post']
+        updated_record = response.json()['record']
+        post = response.json()['post']
 
         self.assertTrue('id' in updated_record)
         self.assertEqual(updated_record['user_id'], context.user['id'])
@@ -659,7 +661,7 @@ class RecordPostsViewTest(TestCase):
         self.assertEqual(mock_twitter.update_status.call_count, 1)
         args, kwargs = mock_twitter.update_status.call_args
         status = args[0]
-        post_id = response.obj['post']['id']
+        post_id = response.json()['post']['id']
         self.assertEqual(status, u'A b123화 (완료): hello https://animeta.net/-%s' % post_id)
 
         # Twitter failure; success silently
@@ -687,7 +689,7 @@ class RecordPostsViewTest(TestCase):
         with mock.patch('connect.twitter.get_api', return_value=mock_twitter):
             response = context.post(path, data)
         self.assertEqual(response.status_code, 200)
-        post = response.obj['post']
+        post = response.json()['post']
         self.assertTrue(post['contains_spoiler'])
         self.assertEqual(mock_twitter.update_status.call_count, 1)
         args, kwargs = mock_twitter.update_status.call_args
@@ -712,7 +714,7 @@ class WorkViewTest(TestCase):
         # Get by ID
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
-        work = response.obj
+        work = response.json()
         expected = {
             'id': record['work_id'],
             'title': u'Fate/stay night',
@@ -729,28 +731,28 @@ class WorkViewTest(TestCase):
         indexer.run()
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
-        work = response.obj
+        work = response.json()
         expected['rank'] = 1
         self.assertEqual(work, expected)
 
         # Should have record if logged in
         response = context.get(path)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.obj['record']['id'], record['id'])
+        self.assertEqual(response.json()['record']['id'], record['id'])
 
         # If logged in and no record should not have record field
         context3 = TestContext()
         response = context3.get(path)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue('record' not in response.obj)
+        self.assertTrue('record' not in response.json())
 
         # Lookup by title
         response = self.client.get('/api/v2/works/_/%s' % title)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.obj, work)
+        self.assertEqual(response.json(), work)
         response = self.client.get('/api/v2/works/_/%s' % alt_title)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.obj, work)
+        self.assertEqual(response.json(), work)
 
 class WorkPostsViewTest(TestCase):
     def test_get(self):
@@ -762,23 +764,23 @@ class WorkPostsViewTest(TestCase):
         path = '/api/v2/works/%d/posts' % record['work_id']
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.obj), 2)
+        self.assertEqual(len(response.json()), 2)
         for key in ('id', 'status', 'status_type', 'updated_at', 'comment'):
-            self.assertEqual(response.obj[0][key], post2[key])
-            self.assertEqual(response.obj[1][key], post1[key])
-        for post in response.obj:
+            self.assertEqual(response.json()[0][key], post2[key])
+            self.assertEqual(response.json()[1][key], post1[key])
+        for post in response.json():
             self.assertEqual(post['user']['id'], context.user['id'])
             self.assertEqual(post['user']['name'], context.user['name'])
 
         response = self.client.get(path, {'before_id': post2['id']})
         self.assertEqual(response.status_code, 200)
-        result = response.obj
+        result = response.json()
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]['id'], post1['id'])
 
         response = self.client.get(path, {'episode': '2'})
         self.assertEqual(response.status_code, 200)
-        result = response.obj
+        result = response.json()
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]['id'], post2['id'])
 
@@ -798,23 +800,23 @@ class PostsViewTest(TestCase):
 
         response = self.client.get(path, {'count': 2})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.obj), 2)
-        self.assertEqual(response.obj[0]['id'], post_a2['id'])
-        self.assertEqual(response.obj[1]['id'], post_b['id'])
+        self.assertEqual(len(response.json()), 2)
+        self.assertEqual(response.json()[0]['id'], post_a2['id'])
+        self.assertEqual(response.json()[1]['id'], post_b['id'])
 
         # Test before_id
         response = self.client.get(path, {'before_id': post_b['id']})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.obj), 1)
-        self.assertEqual(response.obj[0]['id'], post_a['id'])
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(response.json()[0]['id'], post_a['id'])
 
         # Test min_record_count
         indexer.run() # We need index to use this feature
         response = self.client.get(path, {'min_record_count': 2})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.obj), 2)
-        self.assertEqual(response.obj[0]['id'], post_a2['id'])
-        self.assertEqual(response.obj[1]['id'], post_a['id'])
+        self.assertEqual(len(response.json()), 2)
+        self.assertEqual(response.json()[0]['id'], post_a2['id'])
+        self.assertEqual(response.json()[1]['id'], post_a['id'])
 
 
 from chart.utils import Week
@@ -831,10 +833,10 @@ class PopularWorksChartViewTest(TestCase):
         context2.new_record(work_title=record['title'])
 
         response = self.client.get('/api/v2/charts/works/weekly?limit=5')
-        self.assertEqual(len(response.obj), 1)
-        self.assertEqual(response.obj[0]['rank'], 1)
-        self.assertEqual(response.obj[0]['factor_percent'], 100.0)
-        self.assertEqual(response.obj[0]['object']['id'], record['work_id'])
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(response.json()[0]['rank'], 1)
+        self.assertEqual(response.json()[0]['factor_percent'], 100.0)
+        self.assertEqual(response.json()[0]['object']['id'], record['work_id'])
 
 
 class TablePeriodViewTest(TestCase):
@@ -905,14 +907,14 @@ website: http://imas-cinderella.com/'''
 
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual([work['id'] for work in response.obj], [work2_id, work3_id])
+        self.assertEqual([work['id'] for work in response.json()], [work2_id, work3_id])
 
         response = self.client.get(path, {'only_first_period': 'true'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual([work['id'] for work in response.obj], [work2_id])
+        self.assertEqual([work['id'] for work in response.json()], [work2_id])
 
         context2 = TestContext()
         record = context2.new_record(work_title=work2.title)
         response = context2.get(path)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual([work.get('record') for work in response.obj], [record, None])
+        self.assertEqual([work.get('record') for work in response.json()], [record, None])
