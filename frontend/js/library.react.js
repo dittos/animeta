@@ -1,5 +1,6 @@
 /* global PreloadData */
 /* global _gaq */
+/* global Raven */
 var $ = require('jquery');
 var React = require('react');
 var ReactDOM = require('react-dom');
@@ -129,7 +130,21 @@ function runApp() {
 
 window.startApp = runApp;
 
-$(document).ajaxError((event, jqXHR) => {
+$(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) => {
+    try {
+        Raven.captureMessage(thrownError || jqXHR.statusText, {
+            extra: {
+                type: ajaxSettings.type,
+                url: ajaxSettings.url,
+                data: ajaxSettings.data,
+                status: jqXHR.status,
+                error: thrownError || jqXHR.statusText,
+                response: jqXHR.responseText && jqXHR.responseText.substring(0, 100)
+            }
+        });
+    } catch (e) {
+        Raven.captureMessage(e);
+    }
     if (jqXHR.responseText) {
         try {
             var err = $.parseJSON(jqXHR.responseText);
