@@ -140,10 +140,10 @@ class Record(models.Model):
         try:
             n = int(self.status)
             return History.objects.filter(
-                work=self.work,
+                work_id=self.work_id,
                 status=str(n + 1),
                 updated_at__gt=self.updated_at
-            ).count() > 0
+            ).exists()
         except ValueError:
             return False
 
