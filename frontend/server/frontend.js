@@ -52,6 +52,11 @@ server.ext('onPreResponse', (request, reply) => {
             return;
         }
     }
+
+    if (response.isBoom && response.output.statusCode === 403) {
+        console.error(request.headers)
+    }
+
     return reply.continue();
 });
 
