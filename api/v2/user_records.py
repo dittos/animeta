@@ -15,10 +15,26 @@ class UserRecordsView(BaseView):
             request.GET.get('include_has_newer_episode') == 'true'
         if request.user != user:
             include_has_newer_episode = False
+        records = user.record_set.all()
+        sort = request.GET.get('sort')
+        if sort == 'date':
+            records = records.order_by('-updated_at')
+        elif sort == 'title':
+            records = records.order_by('title')
+        status_type = request.GET.get('status_type')
+        if status_type:
+            records = records.filter(status_type=StatusTypes.from_name(status_type))
+        limit = request.GET.get('limit')
+        if limit:
+            try:
+                limit = int(limit)
+                records = records[:limit]
+            except ValueError:
+                pass
         return [serialize_record(
             record,
             include_has_newer_episode=include_has_newer_episode
-        ) for record in user.record_set.all()]
+        ) for record in records]
 
     @transaction.atomic
     def post(self, request, name):

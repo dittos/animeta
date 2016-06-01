@@ -5,10 +5,22 @@ var Layout = require('./Layout');
 var Typeahead = require('./Typeahead');
 import LoginDialog from './LoginDialog';
 import Styles from './GlobalHeader.less';
+import {getStatusDisplay} from '../util';
 
 var DropdownUserMenu = React.createClass({
+    getInitialState() {
+        return {records: null};
+    },
     componentDidMount() {
         $(document).on('click', this._onClose);
+
+        $.get(`/api/v2/users/${this.props.user.name}/records`, {
+            sort: 'date',
+            status_type: 'watching',
+            limit: 10,
+        }).then(records => {
+            this.setState({ records });
+        });
     },
     componentWillUnmount() {
         $(document).off('click', this._onClose);
@@ -16,21 +28,24 @@ var DropdownUserMenu = React.createClass({
     render() {
         return <div className={Styles.userMenu}
             onClick={e => e.stopPropagation()}>
-            <a href="/library/">기록 관리</a>
+            <a href={`/users/${this.props.user.name}/`}>기록 관리</a>
             <a href="/settings/">설정</a>
-            <a href="#" onClick={this._logout}>로그아웃</a>
+            {this.state.records && <div>
+                <div className={Styles.userMenuSeparator}>
+                    바로가기
+                </div>
+                {this.state.records.map(record =>
+                    <a href={`/records/${record.id}/`}>
+                        {record.title}
+                        <span className={Styles.quickRecordStatus}>{getStatusDisplay(record)}</span>
+                    </a>
+                )}
+                <a href={`/users/${this.props.user.name}/`} className={Styles.quickRecordViewAll}>전체 보기</a>
+            </div>}
         </div>;
     },
     _onClose() {
         this.props.onClose();
-    },
-    _logout() {
-        $.ajax({
-            url: '/api/v2/auth',
-            method: 'DELETE'
-        }).then(() => {
-            location.href = '/';
-        });
     }
 });
 
@@ -137,6 +152,7 @@ var GlobalHeader = React.createClass({
                 </a>
                 {this.state.showUserMenu &&
                     <DropdownUserMenu
+                        user={user}
                         onClose={() => this.setState({showUserMenu: false})} />}
             </div>;
         } else {

@@ -414,14 +414,31 @@ class UserPostsViewTest(TestCase):
 class UserRecordsViewTest(TestCase):
     def test_get(self):
         context = TestContext()
-        record1 = context.new_record()
-        record2 = context.new_record()
+        record1 = context.new_record(status_type='watching')
+        record2 = context.new_record(status_type='finished')
 
         response = self.client.get(context.user_path + '/records')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 2)
         self.assertEqual(response.json()[0], record2)
         self.assertEqual(response.json()[1], record1)
+
+        response = self.client.get(context.user_path + '/records', {
+            'sort': 'date',
+            'limit': '1'
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(response.json()[0], record2)
+
+        response = self.client.get(context.user_path + '/records', {
+            'sort': 'date',
+            'status_type': 'watching',
+            'limit': '1'
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(response.json()[0], record1)
 
     def test_get_with_has_newer_episode_flag(self):
         context1 = TestContext()

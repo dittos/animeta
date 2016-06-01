@@ -103,7 +103,6 @@
     margin-top: -8px;
     background-color: #fff;
     border: 1px solid #ccc;
-    width: 140px;
 
     a {
         line-height: 1;
@@ -112,6 +111,9 @@
         color: #666;
         text-decoration: none;
         font-size: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         &:hover {
             background-color: #f4f4f4;
         }
@@ -202,6 +204,31 @@
 :local(.userMenu) {
     composes: dropdown;
     right: 0;
+    width: 200px;
+}
+
+:local(.userMenuSeparator) {
+    border-top: 1px solid @color-border;
+    font-size: 13px;
+    font-weight: bold;
+    background-color: @color-bg-lightest;
+    color: @color-text-dark;
+    line-height: 1.8;
+    padding: 0 10px;
+}
+
+:local(.quickRecordStatus) {
+    color: @color-primary;
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+:local(.quickRecordViewAll) {
+    color: @color-text-light !important;
+    line-height: 1.8 !important;
+    padding: 0 !important;
+    text-align: center;
+    border-top: 1px dashed @color-border;
 }
 
 :local(.menuToggle) {

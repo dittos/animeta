@@ -54,6 +54,9 @@ export default connect(select)(class extends React.Component {
             {this.props.connectedServices.has('twitter') ?
                 <button onClick={this._disconnectTwitter.bind(this)}>연결 끊기</button>
                 : <button onClick={this._connectTwitter.bind(this)}>연결하기</button>}
+
+            <h2>로그아웃</h2>
+            <button onClick={this._logout.bind(this)}>로그아웃</button>
         </div>;
     }
 
@@ -83,6 +86,15 @@ export default connect(select)(class extends React.Component {
             this.refs.newPassword2.value = '';
         }).always(() => {
             this.setState({isChangingPassword: false});
+        });
+    }
+
+    _logout() {
+        $.ajax({
+            url: '/api/v2/auth',
+            method: 'DELETE'
+        }).then(() => {
+            location.href = '/';
         });
     }
 })
