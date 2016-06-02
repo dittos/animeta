@@ -1,7 +1,9 @@
 import $ from 'jquery';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {Modal} from 'react-overlays';
 import Styles from './LoginDialog.less';
+import ModalStyles from './Modal.less';
 
 var LoginDialog = React.createClass({
     statics: {
@@ -30,26 +32,33 @@ var LoginDialog = React.createClass({
         };
     },
     render() {
-        return <div className={Styles.backdrop}>
-            <div className={Styles.loginDialog}>
-                <div className={Styles.header}>
-                    <button className={Styles.closeButton} onClick={this.props.onClose}><i className="fa fa-lg fa-times-circle" /></button>
-                    <h2 className={Styles.title}>로그인</h2>
+        return <Modal
+            show={true}
+            className={ModalStyles.container}
+            backdropClassName={ModalStyles.backdrop}
+            onHide={this.props.onClose}
+        >
+            <div className={ModalStyles.dialog}>
+                <div className={ModalStyles.header}>
+                    <button className={ModalStyles.closeButton} onClick={this.props.onClose}>
+                        <i className="fa fa-lg fa-times-circle" />
+                    </button>
+                    <h2 className={ModalStyles.title}>로그인</h2>
                 </div>
                 {this.state.errors &&
                     <div className={Styles.loginErrors}>없는 아이디거나 암호가 틀렸습니다. 다시 시도해보세요.</div>}
                 <form method="post" action="/login/" onSubmit={this._onSubmit}>
                     <div className={Styles.loginRowGroup}>
-                    <div className={Styles.loginRow}>
-                        <label>아이디</label>
-                        <input name="username" maxLength="30" autoFocus ref="username" />
+                        <div className={Styles.loginRow}>
+                            <label>아이디</label>
+                            <input name="username" maxLength="30" autoFocus ref="username" />
+                        </div>
+                        <div className={Styles.loginRow}>
+                            <label>암호</label>
+                            <input type="password" name="password" ref="password" />
+                        </div>
                     </div>
-                    <div className={Styles.loginRow}>
-                        <label>암호</label>
-                        <input type="password" name="password" ref="password" />
-                    </div>
-                    </div>
-                    {!this.state.submitted && <button type="submit" className={Styles.loginButton}>로그인</button>}
+                    {!this.state.submitted && <button type="submit" className={ModalStyles.confirmButton}>로그인</button>}
                     <div className={Styles.loginCheckRow}>
                         <label>
                             <input type="checkbox" checked={!this.state.isTransient} onChange={e => this.setState({isTransient: !e.target.checked})} />
@@ -58,7 +67,7 @@ var LoginDialog = React.createClass({
                     </div>
                 </form>
             </div>
-        </div>;
+        </Modal>;
     },
     _onSubmit(event) {
         event.preventDefault();

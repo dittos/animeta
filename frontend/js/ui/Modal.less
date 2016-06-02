@@ -1,0 +1,100 @@
+@import "../../less/variables.less";
+
+:local(.fullSize) {
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+:local(.container) {
+    position: fixed;
+    composes: fullSize;
+    z-index: @z-modal;
+    overflow-y: auto;
+}
+
+:local(.backdrop) {
+    position: absolute;
+    composes: fullSize;
+    background: #fff;
+    opacity: 0.75;
+}
+
+:local(.dialog) {
+    position: relative;
+    margin: 0 auto;
+    width: 320px;
+    max-width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid @color-main;
+    padding: 20px;
+
+    @media (max-width: 480px) {
+        margin-top: 20px;
+    }
+    @media (min-width: 481px) {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%); // fuck IE8
+    }
+}
+
+:local(.header) {
+    margin-bottom: 16px;
+}
+
+:local(.closeButton) {
+    float: right;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    height: 24px;
+    padding: 0;
+    color: #666;
+}
+
+:local(.title) {
+    font-size: 20px;
+    font-weight: normal;
+    margin: 0;
+}
+
+:local(.button) {
+    float: right;
+    display: block;
+    border: none;
+    border-radius: 5px;
+    height: 40px;
+    padding: 0 20px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 10px;
+
+    &:disabled {
+        background: #999;
+    }
+}
+
+:local(.dangerConfirmButton) {
+    composes: button;
+    background: #c9302c;
+}
+
+:local(.confirmButton) {
+    composes: button;
+    background: @color-main;
+}
+
+:local(.cancelButton) {
+    composes: button;
+    color: @color-text-dark;
+    background: transparent;
+}

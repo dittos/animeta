@@ -1,62 +1,5 @@
 @import "../../less/variables.less";
 
-:local(.backdrop) {
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background: #fff;
-    background: rgba(255, 255, 255, 0.75);
-    z-index: @z-modal;
-}
-
-:local(.dialog) {
-    margin: 0 auto;
-    width: 320px;
-    max-width: 100%;
-    box-sizing: border-box;
-    background: #fff;
-    border-radius: 5px;
-    overflow: hidden;
-    border: 1px solid @color-main;
-
-    @media (max-width: 480px) {
-        margin-top: 20px;
-    }
-    @media (min-width: 481px) {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translateX(-50%) translateY(-50%); // fuck IE8
-    }
-}
-
-:local(.loginDialog) {
-    composes: dialog;
-    padding: 20px;
-}
-
-:local(.header) {
-    margin-bottom: 16px;
-}
-
-:local(.closeButton) {
-    float: right;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    height: 24px;
-    padding: 0;
-    color: #666;
-}
-
-:local(.title) {
-    font-size: 20px;
-    font-weight: normal;
-    margin: 0;
-}
-
 :local(.loginErrors) {
     background-color: #ffa;
     border: 1px solid #deb200;
@@ -121,23 +64,5 @@
         padding: 0;
         margin-right: 10px;
         vertical-align: middle;
-    }
-}
-
-:local(.loginButton) {
-    float: right;
-    display: block;
-    background: @color-main;
-    border: none;
-    border-radius: 5px;
-    height: 40px;
-    padding: 0 20px;
-    color: #fff;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-
-    &:disabled {
-        background: #999;
     }
 }
