@@ -30,6 +30,7 @@ export function render(app, serverRequest, prerender = false) {
             app,
             client: requestBoundClient,
             params: match.params,
+            query: serverRequest.query,
         };
         Promise.resolve(fetchData(request)).then(data => {
             if (data.redirect)
