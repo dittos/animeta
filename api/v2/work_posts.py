@@ -7,7 +7,7 @@ from work.models import Work
 class WorkPostsView(BaseView):
     def get(self, request, id):
         work = get_object_or_404(Work, id=id)
-        queryset = work.history_set.exclude(comment='').order_by('-id')
+        queryset = work.history_set.select_related('user').exclude(comment='').order_by('-id')
         if 'before_id' in request.GET:
             queryset = queryset.filter(id__lt=request.GET['before_id'])
         if 'episode' in request.GET:
