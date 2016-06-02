@@ -1,30 +1,10 @@
 var $ = require('jquery');
-
-var _twitterConnectPromise = null;
+import _connectTwitter from '../connectTwitter';
 
 export function connectTwitter() {
-    return dispatch => {
-        if (!_twitterConnectPromise) {
-            _twitterConnectPromise = new Promise((resolve, reject) => {
-                window.onTwitterConnect = ok => {
-                    try {
-                        if (ok) {
-                            dispatch(connectedService('twitter'));
-                            resolve();
-                        } else {
-                            alert('연동 실패. 잠시 후 다시 시도해주세요.');
-                            reject();
-                        }
-                    } finally {
-                        window.onTwitterConnect = null;
-                        _twitterConnectPromise = null;
-                    }
-                };
-                window.open('/api/v2/me/external-services/twitter/connect');
-            });
-        }
-        return _twitterConnectPromise;
-    }
+    return dispatch => _connectTwitter().then(() => {
+        dispatch(connectedService('twitter'));
+    });
 }
 
 function connectedService(serviceID) {

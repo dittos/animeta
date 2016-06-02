@@ -62,12 +62,17 @@ var VideoSearchResult = React.createClass({
     _loadMore() {
         var page = (this.state.page || 0) + 1;
         this.setState({isLoading: true});
-        $.getJSON('https://apis.daum.net/search/vclip?callback=?', {
-            apikey: PreloadData.daum_api_key,
-            output: 'json',
-            result: this.state.itemsPerRow * 2,
-            q: this.props.query,
-            pageno: page
+        $.ajax({
+            url: 'https://apis.daum.net/search/vclip?callback=?',
+            data: {
+                apikey: PreloadData.daum_api_key,
+                output: 'json',
+                result: this.state.itemsPerRow * 2,
+                q: this.props.query,
+                pageno: page
+            },
+            dataType: 'jsonp',
+            __silent__: true,
         }).then(data => {
             var result = this.state.result.concat(data.channel.item);
             var totalCount = parseInt(data.channel.totalCount, 10);

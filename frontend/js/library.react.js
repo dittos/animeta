@@ -97,7 +97,6 @@ function runApp() {
             <Route path="/records/:recordId/delete/" component={require('./ui/DeleteRecord')} />
             <Route path="/records/:recordId/" component={require('./ui/RecordDetail')} />
             <Route path={locationStrategy.libraryPath + "history/"} component={require('./ui/LibraryHistory')} />
-            <Route path="/settings/" component={require('./ui/Settings').default} />
         </Route>
     );
 

@@ -21,7 +21,8 @@ def serialize_user(user, viewer=None, include_categories=True):
         'date_joined': serialize_datetime(user.date_joined),
     }
     if viewer == user:
-        data['connected_services'] = get_connected_services(user)
+        data['connected_services'] = get_connected_services(user)  # deprecated
+        data['is_twitter_connected'] = 'twitter' in data['connected_services']
     if include_categories:
         data['categories'] = map(serialize_category, user.category_set.all())
     return data

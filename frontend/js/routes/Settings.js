@@ -1,20 +1,17 @@
-import $ from "jquery";
-import React from "react";
-import {connect} from "react-redux";
-import * as ExternalServiceActions from "../store/ExternalServiceActions";
-import ExternalServiceStore from "../store/ExternalServiceStore";
+import React from 'react';
+import connectTwitter from '../connectTwitter';
+import {
+    changePassword,
+    disconnectTwitter,
+    logout,
+} from '../API';
+import Layout from '../ui/Layout';
 
-function select(state) {
-    return {
-        connectedServices: ExternalServiceStore.getConnectedServices(state),
-    };
-}
-
-export default connect(select)(class extends React.Component {
-    constructor(a, b) {
-        super(a, b);
+class ChangePassword extends React.Component {
+    constructor(props) {
+        super(props);
         this.state = {
-            isChangingPassword: false
+            isChangingPassword: false,
         };
     }
 
@@ -40,7 +37,6 @@ export default connect(select)(class extends React.Component {
                         <td>
                             <button
                                 onClick={this._changePassword.bind(this)}
-                                className="button"
                                 disabled={this.state.isChangingPassword}
                             >
                                 바꾸기
@@ -49,23 +45,7 @@ export default connect(select)(class extends React.Component {
                     </tr>
                 </tbody>
             </table>
-
-            <h2>트위터 연동</h2>
-            {this.props.connectedServices.has('twitter') ?
-                <button onClick={this._disconnectTwitter.bind(this)}>연결 끊기</button>
-                : <button onClick={this._connectTwitter.bind(this)}>연결하기</button>}
-
-            <h2>로그아웃</h2>
-            <button onClick={this._logout.bind(this)}>로그아웃</button>
         </div>;
-    }
-
-    _connectTwitter() {
-        this.props.dispatch(ExternalServiceActions.connectTwitter());
-    }
-
-    _disconnectTwitter() {
-        this.props.dispatch(ExternalServiceActions.disconnectService('twitter'));
     }
 
     _changePassword() {
@@ -75,11 +55,11 @@ export default connect(select)(class extends React.Component {
         }
 
         this.setState({isChangingPassword: true});
-        $.post('/api/v2/me/password', {
-            old_password: this.refs.oldPassword.value,
-            new_password1: this.refs.newPassword1.value,
-            new_password2: this.refs.newPassword2.value,
-        }).then(() => {
+        changePassword(
+            this.refs.oldPassword.value,
+            this.refs.newPassword1.value,
+            this.refs.newPassword2.value,
+        ).then(() => {
             alert('암호를 변경했습니다.');
             this.refs.oldPassword.value = '';
             this.refs.newPassword1.value = '';
@@ -88,13 +68,65 @@ export default connect(select)(class extends React.Component {
             this.setState({isChangingPassword: false});
         });
     }
+}
+
+class SettingsRoute extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            currentUser: props.currentUser,
+        };
+    }
+
+    render() {
+        return <Layout.CenteredFullWidth>
+            <ChangePassword />
+
+            <h2>트위터 연동</h2>
+            {this.state.currentUser.is_twitter_connected ?
+                <button onClick={this._disconnectTwitter.bind(this)}>연결 끊기</button>
+                : <button onClick={this._connectTwitter.bind(this)}>연결하기</button>}
+
+            <h2>로그아웃</h2>
+            <button onClick={this._logout.bind(this)}>로그아웃</button>
+        </Layout.CenteredFullWidth>;
+    }
+
+    _connectTwitter() {
+        connectTwitter().then(() => {
+            this.setState({currentUser: {
+                ...this.state.currentUser,
+                is_twitter_connected: true,
+            }});
+        });
+    }
+
+    _disconnectTwitter() {
+        disconnectTwitter().then(() => {
+            this.setState({currentUser: {
+                ...this.state.currentUser,
+                is_twitter_connected: false,
+            }});
+        });
+    }
 
     _logout() {
-        $.ajax({
-            url: '/api/v2/auth',
-            method: 'DELETE'
-        }).then(() => {
+        logout().then(() => {
             location.href = '/';
         });
     }
-})
+}
+
+SettingsRoute.fetchData = async ({ client }) => {
+    const currentUser = await client.getCurrentUser();
+    if (!currentUser) {
+        return {redirect: '/login/'};
+    }
+    return {
+        props: {
+            currentUser,
+        }
+    };
+};
+
+export default SettingsRoute;

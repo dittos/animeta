@@ -306,10 +306,4 @@ server.route({
     handler: currentUserHandler
 });
 
-server.route({
-    method: 'GET',
-    path: '/settings/',
-    handler: currentUserHandler
-});
-
 module.exports = server;

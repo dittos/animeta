@@ -1,6 +1,5 @@
 import React from 'react';
 import {createApp} from './Isomorphic';
-import GlobalHeader from './ui/GlobalHeader';
 import LoginDialog from './ui/LoginDialog';
 import Periods from './Periods';
 import IndexRoute from './routes/Index';
@@ -9,28 +8,19 @@ import ChartRoute from './routes/Chart';
 import PostRoute from './routes/Post';
 import WorkRoute from './routes/Work';
 import TableRoute from './routes/Table';
-
-function Layout(Component) {
-    const Wrapped = (props) => <div>
-        <GlobalHeader
-            currentUser={props.currentUser}
-            useRouterLink={true}
-        />
-        <Component {...props} />
-    </div>;
-    Wrapped.fetchData = Component.fetchData;
-    return Wrapped;
-}
+import SettingsRoute from './routes/Settings';
+import * as layouts from './layouts';
 
 var app = createApp();
-app.route('/', Layout(IndexRoute));
-app.route('/login/', Layout(() => <LoginDialog next="/" />), () => ({pageTitle: '로그인'}));
-app.route('/signup/', Layout(SignupRoute), () => ({pageTitle: '회원 가입'}));
-app.route('/charts/:type/:range/', Layout(ChartRoute));
-app.route('/-:id', Layout(PostRoute));
-app.route('/works/:title+/ep/:episode/', Layout(WorkRoute));
-app.route('/works/:title+/', Layout(WorkRoute));
+app.route('/', layouts.App(IndexRoute));
+app.route('/login/', layouts.App(() => <LoginDialog next="/" />), () => ({pageTitle: '로그인'}));
+app.route('/signup/', layouts.App(SignupRoute), () => ({pageTitle: '회원 가입'}));
+app.route('/charts/:type/:range/', layouts.App(ChartRoute));
+app.route('/-:id', layouts.App(PostRoute));
+app.route('/works/:title+/ep/:episode/', layouts.App(WorkRoute));
+app.route('/works/:title+/', layouts.App(WorkRoute));
 app.route('/table/', null, () => ({redirect: `/table/${Periods.current}/`}));
-app.route('/table/:period/', Layout(TableRoute));
+app.route('/table/:period/', layouts.App(TableRoute));
+app.route('/settings/', layouts.App(SettingsRoute));
 
 export default app;

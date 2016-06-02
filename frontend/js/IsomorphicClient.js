@@ -1,4 +1,5 @@
 /* global _gaq */
+/* global Raven */
 import $ from 'jquery';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -20,7 +21,7 @@ function createClient() {
         },
 
         getCurrentUser() {
-            return this.call('/me').then(undefined, jqXHR => {
+            return $.ajax({url: '/api/v2/me', __silent__: true}).then(undefined, jqXHR => {
                 var deferred = $.Deferred();
                 if (jqXHR.statusCode)
                     deferred.resolve(null);
@@ -37,6 +38,36 @@ function onPageTransition() {
         _gaq.push(['_trackPageview']);
     }
 }
+
+$(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) => {
+    if (ajaxSettings.__silent__)
+        return;
+
+    try {
+        Raven.captureMessage(thrownError || jqXHR.statusText, {
+            extra: {
+                type: ajaxSettings.type,
+                url: ajaxSettings.url,
+                data: ajaxSettings.data,
+                status: jqXHR.status,
+                error: thrownError || jqXHR.statusText,
+                response: jqXHR.responseText && jqXHR.responseText.substring(0, 100)
+            }
+        });
+    } catch (e) {
+        Raven.captureMessage(e);
+    }
+    if (jqXHR.responseText) {
+        try {
+            var err = $.parseJSON(jqXHR.responseText);
+            alert(err.message);
+            return;
+        } catch (e) {
+            // ignore
+        }
+    }
+    alert('서버 오류로 요청에 실패했습니다.');
+});
 
 export function render(app, container) {
     const history = useQueries(createHistory)();

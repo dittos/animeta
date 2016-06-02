@@ -26,10 +26,11 @@ var DropdownUserMenu = React.createClass({
         $(document).off('click', this._onClose);
     },
     render() {
+        const {Link} = this.props;
         return <div className={Styles.userMenu}
             onClick={e => e.stopPropagation()}>
             <a href={`/users/${this.props.user.name}/`}>기록 관리</a>
-            <a href="/settings/">설정</a>
+            <Link href="/settings/">설정</Link>
             {this.state.records && <div>
                 <div className={Styles.userMenuSeparator}>
                     바로가기
@@ -144,7 +145,7 @@ var GlobalHeader = React.createClass({
         var user = this.props.currentUser;
         if (user) {
             return <div className={Styles.accountMenu}>
-                <a href="/library/" className={Styles.userButton}
+                <a href={`/users/${user.name}/`} className={Styles.userButton}
                     onClick={this._toggleUserMenu}>
                     <i className="fa fa-user" />
                     {user.name}
@@ -153,7 +154,8 @@ var GlobalHeader = React.createClass({
                 {this.state.showUserMenu &&
                     <DropdownUserMenu
                         user={user}
-                        onClose={() => this.setState({showUserMenu: false})} />}
+                        onClose={() => this.setState({showUserMenu: false})}
+                        Link={Link} />}
             </div>;
         } else {
             return <div className={Styles.accountMenu}>
