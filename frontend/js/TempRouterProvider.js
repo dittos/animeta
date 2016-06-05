@@ -2,8 +2,8 @@ import React from 'react';
 
 export default class TempRouterProvider extends React.Component {
     getChildContext() {
-        const {history} = this.props;
-        return {history};
+        const {app} = this.props;
+        return {app};
     }
 
     render() {
@@ -11,5 +11,5 @@ export default class TempRouterProvider extends React.Component {
     }
 }
 TempRouterProvider.childContextTypes = {
-    history: React.PropTypes.object
+    app: React.PropTypes.object
 };

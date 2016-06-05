@@ -8,7 +8,7 @@ function isModifiedEvent(event) {
     return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
 }
 
-export default function Link({ to, onClick, ...props }, { history }) {
+export default function Link({ to, onClick, ...props }, { app }) {
     function handleClick(event) {
         var allowTransition = true;
 
@@ -28,7 +28,7 @@ export default function Link({ to, onClick, ...props }, { history }) {
         event.preventDefault();
 
         if (allowTransition) {
-            history.push(to);
+            app.visit(to);
         }
     }
 
@@ -36,5 +36,5 @@ export default function Link({ to, onClick, ...props }, { history }) {
 }
 
 Link.contextTypes = {
-    history: React.PropTypes.object
+    app: React.PropTypes.object
 };

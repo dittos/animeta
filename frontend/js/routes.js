@@ -12,11 +12,11 @@ import SettingsRoute from './routes/Settings';
 import * as layouts from './layouts';
 
 var app = createApp();
-app.route('/', layouts.App(IndexRoute));
+app.route('/', IndexRoute);
 app.route('/login/', layouts.App(() => <LoginDialog next="/" />), () => ({pageTitle: '로그인'}));
 app.route('/signup/', layouts.App(SignupRoute), () => ({pageTitle: '회원 가입'}));
 app.route('/charts/:type/:range/', layouts.App(ChartRoute));
-app.route('/-:id', layouts.App(PostRoute));
+app.route('/-:id', PostRoute);
 app.route('/works/:title+/ep/:episode/', layouts.App(WorkRoute));
 app.route('/works/:title+/', layouts.App(WorkRoute));
 app.route('/table/', null, () => ({redirect: `/table/${Periods.current}/`}));

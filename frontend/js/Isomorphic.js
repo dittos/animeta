@@ -5,14 +5,13 @@ class App {
         this.routes = [];
     }
 
-    route(path, Component, fetchData) {
+    route(path, handler) {
         const keys = [];
         const regexp = pathToRegexp(path, keys);
         this.routes.push({
             regexp,
             keys,
-            Component,
-            fetchData: fetchData || Component.fetchData,
+            handler,
         })
     }
 }

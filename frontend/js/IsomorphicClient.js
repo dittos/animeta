@@ -4,6 +4,8 @@ import $ from 'jquery';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {createHistory, useQueries} from 'history';
+import qs from 'querystring';
+import {Observable} from 'rx';
 import nprogress from 'nprogress';
 import {matchRoute} from './Isomorphic';
 import dedupeClient from './dedupeClient';
@@ -69,79 +71,131 @@ $(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) => {
     alert('서버 오류로 요청에 실패했습니다.');
 });
 
-export function render(app, container) {
-    const history = useQueries(createHistory)();
+class History {
+    constructor() {
+        this._syncFromDOM();
+        Rx.Observable.fromEvent(window, 'popstate')
+            .subscribeOnNext(() => this._syncFromDOM());
+    }
 
-    const renderRoute = (Component, props, done) => {
+    getState() {
+        return this.state;
+    }
+
+    setState(state) {
+        this.state = state;
+        window.history.replaceState({__isomorphic__: state}, '', this.path);
+    }
+
+    pushState(state, path) {
+        this.path = path;
+        this.state = state;
+        window.history.pushState({__isomorphic__: state}, '', path);
+    }
+
+    _syncFromDOM() {
+        this.path = window.location.pathname + window.location.search;
+        this.state = window.history.state.__isomorphic__;
+    }
+}
+
+export function render(app, container) {
+    const history = new History();
+
+    let Component;
+
+    initialize();
+
+    function initialize() {
+        const match = matchRoute(app, window.location.pathname);
+        if (!match) {
+            // TODO: 404
+            return;
+        }
+        const handler = match.route.handler;
+        const request = {
+            app,
+            client: createClient(),
+            params: match.params,
+            query: qs.parse(window.location.search.substring(1)),
+        };
+        // TODO: initialRouteProps
+        Promise.resolve(handler.model(request)).then(model => {
+            history.setState(model);
+            Component = handler.component;
+
+            //ReactDOM.unmountComponentAtNode(container);
+            renderView();
+            listenForBackOrForwardNavigations();
+        });
+    }
+
+    function setModel(updates) {
+        const model = {
+            ...history.getState(),
+            ...updates
+        };
+        history.setState(model);
+        renderView();
+    }
+
+    function visit(pathname) {
+        // TODO: query support
+        const match = matchRoute(app, pathname);
+        if (!match) {
+            // TODO: 404
+            return;
+        }
+        const handler = match.route.handler;
+        const request = {
+            app,
+            client: createClient(),
+            params: match.params,
+            query: {},
+        };
+        Promise.resolve(handler.model(request)).then(model => {
+            history.pushState(model, pathname);
+            Component = handler.component;
+
+            ReactDOM.unmountComponentAtNode(container);
+            renderView(() => { window.scrollTo(0, 0) });
+        });
+    }
+
+    function listenForBackOrForwardNavigations() {
+        Rx.Observable.fromEvent(window, 'popstate')
+            .subscribeOnNext(() => {
+                const match = matchRoute(app, window.location.pathname);
+                if (!match) {
+                    // TODO: 404
+                    return;
+                }
+
+                const handler = match.route.handler;
+                const model = history.getState();
+
+                Component = handler.component;
+
+                ReactDOM.unmountComponentAtNode(container);
+                renderView();
+            })
+    }
+
+    function renderView(done) {
         ReactDOM.render(
-            <TempRouterProvider history={history}>
-                <Component {...props} />
+            <TempRouterProvider app={{visit}}>
+                <Component
+                    model={history.getState()}
+                    setModel={setModel}
+                />
             </TempRouterProvider>,
             container,
             done
         );
-    };
+    }
 
-    var lastRequestID = 0;
-    const initialRouteProps = global.PreloadData.routeProps;
-
-    const listener = (location, callback) => {
-        const done = () => callback();
-        const match = matchRoute(app, location.pathname);
-        if (!match) {
-            // TODO: 404
-            done();
-            return;
-        }
-        const {Component, fetchData} = match.route;
-        const requestID = ++lastRequestID;
-
-        if (requestID === 1 && initialRouteProps) {
-            renderRoute(Component, initialRouteProps, done);
-            global.PreloadData.routeProps = null;
-        } else {
-            const request = {
-                app,
-                client: createClient(),
-                params: match.params,
-                query: location.query,
-            };
-            nprogress.start();
-            Promise.resolve(fetchData(request)).then(data => {
-                if (requestID != lastRequestID)
-                    return;
-
-                if (data.redirect) {
-                    history.push(data.redirect);
-                    return;
-                }
-
-                var {props, pageTitle = '', allowReuse = false} = data;
-
-                nprogress.done();
-
-                if (requestID > 1)
-                    onPageTransition();
-
-                if (!allowReuse)
-                    ReactDOM.unmountComponentAtNode(container);
-
-                if (pageTitle)
-                    pageTitle += ' - ';
-                document.title = pageTitle + '애니메타';
-
-                renderRoute(Component, props, () => {
-                    done();
-
-                    if (location.action === 'PUSH')
-                        window.scrollTo(0, 0)
-                });
-            }, e => {
-                // TODO: show error
-            })
-        }
-    };
-
-    history.listenBefore(listener);
-    listener(history.createLocation(window.location), () => {});
+    // TODO: nprogress
+    // TODO: analytics
+    // TODO: redirect
+    // TODO: title
 }

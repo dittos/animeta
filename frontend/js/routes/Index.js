@@ -2,6 +2,7 @@ import $ from 'jquery';
 import React from 'react';
 import {Link} from '../Isomorphic';
 import * as util from '../util';
+import AppLayout from '../ui/AppLayout';
 import Grid from '../ui/Grid';
 import TimeAgo from '../ui/TimeAgo';
 import WeeklyChart from '../ui/WeeklyChart';
@@ -12,25 +13,26 @@ import Styles from '../../less/index.less';
 var Index = React.createClass({
     getInitialState() {
         return {
-            posts: this.props.posts,
             isLoading: false
         };
     },
     componentDidMount() {
         // Show less posts initially in mobile
         if ($(window).width() <= 480)
-            this.setState({posts: this.state.posts.slice(0, 3)});
+            this.props.setModel({posts: this.props.model.posts.slice(0, 3)});
     },
     render() {
-        return <Grid.Row>
-            <Grid.Column size={8} pull="left">
-                {this._renderTimeline(this.state.posts)}
-            </Grid.Column>
-            <Grid.Column size={4} pull="right" className={Styles.sidebar}>
-                <h2 className={Styles.sectionTitle}>주간 인기 작품</h2>
-                <WeeklyChart data={this.props.chart} />
-            </Grid.Column>
-        </Grid.Row>;
+        return <AppLayout currentUser={this.props.model.currentUser}>
+            <Grid.Row>
+                <Grid.Column size={8} pull="left">
+                    {this._renderTimeline(this.props.model.posts)}
+                </Grid.Column>
+                <Grid.Column size={4} pull="right" className={Styles.sidebar}>
+                    <h2 className={Styles.sectionTitle}>주간 인기 작품</h2>
+                    <WeeklyChart data={this.props.model.chart} />
+                </Grid.Column>
+            </Grid.Row>
+        </AppLayout>;
     },
     _renderTimeline(posts) {
         return <div className={Styles.timeline}>
@@ -55,30 +57,32 @@ var Index = React.createClass({
     _loadMore() {
         this.setState({isLoading: true});
         $.get('/api/v2/posts', {
-            before_id: this.state.posts[this.state.posts.length - 1].id,
+            before_id: this.props.model.posts[this.props.model.posts.length - 1].id,
             min_record_count: 2
-        }).then(data => {
+        }).then(posts => {
+            this.props.setModel({
+                posts: this.props.model.posts.concat(posts)
+            });
             this.setState({
                 isLoading: false,
-                posts: this.state.posts.concat(data)
             });
         });
     }
 });
 
-Index.fetchData = async ({ client }) => {
-    const [currentUser, posts, chart] = await Promise.all([
-        client.getCurrentUser(),
-        client.call('/posts', {min_record_count: 2, count: 10}),
-        client.call('/charts/works/weekly', {limit: 5}),
-    ]);
-    return {
-        props: {
+export default {
+    component: Index,
+
+    async model({ client }) {
+        const [currentUser, posts, chart] = await Promise.all([
+            client.getCurrentUser(),
+            client.call('/posts', {min_record_count: 2, count: 10}),
+            client.call('/charts/works/weekly', {limit: 5}),
+        ]);
+        return {
             currentUser,
             posts,
             chart,
-        }
-    };
-};
-
-export default Index;
+        };
+    }
+}

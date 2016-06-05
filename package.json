@@ -43,6 +43,7 @@
     "redux-thunk": "^1.0.2",
     "regenerator": "^0.8.36",
     "request": "^2.65.0",
+    "rx": "^4.1.0",
     "typeahead.js": "^0.10.5",
     "vision": "^3.0.0"
   },

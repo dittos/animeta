@@ -25,7 +25,7 @@ export function render(app, serverRequest, prerender = false) {
                 return _backend.getCurrentUser(serverRequest);
             },
         });
-        const {Component, fetchData} = match.route;
+        const {render, fetchData, renderTitle, renderMeta} = match.route.handler;
         const request = {
             app,
             client: requestBoundClient,
@@ -36,12 +36,11 @@ export function render(app, serverRequest, prerender = false) {
             if (data.redirect)
                 throw {_redirect: data.redirect};
 
-            var {props, pageTitle = '', pageMeta = {}} = data;
             var html;
             if (prerender) {
                 html = ReactDOMServer.renderToString(
                     <TempRouterProvider history={null}>
-                        <Component {...props} />
+                        {render(data)}
                     </TempRouterProvider>
                 );
             } else {
@@ -50,10 +49,10 @@ export function render(app, serverRequest, prerender = false) {
             resolve({
                 html,
                 preloadData: {
-                    routeProps: props,
+                    routeProps: prerender && data,
                 },
-                title: pageTitle,
-                meta: pageMeta
+                title: renderTitle && renderTitle(data),
+                meta: renderMeta ? renderMeta(data) : {},
             });
         }).catch(e => reject(e));
     });
