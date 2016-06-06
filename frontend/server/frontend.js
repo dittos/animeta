@@ -19,6 +19,7 @@ const server = express();
 server.set('view engine', 'ejs');
 server.set('views', __dirname);
 server.set('strict routing', true);
+server.set('etag', false);
 
 if (DEBUG) {
     server.use('/static', express.static(__dirname + '/../../animeta/static'));
