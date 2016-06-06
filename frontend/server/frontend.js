@@ -136,6 +136,7 @@ server.get('/records/:id/delete/', recordHandler);
 
 server.get('*', (req, res, next) => {
     IsomorphicServer.render(app, req, true).then(({html, preloadData, title, meta}) => {
+        preloadData.daum_api_key = config.daumAPIKey; // XXX
         renderDefault(res, {
             html,
             preloadData,
