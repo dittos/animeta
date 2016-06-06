@@ -19,12 +19,9 @@ require('css-modules-require-hook')({
     }
 });
 require('moment').locale('ko');
-var server = require('./server/frontend');
+var app = require('./server/frontend');
+var port = process.env.PORT || 3000;
 
-server.start(err => {
-    if (err) {
-        console.error(err);
-        return;
-    }
-    console.log('Server running at:', server.info.uri);
+app.listen(port, () => {
+    console.log('Server running at port', port);
 });

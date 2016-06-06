@@ -55,7 +55,9 @@
 <script>
 if (!document.createElementNS || !document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect)document.body.className+=' no-svg';
 </script>
-<%- content %>
+<% if (typeof html !== 'undefined') { %>
+<div id="app"><%- html %></div>
+<% } %>
 <script src="//cdn.ravenjs.com/1.1.20/raven.min.js"></script>
 <% if (!DEBUG) { %>
 <script>
