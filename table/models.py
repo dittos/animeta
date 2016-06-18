@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 import calendar
 import datetime
-import os.path
 import urllib
 import pytz
-import yaml
-from django.conf import settings
 
 TZ = pytz.timezone('Asia/Seoul')
 
@@ -61,8 +58,6 @@ def item_json(item, period):
     data['studios'] = studio
 
     data['source'] = item['source']
-    image_url_fmt = 'https://animeta.net/media/%s/images/thumb/%s'
-    data['image_url'] = image_url_fmt % (period, item['image'])
     data['schedule'] = get_schedule(item, period)
     return data
 
@@ -114,15 +109,6 @@ def namu_link(ref):
     if anchor:
         url += '#' + urllib.quote(anchor.encode('utf-8'))
     return url
-
-
-def load_data(period):
-    path = os.path.join(settings.ANITABLE_DATA_DIR, '%s/schedule.yml' % period)
-    with open(path) as fp:
-        data = []
-        for item in yaml.load_all(fp):
-            data.append(item_json(item, period))
-        return data
 
 
 def next_schedule(date):

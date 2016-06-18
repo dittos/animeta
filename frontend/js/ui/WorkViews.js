@@ -159,10 +159,14 @@ var StatusButton = React.createClass({
 
 var Sidebar = React.createClass({
     render() {
-        var metadata = this.props.metadata;
+        const work = this.props.work;
+        const poster = work.image_url ?
+            <img className="poster" src={work.image_url} /> :
+            <div className="poster poster-empty">No Image</div>;
+        const metadata = work.metadata;
         if (metadata) {
             return <div className="work-sidebar">
-                <img className="poster" src={metadata.image_url} />
+                {poster}
                 <p>
                     {metadata.studios &&
                         [<b>{metadata.studios.join(', ')}</b>, ' 제작']}
@@ -184,7 +188,7 @@ var Sidebar = React.createClass({
             </div>;
         } else {
             return <div className="work-sidebar">
-                <div className="poster poster-empty">No Image</div>
+                {poster}
                 <h3 className="section-title">주간 인기 작품</h3>
                 <WeeklyChart data={this.props.chart} />
             </div>;
@@ -201,10 +205,10 @@ var modernGradientSupported = (() => {
 })();
 
 function getCoverImageStyle(work) {
-    if (work.metadata && work.metadata.image_url) {
+    if (work.image_url) {
         return {
             background: (!modernGradientSupported ? '-webkit-' : '') + 'linear-gradient(rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0) 100%),' +
-                'url(' + work.metadata.image_url + ') 0 40% no-repeat',
+                'url(' + work.image_url + ') 0 40% no-repeat',
             backgroundSize: 'cover'
         };
     }
@@ -260,7 +264,7 @@ var Work = React.createClass({
             {this.state.showSidebar &&
                 <Grid.Row>
                     <Grid.Column pull="right" size={3}>
-                        <Sidebar metadata={work.metadata}
+                        <Sidebar work={work}
                             chart={this.props.chart} />
                     </Grid.Column>
                 </Grid.Row>}

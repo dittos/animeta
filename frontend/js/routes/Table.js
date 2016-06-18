@@ -115,7 +115,7 @@ var StatusButton = React.createClass({
 
 function Poster({item}) {
     return <div className={Styles.poster}>
-        <LazyImageView src={item.metadata.image_url} className={Styles.posterImage} />
+        <LazyImageView src={item.image_url} className={Styles.posterImage} />
         <div className={Styles.posterOverlay}>
             <i className="fa fa-check" /> {item.record_count}
         </div>

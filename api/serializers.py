@@ -77,6 +77,8 @@ def serialize_work(work, viewer=None, full=False):
         'id': work.id,
         'title': work.title,
     }
+    if work.image_filename:
+        data['image_url'] = 'https://animeta.net/media/' + work.image_filename
     if full:
         data['alt_titles'] = list(TitleMapping.objects.filter(work=work)
                                   .exclude(title=work.title)
@@ -96,4 +98,7 @@ def serialize_work(work, viewer=None, full=False):
     if metadata:
         period = Period.parse(metadata['periods'][0])
         data['metadata'] = item_json(metadata, period)
+        # Backward compat
+        if 'image_url' in data:
+            data['metadata']['image_url'] = data['image_url']
     return data

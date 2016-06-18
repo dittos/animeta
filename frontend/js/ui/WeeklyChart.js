@@ -22,8 +22,8 @@ function WeeklyChart({ data }) {
                     <span className="title">{work.title}</span>
                     {diff}
                 </div>
-                {work.metadata &&
-                    <img src={work.metadata.image_url} />}
+                {work.image_url &&
+                    <img src={work.image_url} />}
             </Link>;
         })}
     </div>;

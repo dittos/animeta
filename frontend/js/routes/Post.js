@@ -39,8 +39,8 @@ Post.fetchData = async ({ params, client }) => {
         pageMeta: {
             og_url: `/-${post.id}`,
             og_type: 'article',
-            og_image: work.metadata && work.metadata.image_url,
-            tw_image: work.metadata && work.metadata.image_url,
+            og_image: work.image_url,
+            tw_image: work.image_url,
         },
         props: {
             currentUser,
