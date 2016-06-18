@@ -7,6 +7,7 @@ import yaml
 class Work(models.Model):
     title = models.CharField(max_length=100, unique=True)
     raw_metadata = models.TextField(null=True)
+    image_filename = models.CharField(max_length=100, null=True, blank=False)
 
     @property
     def popularity(self):
