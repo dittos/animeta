@@ -36,7 +36,7 @@ class Period(object):
 
 
 def item_json(item, period):
-    data = {'id': item['id']}
+    data = {}
 
     title = item['title']
     if not isinstance(title, basestring):
@@ -109,11 +109,3 @@ def namu_link(ref):
     if anchor:
         url += '#' + urllib.quote(anchor.encode('utf-8'))
     return url
-
-
-def next_schedule(date):
-    day = datetime.timedelta(days=1)
-    thres = datetime.timedelta(hours=12)
-    while date + thres < datetime.datetime.now():
-        date = date + 7 * day
-    return date
