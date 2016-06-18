@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import user_passes_test
 from work.models import Work, TitleMapping, normalize_title, get_or_create_work
+from moderation.utils import download_ann_poster, generate_thumbnail
 
 
 def test_is_staff(user):
@@ -134,4 +135,16 @@ def edit_metadata(request, work_id):
     yaml.load(request.POST['metadata'])
     work.raw_metadata = request.POST['metadata']
     work.save()
+    return redirect('moderation-work', work_id=work.id)
+
+
+@user_passes_test(test_is_staff)
+def upload_image(request, work_id):
+    work = Work.objects.get(pk=work_id)
+    if 'ann_id' in request.POST:
+        ann_id = request.POST['ann_id']
+        work.original_image_filename = download_ann_poster(ann_id)
+        if work.original_image_filename:
+            work.image_filename = generate_thumbnail(work.original_image_filename)
+            work.save()
     return redirect('moderation-work', work_id=work.id)

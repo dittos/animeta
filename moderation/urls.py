@@ -6,6 +6,7 @@ urlpatterns = [
     url(r'^works/$', views.create_work, name='moderation-works'),
     url(r'^works/(?P<work_id>\d+)/$', views.work_detail, name='moderation-work'),
     url(r'^works/(?P<work_id>\d+)/metadata/$', views.edit_metadata, name='moderation-work-metadata'),
+    url(r'^works/(?P<work_id>\d+)/image/$', views.upload_image, name='moderation-work-image'),
     url(r'^works/(?P<work_id>\d+)/delete/$', views.delete_work, name='moderation-work-delete'),
     url(r'^works/(?P<work_id>\d+)/merge/$', views.merge_work, name='moderation-work-merge'),
     url(r'^works/(?P<work_id>\d+)/mappings/$', views.add_mapping, name='moderation-work-mappings'),

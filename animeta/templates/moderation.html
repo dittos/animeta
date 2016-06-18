@@ -1,4 +1,5 @@
 {% extends 'base_js.html' %}
+{% load static %}
 
 {% block head-extra %}
 <style>
@@ -111,6 +112,17 @@
 <textarea name="metadata" rows="10" cols="50">{{work.raw_metadata}}</textarea><br>
 <button type="submit">Save</button>
 </form>
+
+<br>
+<h2>Image</h2>
+<form method="post" action="{% url 'moderation-work-image' work_id=work.id %}">
+    {% csrf_token %}
+    Download from ANN ID: <input type="text" name="ann_id"><br>
+    <button type="submit">Download</button>
+</form>
+{% if work.image_filename %}
+<br><img src="{% get_media_prefix %}{{ work.image_filename }}">
+{% endif %}
 
 {% else %}
 

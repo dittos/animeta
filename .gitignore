@@ -9,6 +9,7 @@ node_modules
 animeta/settings.py
 animeta/static/build/
 animeta/assets.py
+animeta/media/
 .coverage
 htmlcov
 .env
