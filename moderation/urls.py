@@ -13,4 +13,5 @@ urlpatterns = [
     url(r'^mappings/(?P<mapping_id>\d+)/set_primary_title/$',
      views.set_primary_title, name='moderation-mapping-set-primary-title'),
     url(r'^mappings/(?P<mapping_id>\d+)/delete/$', views.delete_mapping, name='moderation-mapping-delete'),
+    url(r'^cache/clear/$', views.clear_cache, name='moderation-cache-clear'),
 ]

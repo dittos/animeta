@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import yaml
+from django.core.cache import cache
 from django.db import models, transaction
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -148,3 +149,9 @@ def upload_image(request, work_id):
             work.image_filename = generate_thumbnail(work.original_image_filename)
             work.save()
     return redirect('moderation-work', work_id=work.id)
+
+
+@user_passes_test(test_is_staff)
+def clear_cache(request):
+    cache.clear()
+    return redirect('moderation-index')
