@@ -35,12 +35,14 @@ class Period(object):
         return cls(int(y), q)
 
 
-def item_json(item, period):
+def item_json(work, item, period):
     data = {}
 
-    title = item['title']
-    if not isinstance(title, basestring):
+    title = item.get('title')
+    if title and not isinstance(title, basestring):
         title = title['ko']
+    if not title:
+        title = work.title
     data['title'] = title
 
     data['links'] = {}
