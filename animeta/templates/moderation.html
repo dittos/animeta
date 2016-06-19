@@ -123,7 +123,7 @@
 <h2>Image</h2>
 <form method="post" action="{% url 'moderation-work-image' work_id=work.id %}">
     {% csrf_token %}
-    Download from ANN ID: <input type="text" name="ann_id"><br>
+    Download from ANN ID: <input type="text" name="ann_id" value="{% if metadata %}{{ metadata.ann_id }}{% endif %}"><br>
     <button type="submit">Download</button>
 </form>
 {% if work.image_filename %}

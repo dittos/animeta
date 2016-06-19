@@ -55,6 +55,7 @@ def work_detail(request, work_id):
     title_mappings.sort(key=lambda m: m.count, reverse=True)
     return render(request, 'moderation.html', {
         'work': work,
+        'metadata': work.metadata,
         'title_mappings': title_mappings,
     })
 
