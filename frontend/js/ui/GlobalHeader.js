@@ -105,19 +105,17 @@ var GlobalHeader = React.createClass({
                     left={this._renderLeft(Link)}
                     right={this._renderRight(Link)} />
             </Layout.CenteredFullWidth>
-            {/*
             <Layout.CenteredFullWidth className={Styles.notice}>
                 <span className={Styles.noticeLabel}>
                     <i className="fa fa-bell" />
                 </span>
                 <Link href="/table/" className={Styles.noticeText}>
-                    <b>2016년 4월 신작</b>이 업데이트 됐습니다.
+                    <b>2016년 7월 신작</b>이 업데이트 됐습니다.
                 </Link>
                 <Link href="/table/" className={Styles.noticeAction}>
                     보러가기!
                 </Link>
             </Layout.CenteredFullWidth>
-            */}
         </div>;
     },
     _renderLeft(Link) {
