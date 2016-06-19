@@ -98,7 +98,4 @@ def serialize_work(work, viewer=None, full=False):
     if metadata:
         period = Period.parse(metadata['periods'][0])
         data['metadata'] = item_json(metadata, period)
-        # Backward compat
-        if 'image_url' in data:
-            data['metadata']['image_url'] = data['image_url']
     return data
