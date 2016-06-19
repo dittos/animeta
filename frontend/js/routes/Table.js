@@ -157,16 +157,16 @@ function Item({item, onFavorite}) {
 }
 
 function renderSchedule(country, schedule) {
-    var {date, broadcasts} = schedule;
+    var {date, date_only = false, broadcasts} = schedule;
     if (date) {
         date = new Date(date);
     }
     return <div className={Styles.schedule + " item-schedule-" + country}>
-        {date ? [
-            <span className="date">{getDate(date)}</span>,
-            ' ',
-            <span className="time">{util.formatTime(date)}</span>
-        ] : <span className="date">미정</span>}
+        {date ?
+            <span className="date">{getDate(date)}</span> :
+            <span className="date">미정</span>}
+        {date && !date_only &&
+            <span className="time">{' '}{util.formatTime(date)}</span>}
         {broadcasts &&
             [' ', <span className="broadcasts">({broadcasts.join(', ')})</span>]}
     </div>;

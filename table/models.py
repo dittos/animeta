@@ -73,29 +73,49 @@ def get_schedule(item, period):
 def _get_schedule(schedule, period):
     if not schedule:
         return None
-    if len(schedule) == 1:
+    if isinstance(schedule, str):
+        date = parse_datetime(schedule, period)
+        broadcasts = None
+    elif len(schedule) == 1:
         date = None
         broadcasts = schedule[0]
     else:
         date, broadcasts = schedule
-        localized_date = TZ.localize(parse_date(date, period))
-        date = calendar.timegm(localized_date.utctimetuple()) * 1000
-    if isinstance(broadcasts, basestring):
+        date = parse_datetime(date, period)
+    if broadcasts and isinstance(broadcasts, basestring):
         broadcasts = [broadcasts]
-    return {'date': date, 'broadcasts': broadcasts}
+    result = {}
+    if date:
+        if not isinstance(date, datetime.datetime):
+            result['date_only'] = True
+            date = datetime.datetime.combine(date, datetime.time.min)
+        localized_date = TZ.localize(date)
+        result['date'] = calendar.timegm(localized_date.utctimetuple()) * 1000
+    if broadcasts:
+        result['broadcasts'] = broadcasts
+    return result
 
 
-def parse_date(s, period):
+def parse_datetime(s, period):
     # date is MM-DD HH:MM format
-    date, time = s.split(' ')
+    parts = s.split(' ')
+    if len(parts) == 1:
+        return parse_date(s, period)
+    date, time = parts
+    date = parse_date(date, period)
+    h, min = map(int, time.split(':'))
+    time = datetime.time(h, min)
+    return datetime.datetime.combine(date, time)
+
+
+def parse_date(date, period):
     date_parts = map(int, date.split('-'))
     if len(date_parts) == 3:
         y, m, d = date_parts
     else:
         y = period.year
         m, d = date_parts
-    h, min = map(int, time.split(':'))
-    return datetime.datetime(y, m, d, h, min)
+    return datetime.date(y, m, d)
 
 
 def namu_link(ref):
