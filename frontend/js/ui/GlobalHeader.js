@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var React = require('react');
-import {Link as RouterLink} from '../Isomorphic';
+import {Link as RouterLink} from 'nuri';
 var Layout = require('./Layout');
 var Typeahead = require('./Typeahead');
 import LoginDialog from './LoginDialog';

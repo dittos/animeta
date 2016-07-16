@@ -3,12 +3,12 @@ var $ = require('jquery');
 var React = require('react');
 var cx = require('classnames');
 var moment = require('moment');
+import {Link} from 'nuri';
 var TimeAgo = require('./TimeAgo');
 var Grid = require('./Grid');
 var Layout = require('./Layout');
 var WeeklyChart = require('./WeeklyChart');
 var util = require('../util');
-import {Link} from '../Isomorphic';
 import PostComment from './PostComment';
 import LoadMore from './LoadMore';
 
@@ -296,49 +296,39 @@ var Post = React.createClass({
 });
 
 var WorkIndex = React.createClass({
-    getDefaultProps() {
-        return {pageSize: 10};
-    },
     getInitialState() {
-        return {isLoading: false, hasMore: this.props.hasMore, posts: this.props.initialPosts};
-    },
-    componentDidMount() {
-        if (!this.state.posts) {
-            this._loadMore();
-        }
+        return {isLoading: false};
     },
     render() {
-        var videoQuery = this.props.work.title;
-        if (this.props.episode) {
-            videoQuery += ' ' + this.props.episode + '화';
+        let {
+            work,
+            episode,
+            posts,
+            hasMorePosts,
+            excludePostID,
+        } = this.props;
+
+        var videoQuery = work.title;
+        if (episode) {
+            videoQuery += ' ' + episode + '화';
         }
-        var posts = this.state.posts;
-        if (posts && this.props.excludePostID) {
-            posts = posts.filter(post => post.id != this.props.excludePostID);
+        if (posts && excludePostID) {
+            posts = posts.filter(post => post.id !== excludePostID);
         }
         return <div>
             <VideoSearchResult query={videoQuery} />
             {posts && posts.length > 0 && <div className="section section-post">
                 <h2 className="section-title"><i className="fa fa-comment" /> 감상평</h2>
                 {posts.map(post => <Post post={post} key={post.id} />)}
-                {this.state.hasMore &&
+                {hasMorePosts &&
                     <LoadMore isLoading={this.state.isLoading} onClick={this._loadMore} />}
             </div>}
         </div>;
     },
     _loadMore() {
         this.setState({isLoading: true});
-        var params = {count: this.props.pageSize + 1};
-        if (this.state.posts && this.state.posts.length > 0)
-            params.before_id = this.state.posts[this.state.posts.length - 1].id;
-        if (this.props.episode)
-            params.episode = this.props.episode;
-        $.get('/api/v2/works/' + this.props.work.id + '/posts', params, data => {
-            this.setState({
-                hasMore: data.length > this.props.pageSize,
-                isLoading: false,
-                posts: (this.state.posts || []).concat(data)
-            });
+        this.props.loadMorePosts().then(() => {
+            this.setState({isLoading: false});
         });
     }
 });

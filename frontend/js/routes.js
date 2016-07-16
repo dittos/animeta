@@ -1,7 +1,8 @@
 import React from 'react';
-import {createApp} from './Isomorphic';
-import LoginDialog from './ui/LoginDialog';
+import {createApp} from 'nuri';
 import Periods from './Periods';
+import * as layouts from './layouts';
+import LoginDialog from './ui/LoginDialog';
 import IndexRoute from './routes/Index';
 import SignupRoute from './routes/Signup';
 import ChartRoute from './routes/Chart';
@@ -9,18 +10,27 @@ import PostRoute from './routes/Post';
 import WorkRoute from './routes/Work';
 import TableRoute from './routes/Table';
 import SettingsRoute from './routes/Settings';
-import * as layouts from './layouts';
 
 var app = createApp();
-app.route('/', layouts.App(IndexRoute));
-app.route('/login/', layouts.App(() => <LoginDialog next="/" />), () => ({pageTitle: '로그인'}));
-app.route('/signup/', layouts.App(SignupRoute), () => ({pageTitle: '회원 가입'}));
-app.route('/charts/:type/:range/', layouts.App(ChartRoute));
-app.route('/-:id', layouts.App(PostRoute));
-app.route('/works/:title+/ep/:episode/', layouts.App(WorkRoute));
-app.route('/works/:title+/', layouts.App(WorkRoute));
-app.route('/table/', null, () => ({redirect: `/table/${Periods.current}/`}));
-app.route('/table/:period/', layouts.App(TableRoute));
-app.route('/settings/', layouts.App(SettingsRoute));
+
+app.title = (routeTitle) => {
+    return routeTitle + (routeTitle ? ' - ' : '') + '애니메타';
+};
+
+app.route('/', IndexRoute);
+app.route('/login/', {
+    component: layouts.App(() => <LoginDialog next="/" />),
+    renderTitle: () => '로그인',
+});
+app.route('/signup/', SignupRoute);
+app.route('/charts/:type/:range/', ChartRoute);
+app.route('/-:id', PostRoute);
+app.route('/works/:title+/ep/:episode/', WorkRoute);
+app.route('/works/:title+/', WorkRoute);
+app.route('/table/', {
+    load: ({ redirect }) => redirect(`/table/${Periods.current}/`)
+});
+app.route('/table/:period/', TableRoute);
+app.route('/settings/', SettingsRoute);
 
 export default app;
