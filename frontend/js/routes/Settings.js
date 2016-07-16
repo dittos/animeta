@@ -6,6 +6,7 @@ import {
     logout,
 } from '../API';
 import Layout from '../ui/Layout';
+import {App} from '../layouts';
 
 class ChangePassword extends React.Component {
     constructor(props) {
@@ -71,19 +72,13 @@ class ChangePassword extends React.Component {
 }
 
 class SettingsRoute extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            currentUser: props.currentUser,
-        };
-    }
-
     render() {
+        const {currentUser} = this.props.data;
         return <Layout.CenteredFullWidth>
             <ChangePassword />
 
             <h2>트위터 연동</h2>
-            {this.state.currentUser.is_twitter_connected ?
+            {currentUser.is_twitter_connected ?
                 <button onClick={this._disconnectTwitter.bind(this)}>연결 끊기</button>
                 : <button onClick={this._connectTwitter.bind(this)}>연결하기</button>}
 
@@ -94,19 +89,17 @@ class SettingsRoute extends React.Component {
 
     _connectTwitter() {
         connectTwitter().then(() => {
-            this.setState({currentUser: {
-                ...this.state.currentUser,
-                is_twitter_connected: true,
-            }});
+            this.props.writeData(data => {
+                data.currentUser.is_twitter_connected = true;
+            });
         });
     }
 
     _disconnectTwitter() {
         disconnectTwitter().then(() => {
-            this.setState({currentUser: {
-                ...this.state.currentUser,
-                is_twitter_connected: false,
-            }});
+            this.props.writeData(data => {
+                data.currentUser.is_twitter_connected = false;
+            });
         });
     }
 
@@ -117,16 +110,15 @@ class SettingsRoute extends React.Component {
     }
 }
 
-SettingsRoute.fetchData = async ({ client }) => {
-    const currentUser = await client.getCurrentUser();
-    if (!currentUser) {
-        return {redirect: '/login/'};
-    }
-    return {
-        props: {
-            currentUser,
-        }
-    };
-};
+export default {
+    component: App(SettingsRoute),
 
-export default SettingsRoute;
+    async load({ loader, redirect }) {
+        const currentUser = await loader.getCurrentUser();
+        if (!currentUser)
+            return redirect('/login/');
+        return {
+            currentUser,
+        };
+    }
+};

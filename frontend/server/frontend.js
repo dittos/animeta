@@ -7,12 +7,21 @@ import Backend, {HttpNotFound} from './backend';
 import renderFeed from './renderFeed';
 import assetFilenames from '../assets.json';
 import config from '../config.json';
-import * as IsomorphicServer from './IsomorphicServer';
+import {render, injectLoaderFactory} from 'nuri/server';
 import app from '../js/routes';
 
 const DEBUG = process.env.NODE_ENV !== 'production';
 const backend = new Backend(config.backend);
-IsomorphicServer.injectBackend(backend);
+injectLoaderFactory(serverRequest => {
+    return {
+        call(path, params) {
+            return backend.call(serverRequest, path, params);
+        },
+        getCurrentUser() {
+            return backend.getCurrentUser(serverRequest);
+        },
+    };
+});
 
 const server = express();
 
@@ -135,7 +144,19 @@ server.get('/records/:id/', recordHandler);
 server.get('/records/:id/delete/', recordHandler);
 
 server.get('*', (req, res, next) => {
-    IsomorphicServer.render(app, req, true).then(({html, preloadData, title, meta}) => {
+    render(app, req).then(({html, preloadData, title, meta, errorStatus, redirectURI}) => {
+        if (errorStatus === 404) {
+            throw HttpNotFound;
+        }
+
+        if (redirectURI) {
+            res.redirect(redirectURI);
+            return;
+        }
+
+        if (errorStatus)
+            res.status(errorStatus);
+
         preloadData.daum_api_key = config.daumAPIKey; // XXX
         renderDefault(res, {
             html,
@@ -148,10 +169,6 @@ server.get('*', (req, res, next) => {
     }).catch(err => {
         if (err === HttpNotFound) {
             next();
-            return;
-        }
-        if (err._redirect) {
-            res.redirect(err._redirect);
             return;
         }
         if (!(err instanceof Error)) {

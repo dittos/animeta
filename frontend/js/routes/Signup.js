@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import React from 'react';
+import {App} from '../layouts';
 
 var Signup = React.createClass({
     getInitialState() {
@@ -76,4 +77,7 @@ var Signup = React.createClass({
     }
 });
 
-export default Signup;
+export default {
+    component: App(Signup),
+    renderTitle: () => '회원 가입',
+};

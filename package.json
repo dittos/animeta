@@ -66,6 +66,8 @@
     "webpack": "^1.12.9"
   },
   "scripts": {
+    "start": "babel-node frontend/frontendServer.js",
+    "watch": "webpack --watch",
     "test": "jest"
   },
   "jest": {

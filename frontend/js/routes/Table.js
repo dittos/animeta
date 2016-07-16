@@ -1,8 +1,9 @@
 import React from 'react';
 import $ from 'jquery';
 import _ from 'lodash';
-import {Link} from '../Isomorphic';
+import {Link} from 'nuri';
 import * as util from '../util';
+import {App} from '../layouts';
 import LazyImageView from '../ui/LazyImage';
 import LoginDialog from '../ui/LoginDialog';
 import Layout from '../ui/Layout';
@@ -192,29 +193,26 @@ function nullslast(val) {
 }
 
 var Table = React.createClass({
-    getInitialState() {
-        const {items} = this.props;
-        return {
-            items: _.sortBy(items, scheduleComparator),
-            ordering: 'schedule',
-            containsKRSchedule: _.some(items, i => i.metadata.schedule.kr && i.metadata.schedule.kr.date),
-        };
-    },
-
     render() {
+        const {
+            period,
+            ordering,
+            containsKRSchedule,
+            items,
+        } = this.props.data;
         return (
             <div className={Styles.container}>
                 <Layout.CenteredFullWidth>
                     <Header
-                        period={this.props.period}
-                        ordering={this.state.ordering}
-                        excludeKR={!this.state.containsKRSchedule}
+                        period={period}
+                        ordering={ordering}
+                        excludeKR={!containsKRSchedule}
                         onSort={this._onSort}
                     />
                 </Layout.CenteredFullWidth>
 
                 <Grid.Row className={Styles.items}>
-                    {this.state.items.map(item =>
+                    {items.map(item =>
                         <Grid.Column size={6} midSize={12} pull="left">
                             <Item
                                 key={item.id}
@@ -229,46 +227,54 @@ var Table = React.createClass({
     },
 
     _onSort(sort) {
-        this.setState({
-            items: _.sortBy(this.props.items, comparatorMap[sort]),
-            ordering: sort,
+        this.props.writeData(data => {
+            data.ordering = sort;
+            data.items = _.sortBy(data.items, comparatorMap[sort]);
         });
     },
 
     _onFavorite(item) {
-        if (!this.props.currentUser) {
+        const currentUser = this.props.data.currentUser;
+
+        if (!currentUser) {
             alert('로그인 후 관심 등록할 수 있습니다.');
             LoginDialog.open();
             return;
         }
 
-        $.post(`/api/v2/users/${encodeURIComponent(this.props.currentUser.name)}/records`, {
+        $.post(`/api/v2/users/${encodeURIComponent(currentUser.name)}/records`, {
             work_title: item.title,
             status_type: 'interested',
         }).then(result => {
-            item.record = result.record;
-            item.record_count++;
-            this.forceUpdate();
+            this.props.writeData(() => {
+                item.record = result.record;
+                item.record_count++;
+            });
         });
     }
 });
 
-Table.fetchData = async ({ params, client }) => {
-    const {period} = params;
-    const [currentUser, items] = await Promise.all([
-        client.getCurrentUser(),
-        client.call(`/table/periods/${period}`, {
-            only_first_period: JSON.stringify(true)
-        }),
-    ]);
-    return {
-        pageTitle: `${formatPeriod(period)} 신작`,
-        props: {
+export default {
+    component: App(Table),
+    
+    async load({ params, loader }) {
+        const {period} = params;
+        const [currentUser, items] = await Promise.all([
+            loader.getCurrentUser(),
+            loader.call(`/table/periods/${period}`, {
+                only_first_period: JSON.stringify(true)
+            }),
+        ]);
+        return {
             currentUser,
-            items,
             period,
-        }
-    };
+            items: _.sortBy(items, scheduleComparator),
+            containsKRSchedule: _.some(items, i => i.metadata.schedule.kr && i.metadata.schedule.kr.date),
+            ordering: 'schedule',
+        };
+    },
+    
+    renderTitle({ period }) {
+        return `${formatPeriod(period)} 신작`;
+    }
 };
-
-export default Table;

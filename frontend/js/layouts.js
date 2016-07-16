@@ -2,13 +2,11 @@ import React from 'react';
 import GlobalHeader from './ui/GlobalHeader';
 
 export function App(Component) {
-    const Wrapped = (props) => <div>
+    return (props) => <div>
         <GlobalHeader
-            currentUser={props.currentUser}
+            currentUser={props.data.currentUser}
             useRouterLink={true}
         />
         <Component {...props} />
     </div>;
-    Wrapped.fetchData = Component.fetchData;
-    return Wrapped;
 }

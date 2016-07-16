@@ -1,7 +1,8 @@
 import $ from 'jquery';
 import React from 'react';
-import {Link} from '../Isomorphic';
+import {Link} from 'nuri';
 import * as util from '../util';
+import {App} from '../layouts';
 import Grid from '../ui/Grid';
 import TimeAgo from '../ui/TimeAgo';
 import WeeklyChart from '../ui/WeeklyChart';
@@ -12,23 +13,25 @@ import Styles from '../../less/index.less';
 var Index = React.createClass({
     getInitialState() {
         return {
-            posts: this.props.posts,
             isLoading: false
         };
     },
     componentDidMount() {
         // Show less posts initially in mobile
-        if ($(window).width() <= 480)
-            this.setState({posts: this.state.posts.slice(0, 3)});
+        if ($(window).width() <= 480) {
+            this.props.writeData(data => {
+                data.posts = data.posts.slice(0, 3);
+            });
+        }
     },
     render() {
         return <Grid.Row>
             <Grid.Column size={8} pull="left">
-                {this._renderTimeline(this.state.posts)}
+                {this._renderTimeline(this.props.data.posts)}
             </Grid.Column>
             <Grid.Column size={4} pull="right" className={Styles.sidebar}>
                 <h2 className={Styles.sectionTitle}>주간 인기 작품</h2>
-                <WeeklyChart data={this.props.chart} />
+                <WeeklyChart data={this.props.data.chart} />
             </Grid.Column>
         </Grid.Row>;
     },
@@ -52,33 +55,34 @@ var Index = React.createClass({
             <PostComment post={post} className="comment" />
         </div>;
     },
-    _loadMore() {
+    async _loadMore() {
         this.setState({isLoading: true});
-        $.get('/api/v2/posts', {
-            before_id: this.state.posts[this.state.posts.length - 1].id,
+        const result = await this.props.loader.call('/posts', {
+            before_id: this.props.data.posts[this.props.data.posts.length - 1].id,
             min_record_count: 2
-        }).then(data => {
-            this.setState({
-                isLoading: false,
-                posts: this.state.posts.concat(data)
-            });
+        });
+        this.setState({
+            isLoading: false,
+        });
+        this.props.writeData(data => {
+            data.posts = data.posts.concat(result);
         });
     }
 });
 
-Index.fetchData = async ({ client }) => {
-    const [currentUser, posts, chart] = await Promise.all([
-        client.getCurrentUser(),
-        client.call('/posts', {min_record_count: 2, count: 10}),
-        client.call('/charts/works/weekly', {limit: 5}),
-    ]);
-    return {
-        props: {
+export default {
+    component: App(Index),
+
+    async load({ loader }) {
+        const [currentUser, posts, chart] = await Promise.all([
+            loader.getCurrentUser(),
+            loader.call('/posts', {min_record_count: 2, count: 10}),
+            loader.call('/charts/works/weekly', {limit: 5}),
+        ]);
+        return {
             currentUser,
             posts,
             chart,
-        }
-    };
+        };
+    }
 };
-
-export default Index;

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title><%= title %><% if (title) { %> - <% } %>애니메타</title>
+    <title><%= title || '애니메타' %></title>
     <meta name="title" content="<%= title || '애니메타' %>">
     <meta name="description"
           content="<%= meta.description || '애니메타는 애니메이션, 만화, 드라마 등의 순위를 확인하고 감상 기록을 관리할 수 있는 서비스입니다.' %>">
@@ -79,7 +79,7 @@ var PreloadData = <%- JSON.stringify(preloadData) %>;
 var PreloadData = {};
 <% } %>
 if (window.startApp) {
-    window.startApp();
+    window.startApp(PreloadData);
 }
 </script>
 </body>

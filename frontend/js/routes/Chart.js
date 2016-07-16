@@ -1,5 +1,6 @@
 import React from 'react';
-import {Link} from '../Isomorphic';
+import {Link} from 'nuri';
+import {App} from '../layouts';
 import Layout from '../ui/Layout';
 
 class Header extends React.Component {
@@ -60,8 +61,10 @@ function getChartTitle(chart, range) {
 
 class Chart extends React.Component {
     render() {
-        var chart = this.props.chart;
-        var {range} = this.props.params;
+        const {
+            chart,
+            range,
+        } = this.props.data;
         return <ChartLayout>
             <h2 className="chart-title">{getChartTitle(chart, range)}</h2>
             {chart.start ?
@@ -88,20 +91,23 @@ const CHART_TYPES = {
     'works': 'popular-works',
 };
 
-Chart.fetchData = async ({ params, client }) => {
-    const {type, range} = params;
-    const [currentUser, chart] = await Promise.all([
-        client.getCurrentUser(),
-        client.call(`/charts/${CHART_TYPES[type]}/${range}`, {limit: 100}),
-    ]);
-    return {
-        pageTitle: getChartTitle(chart, range),
-        props: {
+export default {
+    component: App(Chart),
+
+    async load({ params, loader }) {
+        const {type, range} = params;
+        const [currentUser, chart] = await Promise.all([
+            loader.getCurrentUser(),
+            loader.call(`/charts/${CHART_TYPES[type]}/${range}`, {limit: 100}),
+        ]);
+        return {
             currentUser,
             chart,
-            params,
-        }
-    };
-};
+            range,
+        };
+    },
 
-export default Chart;
+    renderTitle({ chart, range }) {
+        return getChartTitle(chart, range);
+    }
+};

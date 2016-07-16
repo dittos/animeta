@@ -1,10 +1,24 @@
 import React from 'react';
 import WorkViews from '../ui/WorkViews';
 import {getStatusDisplay} from '../util';
+import {App} from '../layouts';
+
+const POSTS_PER_PAGE = 10;
 
 var Post = React.createClass({
+    componentDidMount() {
+        // lazy load
+        this._loadMorePosts();
+    },
+
     render() {
-        const {work, chart, post} = this.props;
+        const {
+            work,
+            chart,
+            posts,
+            hasMorePosts,
+            post,
+        } = this.props.data;
         return (
             <WorkViews.Work
                 work={work}
@@ -20,35 +34,63 @@ var Post = React.createClass({
                 <WorkViews.WorkIndex
                     work={work}
                     episode={post.status}
-                    excludePostID={post.id} />
+                    posts={posts}
+                    hasMorePosts={hasMorePosts}
+                    loadMorePosts={this._loadMorePosts}
+                    excludePostID={post.id}
+                />
             </WorkViews.Work>
         );
+    },
+
+    async _loadMorePosts() {
+        const {
+            work,
+            posts,
+            post,
+        } = this.props.data;
+        var params = {count: POSTS_PER_PAGE + 1, episode: post.status};
+        if (posts && posts.length > 0)
+            params.before_id = posts[posts.length - 1].id;
+        const result = await this.props.loader.call(`/works/${work.id}/posts`, params);
+        this.props.writeData(data => {
+            if (!data.posts)
+                data.posts = [];
+            data.posts = data.posts.concat(result.slice(0, POSTS_PER_PAGE));
+            data.hasMorePosts = result.length > POSTS_PER_PAGE;
+        });
     }
 });
 
-Post.fetchData = async ({ params, client }) => {
-    const {id} = params;
-    const [currentUser, post, chart] = await Promise.all([
-        client.getCurrentUser(),
-        client.call(`/posts/${id}`),
-        client.call('/charts/works/weekly', {limit: 5}),
-    ]);
-    const work = await client.call(`/works/${post.record.work_id}`);
-    return {
-        pageTitle: `${post.user.name} 사용자 > ${work.title} ${getStatusDisplay(post)}`,
-        pageMeta: {
-            og_url: `/-${post.id}`,
-            og_type: 'article',
-            og_image: work.image_url,
-            tw_image: work.image_url,
-        },
-        props: {
+export default {
+    component: App(Post),
+    
+    async load({ params, loader }) {
+        const {id} = params;
+        const [currentUser, post, chart] = await Promise.all([
+            loader.getCurrentUser(),
+            loader.call(`/posts/${id}`),
+            loader.call('/charts/works/weekly', {limit: 5}),
+        ]);
+        const work = await loader.call(`/works/${post.record.work_id}`);
+        return {
             currentUser,
             post,
             chart,
             work,
-        }
-    };
-};
+        };
+    },
 
-export default Post;
+    renderTitle({ post, work }) {
+        return `${post.user.name} 사용자 > ${work.title} ${getStatusDisplay(post)}`;
+    },
+
+    renderMeta({ post, work }) {
+        return {
+            og_url: `/-${post.id}`,
+            og_type: 'article',
+            og_image: work.image_url,
+            tw_image: work.image_url,
+        };
+    }
+};
