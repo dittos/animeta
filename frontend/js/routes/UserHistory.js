@@ -1,31 +1,31 @@
-var $ = require('jquery');
-var React = require('react');
-var cx = require('classnames');
-var TimeAgo = require('./TimeAgo');
-var util = require('../util');
-import PostComment from './PostComment';
-import LoadMore from './LoadMore';
+import React from 'react';
+import cx from 'classnames';
+import {Link} from 'nuri';
+import * as util from '../util';
+import {getUserPosts} from '../API';
+import {User} from '../layouts';
+import TimeAgo from '../ui/TimeAgo';
+import PostComment from '../ui/PostComment';
+import LoadMore from '../ui/LoadMore';
+// TODO: css module
 
 function getDateHeader(post) {
     var date = new Date(post.updated_at);
     return date.getFullYear() + '/' + (date.getMonth() + 1);
 }
 
-var Post = React.createClass({
-    render() {
-        var post = this.props.post;
-        return <div className={cx({'post-item': true, 'no-comment': !post.comment})}>
-            <a href={util.getWorkURL(post.record.title)} className="title">{post.record.title}</a>
-            <div className={'progress progress-' + post.status_type}>{util.getStatusText(post)}</div>
-            <div className="meta">
-                <a href={util.getPostURL(post)} className="time"><TimeAgo time={new Date(post.updated_at)} /></a>
-            </div>
-            <PostComment post={post} className="comment" />
-        </div>;
-    }
-});
+function Post({post}) {
+    return <div className={cx({'post-item': true, 'no-comment': !post.comment})}>
+        <Link to={util.getWorkURL(post.record.title)} className="title">{post.record.title}</Link>
+        <div className={'progress progress-' + post.status_type}>{util.getStatusText(post)}</div>
+        <div className="meta">
+            <Link to={util.getPostURL(post)} className="time"><TimeAgo time={new Date(post.updated_at)} /></Link>
+        </div>
+        <PostComment post={post} className="comment" />
+    </div>;
+}
 
-var LibraryHistory = React.createClass({
+var UserHistory = React.createClass({
     getDefaultProps() {
         return {pageSize: 32};
     },
@@ -70,10 +70,10 @@ var LibraryHistory = React.createClass({
     },
     _loadMore() {
         this.setState({isLoading: true});
-        var params = {count: this.props.pageSize};
+        var beforeID;
         if (this.state.posts.length > 0)
-            params.before_id = this.state.posts[this.state.posts.length - 1].id;
-        $.get('/api/v2/users/' + this.props.user.name + '/posts', params).then(data => {
+            beforeID = this.state.posts[this.state.posts.length - 1].id;
+        getUserPosts(this.props.data.user.name, this.props.pageSize, beforeID).then(data => {
             if (this.isMounted())
                 this.setState({
                     hasMore: data.length >= this.props.pageSize,
@@ -84,4 +84,22 @@ var LibraryHistory = React.createClass({
     }
 });
 
-module.exports = LibraryHistory;
+export default {
+    component: User(UserHistory),
+
+    async load({ loader, params }) {
+        const {username} = params;
+        const [currentUser, user] = await Promise.all([
+            loader.getCurrentUser(),
+            loader.call(`/users/${encodeURIComponent(username)}`),
+        ]);
+        return {
+            currentUser,
+            user,
+        };
+    },
+
+    renderTitle({ user }) {
+        return `${user.name} 사용자`;
+    }
+};
