@@ -2,6 +2,7 @@ import React from 'react';
 import WorkViews from '../ui/WorkViews';
 import {getStatusDisplay, isSpecialWork} from '../util';
 import {App} from '../layouts';
+// TODO: css module
 
 const POSTS_PER_PAGE = 10;
 

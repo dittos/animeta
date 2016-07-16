@@ -37,7 +37,7 @@ class RecordView(BaseView):
                 record.category = None
             record.save()
 
-        return serialize_record(record)
+        return serialize_record(record, include_user=True)
 
     def delete(self, request, id):
         record = get_object_or_404(Record, id=id)

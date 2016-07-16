@@ -29,19 +29,19 @@ var DropdownUserMenu = React.createClass({
         const {Link} = this.props;
         return <div className={Styles.userMenu}
             onClick={e => e.stopPropagation()}>
-            <a href={`/users/${this.props.user.name}/`}>기록 관리</a>
-            <Link href="/settings/">설정</Link>
+            <RouterLink to={`/users/${this.props.user.name}/`}>기록 관리</RouterLink>
+            <RouterLink to="/settings/">설정</RouterLink>
             {this.state.records && <div>
                 <div className={Styles.userMenuSeparator}>
                     바로가기
                 </div>
                 {this.state.records.map(record =>
-                    <a href={`/records/${record.id}/`}>
+                    <RouterLink to={`/records/${record.id}/`}>
                         {record.title}
                         <span className={Styles.quickRecordStatus}>{getStatusDisplay(record)}</span>
-                    </a>
+                    </RouterLink>
                 )}
-                <a href={`/users/${this.props.user.name}/`} className={Styles.quickRecordViewAll}>전체 보기</a>
+                <RouterLink to={`/users/${this.props.user.name}/`} className={Styles.quickRecordViewAll}>전체 보기</RouterLink>
             </div>}
         </div>;
     },

@@ -1,11 +1,15 @@
 /* global confirm */
-/* eslint no-console:0 */
-var React = require('react');
-var cx = require('classnames');
-var {connect} = require('react-redux');
-var Sortable = require('./Sortable');
-var CategoryStore = require('../store/CategoryStore');
-var CategoryActions = require('../store/CategoryActions');
+import React from 'react';
+import cx from 'classnames';
+import {User} from '../layouts';
+import Sortable from '../ui/Sortable';
+import {
+    renameCategory,
+    removeCategory,
+    addCategory,
+    updateCategoryOrder,
+} from '../API';
+// TODO: css module
 
 var CategoryItem = React.createClass({
     getInitialState() {
@@ -30,7 +34,7 @@ var CategoryItem = React.createClass({
                     <span className="btn btn-rename"
                         onClick={this._startEditing}>이름 바꾸기</span>,
                     <span className="btn btn-remove"
-                        onClick={this._onRemove}>삭제</span>
+                        onClick={this.props.onRemove}>삭제</span>
                 ];
             }
             return <div className="category-item">
@@ -48,10 +52,6 @@ var CategoryItem = React.createClass({
     _endEditing() {
         this.setState({isEditing: false});
     },
-    _onRemove() {
-        if (confirm('분류를 삭제해도 기록은 삭제되지 않습니다.\n분류를 삭제하시려면 [확인]을 누르세요.'))
-            this.props.onRemove();
-    },
     _onSubmit(event) {
         event.preventDefault();
         this.props.onRename(this.state.name).then(() => this._endEditing());
@@ -62,19 +62,19 @@ var ManageCategory = React.createClass({
     getInitialState() {
         return {
             isSorting: false,
-            categoryList: this.props.categoryList,
+            categoryList: this.props.data.categories,
         };
     },
     componentWillReceiveProps(nextProps) {
-        this.setState({categoryList: nextProps.categoryList});
+        this.setState({categoryList: nextProps.data.categories});
     },
     render() {
         var items = this.state.categoryList.map(category =>
             <CategoryItem key={category.id}
                 category={category}
                 isSorting={this.state.isSorting}
-                onRemove={() => this.props.dispatch(CategoryActions.removeCategory(category.id))}
-                onRename={(name) => this.props.dispatch(CategoryActions.renameCategory(category.id, name))}
+                onRemove={() => this._removeCategory(category)}
+                onRename={(name) => this._renameCategory(category, name)}
             />);
         if (this.state.isSorting) {
             items = <Sortable onSwap={this._onSwap} onDrop={this._onDrop}>
@@ -101,7 +101,7 @@ var ManageCategory = React.createClass({
             {!this.state.isSorting &&
                 <h2>분류 추가</h2>}
             {!this.state.isSorting &&
-                <form onSubmit={this._onAdd}>
+                <form onSubmit={this._addCategory}>
                     분류 이름: <input size={12} ref="nameInput" />
                     <button className="btn-add">추가</button>
                 </form>}
@@ -116,20 +116,44 @@ var ManageCategory = React.createClass({
     },
     _onDrop() {
         var categoryIDs = this.state.categoryList.map(c => c.id);
-        this.props.dispatch(CategoryActions.updateCategoryOrder(this.props.user.name, categoryIDs));
+        updateCategoryOrder(this.props.data.user.name, categoryIDs);
     },
-    _onAdd(event) {
+    _addCategory(event) {
         event.preventDefault();
         var input = this.refs.nameInput;
-        this.props.dispatch(CategoryActions.addCategory(this.props.user.name, input.value));
-        input.value = '';
+        addCategory(this.props.data.user.name, input.value).then(category => {
+            input.value = '';
+            this.setState({categoryList: this.state.categoryList.concat(category)})
+        });
+    },
+    _removeCategory(category) {
+        if (confirm('분류를 삭제해도 기록은 삭제되지 않습니다.\n분류를 삭제하시려면 [확인]을 누르세요.')) {
+            removeCategory(category.id).then(() => {
+                this.setState({categoryList: this.state.categoryList.filter(c => c.id !== category.id)});
+            });
+        }
+    },
+    _renameCategory(category, name) {
+        return renameCategory(category.id, name).then(() => {
+            category.name = name;
+            this.forceUpdate();
+        });
     }
 });
 
-function select(state) {
-    return {
-        categoryList: CategoryStore.getAll(state),
-    };
-}
+export default {
+    component: User(ManageCategory),
 
-module.exports = connect(select, null, null, {pure: false})(ManageCategory);
+    async load({ loader }) {
+        const currentUser = await loader.getCurrentUser();
+        return {
+            currentUser,
+            user: currentUser, // for layout
+            categories: currentUser.categories,
+        };
+    },
+
+    renderTitle({ currentUser }) {
+        return `${currentUser.name} 사용자`;
+    }
+};

@@ -4,11 +4,9 @@ var formatDate = require('date-fns/format');
 var diffDays = require('date-fns/difference_in_calendar_days');
 var diffWeeks = require('date-fns/difference_in_calendar_weeks');
 var diffMonths = require('date-fns/difference_in_calendar_months');
-var {connect} = require('react-redux');
-var {Link, withRouter} = require('react-router');
+var moment = require('moment');
+var {Link} = require('nuri');
 var util = require('../util');
-var RecordStore = require('../store/RecordStore');
-var CategoryStore = require('../store/CategoryStore');
 
 function getDateHeader(record) {
     const now = new Date();
@@ -173,12 +171,15 @@ var LibraryHeader = React.createClass({
 });
 
 var Library = React.createClass({
+    contextTypes: {
+        controller: React.PropTypes.object,
+    },
+
     render() {
         if (this.props.count === 0) {
             return this._renderEmpty();
         }
-
-        var {type, category, sort} = this.props.location.query;
+        var {type, category, sort} = this.props.query;
         if (!sort) sort = 'date';
         var {
             count,
@@ -232,28 +233,12 @@ var Library = React.createClass({
     },
 
     _onUpdateQuery(updates) {
-        this.props.router.push({
-            pathname: this.props.location.pathname,
-            query: {...this.props.location.query, ...updates}
+        const basePath = `/users/${encodeURIComponent(this.props.user.name)}/`;
+        this.context.controller.load({
+            path: basePath,
+            query: {...this.props.query, ...updates}
         })
     }
 });
 
-function select(state, props) {
-    var count = RecordStore.getCount(state);
-    if (count === 0) {
-        return {count};
-    }
-
-    var {type, category, sort} = props.location.query;
-    if (!sort) sort = 'date';
-    return {
-        count,
-        records: RecordStore.query(state, type, category, sort),
-        categoryStats: RecordStore.getCategoryStats(state),
-        statusTypeStats: RecordStore.getStatusTypeStats(state),
-        categoryList: CategoryStore.getAll(state)
-    };
-}
-
-module.exports = withRouter(connect(select, null, null, {pure: false})(Library));
+export default Library;

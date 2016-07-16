@@ -14,6 +14,7 @@ import LoadMore from './LoadMore';
 import SpecialWork from './SpecialWork';
 import SpecialWorkStatus from './SpecialWorkStatus';
 import LoginDialog from '../ui/LoginDialog';
+// TODO: css module
 
 function fixTitle(title) {
     // &lt;b&gt;...&lt;b&gt; -> <b>...</b>
@@ -320,9 +321,9 @@ var Work = React.createClass({
 var Post = React.createClass({
     render() {
         var post = this.props.post;
-        return <div className={cx({'post-item': true})}>
+        return <div className={cx({'work-post-item': true})}>
             <div className="meta">
-                <a href={'/users/' + post.user.name + '/'} className="user">{post.user.name}</a>
+                <Link to={'/users/' + post.user.name + '/'} className="user">{post.user.name}</Link>
                 {post.status &&
                     <i className="fa fa-caret-right separator" />}
                 {post.status &&

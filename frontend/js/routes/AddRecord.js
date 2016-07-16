@@ -1,11 +1,8 @@
-var $ = require('jquery');
-var React = require('react');
-var ReactDOM = require('react-dom');
-var {withRouter} = require('react-router');
-var {connect} = require('react-redux');
-var RecordActions = require('../store/RecordActions');
-var CategoryStore = require('../store/CategoryStore');
-var Typeahead = require('./Typeahead');
+import React from 'react';
+import {createRecord} from '../API';
+import {User} from '../layouts';
+import Typeahead from '../ui/Typeahead';
+// TODO: css module
 
 var CategorySelect = React.createClass({
     render() {
@@ -31,7 +28,7 @@ var CategorySelect = React.createClass({
 var AddRecord = React.createClass({
     getInitialState() {
         return {
-            selectedCategoryId: 0,
+            selectedCategoryId: '',
             statusType: 'watching',
             isRequesting: false
         };
@@ -43,13 +40,13 @@ var AddRecord = React.createClass({
                 <tbody>
                 <tr>
                     <th>작품 제목</th>
-                    <td><input name="work_title" ref="title"
-                        defaultValue={this.props.defaultTitle} /></td>
+                    <td><input ref="title"
+                        defaultValue={this.props.data.title} /></td>
                 </tr>
                 <tr>
                     <th>감상 상태</th>
                     <td>
-                        <select name="status_type"
+                        <select
                             value={this.state.statusType}
                             onChange={this._onStatusTypeChange}>
                             <option value="watching">보는 중</option>
@@ -62,8 +59,8 @@ var AddRecord = React.createClass({
                 <tr>
                     <th>분류</th>
                     <td>
-                        <CategorySelect name="category_id"
-                            categoryList={this.props.categoryList}
+                        <CategorySelect
+                            categoryList={this.props.data.user.categories}
                             selectedId={this.state.selectedCategoryId}
                             onChange={this._onCategoryChange} />
                     </td>
@@ -82,6 +79,10 @@ var AddRecord = React.createClass({
         Typeahead.initSuggest(this.refs.title);
     },
 
+    _onTitleChange(event) {
+        this.setState({title: event.target.value});
+    },
+
     _onCategoryChange(categoryId) {
         this.setState({selectedCategoryId: categoryId});
     },
@@ -95,9 +96,13 @@ var AddRecord = React.createClass({
         if (this.state.isRequesting)
             return;
         this.setState({isRequesting: true});
-        var data = $(ReactDOM.findDOMNode(this)).serialize();
-        this.props.dispatch(RecordActions.addRecord(this.props.user.name, data)).then(() => {
-            this.props.onSave();
+        createRecord(this.props.data.user.name, {
+            title: this.refs.title.value,
+            statusType: this.state.statusType,
+            categoryID: this.state.selectedCategoryId,
+        }).then(() => {
+            const basePath = `/users/${encodeURIComponent(this.props.data.user.name)}/`;
+            this.props.controller.load({path: basePath, query: {}});
         }).always(() => {
             if (this.isMounted())
                 this.setState({isRequesting: false});
@@ -105,26 +110,19 @@ var AddRecord = React.createClass({
     }
 });
 
-var AddRecordRoute = withRouter(React.createClass({
-    render() {
-        // XXX: decode one more time due to react-router bug
-        // https://github.com/rackt/react-router/issues/650
-        var defaultTitle = decodeURIComponent(this.props.params.title || '');
-        return <AddRecord
-            {...this.props}
-            defaultTitle={defaultTitle}
-            onSave={this._onSave}
-        />;
+export default {
+    component: User(AddRecord),
+
+    async load({ loader, params }) {
+        const currentUser = await loader.getCurrentUser();
+        return {
+            currentUser,
+            user: currentUser, // for layout
+            title: params.title,
+        };
     },
-    _onSave() {
-        this.props.router.push(this.props.router.libraryPath);
+
+    renderTitle({ currentUser }) {
+        return `${currentUser.name} 사용자`;
     }
-}));
-
-function select(state) {
-    return {
-        categoryList: CategoryStore.getAll(state),
-    };
-}
-
-module.exports = connect(select)(AddRecordRoute);
+};

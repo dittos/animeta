@@ -145,36 +145,6 @@ server.get('/library/', (req, res, next) => {
     }).catch(next);
 });
 
-async function userHandler(req, res, username, currentUser) {
-    if (!currentUser) {
-        currentUser = await backend.getCurrentUser(req);
-    }
-    const [owner, records] = await Promise.all([
-        backend.call(req, `/users/${username}`),
-        backend.call(req, `/users/${username}/records`, {
-            include_has_newer_episode: JSON.stringify(true)
-        }),
-    ]);
-    const preloadData = {
-        current_user: currentUser,
-        owner,
-        records
-    };
-    renderDefault(res, {
-        title: `${owner.name} 사용자`,
-        preloadData,
-        stylesheets: [assetFilenames.library.css],
-        scripts: [assetFilenames.library.js],
-    }, '');
-}
-
-function libraryHandler(req, res, next) {
-    const {username} = req.params;
-    userHandler(req, res, username).catch(next);
-}
-
-server.get('/users/:username/', libraryHandler);
-server.get('/users/:username/history/', libraryHandler);
 server.get('/users/:username/history/:id/', (req, res) => {
     // TODO: check username
     res.redirect(`/-${req.params.id}`);
@@ -190,28 +160,6 @@ server.get('/users/:username/feed/', (req, res, next) => {
             .end(renderFeed(owner, posts));
     }).catch(next);
 });
-
-function currentUserHandler(req, res, next) {
-    backend.getCurrentUser(req).then(currentUser => {
-        if (!currentUser) {
-            res.redirect('/login/');
-            return;
-        }
-        return userHandler(req, res, currentUser.name, currentUser);
-    }).catch(next);
-}
-
-server.get('/records/add/*', currentUserHandler);
-server.get('/records/category/', currentUserHandler);
-
-function recordHandler(req, res, next) {
-    backend.call(req, `/records/${req.params.id}`)
-        .then(record => userHandler(req, res, record.user.name))
-        .catch(next);
-}
-
-server.get('/records/:id/', recordHandler);
-server.get('/records/:id/delete/', recordHandler);
 
 server.get('/admin/', (req, res) => {
     renderDefault(res, {
