@@ -4,6 +4,7 @@ import $ from 'jquery';
 import {injectLoader, render} from 'nuri/client';
 import nprogress from 'nprogress';
 import app from './routes';
+import '../less/nprogress.less';
 import '../less/chart.less';
 import '../less/work.less';
 import '../less/signup.less';
@@ -56,6 +57,12 @@ $(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) => {
 });
 
 window.startApp = (preloadData) => {
+    nprogress.configure({
+        trickleRate: 0.4,
+        trickleSpeed: 600,
+        easing: 'ease',
+    });
+
     const controller = render(app, document.getElementById('app'), preloadData);
 
     controller.subscribe({
