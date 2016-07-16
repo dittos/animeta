@@ -13,8 +13,7 @@ def deploy():
         put('animeta/static/build/*', 'animeta/static/build/')
         put('frontend/assets.json', 'frontend/')
         run('rm -rf frontend-dist')
-        run('cp -r frontend frontend-dist')
-        run('./node_modules/.bin/babel frontend -d frontend-dist')
+        run('./node_modules/.bin/babel frontend --ignore external/** -d frontend-dist --copy-files')
         run('touch ~/uwsgi-services/animeta.ini')
         run('pm2 gracefulReload animeta')
 
@@ -37,6 +36,5 @@ def deploy_frontend():
         put('animeta/static/build/*', 'animeta/static/build/')
         put('frontend/assets.json', 'frontend/')
         run('rm -rf frontend-dist')
-        run('cp -r frontend frontend-dist')
-        run('./node_modules/.bin/babel frontend -d frontend-dist')
+        run('./node_modules/.bin/babel frontend --ignore external/** -d frontend-dist --copy-files')
         run('pm2 gracefulReload animeta')
