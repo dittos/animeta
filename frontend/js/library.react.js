@@ -142,7 +142,9 @@ $(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) => {
             }
         });
     } catch (e) {
-        Raven.captureMessage(e);
+        try {
+            Raven.captureMessage(e);
+        } catch (e2) {}
     }
     if (jqXHR.responseText) {
         try {

@@ -61,9 +61,11 @@ if (!document.createElementNS || !document.createElementNS('http://www.w3.org/20
 <script src="//cdn.ravenjs.com/1.1.20/raven.min.js"></script>
 <% if (!DEBUG) { %>
 <script>
-Raven.config('http://fb3fd1fc77c94c4799d9fc7228260818@sentry.sapzil.org/3', {
-    ignoreErrors: ['hideGuidePopup']
-}).install();
+try {
+    Raven.config('http://fb3fd1fc77c94c4799d9fc7228260818@sentry.sapzil.org/3', {
+        ignoreErrors: ['hideGuidePopup']
+    }).install();
+} catch (e) {}
 </script>
 <% } %>
 <% if (assetFilenames.common) { %>

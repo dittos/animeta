@@ -25,7 +25,9 @@ var ReactErrorUtils = {
    */
   invokeGuardedCallback: function (name, func, a, b) {
     try {
-      func = Raven.wrap(func);
+      try {
+          func = Raven.wrap(func);
+      } catch (e) {}
       return func(a, b);
     } catch (x) {
       if (caughtError === null) {
