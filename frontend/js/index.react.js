@@ -1,4 +1,4 @@
-/* global _gaq */
+/* global ga */
 /* global Raven */
 import $ from 'jquery';
 import {injectLoader, render} from 'nuri/client';
@@ -78,8 +78,8 @@ window.startApp = (preloadData) => {
             nprogress.done();
         },
         didCommitState() {
-            if (_gaq) {
-                _gaq.push(['_trackPageview']);
+            if (ga) {
+                ga('send', 'pageview');
             }
         },
     });

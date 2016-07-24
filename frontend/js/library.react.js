@@ -1,5 +1,5 @@
 /* global PreloadData */
-/* global _gaq */
+/* global ga */
 /* global Raven */
 var $ = require('jquery');
 var React = require('react');
@@ -60,8 +60,13 @@ var AppRoute = React.createClass({
     }
 });
 
+let isFirstTransition = true;
+
 function onPageTransition() {
-    _gaq.push(['_trackPageview']);
+    if (ga && !isFirstTransition) {
+        ga('send', 'pageview');
+    }
+    isFirstTransition = false;
 }
 
 var supportsHistory = require('history/lib/DOMUtils').supportsHistory;
