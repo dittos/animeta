@@ -3,6 +3,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import csurf from 'csurf';
 import httpProxy from 'http-proxy';
+import now from 'performance-now';
 import Backend, {HttpNotFound} from './backend';
 import renderFeed from './renderFeed';
 import assetFilenames from '../assets.json';
@@ -46,7 +47,7 @@ server.use('/api', (req, res) => {
     proxy.web(req, res, {target: `http://${config.backend.host}:${config.backend.port}/api`});
 });
 
-function renderDefault(res, locals) {
+function renderDefault(res, locals, callback) {
     res.render('layout', {
         DEBUG,
         STATIC_URL: '/static/',
@@ -57,7 +58,7 @@ function renderDefault(res, locals) {
         scripts: [],
 
         ...locals,
-    });
+    }, callback);
 }
 
 server.get('/support/', (req, res) => {
@@ -144,7 +145,12 @@ server.get('/records/:id/', recordHandler);
 server.get('/records/:id/delete/', recordHandler);
 
 server.get('*', (req, res, next) => {
-    render(app, req).then(({html, preloadData, title, meta, errorStatus, redirectURI}) => {
+    const startTime = now();
+    render(app, req).then(result => {
+        const renderedTime = now();
+
+        const {preloadData, title, meta, errorStatus, redirectURI} = result;
+
         if (errorStatus === 404) {
             throw HttpNotFound;
         }
@@ -157,6 +163,9 @@ server.get('*', (req, res, next) => {
         if (errorStatus)
             res.status(errorStatus);
 
+        const html = result.getHTML();
+        const htmlRenderedTime = now();
+
         preloadData.daum_api_key = config.daumAPIKey; // XXX
         renderDefault(res, {
             html,
@@ -165,6 +174,17 @@ server.get('*', (req, res, next) => {
             meta,
             stylesheets: [assetFilenames.index.css],
             scripts: [assetFilenames.index.js],
+        }, (err, html) => {
+            if (err) {
+                next(err);
+                return;
+            }
+            const templateRenderedTime = now();
+            res.send(html + `<!--
+nuri: ${(renderedTime - startTime).toFixed(3)}ms
+react: ${(htmlRenderedTime - renderedTime).toFixed(3)}ms
+ejs: ${(templateRenderedTime - htmlRenderedTime).toFixed(3)}ms
+-->`);
         });
     }).catch(err => {
         if (err === HttpNotFound) {
