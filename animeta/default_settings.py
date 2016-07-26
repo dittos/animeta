@@ -69,6 +69,7 @@ STATICFILES_FINDERS = (
 ADMIN_MEDIA_PREFIX = '/media/'
 
 MIDDLEWARE_CLASSES = (
+    'animeta.middleware.PerfMeasureMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     #'django.middleware.csrf.CsrfViewMiddleware',

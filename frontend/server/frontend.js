@@ -19,17 +19,21 @@ injectLoaderFactory(serverRequest => {
     return {
         call(path, params) {
             const startTime = now();
-            return backend.call(serverRequest, path, params).then(r => {
-                const t = now() - startTime;
-                serverRequest.loaderCalls.push({path, t});
-                return r;
+            return backend.callRaw(serverRequest, path, params).then(({response, body}) => {
+                const e2eTime = now() - startTime;
+                serverRequest.loaderCalls.push({
+                    path,
+                    e2eTime,
+                    time: parseFloat(response.headers['x-processing-time']) * 1000,
+                });
+                return body;
             });
         },
         getCurrentUser() {
             const startTime = now();
             return backend.getCurrentUser(serverRequest).then(r => {
-                const t = now() - startTime;
-                serverRequest.loaderCalls.push({path: '(currentUser)', t});
+                const e2eTime = now() - startTime;
+                serverRequest.loaderCalls.push({path: '(currentUser)', e2eTime});
                 return r;
             });
         },
@@ -194,7 +198,7 @@ server.get('*', (req, res, next) => {
             const templateRenderedTime = now();
             res.send(html + `<!--
 nuri: ${(renderedTime - startTime).toFixed(1)}ms
-${req.loaderCalls && req.loaderCalls.map(c => `  ${c.path} [${c.t.toFixed(1)}ms]`).join('\n')}
+${req.loaderCalls && req.loaderCalls.map(c => `  ${c.path} [${c.time ? `${c.time.toFixed(1)}ms / ` : ''}e2e=${c.e2eTime.toFixed(1)}ms]`).join('\n')}
 react: ${(htmlRenderedTime - renderedTime).toFixed(1)}ms
 ejs: ${(templateRenderedTime - htmlRenderedTime).toFixed(1)}ms
 -->`);
