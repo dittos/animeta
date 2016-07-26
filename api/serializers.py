@@ -58,7 +58,7 @@ def serialize_record(record,
 def serialize_post(post, include_record=False, include_user=False):
     data = {
         'id': post.id,
-        'record_id': post.record.id,
+        'record_id': post.record_id,
         'status': post.status,
         'status_type': post.status_type.name,
         'comment': post.comment,

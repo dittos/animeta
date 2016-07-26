@@ -4,18 +4,18 @@ def deploy():
     _deploy(api=True, frontend=True)
 
 def deploy_api():
-    _deploy(api=True, frontend=False)
+    _deploy(api=True)
 
 def deploy_frontend():
-    _deploy(api=False, frontend=True)
+    _deploy(frontend=True)
 
 def deploy_frontend_server():
-    _deploy(api=False, frontend=False, frontend_server=True)
+    _deploy(frontend_server=True)
 
 def deploy_servers():
-    _deploy(api=True, frontend=False, frontend_server=True)
+    _deploy(api=True, frontend_server=True)
 
-def _deploy(api, frontend, frontend_server):
+def _deploy(api=False, frontend=False, frontend_server=False):
     if frontend:
         frontend_server = True
 

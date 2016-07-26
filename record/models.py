@@ -126,10 +126,6 @@ class Record(models.Model):
     updated_at = models.DateTimeField(null=True)
 
     @property
-    def history_set(self):
-        return History.objects.filter(user=self.user, work=self.work)
-
-    @property
     def status_type_name(self):
         return StatusTypes.to_name(self.status_type)
 
@@ -146,10 +142,6 @@ class Record(models.Model):
             ).exists()
         except ValueError:
             return False
-
-    def delete(self, *args, **kwargs):
-        self.history_set.delete()
-        super(Record, self).delete(*args, **kwargs)
 
     def update_title(self, title):
         work = get_or_create_work(title)
@@ -171,7 +163,7 @@ class Record(models.Model):
 class History(models.Model):
     user = models.ForeignKey(User, editable=False)
     work = models.ForeignKey(Work, editable=False)
-    record_prep = models.ForeignKey(Record, related_name='history_set_temp')
+    record = models.ForeignKey(Record)
     status = models.CharField(max_length=30, blank=True, verbose_name=u'감상 상태')
     status_type = StatusTypeField()
     comment = models.TextField(blank=True, verbose_name=u'감상평')
@@ -179,13 +171,6 @@ class History(models.Model):
     contains_spoiler = models.BooleanField(default=False)
 
     objects = TransformManager()
-
-    @property
-    def record(self):
-        if not hasattr(self, '_record'):
-            return self.user.record_set.get(work=self.work)
-        else:
-            return self._record
 
     @property
     def status_type_name(self):
@@ -207,29 +192,12 @@ class History(models.Model):
         get_latest_by = 'updated_at'
 
 
-def include_records(qs):
-    user_ids = set(history.user_id for history in qs)
-    work_ids = set(history.work_id for history in qs)
-    records = Record.objects.filter(user__in=user_ids, work__in=work_ids)
-    dict = {}
-    for record in records:
-        dict[(record.user_id, record.work_id)] = record
-    for history in qs:
-        history._record = dict[(history.user_id, history.work_id)]
-
-
 def sync_record(sender, instance, **kwargs):
-    record, created = Record.objects.get_or_create(
-        user=instance.user,
-        work=instance.work
-    )
-    if not created:
-        try:
-            history = record.history_set.latest()
-        except History.DoesNotExist:
-            return
-    else:
-        history = instance
+    record = instance.record
+    try:
+        history = record.history_set.latest()
+    except History.DoesNotExist:
+        return
     record.status = history.status
     record.status_type = history.status_type
     record.updated_at = history.updated_at

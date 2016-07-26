@@ -9,7 +9,7 @@ from record.models import Record, History, StatusTypes
 class RecordPostsView(BaseView):
     def get(self, request, id):
         record = get_object_or_404(Record, id=id)
-        posts = record.history_set
+        posts = record.history_set.all()
         return {
             'posts': map(serialize_post, posts)
         }
@@ -22,7 +22,7 @@ class RecordPostsView(BaseView):
         history = History.objects.create(
             user=request.user,
             work=record.work,
-            record_prep=record,
+            record=record,
             status=request.POST['status'],
             status_type=StatusTypes.from_name(request.POST['status_type']),
             comment=request.POST['comment'],

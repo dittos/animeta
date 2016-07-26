@@ -7,7 +7,7 @@ from record.models import History
 class PostsView(BaseView):
     def get(self, request):
         queryset = (History.objects
-                    .select_related('user', 'work')
+                    .select_related('user', 'work', 'record')
                     .exclude(comment='')
                     .order_by('-id'))
         if 'before_id' in request.GET:
