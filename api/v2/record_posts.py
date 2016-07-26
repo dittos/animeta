@@ -22,6 +22,7 @@ class RecordPostsView(BaseView):
         history = History.objects.create(
             user=request.user,
             work=record.work,
+            record_prep=record,
             status=request.POST['status'],
             status_type=StatusTypes.from_name(request.POST['status_type']),
             comment=request.POST['comment'],

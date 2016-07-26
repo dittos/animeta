@@ -12,6 +12,9 @@ def deploy_frontend():
 def deploy_frontend_server():
     _deploy(api=False, frontend=False, frontend_server=True)
 
+def deploy_servers():
+    _deploy(api=True, frontend=False, frontend_server=True)
+
 def _deploy(api, frontend, frontend_server):
     if frontend:
         frontend_server = True

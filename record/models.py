@@ -171,6 +171,7 @@ class Record(models.Model):
 class History(models.Model):
     user = models.ForeignKey(User, editable=False)
     work = models.ForeignKey(Work, editable=False)
+    record_prep = models.ForeignKey(Record, related_name='history_set_temp')
     status = models.CharField(max_length=30, blank=True, verbose_name=u'감상 상태')
     status_type = StatusTypeField()
     comment = models.TextField(blank=True, verbose_name=u'감상평')

@@ -69,6 +69,7 @@ class UserRecordsView(BaseView):
         history = History.objects.create(
             user=request.user,
             work=record.work,
+            record_prep=record,
             status='',
             status_type=StatusTypes.from_name(request.POST['status_type']),
         )
