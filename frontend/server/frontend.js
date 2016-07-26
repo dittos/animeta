@@ -14,12 +14,24 @@ import app from '../js/routes';
 const DEBUG = process.env.NODE_ENV !== 'production';
 const backend = new Backend(config.backend);
 injectLoaderFactory(serverRequest => {
+    serverRequest.loaderCalls = [];
+
     return {
         call(path, params) {
-            return backend.call(serverRequest, path, params);
+            const startTime = now();
+            return backend.call(serverRequest, path, params).then(r => {
+                const t = now() - startTime;
+                serverRequest.loaderCalls.push({path, t});
+                return r;
+            });
         },
         getCurrentUser() {
-            return backend.getCurrentUser(serverRequest);
+            const startTime = now();
+            return backend.getCurrentUser(serverRequest).then(r => {
+                const t = now() - startTime;
+                serverRequest.loaderCalls.push({path: '(currentUser)', t});
+                return r;
+            });
         },
     };
 });
@@ -181,9 +193,10 @@ server.get('*', (req, res, next) => {
             }
             const templateRenderedTime = now();
             res.send(html + `<!--
-nuri: ${(renderedTime - startTime).toFixed(3)}ms
-react: ${(htmlRenderedTime - renderedTime).toFixed(3)}ms
-ejs: ${(templateRenderedTime - htmlRenderedTime).toFixed(3)}ms
+nuri: ${(renderedTime - startTime).toFixed(1)}ms
+${req.loaderCalls && req.loaderCalls.map(c => `  ${c.path} [${c.t.toFixed(1)}ms]`).join('\n')}
+react: ${(htmlRenderedTime - renderedTime).toFixed(1)}ms
+ejs: ${(templateRenderedTime - htmlRenderedTime).toFixed(1)}ms
 -->`);
         });
     }).catch(err => {
