@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+import string
+
 import tweepy
 from django.conf import settings
 from connect.models import TwitterSetting
-from record.models import StatusTypes
+from record.models import StatusType
 
 
 def get_api(setting):
@@ -14,11 +16,26 @@ def get_api(setting):
     return tweepy.API(auth)
 
 
-def status_text(record):
-    status = record.get_status_display()
+status_texts = {
+    StatusType.finished: u'완료',
+    StatusType.watching: u'보는 중',
+    StatusType.suspended: u'중단',
+    StatusType.interested: u'볼 예정',
+}
 
-    if record.status_type != StatusTypes.Watching or status == '':
-        status_type_name = record.status_type.text
+
+def get_status_display(history):
+    status = history.status.strip()
+    if status and status[-1] in string.digits:
+        status += u'화'
+    return status
+
+
+def status_text(history):
+    status = get_status_display(history)
+
+    if history.status_type != StatusType.watching or status == '':
+        status_type_name = status_texts[history.status_type]
         if status != '':
             status += ' (' + status_type_name + ')'
         else:

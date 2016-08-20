@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.db import models
 from django.http import QueryDict
 from api.v2 import BaseView
 from api.serializers import serialize_category
@@ -14,9 +15,16 @@ class UserCategoriesView(BaseView):
         if not category_name:
             # 400 Bad Request
             self.raise_error(u'분류 이름을 입력하세요.', status=400)
+        max = (request.user.category_set
+               .aggregate(models.Max('position'))['position__max'])
+        if max is None:
+            next_pos = 0
+        else:
+            next_pos = max + 1
         category = Category.objects.create(
             user=request.user,
-            name=category_name
+            name=category_name,
+            position=next_pos,
         )
         record_ids = request.POST.getlist('record_ids[]')
         Record.objects.filter(user=request.user, id__in=record_ids) \

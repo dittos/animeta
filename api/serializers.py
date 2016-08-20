@@ -2,7 +2,7 @@
 import time
 from connect.models import get_connected_services
 from work.models import TitleMapping
-from record.models import get_episodes, Record
+from record.models import get_episodes, Record, StatusType
 from search.models import WorkIndex
 from table.models import item_json, Period
 
@@ -45,7 +45,7 @@ def serialize_record(record,
         'category_id': record.category_id,
         'title': record.title,
         'status': record.status,
-        'status_type': record.status_type.name,
+        'status_type': StatusType(record.status_type).name,
         'updated_at': serialize_datetime(record.updated_at),
     }
     if include_has_newer_episode and record.has_newer_episode():
@@ -60,7 +60,7 @@ def serialize_post(post, include_record=False, include_user=False):
         'id': post.id,
         'record_id': post.record_id,
         'status': post.status,
-        'status_type': post.status_type.name,
+        'status_type': StatusType(post.status_type).name,
         'comment': post.comment,
         'updated_at': serialize_datetime(post.updated_at),
         'contains_spoiler': post.contains_spoiler,

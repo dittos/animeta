@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from api.v2 import BaseView
 from api.serializers import serialize_record, serialize_post
 from work.models import get_or_create_work
-from record.models import Record, History, StatusTypes
+from record.models import Record, History, StatusType
 
 
 class UserRecordsView(BaseView):
@@ -23,7 +23,7 @@ class UserRecordsView(BaseView):
             records = records.order_by('title')
         status_type = request.GET.get('status_type')
         if status_type:
-            records = records.filter(status_type=StatusTypes.from_name(status_type))
+            records = records.filter(status_type=StatusType[status_type])
         limit = request.GET.get('limit')
         if limit:
             try:
@@ -60,23 +60,24 @@ class UserRecordsView(BaseView):
                 status=422
             )
         except Record.DoesNotExist:
-            record = Record.objects.create(
-                user=request.user,
-                work=work,
-                title=title,
-                category=category,
-            )
+            pass
+
+        record = Record.objects.create(
+            user=request.user,
+            work=work,
+            title=title,
+            category=category,
+            status='',
+            status_type=StatusType[request.POST['status_type']],
+        )
         history = History.objects.create(
             user=request.user,
             work=record.work,
             record=record,
-            status='',
-            status_type=StatusTypes.from_name(request.POST['status_type']),
+            status=record.status,
+            status_type=record.status_type,
+            updated_at=record.updated_at
         )
-        # Sync fields
-        record.status = history.status
-        record.status_type = history.status_type
-        record.updated_at = history.updated_at
         return {
             'record': serialize_record(record),
             'post': serialize_post(history),

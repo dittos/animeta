@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 from api.v2 import BaseView
 from api.serializers import serialize_record, serialize_post
@@ -10,6 +11,7 @@ class PostView(BaseView):
         post = get_object_or_404(History, id=id)
         return serialize_post(post, include_record=True, include_user=True)
 
+    @transaction.atomic
     def delete(self, request, id):
         history = get_object_or_404(History, id=id)
         self.check_login()
@@ -19,6 +21,9 @@ class PostView(BaseView):
             # 422 Unprocessable Entity
             self.raise_error(u'등록된 작품마다 최소 1개의 기록이 필요합니다.', status=422)
         history.delete()
+        latest_history = history.record.history_set.latest()
+        history.record.status = latest_history.status
+        history.record.status_type = latest_history.status_type
         return {
             'record': serialize_record(history.record)
         }
