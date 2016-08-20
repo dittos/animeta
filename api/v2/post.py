@@ -24,6 +24,7 @@ class PostView(BaseView):
         latest_history = history.record.history_set.latest()
         history.record.status = latest_history.status
         history.record.status_type = latest_history.status_type
+        history.record.save()
         return {
             'record': serialize_record(history.record)
         }

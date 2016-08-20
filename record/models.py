@@ -32,7 +32,7 @@ class Record(models.Model):
     status = models.CharField(max_length=30, blank=True)
     status_type = models.SmallIntegerField()
     category = models.ForeignKey(Category, null=True)
-    updated_at = models.DateTimeField(null=True)
+    updated_at = models.DateTimeField(null=True, auto_now_add=True)
 
     def has_newer_episode(self):
         if self.status_type != StatusType.watching:
