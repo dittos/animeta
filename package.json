@@ -69,6 +69,7 @@
   "scripts": {
     "start": "babel-node frontend/frontendServer.js",
     "watch": "webpack --watch",
+    "build-dist": "babel frontend --ignore external/** -d frontend-dist --copy-files",
     "test": "jest"
   },
   "jest": {
