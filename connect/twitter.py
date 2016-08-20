@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import tweepy
 from django.conf import settings
-from record.templatetags.status import status_text
 from connect.models import TwitterSetting
+from record.models import StatusTypes
 
 
 def get_api(setting):
@@ -12,6 +12,19 @@ def get_api(setting):
     )
     auth.set_access_token(setting.key, setting.secret)
     return tweepy.API(auth)
+
+
+def status_text(record):
+    status = record.get_status_display()
+
+    if record.status_type != StatusTypes.Watching or status == '':
+        status_type_name = record.status_type.text
+        if status != '':
+            status += ' (' + status_type_name + ')'
+        else:
+            status = status_type_name
+
+    return status
 
 
 def post_history_to_twitter(user, history):
