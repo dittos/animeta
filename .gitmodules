@@ -1,3 +1,3 @@
 [submodule "frontend/external"]
 	path = frontend/external
-	url = git@github.com:dittos/nuri.git
+	url = https://github.com/dittos/nuri
