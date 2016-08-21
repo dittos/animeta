@@ -12,7 +12,7 @@ import {render, injectLoaderFactory} from 'nuri/server';
 import app from '../js/routes';
 
 const DEBUG = process.env.NODE_ENV !== 'production';
-const backend = new Backend(config.backend);
+const backend = new Backend(config.backend.baseUrl);
 injectLoaderFactory(serverRequest => {
     serverRequest.loaderCalls = [];
 
@@ -59,8 +59,9 @@ server.use((req, res, next) => {
 });
 
 const proxy = httpProxy.createProxyServer({
-    target: `http://${config.backend.host}:${config.backend.port}/api`,
-    cookieDomainRewrite: DEBUG ? '' : false,
+    target: config.backend.baseUrl,
+    changeOrigin: config.backend.remote ? true : false,
+    cookieDomainRewrite: config.backend.remote ? '' : false,
 });
 
 proxy.on('proxyReq', (proxyReq, req, res, options) => {

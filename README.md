@@ -2,7 +2,7 @@
 
 http://animeta.net/
 
-크게 백엔드 API 서버 (Django)와 프론트엔드 서버 (Node.js, Hapi) 및 프론트엔드 (React)로 구성되어 있습니다.
+크게 백엔드 API 서버 (Django)와 프론트엔드 서버 (Node.js) 및 프론트엔드 (React)로 구성되어 있습니다.
 
 ## 백엔드 API 서버
 
@@ -26,16 +26,12 @@ http://animeta.net/
 
     python manage.py runserver
 
-## 프론트엔드 / 프론트엔드 서버
 
-* Node.js
-* NPM
-* Webpack (`npm install -g webpack`)
+## 프론트엔드 / 프론트엔드 서버
 
 ### 의존성 설치
 
-    npm install -g webpack
-    npm install .
+    npm install
 
 ### 설정
 
@@ -43,5 +39,5 @@ http://animeta.net/
 
 ### 개발 서버 시작
 
-    webpack --watch & # asset build
-    node frontend/frontendServer.js # frontend server
+    npm watch & # asset build
+    npm start # frontend server
