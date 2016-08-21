@@ -44,7 +44,8 @@ export default class {
                 qs: params,
                 forever: true,
                 headers: {
-                    'Cookie': req.headers.cookie,
+                    'Cookie': req.headers.cookie, // remove this later
+                    'x-animeta-session-key': req.cookies.sessionid,
                 },
             }, (err, response, body) => {
                 if (!err) {

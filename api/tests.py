@@ -20,7 +20,14 @@ class TestContext(Client):
             'password2': password
         })
         self.user = response.json()['user']
-        self.login(username=self.username, password=password)
+        auth_response = self.post('/api/v2/auth', {
+            'username': self.username,
+            'password': password,
+        })
+        self.set_session_key(auth_response.json()['session_key'])
+
+    def set_session_key(self, session_key):
+        self.defaults['HTTP_X_ANIMETA_SESSION_KEY'] = session_key
 
     @property
     def user_path(self):
@@ -85,8 +92,9 @@ class AuthViewTest(TestCase):
             'password': 'a',
         })
         self.assertTrue(response.json()['ok'])
+        session_key = response.json()['session_key']
 
-        response = self.client.get('/api/v2/auth')
+        response = self.client.get('/api/v2/auth', HTTP_X_ANIMETA_SESSION_KEY=session_key)
         self.assertTrue(response.json()['ok'])
 
     def test_delete(self):
@@ -123,9 +131,9 @@ class AccountsViewTest(TestCase):
             'password2': 'a',
         })
         self.assertTrue(response.json()['ok'])
+        session_key = response.json()['session_key']
 
-        # Logged in automatically
-        response = self.client.get('/api/v2/auth')
+        response = self.client.get('/api/v2/auth', HTTP_X_ANIMETA_SESSION_KEY=session_key)
         self.assertTrue(response.json()['ok'])
 
         response = self.client.post('/api/v2/accounts', {

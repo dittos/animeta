@@ -13,5 +13,8 @@ class AccountsView(BaseView):
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
             request.session.set_expiry(0)
-            return {'ok': True, 'user': serialize_user(user)}
+            request.session.save()
+            return {'ok': True,
+                    'user': serialize_user(user),
+                    'session_key': request.session.session_key}
         return {'ok': False, 'errors': form.errors}

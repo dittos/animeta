@@ -58,9 +58,19 @@ server.use((req, res, next) => {
     next();
 });
 
-const proxy = httpProxy.createProxyServer({});
+const proxy = httpProxy.createProxyServer({
+    target: `http://${config.backend.host}:${config.backend.port}/api`,
+    cookieDomainRewrite: DEBUG ? '' : false,
+});
+
+proxy.on('proxyReq', (proxyReq, req, res, options) => {
+    if (req.cookies.sessionid && !req.headers['x-animeta-session-key']) {
+        proxyReq.setHeader('x-animeta-session-key', req.cookies.sessionid);
+    }
+});
+
 server.use('/api', (req, res) => {
-    proxy.web(req, res, {target: `http://${config.backend.host}:${config.backend.port}/api`});
+    proxy.web(req, res);
 });
 
 function renderDefault(res, locals, callback) {
