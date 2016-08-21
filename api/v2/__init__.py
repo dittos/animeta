@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponse, JsonResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 
@@ -9,6 +11,7 @@ class HttpException(Exception):
 
 
 class BaseView(View):
+    @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         try:
             response = super(BaseView, self).dispatch(request, *args, **kwargs)

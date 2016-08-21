@@ -1,5 +1,4 @@
 from django.conf.urls import url
-from django.views.decorators.csrf import csrf_exempt
 from api.v2.auth import AuthView
 from api.v2.accounts import AccountsView
 from api.v2.chart_view import PopularWorksChartView, ChartView
@@ -22,7 +21,7 @@ from chart.models import PopularWorksChart, ActiveUsersChart
 
 urlpatterns = [
     # v2
-    url(r'^v2/auth$', csrf_exempt(AuthView.as_view())),
+    url(r'^v2/auth$', AuthView.as_view()),
     url(r'^v2/accounts$', AccountsView.as_view()),
     url(r'^v2/me$', UserView.as_view()),
     url(r'^v2/me/password$', UserPasswordView.as_view()),
