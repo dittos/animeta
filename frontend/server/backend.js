@@ -4,12 +4,8 @@ import Promise from 'bluebird';
 export const HttpNotFound = {};
 
 export default class {
-    constructor(options) {
-        var host = options.host;
-        if (options.port !== 80) {
-            host += ':' + options.port;
-        }
-        this.endpoint = `http://${host}/api/v2`;
+    constructor(baseUrl) {
+        this.endpoint = baseUrl + '/v2';
     }
 
     async callRaw(req, path, params) {
@@ -44,7 +40,7 @@ export default class {
                 qs: params,
                 forever: true,
                 headers: {
-                    'Cookie': req.headers.cookie,
+                    'x-animeta-session-key': req.cookies.sessionid,
                 },
             }, (err, response, body) => {
                 if (!err) {

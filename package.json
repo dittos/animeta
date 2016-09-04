@@ -20,7 +20,7 @@
     "ejs": "^2.3.4",
     "express": "^4.13.4",
     "history": "^2.1.1",
-    "http-proxy": "^1.13.3",
+    "http-proxy": "nodejitsu/node-http-proxy#1e52f66",
     "immutable": "^3.7.4",
     "jquery": "^2.1.4",
     "less": "^2.5.3",
@@ -70,6 +70,7 @@
   "scripts": {
     "start": "babel-node frontend/frontendServer.js",
     "start-assets": "webpack-dev-server --hot --inline",
+    "build-assets": "NODE_ENV=production webpack",
     "build-dist": "babel frontend --ignore external/** -d frontend-dist --copy-files",
     "test": "jest"
   },

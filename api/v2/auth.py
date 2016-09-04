@@ -19,7 +19,9 @@ class AuthView(BaseView):
         else:
             request.session.set_expiry(0)
         login(request, user)
-        return {'ok': True}
+        request.session.save()
+        return {'ok': True,
+                'session_key': request.session.session_key}
 
     def delete(self, request):
         logout(request)

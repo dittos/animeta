@@ -1,7 +1,7 @@
 {
     "backend": {
-        "host": "127.0.0.1",
-        "port": 8000
+        "baseUrl": "https://animeta.net/api-internal",
+        "remote": true
     },
     "daumAPIKey": "",
     "assetBase": ""

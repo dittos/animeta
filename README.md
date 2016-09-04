@@ -26,16 +26,12 @@ http://animeta.net/
 
     python manage.py runserver
 
-## 프론트엔드 / 프론트엔드 서버
 
-* Node.js
-* NPM
-* Webpack (`npm install -g webpack`)
+## 프론트엔드 / 프론트엔드 서버
 
 ### 의존성 설치
 
-    npm install -g webpack
-    npm install .
+    npm install
 
 ### 설정
 

@@ -12,7 +12,7 @@ import {render, injectLoaderFactory} from 'nuri/server';
 import app from '../js/routes';
 
 const DEBUG = process.env.NODE_ENV !== 'production';
-const backend = new Backend(config.backend);
+const backend = new Backend(config.backend.baseUrl);
 injectLoaderFactory(serverRequest => {
     serverRequest.loaderCalls = [];
 
@@ -58,9 +58,20 @@ server.use((req, res, next) => {
     next();
 });
 
-const proxy = httpProxy.createProxyServer({});
+const proxy = httpProxy.createProxyServer({
+    target: config.backend.baseUrl,
+    changeOrigin: config.backend.remote ? true : false,
+    cookieDomainRewrite: config.backend.remote ? '' : false,
+});
+
+proxy.on('proxyReq', (proxyReq, req, res, options) => {
+    if (req.cookies.sessionid && !req.headers['x-animeta-session-key']) {
+        proxyReq.setHeader('x-animeta-session-key', req.cookies.sessionid);
+    }
+});
+
 server.use('/api', (req, res) => {
-    proxy.web(req, res, {target: `http://${config.backend.host}:${config.backend.port}/api`});
+    proxy.web(req, res);
 });
 
 function renderDefault(res, locals, callback) {
