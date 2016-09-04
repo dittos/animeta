@@ -45,10 +45,10 @@
     </script>
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 <% if (assetFilenames.common) { %>
-    <link href="<%= assetFilenames.common.css %>" rel="stylesheet">
+    <link href="<%= ASSET_BASE %><%= assetFilenames.common.css %>" rel="stylesheet">
 <% } %>
 <% stylesheets.forEach(path => { %>
-    <link href="<%= path %>" rel="stylesheet">
+    <link href="<%= ASSET_BASE %><%= path %>" rel="stylesheet">
 <% }) %>
 </head>
 <body>
@@ -66,10 +66,10 @@ try {
 </script>
 <% } %>
 <% if (assetFilenames.common) { %>
-<script type="text/javascript" src="<%= assetFilenames.common.js %>"></script>
+<script type="text/javascript" src="<%= ASSET_BASE %><%= assetFilenames.common.js %>"></script>
 <% } %>
 <% scripts.forEach(path => { %>
-<script type="text/javascript" src="<%= path %>"></script>
+<script type="text/javascript" src="<%= ASSET_BASE %><%= path %>"></script>
 <% }) %>
 <script>
 var PreloadData = <%- JSON.stringify(preloadData || {}) %>;

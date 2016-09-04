@@ -67,6 +67,7 @@ function renderDefault(res, locals, callback) {
     res.render('layout', {
         DEBUG,
         STATIC_URL: '/static/',
+        ASSET_BASE: config.assetBase || '',
         assetFilenames,
         title: '',
         meta: {},
