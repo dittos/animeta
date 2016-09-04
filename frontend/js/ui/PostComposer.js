@@ -39,6 +39,7 @@ var PostComposer = React.createClass({
                     onChange={this._onStatusChange} />
             </div>
             <textarea name="comment" rows={3} cols={30} autoFocus
+                placeholder="감상평 (선택사항)"
                 valueLink={this.linkState('comment')} />
             <div className={Styles.actions}>
                 <label>

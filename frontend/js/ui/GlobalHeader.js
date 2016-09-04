@@ -99,13 +99,14 @@ var GlobalHeader = React.createClass({
     },
     render() {
         var Link = this.props.useRouterLink ? CompatLink : 'a';
+        const showNotice = false;
         return <div className={Styles.container}>
             <Layout.CenteredFullWidth className={Styles.header}>
                 <Layout.LeftRight className={Styles.headerInner}
                     left={this._renderLeft(Link)}
                     right={this._renderRight(Link)} />
             </Layout.CenteredFullWidth>
-            <Layout.CenteredFullWidth className={Styles.notice}>
+            {showNotice && <Layout.CenteredFullWidth className={Styles.notice}>
                 <span className={Styles.noticeLabel}>
                     <i className="fa fa-bell" />
                 </span>
@@ -115,7 +116,7 @@ var GlobalHeader = React.createClass({
                 <Link href="/table/" className={Styles.noticeAction}>
                     보러가기!
                 </Link>
-            </Layout.CenteredFullWidth>
+            </Layout.CenteredFullWidth>}
         </div>;
     },
     _renderLeft(Link) {
