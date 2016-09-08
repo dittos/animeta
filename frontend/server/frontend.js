@@ -89,6 +89,14 @@ function renderDefault(res, locals, callback) {
     }, callback);
 }
 
+server.get('/robots.txt', (req, res) => {
+    res.set('content-type', 'text/plain');
+    res.send(`User-Agent: *
+Allow: /$
+Disallow: /
+`);
+});
+
 server.get('/support/', (req, res) => {
     res.render('support');
 });
