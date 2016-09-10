@@ -64,10 +64,10 @@ var CategoryEditView = React.createClass({
             <span className="category-form btn">
                 <label>분류: </label>
                 {name} ▼
-                <select value={this.props.selectedId} onChange={this._onChange}>
+                <select value={String(this.props.selectedId)} onChange={this._onChange}>
                     <option value="">지정 안함</option>
                     {this.props.categoryList.map(category =>
-                        <option value={category.id}>{category.name}</option>
+                        <option value={String(category.id)}>{category.name}</option>
                     )}
                 </select>
             </span>
