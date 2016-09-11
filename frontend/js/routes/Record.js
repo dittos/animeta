@@ -187,8 +187,6 @@ var Record = React.createClass({
     getInitialState() {
         return {
             posts: [],
-            record: this.props.data.record,
-            currentUser: this.props.data.currentUser,
             showDeleteModal: false,
         };
     },
@@ -208,8 +206,8 @@ var Record = React.createClass({
     },
 
     render() {
-        const {user} = this.props.data;
-        const {record, posts, currentUser} = this.state;
+        const {user, record, currentUser} = this.props.data;
+        const {posts} = this.state;
         const canEdit = currentUser && currentUser.id === record.user.id;
         var composer;
         if (canEdit) {
@@ -255,13 +253,17 @@ var Record = React.createClass({
 
     _updateTitle(title) {
         return updateRecordTitle(this.props.data.record.id, title).then(record => {
-            this.setState({ record });
+            this.props.writeData(data => {
+                data.record = record;
+            });
         });
     },
 
     _updateCategory(categoryID) {
         return updateRecordCategoryID(this.props.data.record.id, categoryID).then(record => {
-            this.setState({ record });
+            this.props.writeData(data => {
+                data.record = record;
+            });
         });
     },
 
@@ -273,9 +275,11 @@ var Record = React.createClass({
 
     _deletePost(post) {
         if (confirm('삭제 후에는 복구할 수 없습니다.\n기록을 정말로 삭제하시겠습니까?')) {
-            deletePost(post.id).then(() => {
+            deletePost(post.id).then(result => {
                 this.loadPosts();
-                // TODO: update record
+                this.props.writeData(data => {
+                    data.record = result.record;
+                });
             });
         }
     },
@@ -288,10 +292,9 @@ var Record = React.createClass({
 
     _connectTwitter() {
         return connectTwitter().then(() => {
-            this.setState({currentUser: {
-                ...this.state.currentUser,
-                is_twitter_connected: true,
-            }});
+            this.props.writeData(data => {
+                data.currentUser.is_twitter_connected = true;
+            });
         });
     },
 
