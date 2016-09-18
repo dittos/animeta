@@ -61,82 +61,107 @@ var CategoryItem = React.createClass({
 var ManageCategory = React.createClass({
     getInitialState() {
         return {
-            isSorting: false,
-            categoryList: this.props.data.categories,
+            sortingCategories: null,
         };
     },
-    componentWillReceiveProps(nextProps) {
-        this.setState({categoryList: nextProps.data.categories});
-    },
+
     render() {
-        var items = this.state.categoryList.map(category =>
-            <CategoryItem key={category.id}
-                category={category}
-                isSorting={this.state.isSorting}
-                onRemove={() => this._removeCategory(category)}
-                onRename={(name) => this._renameCategory(category, name)}
-            />);
-        if (this.state.isSorting) {
-            items = <Sortable onSwap={this._onSwap} onDrop={this._onDrop}>
-                {items}
-            </Sortable>;
-        }
+        const isSorting = this.state.sortingCategories != null;
+
         return <div className={cx({
             'manage-category': true,
-            'sorting': this.state.isSorting
+            'sorting': isSorting,
         })}>
             <h2>분류 관리</h2>
-            {items}
+            {isSorting ?
+                <Sortable onSwap={this._onSwap}>
+                    {this.state.sortingCategories.map(this._renderItem)}
+                </Sortable>
+                : this.props.data.categories.map(this._renderItem)}
+
             <div className="sort">
-            {this.state.isSorting &&
-                '항목을 드래그하여 순서를 바꿀 수 있습니다. '}
-            <button className="btn-sort"
-                onClick={() => this.setState({isSorting: !this.state.isSorting})}>
-                {!this.state.isSorting ?
-                    '순서 바꾸기' :
-                    '순서 바꾸기 완료'}
-            </button>
+                {isSorting ?
+                    <div>
+                        항목을 드래그하여 순서를 바꿀 수 있습니다.{' '}
+                        <button className="btn-sort" onClick={this._endSorting}>
+                            저장
+                        </button>
+                    </div>
+                    : <button className="btn-sort" onClick={this._beginSorting}>
+                        순서 바꾸기
+                    </button>}
             </div>
 
-            {!this.state.isSorting &&
-                <h2>분류 추가</h2>}
-            {!this.state.isSorting &&
-                <form onSubmit={this._addCategory}>
-                    분류 이름: <input size={12} ref="nameInput" />
-                    <button className="btn-add">추가</button>
-                </form>}
+            {!isSorting &&
+                <div>
+                    <h2>분류 추가</h2>
+                    <form onSubmit={this._addCategory}>
+                        분류 이름: <input size={12} ref="nameInput" />
+                        <button className="btn-add">추가</button>
+                    </form>
+                </div>}
         </div>;
     },
+
+    _renderItem(category) {
+        const isSorting = this.state.sortingCategories != null;
+        return <CategoryItem
+            key={category.id}
+            category={category}
+            isSorting={isSorting}
+            onRemove={() => this._removeCategory(category)}
+            onRename={(name) => this._renameCategory(category, name)}
+        />
+    },
+
+    _beginSorting() {
+        this.setState({ sortingCategories: this.props.data.categories });
+    },
+
+    _endSorting() {
+        const categoryIDs = this.state.sortingCategories.map(c => c.id);
+        updateCategoryOrder(this.props.data.user.name, categoryIDs).then(categories => {
+            this.setState({ sortingCategories: null });
+            this.props.writeData(data => {
+                data.categories = categories;
+            });
+        });
+    },
+
     _onSwap(i, j) {
-        var nextList = this.state.categoryList.slice();
+        const nextList = this.state.sortingCategories.slice();
         var temp = nextList[i];
         nextList[i] = nextList[j];
         nextList[j] = temp;
-        this.setState({categoryList: nextList});
+        this.setState({sortingCategories: nextList});
     },
-    _onDrop() {
-        var categoryIDs = this.state.categoryList.map(c => c.id);
-        updateCategoryOrder(this.props.data.user.name, categoryIDs);
-    },
+
     _addCategory(event) {
         event.preventDefault();
         var input = this.refs.nameInput;
         addCategory(this.props.data.user.name, input.value).then(category => {
             input.value = '';
-            this.setState({categoryList: this.state.categoryList.concat(category)})
+            this.props.writeData(data => {
+                data.categories.push(category);
+            });
         });
     },
+
     _removeCategory(category) {
         if (confirm('분류를 삭제해도 기록은 삭제되지 않습니다.\n분류를 삭제하시려면 [확인]을 누르세요.')) {
             removeCategory(category.id).then(() => {
-                this.setState({categoryList: this.state.categoryList.filter(c => c.id !== category.id)});
+                this.props.writeData(data => {
+                    data.categories = data.categories.filter(c => c.id !== category.id);
+                });
             });
         }
     },
+
     _renameCategory(category, name) {
         return renameCategory(category.id, name).then(() => {
-            category.name = name;
-            this.forceUpdate();
+            this.props.writeData(() => {
+                category.name = name;
+            });
         });
     }
 });
