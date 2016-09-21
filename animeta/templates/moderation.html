@@ -36,6 +36,7 @@
 {% endif %}
 
 <form method="post" action="{% url 'moderation-cache-clear' %}">
+{% csrf_token %}
     <button type="submit">Clear cache</button>
 </form>
 
