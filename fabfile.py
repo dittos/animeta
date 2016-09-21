@@ -1,5 +1,7 @@
 from fabric.api import *
 
+env.hosts = ['animeta.net']
+
 def deploy():
     _deploy(api=True, frontend=True)
 
