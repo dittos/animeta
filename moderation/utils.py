@@ -5,6 +5,16 @@ from django.conf import settings
 from wand.image import Image
 
 
+def download_hummingbird_poster(html_url):
+    info = requests.get(html_url + '.json')
+    info = info.json()['anime']
+    fn = info['id'] + '.jpg'
+    imgpath = os.path.join(settings.MEDIA_ROOT, fn)
+    with open(imgpath, 'wb') as fp:
+        fp.write(requests.get(info['poster_image']).content)
+        return fn
+
+
 def download_ann_poster(ann_id):
     fn = 'ann' + str(ann_id) + '.jpg'
     imgpath = os.path.join(settings.MEDIA_ROOT, fn)
@@ -24,12 +34,11 @@ def download_ann_poster(ann_id):
     return None
 
 
-def generate_thumbnail(filename):
+def generate_thumbnail(filename, remove_ann_watermark=False):
     path = os.path.join(settings.MEDIA_ROOT, filename)
     thumb_filename = 'thumb/' + filename
     targetpath = os.path.join(settings.MEDIA_ROOT, thumb_filename)
 
-    remove_ann_watermark = True
     w = 233
     h = 318
     ann_watermark_h = 13
@@ -39,7 +48,7 @@ def generate_thumbnail(filename):
     h *= 2
 
     with Image(filename=path) as img:
-        if filename.startswith('ann') and remove_ann_watermark:
+        if remove_ann_watermark:
             img.crop(0, 0, img.size[0], img.size[1] - ann_watermark_h)
         img.transform(resize='%dx%d^' % (w, h))
         tw = img.size[0]
