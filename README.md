@@ -39,5 +39,4 @@ http://animeta.net/
 
 ### 개발 서버 시작
 
-    npm run start-assets & # asset build
-    npm run start # frontend server
+    npm start

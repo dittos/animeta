@@ -53,6 +53,7 @@
     "babel-eslint": "^4.1.6",
     "babel-jest": "^5.3.0",
     "babel-loader": "^6.2.0",
+    "concurrently": "^2.2.0",
     "css-loader": "^0.23.0",
     "eslint": "^1.10.3",
     "eslint-loader": "^1.1.1",
@@ -68,7 +69,8 @@
     "webpack-dev-server": "^1.15.1"
   },
   "scripts": {
-    "start": "babel-node frontend/frontendServer.js",
+    "start": "concurrently \"npm run start-server\" \"npm run start-assets\"",
+    "start-server": "babel-node frontend/frontendServer.js",
     "start-assets": "webpack-dev-server --hot --inline",
     "build-assets": "NODE_ENV=production webpack",
     "build-dist": "babel frontend --ignore external/** -d frontend-dist --copy-files",
