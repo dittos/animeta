@@ -99,7 +99,7 @@ var GlobalHeader = React.createClass({
     },
     render() {
         var Link = this.props.useRouterLink ? CompatLink : 'a';
-        const showNotice = false;
+        const showNotice = true;
         return <div className={Styles.container}>
             <Layout.CenteredFullWidth className={Styles.header}>
                 <Layout.LeftRight className={Styles.headerInner}
@@ -111,7 +111,7 @@ var GlobalHeader = React.createClass({
                     <i className="fa fa-bell" />
                 </span>
                 <Link href="/table/" className={Styles.noticeText}>
-                    <b>2016년 7월 신작</b>이 업데이트 됐습니다.
+                    <b>2016년 10월 신작</b>이 업데이트 됐습니다.
                 </Link>
                 <Link href="/table/" className={Styles.noticeAction}>
                     보러가기!
