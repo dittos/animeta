@@ -4,7 +4,6 @@ import _ from 'lodash';
 import {Link} from 'nuri';
 import * as util from '../util';
 import {App} from '../layouts';
-import LazyImageView from '../ui/LazyImage';
 import LoginDialog from '../ui/LoginDialog';
 import Layout from '../ui/Layout';
 import Grid from '../ui/Grid';
@@ -116,7 +115,7 @@ var StatusButton = React.createClass({
 
 function Poster({item}) {
     return <div className={Styles.poster}>
-        <LazyImageView src={item.image_url} className={Styles.posterImage} />
+        <img src={item.image_url} className={Styles.posterImage} />
         <div className={Styles.posterOverlay}>
             <i className="fa fa-check" /> {item.record_count}
         </div>
