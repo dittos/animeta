@@ -52,30 +52,3 @@
 <% }) %>
 </head>
 <body>
-<% if (typeof html !== 'undefined') { %>
-<div id="app"><%- html %></div>
-<% } %>
-<script src="//cdn.ravenjs.com/3.5.1/raven.min.js"></script>
-<% if (!DEBUG) { %>
-<script>
-try {
-    Raven.config('http://980ebdd0a1e4424985cf699705d1738f@sentry.sapzil.org/2', {
-        ignoreErrors: ['hideGuidePopup']
-    }).install();
-} catch (e) {}
-</script>
-<% } %>
-<% if (assetFilenames.common) { %>
-<script type="text/javascript" src="<%= ASSET_BASE %><%= assetFilenames.common.js %>"></script>
-<% } %>
-<% scripts.forEach(path => { %>
-<script type="text/javascript" src="<%= ASSET_BASE %><%= path %>"></script>
-<% }) %>
-<script>
-var PreloadData = <%- JSON.stringify(preloadData || {}) %>;
-if (window.startApp) {
-    window.startApp(PreloadData);
-}
-</script>
-</body>
-</html>

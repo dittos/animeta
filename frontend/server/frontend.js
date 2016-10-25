@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import csurf from 'csurf';
 import httpProxy from 'http-proxy';
 import now from 'performance-now';
+import {createRenderStream} from 'react-dom-gen/src';
 import Backend, {HttpNotFound} from './backend';
 import renderFeed from './renderFeed';
 import assetFilenames from '../assets.json';
@@ -74,8 +75,8 @@ server.use('/api', (req, res) => {
     proxy.web(req, res);
 });
 
-function renderDefault(res, locals, callback) {
-    res.render('layout', {
+function renderDefault(res, locals, content, callback) {
+    const context = {
         DEBUG,
         STATIC_URL: '/static/',
         ASSET_BASE: config.assetBase || '',
@@ -84,9 +85,39 @@ function renderDefault(res, locals, callback) {
         meta: {},
         stylesheets: [],
         scripts: [],
+        checksum: null,
 
         ...locals,
-    }, callback);
+    };
+
+    function renderFooter() {
+        server.render('footer', context, (err, footer) => {
+            res.write('</div>' + footer);
+            res.end();
+        });
+    }
+
+    res.render('layout', context, (err, header) => {
+        if (err) {
+            if (callback) {
+                callback(err);
+                return;
+            }
+            throw err;
+        }
+
+        res.write(header + '<div id="app">');
+        if (typeof content === 'string') {
+            res.write(content);
+            renderFooter();
+        } else {
+            // stream
+            content.on('end', () => {
+                context.checksum = content.checksum;
+                renderFooter();
+            }).pipe(res, {end: false});
+        }
+    });
 }
 
 server.get('/robots.txt', (req, res) => {
@@ -127,12 +158,11 @@ async function userHandler(req, res, username, currentUser) {
         records
     };
     renderDefault(res, {
-        html: '',
         title: `${owner.name} 사용자`,
         preloadData,
         stylesheets: [assetFilenames.library.css],
         scripts: [assetFilenames.library.js],
-    });
+    }, '');
 }
 
 function libraryHandler(req, res, next) {
@@ -183,9 +213,7 @@ server.get('/records/:id/delete/', recordHandler);
 server.get('*', (req, res, next) => {
     const startTime = now();
     render(app, req).then(result => {
-        const renderedTime = now();
-
-        const {preloadData, title, meta, errorStatus, redirectURI} = result;
+        const {preloadData, title, meta, errorStatus, redirectURI, element} = result;
 
         if (errorStatus === 404) {
             throw HttpNotFound;
@@ -199,29 +227,15 @@ server.get('*', (req, res, next) => {
         if (errorStatus)
             res.status(errorStatus);
 
-        const html = result.getHTML();
-        const htmlRenderedTime = now();
-
         preloadData.daum_api_key = config.daumAPIKey; // XXX
         renderDefault(res, {
-            html,
             preloadData,
             title,
             meta,
             stylesheets: [assetFilenames.index.css],
             scripts: [assetFilenames.index.js],
-        }, (err, html) => {
-            if (err) {
-                next(err);
-                return;
-            }
-            const templateRenderedTime = now();
-            res.send(html + `<!--
-nuri: ${(renderedTime - startTime).toFixed(1)}ms
-${req.loaderCalls && req.loaderCalls.map(c => `  ${c.path} [${c.time ? `${c.time.toFixed(1)}ms / ` : ''}e2e=${c.e2eTime.toFixed(1)}ms]`).join('\n')}
-react: ${(htmlRenderedTime - renderedTime).toFixed(1)}ms
-ejs: ${(templateRenderedTime - htmlRenderedTime).toFixed(1)}ms
--->`);
+        }, createRenderStream(element), err => {
+            next(err);
         });
     }).catch(err => {
         if (err === HttpNotFound) {
