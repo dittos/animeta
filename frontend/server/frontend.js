@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser';
 import csurf from 'csurf';
 import httpProxy from 'http-proxy';
 import now from 'performance-now';
-import {createRenderStream} from 'react-dom-gen/src';
+import {createRenderStream} from 'react-dom-gen';
 import Backend, {HttpNotFound} from './backend';
 import renderFeed from './renderFeed';
 import assetFilenames from '../assets.json';
