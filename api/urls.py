@@ -17,6 +17,7 @@ from api.v2.record_view import RecordView
 from api.v2.record_posts import RecordPostsView
 from api.v2.work_view import WorkView
 from api.v2.work_posts import WorkPostsView
+from api import admin
 from chart.models import PopularWorksChart, ActiveUsersChart
 
 urlpatterns = [
@@ -49,6 +50,10 @@ urlpatterns = [
         TablePeriodView.as_view()),
     url(r'^v2/search$', SearchView.as_view()),
     url(r'^v2/search/suggest$', SuggestView.as_view()),
+
+    # admin
+    url(r'^admin/works$', admin.WorksView.as_view()),
+    url(r'^admin/works/(?P<id>[0-9]+)$', admin.WorkView.as_view()),
 
     # deprecated
     url(r'^v2/charts/works/weekly$', PopularWorksChartView.as_view()),
