@@ -54,6 +54,8 @@ urlpatterns = [
     # admin
     url(r'^admin/works$', admin.WorksView.as_view()),
     url(r'^admin/works/(?P<id>[0-9]+)$', admin.WorkView.as_view()),
+    url(r'^admin/works/(?P<id>[0-9]+)/title-mappings$', admin.WorkTitleMappingsView.as_view()),
+    url(r'^admin/title-mappings/(?P<id>[0-9]+)$', admin.TitleMappingView.as_view()),
 
     # deprecated
     url(r'^v2/charts/works/weekly$', PopularWorksChartView.as_view()),
