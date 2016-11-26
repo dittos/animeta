@@ -2,6 +2,7 @@ let sessionKey;
 
 function fetchWithSession(input, init = {}) {
   init.headers = init.headers || {};
+  init.headers['Accept'] = 'application/json';
   init.headers['X-Animeta-Session-Key'] = sessionKey;
   return fetch(input, init).then(r => {
     if (!r.ok)
@@ -76,4 +77,11 @@ export function addTitleMapping(workId, titleMapping) {
 
 export function deleteTitleMapping(id) {
   return fetchWithSession(`/api/admin/title-mappings/${id}`, {method: 'DELETE'});
+}
+
+export function searchWork(q, {minRecordCount = 2}) {
+  const params = new URLSearchParams();
+  params.append('q', q);
+  params.append('min_record_count', minRecordCount);
+  return fetchWithSession(`/api/v2/search?${params}`);
 }

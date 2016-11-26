@@ -3109,6 +3109,10 @@ jodid25519@^1.0.0:
   dependencies:
     jsbn "~0.1.0"
 
+jquery@^1.9:
+  version "1.12.4"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-1.12.4.tgz#01e1dfba290fe73deba77ceeacb0f9ba2fec9e0c"
+
 js-base64@^2.1.9:
   version "2.1.9"
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.1.9.tgz#f0e80ae039a4bd654b5f281fc93f04a914a7fcce"
@@ -5153,6 +5157,10 @@ type-is@~1.6.13:
   dependencies:
     media-typer "0.3.0"
     mime-types "~2.1.11"
+
+typeahead.js@^0.10.5:
+  version "0.10.5"
+  resolved "https://registry.yarnpkg.com/typeahead.js/-/typeahead.js-0.10.5.tgz#1d9971b0f44d385feadbf22c9f369db562912de1"
 
 typedarray@~0.0.5:
   version "0.0.6"

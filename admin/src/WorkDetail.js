@@ -8,6 +8,7 @@ import {
   Button,
 } from 'react-bootstrap';
 import * as API from './API';
+import WorkMergeForm from './WorkMergeForm';
 
 class WorkDetail extends React.Component {
   state = {
@@ -76,16 +77,14 @@ class WorkDetail extends React.Component {
           </FormGroup>
           <Button type="submit">Add title</Button>
         </Form>
+
+        <hr />
+
+        <h3>Merge</h3>
+        <WorkMergeForm work={work} />
       </div>
     );
   }
-
-  _submitAddMapping = (event) => {
-    event.preventDefault();
-    API.addTitleMapping(this.state.work.id, {
-      title: findDOMNode(this.refs.titleToAdd).value
-    }).then(this._load);
-  };
 
   _setPrimaryTitleMapping = (id) => {
     API.editWork(this.state.work.id, {
@@ -95,6 +94,13 @@ class WorkDetail extends React.Component {
 
   _deleteTitleMapping = (id) => {
     API.deleteTitleMapping(id).then(this._load);
+  };
+
+  _submitAddMapping = (event) => {
+    event.preventDefault();
+    API.addTitleMapping(this.state.work.id, {
+      title: findDOMNode(this.refs.titleToAdd).value
+    }).then(this._load);
   };
 }
 
