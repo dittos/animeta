@@ -52,7 +52,7 @@ const typeaheadTemplates = {
 
 class TitleAutosuggest extends React.Component {
   componentDidMount() {
-    jQuery(findDOMNode(this.refs.input)).typeahead({hint: false}, {
+    this._typeahead = jQuery(findDOMNode(this.refs.input)).typeahead({hint: false}, {
       source,
       displayKey: 'title',
       templates: typeaheadTemplates,
@@ -63,6 +63,10 @@ class TitleAutosuggest extends React.Component {
 
   render() {
     return <FormControl ref="input" />;
+  }
+
+  clear() {
+    this._typeahead.typeahead('val', '');
   }
 }
 

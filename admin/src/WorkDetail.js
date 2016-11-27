@@ -16,12 +16,18 @@ class WorkDetail extends React.Component {
   };
 
   componentDidMount() {
-    this._load();
+    this._reload();
   }
 
-  _load = async () => {
-    const work = await API.getWork(this.props.params.id);
-    this.setState({ work });
+  componentWillReceiveProps(nextProps) {
+    this._load(nextProps);
+  }
+
+  _reload = () => this._load(this.props);
+
+  _load = props => {
+    return API.getWork(props.params.id)
+      .then(work => this.setState({ work }));
   };
 
   render() {
@@ -81,7 +87,7 @@ class WorkDetail extends React.Component {
         <hr />
 
         <h3>Merge</h3>
-        <WorkMergeForm work={work} />
+        <WorkMergeForm work={work} onMerge={this._reload} />
       </div>
     );
   }
@@ -89,18 +95,18 @@ class WorkDetail extends React.Component {
   _setPrimaryTitleMapping = (id) => {
     API.editWork(this.state.work.id, {
       primaryTitleMappingId: id
-    }).then(this._load);
+    }).then(this._reload);
   };
 
   _deleteTitleMapping = (id) => {
-    API.deleteTitleMapping(id).then(this._load);
+    API.deleteTitleMapping(id).then(this._reload);
   };
 
   _submitAddMapping = (event) => {
     event.preventDefault();
     API.addTitleMapping(this.state.work.id, {
       title: findDOMNode(this.refs.titleToAdd).value
-    }).then(this._load);
+    }).then(this._reload);
   };
 }
 

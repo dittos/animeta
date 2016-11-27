@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { Navbar, Nav, NavDropdown, MenuItem, Grid } from 'react-bootstrap';
 import Loading from './Loading';
 import Login from './Login';
+import TitleAutosuggest from './TitleAutosuggest';
 import * as API from './API';
 
 class App extends Component {
@@ -40,6 +41,12 @@ class App extends Component {
               <Link to="/">animeta</Link>
             </Navbar.Brand>
           </Navbar.Header>
+          <Navbar.Form pullLeft>
+            <TitleAutosuggest
+              onSelected={this._onTitleSelected}
+              ref="titleSearch"
+            />
+          </Navbar.Form>
           <Nav pullRight>
             <NavDropdown id="navbar-user-dropdown" title={this.state.currentUser.name}>
               <MenuItem onSelect={this._logout}>Logout</MenuItem>
@@ -63,6 +70,11 @@ class App extends Component {
   _logout = () => {
     API.clearSession();
     this.setState({ currentUser: null });
+  };
+
+  _onTitleSelected = (item) => {
+    this.props.router.push(`/works/${item.id}`);
+    this.refs.titleSearch.clear();
   };
 }
 

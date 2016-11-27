@@ -30,8 +30,11 @@ class BaseView(View):
         if not self.request.user.is_authenticated():
             self.raise_error('Login required.', status=401)
 
-    def raise_error(self, message, status):
-        raise HttpException(JsonResponse({'message': message}, status=status))
+    def raise_error(self, message, status, extra=None):
+        data = {'message': message}
+        if extra:
+            data['extra'] = extra
+        raise HttpException(JsonResponse(data, status=status))
 
 
 def get_user(request):

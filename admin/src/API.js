@@ -1,3 +1,5 @@
+const SESSION_KEY_STORAGE_KEY = 'sessionKey';
+
 let sessionKey;
 
 function fetchWithSession(input, init = {}) {
@@ -6,17 +8,21 @@ function fetchWithSession(input, init = {}) {
   init.headers['X-Animeta-Session-Key'] = sessionKey;
   return fetch(input, init).then(r => {
     if (!r.ok)
-      return Promise.reject(r);
+      return r.json().then(data => Promise.reject(data));
     return r.json();
   });
 }
 
 function saveSession() {
-  window.localStorage.setItem('sessionKey', sessionKey);
+  if (sessionKey) {
+    window.localStorage.setItem(SESSION_KEY_STORAGE_KEY, sessionKey);
+  } else {
+    window.localStorage.removeItem(SESSION_KEY_STORAGE_KEY);
+  }
 }
 
 export function loadSession() {
-  sessionKey = window.localStorage.sessionKey;
+  sessionKey = window.localStorage[SESSION_KEY_STORAGE_KEY];
 }
 
 export function clearSession() {
