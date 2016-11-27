@@ -17,7 +17,10 @@ class WorkMergeForm extends React.Component {
     return (
       <div>
         <FormGroup>
-          <TitleAutosuggest onSelected={this._onWorkToMergeSelected} />
+          <TitleAutosuggest
+            onSelected={this._onWorkToMergeSelected}
+            ref="titleSearch"
+          />
         </FormGroup>
 
         {this.state.workToMerge && (
@@ -71,6 +74,7 @@ class WorkMergeForm extends React.Component {
 
   _onWorkToMergeSelected = (work) => {
     this.setState({ workToMerge: work });
+    this.refs.titleSearch.clear();
   };
 
   _merge = () => {

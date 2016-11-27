@@ -68,6 +68,10 @@ class TitleAutosuggest extends React.Component {
   clear() {
     this._typeahead.typeahead('val', '');
   }
+
+  getValue() {
+    return this._typeahead.typeahead('val');
+  }
 }
 
 export default TitleAutosuggest;

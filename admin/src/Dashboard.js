@@ -7,7 +7,9 @@ class Dashboard extends React.Component {
     works: []
   };
 
-  async _load(props = this.props) {
+  _reload = () => this._load(this.props);
+
+  async _load(props) {
     const offset = props.location.query.offset;
     this.setState({ works: await API.getWorks({ offset }) }, () => {
       window.scrollTo(0, 0);
@@ -15,7 +17,7 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount() {
-    this._load();
+    this._reload();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -51,9 +53,8 @@ class Dashboard extends React.Component {
     );
   }
 
-  _deleteWork = async (id) => {
-    await API.deleteWork(id);
-    this._load();
+  _deleteWork = id => {
+    API.deleteWork(id).then(this._reload);
   };
 }
 

@@ -6,7 +6,7 @@ from django.db import models, transaction
 from api.serializers import serialize_work
 from api.v2 import BaseView
 from search.models import WorkIndex
-from work.models import Work, TitleMapping, normalize_title
+from work.models import Work, TitleMapping, normalize_title, get_or_create_work
 
 
 # TODO: auth
@@ -21,6 +21,11 @@ class WorksView(BaseView):
         if only_orphans:
             queryset = queryset.filter(index__record_count=0)
         return map(serialize_work, queryset[offset:offset+limit])
+
+    def post(self, request):
+        payload = json.loads(request.body)
+        work = get_or_create_work(payload['title'])
+        return serialize_work(work)
 
 
 def serialize_title_mapping(mapping):

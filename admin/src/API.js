@@ -59,6 +59,13 @@ export function getWorks({ orphans = false, offset = 0 }) {
   return fetchWithSession(`/api/admin/works?${params}`);
 }
 
+export function createWork(title) {
+  return fetchWithSession(`/api/admin/works`, {
+    method: 'POST',
+    body: JSON.stringify({ title }),
+  });
+}
+
 export function getWork(id) {
   return fetchWithSession(`/api/admin/works/${id}`);
 }
