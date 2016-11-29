@@ -5,6 +5,7 @@ import csurf from 'csurf';
 import httpProxy from 'http-proxy';
 import now from 'performance-now';
 import {createRenderStream} from 'react-dom-gen';
+import serializeJS from 'serialize-javascript';
 import Backend, {HttpNotFound} from './backend';
 import renderFeed from './renderFeed';
 import assetFilenames from '../assets.json';
@@ -86,6 +87,7 @@ function renderDefault(res, locals, content, callback) {
         stylesheets: [],
         scripts: [],
         checksum: null,
+        serializeJS,
 
         ...locals,
     };
