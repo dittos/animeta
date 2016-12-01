@@ -1,10 +1,13 @@
 import json
 
+import yaml
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models, transaction
 
 from api.serializers import serialize_work
 from api.v2 import BaseView
+from moderation.utils import download_ann_poster, generate_thumbnail, download_hummingbird_poster
 from search.models import WorkIndex
 from work.models import Work, TitleMapping, normalize_title, get_or_create_work
 
@@ -51,6 +54,7 @@ class WorkView(BaseView):
             'id': work.id,
             'title': work.title,
             'image_filename': work.image_filename,
+            'image_path': work.image_filename and settings.MEDIA_URL + work.image_filename,
             'raw_metadata': work.raw_metadata,
             'metadata': work.metadata,
             'title_mappings': map(serialize_title_mapping, title_mappings),
@@ -66,6 +70,10 @@ class WorkView(BaseView):
             self._set_primary_title_mapping(payload['primaryTitleMappingId'])
         if 'mergeWorkId' in payload:
             self._merge(id, payload['mergeWorkId'], payload.get('forceMerge', False))
+        if 'rawMetadata' in payload:
+            self._edit_metadata(id, payload['rawMetadata'])
+        if 'crawlImage' in payload:
+            self._crawl_image(id, payload['crawlImage']['source'], payload['crawlImage'])
         return self.get(request, id)
 
     def _set_primary_title_mapping(self, primary_title_mapping_id):
@@ -100,6 +108,32 @@ class WorkView(BaseView):
             other.record_set.update(work=work)
             other.history_set.update(work=work)
             other.delete()
+
+    def _edit_metadata(self, id, raw_metadata):
+        work = Work.objects.get(pk=id)
+        # Verify yaml
+        try:
+            yaml.load(raw_metadata)
+        except yaml.YAMLError as e:
+            self.raise_error('YAML parse failed: ' + str(e), status=400)
+        work.raw_metadata = raw_metadata
+        work.save()
+
+    def _crawl_image(self, id, source, options):
+        work = Work.objects.get(pk=id)
+        if source == 'ann':
+            ann_id = options['annId']
+            work.original_image_filename = download_ann_poster(ann_id)
+            if work.original_image_filename:
+                work.image_filename = generate_thumbnail(work.original_image_filename, remove_ann_watermark=True)
+                work.save()
+        elif source == 'hummingbird':
+            hummingbird_url = options['hummingbirdUrl']
+            work.original_image_filename = download_hummingbird_poster(hummingbird_url)
+            if work.original_image_filename:
+                work.image_filename = generate_thumbnail(work.original_image_filename)
+                work.save()
+        work.save()
 
     def delete(self, request, id):
         work = Work.objects.get(pk=id)

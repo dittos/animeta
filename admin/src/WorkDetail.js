@@ -9,10 +9,11 @@ import {
 } from 'react-bootstrap';
 import * as API from './API';
 import WorkMergeForm from './WorkMergeForm';
+import ImageUploadForm from './ImageUploadForm';
 
 class WorkDetail extends React.Component {
   state = {
-    work: null
+    work: null,
   };
 
   componentDidMount() {
@@ -90,6 +91,35 @@ class WorkDetail extends React.Component {
 
         <h3>Merge</h3>
         <WorkMergeForm work={work} onMerge={this._reload} />
+
+        <hr />
+
+        <h3>Metadata</h3>
+        <FormGroup>
+          <textarea
+            rows={10}
+            cols={50}
+            value={work.raw_metadata}
+            onChange={e => {
+              work.raw_metadata = e.target.value;
+              this.setState({ work });
+            }}
+          />
+        </FormGroup>
+        <Button onClick={this._saveMetadata}>Save</Button>
+
+        <hr />
+
+        <h3>Image</h3>
+        <ImageUploadForm
+          key={work.id}
+          work={work}
+          onUpload={this._uploadImage}
+        />
+
+        {work.image_path && (
+          <img src={work.image_path} alt={`Poster for ${work.title}`} />
+        )}
       </div>
     );
   }
@@ -109,6 +139,25 @@ class WorkDetail extends React.Component {
     API.addTitleMapping(this.state.work.id, {
       title: findDOMNode(this.refs.titleToAdd).value
     }).then(this._reload);
+  };
+
+  _saveMetadata = () => {
+    API.editWork(this.state.work.id, {
+      rawMetadata: this.state.work.raw_metadata
+    }).then(this._reload, e => {
+      alert(e.message);
+    });
+  };
+
+  _uploadImage = (source, options) => {
+    API.editWork(this.state.work.id, {
+      crawlImage: {
+        source,
+        ...options,
+      }
+    }).then(this._reload, e => {
+      alert(e.message);
+    });
   };
 }
 
