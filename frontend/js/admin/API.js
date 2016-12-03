@@ -1,3 +1,5 @@
+import * as CSRF from '../CSRF';
+
 const SESSION_KEY_STORAGE_KEY = 'sessionKey';
 
 let sessionKey;
@@ -6,6 +8,8 @@ function fetchWithSession(input, init = {}) {
   init.headers = init.headers || {};
   init.headers['Accept'] = 'application/json';
   init.headers['X-Animeta-Session-Key'] = sessionKey;
+  init.headers['X-CSRF-Token'] = CSRF.getToken();
+  init.credentials = 'same-origin'; // allow cookie
   return fetch(input, init).then(r => {
     if (!r.ok)
       return r.json().then(data => Promise.reject(data));
@@ -38,7 +42,14 @@ export async function login(username, password){
   const data = new FormData();
   data.append('username', username);
   data.append('password', password);
-  const resp = await fetch('/api/v2/auth', {method: 'POST', body: data});
+  const resp = await fetch('/api/v2/auth', {
+    method: 'POST',
+    body: data,
+    headers: {
+      'X-CSRF-Token': CSRF.getToken(),
+    },
+    credentials: 'same-origin',
+  });
   const result = await resp.json();
   if (result.ok) {
     sessionKey = result.session_key;

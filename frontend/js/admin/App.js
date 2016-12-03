@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router';
+import { Link, withRouter } from 'react-router';
 import { Button, FormGroup, Navbar, Nav, NavDropdown, MenuItem, Grid } from 'react-bootstrap';
 import Loading from './Loading';
 import Login from './Login';
@@ -89,4 +89,4 @@ class App extends Component {
   };
 }
 
-export default App;
+export default withRouter(App);

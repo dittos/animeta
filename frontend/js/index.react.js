@@ -44,7 +44,9 @@ $(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) => {
     } catch (e) {
         try {
             Raven.captureMessage(e);
-        } catch (e2) {}
+        } catch (e2) {
+            // ignore
+        }
     }
     if (jqXHR.responseText) {
         try {

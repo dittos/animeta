@@ -1,11 +1,10 @@
 import React from 'react';
 import { findDOMNode } from 'react-dom';
 import { FormControl } from 'react-bootstrap';
-import 'typeahead.js';
+import jQuery from 'jquery';
+import '../typeahead';
 import * as API from './API';
 import './TitleAutosuggest.css';
-
-const jQuery = window.jQuery;
 
 function cachingSource(source, maxSize) {
   var cache = [];

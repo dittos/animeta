@@ -212,6 +212,15 @@ function recordHandler(req, res, next) {
 server.get('/records/:id/', recordHandler);
 server.get('/records/:id/delete/', recordHandler);
 
+server.get('/admin/', (req, res) => {
+    renderDefault(res, {
+        title: `Admin`,
+        preloadData: {},
+        stylesheets: [assetFilenames.admin.css],
+        scripts: [assetFilenames.admin.js],
+    }, '');
+});
+
 server.get('*', (req, res, next) => {
     const startTime = now();
     render(app, req).then(result => {

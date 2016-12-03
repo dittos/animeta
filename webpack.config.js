@@ -17,6 +17,7 @@ module.exports = config = {
     entry: {
         library: './js/library.react.js',
         index: './js/index.react.js',
+        admin: './js/admin.react.js',
         common: './js/common.js'
     },
     output: {
@@ -30,7 +31,7 @@ module.exports = config = {
             { test: /\.json$/, loader: 'json-loader' },
             { test: /\.less$/, loader: ExtractTextPlugin.extract('style', 'css?localIdentName=[name]_[local]_[hash:base64:5]!autoprefixer!less') },
             { test: /\.css$/, loader: ExtractTextPlugin.extract('style', 'css!autoprefixer') },
-            { test: /\.(png|gif|svg)$/, loader: 'url' }
+            { test: /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/, loader: 'url' }
         ]
     }
 };

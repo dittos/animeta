@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, hashHistory } from 'react-router';
-import App from './App';
-import Dashboard from './Dashboard';
-import WorkDetail from './WorkDetail';
+import App from './admin/App';
+import Dashboard from './admin/Dashboard';
+import WorkDetail from './admin/WorkDetail';
 import 'bootstrap/dist/css/bootstrap.css';
 
 ReactDOM.render(
@@ -13,5 +13,5 @@ ReactDOM.render(
       <Route path="/works/:id" component={WorkDetail} />
     </Route>
   </Router>,
-  document.getElementById('root')
+  document.getElementById('app')
 );
