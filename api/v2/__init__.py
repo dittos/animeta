@@ -19,12 +19,16 @@ class BaseView(View):
     def dispatch(self, request, *args, **kwargs):
         request.user = SimpleLazyObject(lambda: get_user(request))
         try:
+            self.before_dispatch(request, *args, **kwargs)
             response = super(BaseView, self).dispatch(request, *args, **kwargs)
         except HttpException as e:
             return e.response
         if not isinstance(response, HttpResponse):
             response = JsonResponse(response, safe=False)
         return response
+
+    def before_dispatch(self, request, *args, **kwargs):
+        pass
 
     def check_login(self):
         if not self.request.user.is_authenticated():

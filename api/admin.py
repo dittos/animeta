@@ -12,10 +12,14 @@ from search.models import WorkIndex
 from work.models import Work, TitleMapping, normalize_title, get_or_create_work
 
 
-# TODO: auth
+class BaseAdminView(BaseView):
+    def before_dispatch(self, request, *args, **kwargs):
+        self.check_login()
+        if not request.user.is_staff:
+            self.raise_error('Staff permission required.', status=401)
 
 
-class WorksView(BaseView):
+class WorksView(BaseAdminView):
     def get(self, request):
         only_orphans = request.GET.get('orphans') == '1'
         offset = int(request.GET.get('offset', 0))
@@ -39,7 +43,7 @@ def serialize_title_mapping(mapping):
     }
 
 
-class WorkView(BaseView):
+class WorkView(BaseAdminView):
     def get(self, request, id):
         work = Work.objects.get(pk=id)
         title_mappings = list(work.title_mappings.all())
@@ -142,7 +146,7 @@ class WorkView(BaseView):
         return {'ok': True}
 
 
-class WorkTitleMappingsView(BaseView):
+class WorkTitleMappingsView(BaseAdminView):
     def post(self, request, id):
         payload = json.loads(request.body)
         work = Work.objects.get(pk=id)
@@ -159,7 +163,7 @@ class WorkTitleMappingsView(BaseView):
         return serialize_title_mapping(created)
 
 
-class TitleMappingView(BaseView):
+class TitleMappingView(BaseAdminView):
     def delete(self, request, id):
         mapping = TitleMapping.objects.get(pk=id)
         if mapping.record_count == 0:
