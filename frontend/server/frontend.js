@@ -99,6 +99,7 @@ function renderDefault(res, locals, content, callback) {
         });
     }
 
+    res.type('text/html');
     res.render('layout', context, (err, header) => {
         if (err) {
             if (callback) {

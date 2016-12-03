@@ -34,6 +34,7 @@ def _deploy(api=False, frontend=False, frontend_server=False):
             run('venv/bin/pip install -r ./requirements.txt')
             run('venv/bin/python manage.py migrate')
         if frontend:
+            run('mkdir -p animeta/static/build')
             put('animeta/static/build/*', 'animeta/static/build/')
             put('frontend/assets.json', 'frontend/')
         if frontend_server:
