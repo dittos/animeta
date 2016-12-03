@@ -5,9 +5,9 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models, transaction
 
+from animeta.utils.poster import download_ann_poster, generate_thumbnail, download_hummingbird_poster
 from api.serializers import serialize_work
 from api.v2 import BaseView
-from moderation.utils import download_ann_poster, generate_thumbnail, download_hummingbird_poster
 from search.models import WorkIndex
 from work.models import Work, TitleMapping, normalize_title, get_or_create_work
 

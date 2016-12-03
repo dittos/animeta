@@ -84,26 +84,6 @@ ROOT_URLCONF = 'animeta.urls'
 import os.path
 ROOT_PATH = os.path.dirname(__file__)
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ROOT_PATH + '/templates'],
-        'OPTIONS': {
-            'context_processors': [
-                'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.debug',
-                'django.template.context_processors.i18n',
-                'django.template.context_processors.media',
-                'django.template.context_processors.static',
-                'django.template.context_processors.request',
-                'django.template.context_processors.csrf',
-                'django.contrib.messages.context_processors.messages',
-                'animeta.context_processors.settings',
-            ]
-        }
-    },
-]
-
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.sessions',
@@ -118,7 +98,6 @@ INSTALLED_APPS = (
     'connect',
     'chart',
     'api',
-    'moderation',
     'search',
     'table',
 )

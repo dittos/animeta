@@ -31,8 +31,8 @@ def _deploy(api=False, frontend=False, frontend_server=False):
             run('./build-external.sh')
             run('npm install')
         if api:
-            run('env/bin/pip install -r ./requirements.txt')
-            run('env/bin/python manage.py migrate')
+            run('venv/bin/pip install -r ./requirements.txt')
+            run('venv/bin/python manage.py migrate')
         if frontend:
             put('animeta/static/build/*', 'animeta/static/build/')
             put('frontend/assets.json', 'frontend/')
