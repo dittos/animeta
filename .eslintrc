@@ -27,5 +27,9 @@
         "react/jsx-uses-vars": 1,
         "react/no-unknown-property": 1,
         "react/react-in-jsx-scope": 1
+    },
+    "globals": {
+        "Promise": true,
+        "URLSearchParams": true
     }
 }

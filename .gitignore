@@ -2,7 +2,6 @@
 *.swp
 *.orig
 backup
-src
 env
 settings_local.py
 node_modules

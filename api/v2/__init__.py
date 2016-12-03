@@ -19,6 +19,7 @@ class BaseView(View):
     def dispatch(self, request, *args, **kwargs):
         request.user = SimpleLazyObject(lambda: get_user(request))
         try:
+            self.before_dispatch(request, *args, **kwargs)
             response = super(BaseView, self).dispatch(request, *args, **kwargs)
         except HttpException as e:
             return e.response
@@ -26,12 +27,18 @@ class BaseView(View):
             response = JsonResponse(response, safe=False)
         return response
 
+    def before_dispatch(self, request, *args, **kwargs):
+        pass
+
     def check_login(self):
         if not self.request.user.is_authenticated():
             self.raise_error('Login required.', status=401)
 
-    def raise_error(self, message, status):
-        raise HttpException(JsonResponse({'message': message}, status=status))
+    def raise_error(self, message, status, extra=None):
+        data = {'message': message}
+        if extra:
+            data['extra'] = extra
+        raise HttpException(JsonResponse(data, status=status))
 
 
 def get_user(request):
