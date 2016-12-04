@@ -63,6 +63,7 @@ class Chart extends React.Component {
     render() {
         const {
             chart,
+            chartType,
             range,
         } = this.props.data;
         return <ChartLayout>
@@ -76,7 +77,11 @@ class Chart extends React.Component {
                     <td className="rank">{item.rank}</td>
                     {chart.has_diff &&
                         <td className="diff">{renderDiff(item)}</td>}
-                    <td className="name"><Link to={item.object.link}>{item.object.text}</Link></td>
+                    <td className="name">
+                        {chartType === 'users'
+                            ? <a href={item.object.link}>{item.object.text}</a>
+                            : <Link to={item.object.link}>{item.object.text}</Link>}
+                    </td>
                     <td className="bar"><div style={{width: item.factor_percent + '%'}} /></td>
                     <td className="factor">{item.factor}</td>
                 </tr>)}
@@ -102,6 +107,7 @@ export default {
         ]);
         return {
             currentUser,
+            chartType: type,
             chart,
             range,
         };
