@@ -27,6 +27,7 @@ def run():
             work_id=work.id,
             title=work.title,
             record_count=work.record_count,
+            blacklisted=work.blacklisted,
         ))
         metadata = work.metadata
         if metadata:
