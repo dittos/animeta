@@ -24,7 +24,7 @@ class WorksView(BaseAdminView):
         only_orphans = request.GET.get('orphans') == '1'
         offset = int(request.GET.get('offset', 0))
         limit = 50
-        queryset = Work.objects.order_by('-id')
+        queryset = Work.objects.order_by('-id').exclude(blacklisted=True)
         if only_orphans:
             queryset = queryset.filter(index__record_count=0)
         return map(serialize_work, queryset[offset:offset+limit])
