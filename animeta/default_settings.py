@@ -99,7 +99,6 @@ INSTALLED_APPS = (
     'chart',
     'api',
     'search',
-    'table',
 )
 
 LOGIN_URL = '/login/'

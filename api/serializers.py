@@ -4,7 +4,7 @@ from connect.models import get_connected_services
 from work.models import TitleMapping
 from record.models import get_episodes, Record, StatusType
 from search.models import WorkIndex
-from table.models import item_json, Period
+from animeta.utils.table import item_json, Period
 
 
 def serialize_datetime(dt):

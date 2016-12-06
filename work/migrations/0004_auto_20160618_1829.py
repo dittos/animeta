@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django.db import migrations
 
 import yaml
-from table.models import Period
+from animeta.utils.table import Period
 
 
 def fill_image_filename(apps, schema_editor):

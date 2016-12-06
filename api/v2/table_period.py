@@ -2,7 +2,7 @@ from django.core.cache import cache
 from api.v2 import BaseView
 from api.serializers import serialize_work, serialize_record
 from search.models import WorkPeriodIndex
-from table.models import Period
+from animeta.utils.table import Period
 
 
 class TablePeriodView(BaseView):
