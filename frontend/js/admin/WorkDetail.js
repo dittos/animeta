@@ -1,5 +1,6 @@
 import React from 'react';
 import { findDOMNode } from 'react-dom';
+import { withRouter } from 'react-router';
 import {
   Table,
   Form,
@@ -40,6 +41,10 @@ class WorkDetail extends React.Component {
     return (
       <div>
         <h2>{work.title}</h2>
+
+        <div>
+          <Button bsStyle="danger" onClick={this._blacklist}>Blacklist</Button>
+        </div>
 
         <Table>
           <thead>
@@ -159,6 +164,14 @@ class WorkDetail extends React.Component {
       alert(e.message);
     });
   };
+
+  _blacklist = () => {
+    API.editWork(this.state.work.id, {
+      blacklisted: true
+    }).then(() => {
+      this.props.router.push('/');
+    });
+  };
 }
 
-export default WorkDetail;
+export default withRouter(WorkDetail);

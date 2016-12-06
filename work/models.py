@@ -9,6 +9,7 @@ class Work(models.Model):
     raw_metadata = models.TextField(null=True)
     image_filename = models.CharField(max_length=100, null=True, blank=False)
     original_image_filename = models.CharField(max_length=100, null=True, blank=False)
+    blacklisted = models.BooleanField(default=False)
 
     @property
     def popularity(self):

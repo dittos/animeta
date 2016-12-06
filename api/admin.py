@@ -24,7 +24,7 @@ class WorksView(BaseAdminView):
         only_orphans = request.GET.get('orphans') == '1'
         offset = int(request.GET.get('offset', 0))
         limit = 50
-        queryset = Work.objects.order_by('-id')
+        queryset = Work.objects.order_by('-id').exclude(blacklisted=True)
         if only_orphans:
             queryset = queryset.filter(index__record_count=0)
         return map(serialize_work, queryset[offset:offset+limit])
@@ -78,6 +78,10 @@ class WorkView(BaseAdminView):
             self._edit_metadata(id, payload['rawMetadata'])
         if 'crawlImage' in payload:
             self._crawl_image(id, payload['crawlImage']['source'], payload['crawlImage'])
+        if 'blacklisted' in payload:
+            work = Work.objects.get(pk=id)
+            work.blacklisted = payload['blacklisted']
+            work.save()
         return self.get(request, id)
 
     def _set_primary_title_mapping(self, primary_title_mapping_id):
