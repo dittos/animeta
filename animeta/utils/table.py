@@ -75,7 +75,7 @@ def get_schedule(item, period):
 def _get_schedule(schedule, period):
     if not schedule:
         return None
-    if isinstance(schedule, str):
+    if isinstance(schedule, basestring):
         date = parse_datetime(schedule, period)
         broadcasts = None
     elif len(schedule) == 1:
