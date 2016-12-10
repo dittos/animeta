@@ -1,0 +1,8 @@
+root = true
+
+[*.{js,py}]
+indent_style = space
+indent_size = 4
+
+[frontend/js/admin/**.js]
+indent_size = 2
