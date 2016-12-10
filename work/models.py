@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.contrib.postgres.fields import JSONField
 from django.utils.http import urlquote
 import yaml
 
@@ -7,6 +8,7 @@ import yaml
 class Work(models.Model):
     title = models.CharField(max_length=100, unique=True)
     raw_metadata = models.TextField(null=True)
+    metadata = JSONField(null=True)
     image_filename = models.CharField(max_length=100, null=True, blank=False)
     original_image_filename = models.CharField(max_length=100, null=True, blank=False)
     blacklisted = models.BooleanField(default=False)
@@ -14,12 +16,6 @@ class Work(models.Model):
     @property
     def popularity(self):
         return self.record_set.count()
-
-    @property
-    def metadata(self):
-        if not self.raw_metadata:
-            return None
-        return yaml.load(self.raw_metadata)
 
     def __unicode__(self):
         return self.title

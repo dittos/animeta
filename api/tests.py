@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import uuid
+
+import yaml
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
 import mock
@@ -884,6 +886,7 @@ studio: Feel
 ann_id: 16329
 image: ann16329.jpg
 website: http://www.tbs.co.jp/anime/oregairu/'''
+        work1.metadata = yaml.load(work1.raw_metadata)
         work1.save()
 
         work2_id = context.new_record(work_title='B')['work_id']
@@ -903,6 +906,7 @@ studio: 타츠노코
 website: http://www.ntv.co.jp/GC_insight/
 ann_id: 16697
 image: ann16697.jpg'''
+        work2.metadata = yaml.load(work2.raw_metadata)
         work2.save()
 
         work3_id = context.new_record(work_title='C')['work_id']
@@ -924,6 +928,7 @@ image: ann16098.jpg
 source: game
 studio: A-1 픽쳐스
 website: http://imas-cinderella.com/'''
+        work3.metadata = yaml.load(work3.raw_metadata)
         work3.save()
 
         indexer.run()

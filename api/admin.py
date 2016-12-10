@@ -121,10 +121,11 @@ class WorkView(BaseAdminView):
         work = Work.objects.get(pk=id)
         # Verify yaml
         try:
-            yaml.load(raw_metadata)
+            metadata = yaml.load(raw_metadata)
         except yaml.YAMLError as e:
             self.raise_error('YAML parse failed: ' + str(e), status=400)
         work.raw_metadata = raw_metadata
+        work.metadata = metadata
         work.save()
 
     def _crawl_image(self, id, source, options):
