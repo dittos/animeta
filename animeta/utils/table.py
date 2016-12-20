@@ -36,6 +36,15 @@ class Period(object):
 
 
 def item_json(work, item, period):
+    '''
+    - Add metadata_json field
+    - Use first period if multiple periods exist
+    - ISO8601 MonthDay: "--1225"
+    - Cannot remove post-processing (?)
+    - studio -> studios
+    - ...
+    - WorkIndex id reuse (upsert, not delete+insert)
+    '''
     data = {}
 
     title = item.get('title')
