@@ -1,18 +1,17 @@
 import os
+import uuid
 import requests
 from xml.etree import ElementTree
 from django.conf import settings
 from wand.image import Image
 
 
-def download_hummingbird_poster(html_url):
-    info = requests.get(html_url + '.json')
-    info = info.json()['anime']
-    fn = info['id'] + '.jpg'
-    imgpath = os.path.join(settings.MEDIA_ROOT, fn)
+def download_poster(url):
+    filename = uuid.uuid4().hex
+    imgpath = os.path.join(settings.MEDIA_ROOT, filename)
     with open(imgpath, 'wb') as fp:
-        fp.write(requests.get(info['poster_image']).content)
-        return fn
+        fp.write(requests.get(url).content)
+        return filename
 
 
 def download_ann_poster(ann_id):

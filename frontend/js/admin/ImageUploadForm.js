@@ -7,7 +7,7 @@ import {
 
 const ImageSources = {
   ANN: 'ann',
-  HUMMINGBIRD: 'hummingbird',
+  URL: 'url',
 };
 
 class ImageUploadForm extends React.Component {
@@ -30,7 +30,7 @@ class ImageUploadForm extends React.Component {
           activeKey={source}
           onSelect={this._setSource}>
           <NavItem eventKey={ImageSources.ANN}>ANN</NavItem>
-          <NavItem eventKey={ImageSources.HUMMINGBIRD}>Hummingbird</NavItem>
+          <NavItem eventKey={ImageSources.URL}>URL</NavItem>
         </Nav>
         {source === ImageSources.ANN && (
           <span>
@@ -43,13 +43,13 @@ class ImageUploadForm extends React.Component {
             />
           </span>
         )}
-        {source === ImageSources.HUMMINGBIRD && (
+        {source === ImageSources.URL && (
           <span>
-            Download from Hummingbird:
+            Download from URL:
             <input
-              value={options.hummingbirdUrl}
+              value={options.url}
               onChange={e => this.setState({ options: {
-                hummingbirdUrl: e.target.value
+                url: e.target.value
               } })}
             />
           </span>
@@ -69,8 +69,8 @@ class ImageUploadForm extends React.Component {
       case ImageSources.ANN:
         options.annId = '';
         break;
-      case ImageSources.HUMMINGBIRD:
-        options.hummingbirdUrl = '';
+      case ImageSources.URL:
+        options.url = '';
         break;
       default:
         break;

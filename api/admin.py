@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models, transaction
 
-from animeta.utils.poster import download_ann_poster, generate_thumbnail, download_hummingbird_poster
+from animeta.utils.poster import download_ann_poster, generate_thumbnail, download_poster
 from api.serializers import serialize_work
 from api.v2 import BaseView
 from search.models import WorkIndex
@@ -136,9 +136,9 @@ class WorkView(BaseAdminView):
             if work.original_image_filename:
                 work.image_filename = generate_thumbnail(work.original_image_filename, remove_ann_watermark=True)
                 work.save()
-        elif source == 'hummingbird':
-            hummingbird_url = options['hummingbirdUrl']
-            work.original_image_filename = download_hummingbird_poster(hummingbird_url)
+        elif source == 'url':
+            url = options['url']
+            work.original_image_filename = download_poster(url)
             if work.original_image_filename:
                 work.image_filename = generate_thumbnail(work.original_image_filename)
                 work.save()
