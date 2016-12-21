@@ -99,7 +99,7 @@ var GlobalHeader = React.createClass({
     },
     render() {
         var Link = this.props.useRouterLink ? CompatLink : 'a';
-        const showNotice = false;
+        const showNotice = true;
         return <div className={Styles.container}>
             <Layout.CenteredFullWidth className={Styles.header}>
                 <Layout.LeftRight className={Styles.headerInner}
