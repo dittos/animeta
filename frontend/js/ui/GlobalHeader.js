@@ -111,7 +111,7 @@ var GlobalHeader = React.createClass({
                     <i className="fa fa-bell" />
                 </span>
                 <Link href="/table/" className={Styles.noticeText}>
-                    <b>2016년 10월 신작</b>이 업데이트 됐습니다.
+                    2017년 1월 신작이 업데이트!
                 </Link>
                 <Link href="/table/" className={Styles.noticeAction}>
                     보러가기!
