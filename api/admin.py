@@ -8,7 +8,7 @@ from django.db import models, transaction
 from animeta.utils.poster import download_ann_poster, generate_thumbnail, download_poster
 from api.serializers import serialize_work
 from api.v2 import BaseView
-from search.models import WorkIndex
+from search.models import WorkIndex, WorkAttributeIndex
 from work.models import Work, TitleMapping, normalize_title, get_or_create_work
 
 
@@ -174,3 +174,8 @@ class TitleMappingView(BaseAdminView):
         if mapping.record_count == 0:
             mapping.delete()
         return {'ok': True}
+
+
+class StudiosView(BaseAdminView):
+    def get(self, request):
+        return [attr.value for attr in WorkAttributeIndex.objects.filter(key='studio').all()]

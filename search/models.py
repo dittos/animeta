@@ -21,6 +21,11 @@ class WorkPeriodIndex(models.Model):
     work = models.ForeignKey(Work)
     is_first_period = models.BooleanField()
 
+
+class WorkAttributeIndex(models.Model):
+    key = models.CharField(max_length=20, db_index=True)
+    value = models.TextField()
+
 FIRSTS = u'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ'
 MIDDLES = (
     u'ㅏ', u'ㅐ', u'ㅑ', u'ㅒ', u'ㅓ', u'ㅔ', u'ㅕ', u'ㅖ', u'ㅗ', u'ㅗㅏ',

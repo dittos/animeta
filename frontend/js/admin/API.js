@@ -109,3 +109,7 @@ export function searchWork(q, {minRecordCount = 2}) {
   params.append('min_record_count', minRecordCount);
   return fetchWithSession(`/api/v2/search?${params}`);
 }
+
+export function getStudios() {
+  return fetchWithSession('/api/admin/studios');
+}

@@ -1,7 +1,8 @@
+import collections
 from django.db import transaction, models
 from work.models import Work, TitleMapping
 from search.models import WorkIndex, WorkTitleIndex, \
-    WorkPeriodIndex, make_key
+    WorkPeriodIndex, WorkAttributeIndex, make_key
 
 
 def add_ranks(objects):
@@ -19,9 +20,12 @@ def add_ranks(objects):
 def run():
     WorkIndex.objects.all().delete()
     WorkPeriodIndex.objects.all().delete()
+    WorkAttributeIndex.objects.all().delete()
 
     objects = []
     period_objects = []
+    attr_objects = []
+    attr_map = collections.defaultdict(set)
     for work in Work.objects.annotate(record_count=models.Count('record')):
         objects.append(WorkIndex(
             work_id=work.id,
@@ -39,9 +43,34 @@ def run():
                     is_first_period=is_first,
                 ))
                 is_first = False
+            studios = metadata.get('studio')
+            if isinstance(studios, basestring):
+                studios = [studios]
+            if studios:
+                studio_set = attr_map['studio']
+                for studio in studios:
+                    if studio not in studio_set:
+                        attr_objects.append(WorkAttributeIndex(key='studio', value=studio))
+                        studio_set.add(studio)
+            schedule_jp = metadata.get('schedule')
+            if schedule_jp:
+                if not isinstance(schedule_jp, basestring):
+                    if len(schedule_jp) == 2:
+                        broadcasts = schedule_jp[1]
+                    else:
+                        broadcasts = schedule_jp[0]
+                    if broadcasts and isinstance(broadcasts, basestring):
+                        broadcasts = [broadcasts]
+                    broadcast_set = attr_map['broadcast']
+                    for broadcast in broadcasts:
+                        if broadcast not in broadcast_set:
+                            attr_objects.append(WorkAttributeIndex(key='broadcast', value=broadcast))
+                            broadcast_set.add(broadcast)
+
     add_ranks(objects)
     WorkIndex.objects.bulk_create(objects)
     WorkPeriodIndex.objects.bulk_create(period_objects)
+    WorkAttributeIndex.objects.bulk_create(attr_objects)
 
     objects = []
     for mapping in TitleMapping.objects.all():
