@@ -227,11 +227,13 @@ var Work = React.createClass({
         $(window).off('resize', this._relayout);
     },
     render() {
-        var work = this.props.work;
+        const work = this.props.work;
+        const isSpecial = util.isSpecialWork(work);
         return <Layout.Stack>
             <div>
                 <div className="work-header"
                     style={getCoverImageStyle(work)}>
+                    {isSpecial && <div className="work-header-special" />}
                     <Grid.Row>
                         <Grid.Column size={9}>
                             <h1 className="title">{work.title}</h1>

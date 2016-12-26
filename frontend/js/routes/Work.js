@@ -1,6 +1,7 @@
 import React from 'react';
 import WorkViews from '../ui/WorkViews';
 import {App} from '../layouts';
+import {isSpecialWork} from '../util';
 
 const POSTS_PER_PAGE = 10;
 
@@ -45,7 +46,13 @@ function Work({data, writeData, loader}) {
 }
 
 export default {
-    component: App(Work),
+    component: (props) => {
+        const Component = App(Work);
+        return <Component
+            {...props}
+            globalHeaderProps={{mobileSpecial: isSpecialWork(props.data.work)}}
+        />;
+    },
 
     async load({ params, loader }) {
         const {title, episode} = params;

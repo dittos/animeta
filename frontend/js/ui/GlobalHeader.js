@@ -90,6 +90,45 @@ function CompatLink(linkProps) {
     return <RouterLink to={href} {...props} />;
 }
 
+class Header extends React.Component {
+    state = {
+        transparent: true,
+    };
+
+    componentDidMount() {
+        $(document).on('scroll', this._onScroll);
+    }
+
+    componentWillUnmount() {
+        $(document).off('scroll', this._onScroll);
+    }
+
+    render() {
+        const { mobileSpecial, children } = this.props;
+        return (
+            <Layout.CenteredFullWidth className={mobileSpecial && this.state.transparent ? Styles.mobileSpecialHeader : Styles.header}>
+                {children}
+            </Layout.CenteredFullWidth>
+        );
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return nextState.transparent !== this.state.transparent ||
+            nextProps.mobileSpecial !== this.props.mobileSpecial;
+    }
+
+    _onScroll = () => {
+        if (!this.props.mobileSpecial)
+            return;
+
+        if ($(document).scrollTop() < 150) {
+            this.setState({ transparent: true });
+        } else {
+            this.setState({ transparent: false });
+        }
+    };
+}
+
 var GlobalHeader = React.createClass({
     getInitialState() {
         return {
@@ -98,15 +137,16 @@ var GlobalHeader = React.createClass({
         };
     },
     render() {
-        var Link = this.props.useRouterLink ? CompatLink : 'a';
+        const { useRouterLink, mobileSpecial = false } = this.props;
+        const Link = useRouterLink ? CompatLink : 'a';
         const showNotice = true;
-        return <div className={Styles.container}>
-            <Layout.CenteredFullWidth className={Styles.header}>
+        return <div className={mobileSpecial ? Styles.mobileSpecialContainer : Styles.container}>
+            <Header mobileSpecial={mobileSpecial}>
                 <Layout.LeftRight className={Styles.headerInner}
                     left={this._renderLeft(Link)}
                     right={this._renderRight(Link)} />
-            </Layout.CenteredFullWidth>
-            {showNotice && <Layout.CenteredFullWidth className={Styles.notice}>
+            </Header>
+            {showNotice && !mobileSpecial && <Layout.CenteredFullWidth className={Styles.notice}>
                 <span className={Styles.noticeLabel}>
                     <i className="fa fa-bell" />
                 </span>

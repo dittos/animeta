@@ -5,14 +5,33 @@
     padding-top: @nav-height;
 }
 
-:local(.header) {
-    background-color: @color-primary;
+:local(.mobileSpecialContainer) {
+    @media (min-width: 481px) {
+        padding-top: @nav-height;
+    }
+}
+
+:local(.transparentHeader) {
     line-height: 1;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: @z-header;
+    transition: 0.2s ease-in-out background-color;
+}
+
+:local(.mobileSpecialHeader) {
+    composes: transparentHeader;
+
+    @media (min-width: 481px) {
+        background-color: @color-primary;
+    }
+}
+
+:local(.header) {
+    composes: transparentHeader;
+    background-color: @color-primary;
 }
 
 :local(.headerInner) {

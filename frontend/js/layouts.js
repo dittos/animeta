@@ -6,6 +6,7 @@ export function App(Component) {
         <GlobalHeader
             currentUser={props.data.currentUser}
             useRouterLink={true}
+            {...props.globalHeaderProps}
         />
         <Component {...props} />
     </div>;
