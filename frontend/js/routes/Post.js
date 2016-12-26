@@ -1,6 +1,6 @@
 import React from 'react';
 import WorkViews from '../ui/WorkViews';
-import {getStatusDisplay} from '../util';
+import {getStatusDisplay, isSpecialWork} from '../util';
 import {App} from '../layouts';
 
 const POSTS_PER_PAGE = 10;
@@ -63,8 +63,14 @@ var Post = React.createClass({
 });
 
 export default {
-    component: App(Post),
-    
+    component: (props) => {
+        const Component = App(Post);
+        return <Component
+            {...props}
+            globalHeaderProps={{mobileSpecial: isSpecialWork(props.data.work)}}
+        />;
+    },
+
     async load({ params, loader }) {
         const {id} = params;
         const [currentUser, post, chart] = await Promise.all([

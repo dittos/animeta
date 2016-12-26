@@ -114,7 +114,8 @@ class Header extends React.Component {
 
     shouldComponentUpdate(nextProps, nextState) {
         return nextState.transparent !== this.state.transparent ||
-            nextProps.mobileSpecial !== this.props.mobileSpecial;
+            nextProps.mobileSpecial !== this.props.mobileSpecial ||
+            nextProps.children !== this.props.children;
     }
 
     _onScroll = () => {
@@ -147,14 +148,12 @@ var GlobalHeader = React.createClass({
                     right={this._renderRight(Link)} />
             </Header>
             {showNotice && !mobileSpecial && <Layout.CenteredFullWidth className={Styles.notice}>
-                <span className={Styles.noticeLabel}>
-                    <i className="fa fa-bell" />
-                </span>
-                <Link href="/table/" className={Styles.noticeText}>
-                    2017년 1월 신작이 업데이트!
+                <Link href="/table/" className={Styles.noticeLink}>
+                    <b>2017년 1월</b> 신작
                 </Link>
-                <Link href="/table/" className={Styles.noticeAction}>
-                    보러가기!
+                <span className={Styles.noticeSeparator}>&ndash;</span>
+                <Link href="/works/%EB%84%88%EC%9D%98%20%EC%9D%B4%EB%A6%84%EC%9D%80./" className={Styles.noticeLink}>
+                    <b>너의 이름은.</b> 국내 개봉
                 </Link>
             </Layout.CenteredFullWidth>}
         </div>;

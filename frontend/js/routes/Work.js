@@ -12,7 +12,9 @@ function Work({data, writeData, loader}) {
         episode,
         posts,
         hasMorePosts,
+        currentUser,
     } = data;
+    const isSpecial = isSpecialWork(work);
 
     async function loadMorePosts() {
         var params = {count: POSTS_PER_PAGE + 1};
@@ -27,14 +29,22 @@ function Work({data, writeData, loader}) {
         });
     }
 
+    function applyRecord(record) {
+        writeData(data => {
+            data.work.record = record;
+        });
+    }
+
     return <WorkViews.Work
         work={work}
         chart={chart}
+        currentUser={currentUser}
+        onRecordChange={applyRecord}
     >
-        <WorkViews.Episodes
+        {!isSpecial && <WorkViews.Episodes
             work={work}
             activeEpisodeNumber={episode}
-        />
+        />}
         <WorkViews.WorkIndex
             work={work}
             episode={episode}

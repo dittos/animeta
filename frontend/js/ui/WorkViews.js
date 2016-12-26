@@ -11,6 +11,9 @@ var WeeklyChart = require('./WeeklyChart');
 var util = require('../util');
 import PostComment from './PostComment';
 import LoadMore from './LoadMore';
+import SpecialWork from './SpecialWork';
+import SpecialWorkStatus from './SpecialWorkStatus';
+import LoginDialog from '../ui/LoginDialog';
 
 function fixTitle(title) {
     // &lt;b&gt;...&lt;b&gt; -> <b>...</b>
@@ -238,7 +241,7 @@ var Work = React.createClass({
                         <Grid.Column size={9}>
                             <h1 className="title">{work.title}</h1>
                             <div className="stats">
-                                {work.rank &&
+                                {!isSpecial && work.rank &&
                                     <span className="stat stat-rank">
                                         <i className="fa fa-bar-chart" />
                                         전체 {work.rank}위
@@ -248,7 +251,14 @@ var Work = React.createClass({
                                     {work.record_count}명이 기록 남김
                                 </span>
                             </div>
-                            <StatusButton work={work} />
+                            {isSpecial && !work.record ?
+                                <SpecialWorkStatus
+                                    work={work}
+                                    onInterestedClick={this._markInterested}
+                                    onWatchedClick={this._markWatched}
+                                /> :
+                                <StatusButton work={work} />
+                            }
                         </Grid.Column>
                     </Grid.Row>
                 </div>
@@ -277,6 +287,33 @@ var Work = React.createClass({
         var nextState = {showSidebar: width > 480};
         if (this.state.showSidebar != nextState.showSidebar)
             this.setState(nextState);
+    },
+    _markInterested() {
+        const currentUser = this.props.currentUser;
+
+        if (!currentUser) {
+            alert('먼저 로그인 해 주세요.');
+            LoginDialog.open();
+            return;
+        }
+
+        $.post(`/api/v2/users/${encodeURIComponent(currentUser.name)}/records`, {
+            work_title: this.props.work.title,
+            status_type: 'interested',
+        }).then(result => {
+            this.props.onRecordChange(result.record);
+        });
+    },
+    _markWatched() {
+        const currentUser = this.props.currentUser;
+
+        if (!currentUser) {
+            alert('먼저 로그인 해 주세요.');
+            LoginDialog.open();
+            return;
+        }
+
+        location.href = `/records/add-simple/${this.props.work.id}/`;
     }
 });
 
@@ -309,6 +346,7 @@ var WorkIndex = React.createClass({
             hasMorePosts,
             excludePostID,
         } = this.props;
+        const isSpecial = util.isSpecialWork(work);
 
         var videoQuery = work.title;
         if (episode) {
@@ -318,7 +356,8 @@ var WorkIndex = React.createClass({
             posts = posts.filter(post => post.id !== excludePostID);
         }
         return <div>
-            <VideoSearchResult query={videoQuery} />
+            {!isSpecial && <VideoSearchResult query={videoQuery} />}
+            {isSpecial && <SpecialWork />}
             {posts && posts.length > 0 && <div className="section section-post">
                 <h2 className="section-title"><i className="fa fa-comment" /> 감상평</h2>
                 {posts.map(post => <Post post={post} key={post.id} />)}
