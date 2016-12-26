@@ -36,7 +36,7 @@ def run():
         metadata = work.metadata
         if metadata:
             is_first = True
-            for period in metadata['periods']:
+            for period in metadata.get('periods', []):
                 period_objects.append(WorkPeriodIndex(
                     period=period,
                     work_id=work.id,
