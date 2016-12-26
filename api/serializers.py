@@ -96,6 +96,9 @@ def serialize_work(work, viewer=None, full=False):
             pass
     metadata = work.metadata
     if metadata:
-        period = Period.parse(metadata['periods'][0])
+        if 'periods' in metadata:
+            period = Period.parse(metadata['periods'][0])
+        else:
+            period = None
         data['metadata'] = item_json(work, metadata, period)
     return data

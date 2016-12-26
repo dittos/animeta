@@ -68,7 +68,8 @@ def item_json(work, item, period):
         studio = [studio]
     data['studios'] = studio
 
-    data['source'] = item['source']
+    if 'source' in item:
+        data['source'] = item['source']
     data['schedule'] = get_schedule(item, period)
     return data
 
