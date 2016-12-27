@@ -55,9 +55,10 @@ function Work({data, writeData, loader}) {
     </WorkViews.Work>;
 }
 
+const Component = App(Work);
+
 export default {
     component: (props) => {
-        const Component = App(Work);
         return <Component
             {...props}
             globalHeaderProps={{mobileSpecial: isSpecialWork(props.data.work)}}

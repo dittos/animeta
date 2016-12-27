@@ -62,9 +62,10 @@ var Post = React.createClass({
     }
 });
 
+const Component = App(Post);
+
 export default {
     component: (props) => {
-        const Component = App(Post);
         return <Component
             {...props}
             globalHeaderProps={{mobileSpecial: isSpecialWork(props.data.work)}}
