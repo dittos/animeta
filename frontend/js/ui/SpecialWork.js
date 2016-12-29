@@ -16,7 +16,7 @@ class SpecialWork extends React.Component {
                         정식 개봉일
                     </div>
                     <div className={Styles.sectionContent}>
-                        2017. 1. 7. (토)
+                        2017. 1. 4. (수)
                     </div>
                 </div>
 
