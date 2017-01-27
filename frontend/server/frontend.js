@@ -4,8 +4,8 @@ import cookieParser from 'cookie-parser';
 import csurf from 'csurf';
 import httpProxy from 'http-proxy';
 import now from 'performance-now';
-import {createRenderStream} from 'react-dom-gen';
 import serializeJS from 'serialize-javascript';
+import ReactDOMServer from 'react-dom/server';
 import Backend, {HttpNotFound} from './backend';
 import renderFeed from './renderFeed';
 import assetFilenames from '../assets.json';
@@ -246,7 +246,7 @@ server.get('*', (req, res, next) => {
             meta,
             stylesheets: [assetFilenames.index.css],
             scripts: [assetFilenames.index.js],
-        }, createRenderStream(element), err => {
+        }, ReactDOMServer.renderToString(element), err => {
             next(err);
         });
     }).catch(err => {
