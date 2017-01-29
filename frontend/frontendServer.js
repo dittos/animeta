@@ -18,7 +18,6 @@ require('css-modules-require-hook')({
         return _result;
     }
 });
-require('moment').locale('ko');
 process.env = Object.assign({}, process.env);
 var app = require('./server/frontend');
 var port = process.env.PORT || 3000;

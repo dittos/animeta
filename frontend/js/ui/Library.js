@@ -1,6 +1,9 @@
-var _ = require('lodash');
+var sortBy = require('lodash/sortBy');
 var React = require('react');
-var moment = require('moment');
+var formatDate = require('date-fns/format');
+var diffDays = require('date-fns/difference_in_calendar_days');
+var diffWeeks = require('date-fns/difference_in_calendar_weeks');
+var diffMonths = require('date-fns/difference_in_calendar_months');
 var {connect} = require('react-redux');
 var {Link, withRouter} = require('react-router');
 var util = require('../util');
@@ -8,9 +11,8 @@ var RecordStore = require('../store/RecordStore');
 var CategoryStore = require('../store/CategoryStore');
 
 function getDateHeader(record) {
-    var date = moment(record.updated_at).startOf('day');
-    var today = moment().startOf('day');
-    var days = today.diff(date, 'days');
+    const now = new Date();
+    var days = diffDays(now, record.updated_at);
     if (days <= 60) {
         if (days < 1)
             return '오늘';
@@ -20,16 +22,16 @@ function getDateHeader(record) {
             return '그저께';
         else if (days < 4)
             return '그끄저께';
-        else if (date.isSame(today, 'week'))
+        else if (diffWeeks(now, record.updated_at) === 0)
             return '이번 주';
-        else if (date.isSame(today.clone().subtract(1, 'week'), 'week'))
+        else if (diffWeeks(now, record.updated_at) === 1)
             return '지난 주';
-        else if (date.isSame(today, 'month'))
+        else if (diffMonths(now, record.updated_at) === 0)
             return '이번 달';
-        else if (date.isSame(today.clone().subtract(1, 'month'), 'month'))
+        else if (diffMonths(now, record.updated_at) === 1)
             return '지난 달';
     }
-    return date.format('YYYY/MM');
+    return formatDate(record.updated_at, 'YYYY/MM');
 }
 
 function getIndexChar(s) {
@@ -54,7 +56,7 @@ function getIndexChar(s) {
 }
 
 function groupRecordsByTitle(records) {
-    records = _.sortBy(records, record => getIndexChar(record.title));
+    records = sortBy(records, record => getIndexChar(record.title));
     var groups = [];
     var lastKey, group;
     records.forEach(record => {
@@ -75,7 +77,7 @@ function groupRecordsByTitle(records) {
 }
 
 function groupRecordsByDate(records) {
-    records = _.sortBy(records, record => -record.updated_at);
+    records = sortBy(records, record => -record.updated_at);
     var groups = [];
     var unknownGroup = [];
     var lastKey, group;

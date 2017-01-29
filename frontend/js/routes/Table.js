@@ -1,6 +1,7 @@
 import React from 'react';
 import $ from 'jquery';
-import _ from 'lodash';
+import sortBy from 'lodash/sortBy';
+import some from 'lodash/some';
 import {Link} from 'nuri';
 import * as util from '../util';
 import {App} from '../layouts';
@@ -228,7 +229,7 @@ var Table = React.createClass({
     _onSort(sort) {
         this.props.writeData(data => {
             data.ordering = sort;
-            data.items = _.sortBy(data.items, comparatorMap[sort]);
+            data.items = sortBy(data.items, comparatorMap[sort]);
         });
     },
 
@@ -267,8 +268,8 @@ export default {
         return {
             currentUser,
             period,
-            items: _.sortBy(items, scheduleComparator),
-            containsKRSchedule: _.some(items, i => i.metadata.schedule.kr && i.metadata.schedule.kr.date),
+            items: sortBy(items, scheduleComparator),
+            containsKRSchedule: some(items, i => i.metadata.schedule.kr && i.metadata.schedule.kr.date),
             ordering: 'schedule',
         };
     },

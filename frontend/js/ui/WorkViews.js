@@ -2,8 +2,8 @@
 var $ = require('jquery');
 var React = require('react');
 var cx = require('classnames');
-var moment = require('moment');
 import {Link} from 'nuri';
+import {default as dateFnsFormat} from 'date-fns/format';
 var TimeAgo = require('./TimeAgo');
 var Grid = require('./Grid');
 var Layout = require('./Layout');
@@ -177,7 +177,7 @@ var Sidebar = React.createClass({
                         ' / ' + util.SOURCE_TYPE_MAP[metadata.source]}
                 </p>
                 {metadata.schedule.jp &&
-                    <p><i className="fa fa-calendar" /> 첫 방영: {moment(metadata.schedule.jp.date).format('YYYY-MM-DD')}</p>}
+                    <p><i className="fa fa-calendar" /> 첫 방영: {dateFnsFormat(metadata.schedule.jp.date, 'YYYY-MM-DD')}</p>}
                 <div className="links">
                 {metadata.links.website &&
                     <p><i className="fa fa-globe" /> <a href={metadata.links.website} target="_blank">공식 사이트</a></p>}

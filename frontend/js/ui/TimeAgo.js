@@ -1,21 +1,37 @@
-var React = require('react');
-var moment = require('moment');
+import React from 'react';
+import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
+import koLocale from 'date-fns/locale/ko';
 
-var TimeAgo = React.createClass({
-    render: function() {
-        var m = moment(this.props.time);
-        return <span title={m.format('llll')}>{m.fromNow()}</span>;
-    },
+class TimeAgo extends React.Component {
+    state = {};
 
-    componentDidMount: function() {
+    render() {
+        return <span title={this.state.title}>
+            {distanceInWordsToNow(this.props.time, {addSuffix: true, locale: koLocale})}
+        </span>;
+    }
+
+    componentDidMount() {
         this._timer = setInterval(this.forceUpdate.bind(this), 60 * 1000);
-    },
+        this._syncState(this.props);
+    }
 
-    componentWillUnmount: function() {
+    componentWillUnmount() {
         if (this._timer) {
             clearInterval(this._timer);
         }
     }
-});
+
+    componentWillReceiveProps(nextProps) {
+        this._syncState(nextProps);
+    }
+
+    _syncState = (props) => {
+        // Store title in state to workaround difference between server and client
+        this.setState({
+            title: new Date(props.time).toLocaleString(),
+        });
+    };
+}
 
 module.exports = TimeAgo;

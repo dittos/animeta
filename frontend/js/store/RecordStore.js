@@ -1,4 +1,8 @@
-var _ = require('lodash');
+import forEach from 'lodash/forEach';
+import size from 'lodash/size';
+import countBy from 'lodash/countBy';
+import filter from 'lodash/filter';
+import sort from 'lodash/sortBy';
 
 var reducers = {
     loadRecords(_records, {records}) {
@@ -29,7 +33,7 @@ var reducers = {
         delete _records[recordID];
     },
     removeCategory(_records, {categoryID}) {
-        _.each(_records, record => {
+        forEach(_records, record => {
             if (record.category_id == categoryID)
                 record.category_id = 0;
         });
@@ -48,32 +52,31 @@ function recordReducer(state = {}, action) {
 
 module.exports = Object.assign(recordReducer, {
     getCount(state) {
-        return _.size(state.record);
+        return size(state.record);
     },
 
     getCategoryStats(state) {
-        return _.countBy(state.record, record => record.category_id || 0);
+        return countBy(state.record, record => record.category_id || 0);
     },
 
     getStatusTypeStats(state) {
-        return _.countBy(state.record, 'status_type');
+        return countBy(state.record, 'status_type');
     },
 
     query(state, statusType, categoryId, sortBy) {
-        var chain = _(state.record);
+        var records = state.record;
         if (statusType) {
-            chain = chain.filter(record => record.status_type == statusType);
+            records = filter(records, record => record.status_type == statusType);
         }
         if (categoryId === 0 || categoryId) {
-            chain = chain.filter(record => (record.category_id || 0) == categoryId);
+            records = filter(records, record => (record.category_id || 0) == categoryId);
         }
-        chain = chain.values();
         if (sortBy == 'date') {
-            chain = chain.sortBy('created_at').reverse();
+            records = sort(records, 'created_at').reverse();
         } else if (sortBy == 'title') {
-            chain = chain.sortBy('title');
+            records = sort(records, 'title');
         }
-        return chain.value();
+        return records;
     },
 
     get(state, id) {

@@ -1,4 +1,4 @@
-var _ = require('lodash');
+import throttle from 'lodash/throttle';
 var $ = require('jquery');
 require('../typeahead');
 
@@ -21,7 +21,7 @@ function cachingSource(source, maxSize) {
     };
 }
 
-var searchSource = cachingSource(_.throttle(function (q, cb) {
+var searchSource = cachingSource(throttle(function (q, cb) {
     $.getJSON('/api/v2/search', {q: q}, cb);
 }, 200), 20);
 
@@ -31,7 +31,7 @@ function init(node, viewOptions, sourceOptions) {
 
 function initSuggest(node) {
     return init(node, null, {
-        source: cachingSource(_.throttle(function (q, cb) {
+        source: cachingSource(throttle(function (q, cb) {
             $.getJSON('/api/v2/search/suggest', {q: q}, cb);
         }, 200), 20),
         displayKey: 'title',

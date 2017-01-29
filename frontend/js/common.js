@@ -2,10 +2,7 @@ require('babel-polyfill');
 require('react');
 
 var $ = require('jquery');
-var moment = require('moment');
 var CSRF = require('./CSRF');
-
-moment.locale('ko');
 
 function csrfSafeMethod(method) {
     // these HTTP methods do not require CSRF protection
