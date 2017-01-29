@@ -1,36 +1,37 @@
-import _ from 'lodash';
+import size from 'lodash/size';
+import countBy from 'lodash/countBy';
+import filter from 'lodash/filter';
+import sort from 'lodash/sortBy';
 import React from 'react';
 import {User as UserLayout} from '../layouts';
 import Library from '../ui/Library';
 import '../../less/library.less';
 
 function getCount(records) {
-    return _.size(records);
+    return size(records);
 }
 
 function getCategoryStats(records) {
-    return _.countBy(records, record => record.category_id || 0);
+    return countBy(records, record => record.category_id || 0);
 }
 
 function getStatusTypeStats(records) {
-    return _.countBy(records, 'status_type');
+    return countBy(records, 'status_type');
 }
 
 function filterAndSort(records, statusType, categoryId, sortBy) {
-    var chain = _(records);
     if (statusType) {
-        chain = chain.filter(record => record.status_type == statusType);
+        records = filter(records, record => record.status_type == statusType);
     }
     if (categoryId === 0 || categoryId) {
-        chain = chain.filter(record => (record.category_id || 0) == categoryId);
+        records = filter(records, record => (record.category_id || 0) == categoryId);
     }
-    chain = chain.values();
     if (sortBy == 'date') {
-        chain = chain.sortBy('created_at').reverse();
+        records = sort(records, 'created_at').reverse();
     } else if (sortBy == 'title') {
-        chain = chain.sortBy('title');
+        records = sort(records, 'title');
     }
-    return chain.value();
+    return records;
 }
 
 class User extends React.Component {
