@@ -4,7 +4,6 @@ var formatDate = require('date-fns/format');
 var diffDays = require('date-fns/difference_in_calendar_days');
 var diffWeeks = require('date-fns/difference_in_calendar_weeks');
 var diffMonths = require('date-fns/difference_in_calendar_months');
-var moment = require('moment');
 var {Link} = require('nuri');
 var util = require('../util');
 

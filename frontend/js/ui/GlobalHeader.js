@@ -26,7 +26,6 @@ var DropdownUserMenu = React.createClass({
         $(document).off('click', this._onClose);
     },
     render() {
-        const {Link} = this.props;
         return <div className={Styles.userMenu}
             onClick={e => e.stopPropagation()}>
             <RouterLink to={`/users/${this.props.user.name}/`}>기록 관리</RouterLink>

@@ -64,7 +64,6 @@ class Chart extends React.Component {
     render() {
         const {
             chart,
-            chartType,
             range,
         } = this.props.data;
         return <ChartLayout>
@@ -79,9 +78,7 @@ class Chart extends React.Component {
                     {chart.has_diff &&
                         <td className="diff">{renderDiff(item)}</td>}
                     <td className="name">
-                        {chartType === 'users'
-                            ? <a href={item.object.link}>{item.object.text}</a>
-                            : <Link to={item.object.link}>{item.object.text}</Link>}
+                        <Link to={item.object.link}>{item.object.text}</Link>
                     </td>
                     <td className="bar"><div style={{width: item.factor_percent + '%'}} /></td>
                     <td className="factor">{item.factor}</td>
