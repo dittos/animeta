@@ -1,5 +1,5 @@
 import React from 'react';
-import WorkViews from '../ui/WorkViews';
+import * as WorkViews from '../ui/WorkViews';
 import {App} from '../layouts';
 import {isSpecialWork} from '../util';
 
@@ -61,7 +61,7 @@ export default {
     component: (props) => {
         return <Component
             {...props}
-            globalHeaderProps={{mobileSpecial: isSpecialWork(props.data.work)}}
+            globalHeaderProps={{mobileSpecial: true}}
         />;
     },
 

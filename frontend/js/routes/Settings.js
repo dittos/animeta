@@ -5,7 +5,7 @@ import {
     disconnectTwitter,
     logout,
 } from '../API';
-import Layout from '../ui/Layout';
+import * as Layout from '../ui/Layout';
 import {App} from '../layouts';
 
 class ChangePassword extends React.Component {

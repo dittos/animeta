@@ -1,16 +1,17 @@
-var $ = require('jquery');
-var React = require('react');
+import $ from 'jquery';
+import React from 'react';
 import {Link as RouterLink} from 'nuri';
-var Layout = require('./Layout');
+import * as Layout from './Layout';
 var Typeahead = require('./Typeahead');
 import LoginDialog from './LoginDialog';
 import Styles from './GlobalHeader.less';
 import {getStatusDisplay} from '../util';
 
-var DropdownUserMenu = React.createClass({
-    getInitialState() {
-        return {records: null};
-    },
+class DropdownUserMenu extends React.Component {
+    state = {
+        records: null,
+    };
+
     componentDidMount() {
         $(document).on('click', this._onClose);
 
@@ -21,10 +22,12 @@ var DropdownUserMenu = React.createClass({
         }).then(records => {
             this.setState({ records });
         });
-    },
+    }
+
     componentWillUnmount() {
         $(document).off('click', this._onClose);
-    },
+    }
+
     render() {
         const {Link} = this.props;
         return <div className={Styles.userMenu}
@@ -44,17 +47,18 @@ var DropdownUserMenu = React.createClass({
                 <a href={`/users/${this.props.user.name}/`} className={Styles.quickRecordViewAll}>전체 보기</a>
             </div>}
         </div>;
-    },
-    _onClose() {
-        this.props.onClose();
     }
-});
+
+    _onClose = () => {
+        this.props.onClose();
+    };
+}
 
 function openWork(title) {
     location.href = '/works/' + encodeURIComponent(title) + '/';
 }
 
-var Search = React.createClass({
+class Search extends React.Component {
     componentDidMount() {
         Typeahead.init(this.refs.input,
             {highlight: true, hint: false}, {
@@ -77,13 +81,14 @@ var Search = React.createClass({
                     });
                 }
             });
-    },
+    }
+
     render() {
         return <div className={Styles.search}>
             <input type="search" placeholder="작품 검색" ref="input" />
         </div>;
     }
-});
+}
 
 function CompatLink(linkProps) {
     var {href, ...props} = linkProps;
@@ -130,13 +135,12 @@ class Header extends React.Component {
     };
 }
 
-var GlobalHeader = React.createClass({
-    getInitialState() {
-        return {
-            showMenu: false,
-            showUserMenu: false
-        };
-    },
+class GlobalHeader extends React.Component {
+    state = {
+        showMenu: false,
+        showUserMenu: false
+    };
+
     render() {
         const { useRouterLink, mobileSpecial = false } = this.props;
         const Link = useRouterLink ? CompatLink : 'a';
@@ -157,7 +161,8 @@ var GlobalHeader = React.createClass({
                 </Link>
             </Layout.CenteredFullWidth>}
         </div>;
-    },
+    }
+
     _renderLeft(Link) {
         return <div>
             <div className={this.state.showMenu ? Styles.menuToggleActive : Styles.menuToggleNormal}
@@ -178,7 +183,8 @@ var GlobalHeader = React.createClass({
                 <a href="/support/"><i className="fa fa-bullhorn" />{' '}버그 제보 / 건의</a>
             </div>
         </div>;
-    },
+    }
+
     _renderRight(Link) {
         var user = this.props.currentUser;
         if (user) {
@@ -201,21 +207,25 @@ var GlobalHeader = React.createClass({
                 <Link href="/signup/" className={Styles.signUpButton}>회원 가입</Link>
             </div>;
         }
-    },
-    _toggleUserMenu(event) {
+    }
+
+    _toggleUserMenu = (event) => {
         event.preventDefault();
         this.setState({showUserMenu: !this.state.showUserMenu});
-    },
-    _toggleMenu() {
+    };
+
+    _toggleMenu = () => {
         this.setState({showMenu: !this.state.showMenu});
-    },
-    _openLogin(e) {
+    };
+
+    _openLogin = (e) => {
         if (e) e.preventDefault();
         LoginDialog.open();
-    },
-    _closeLogin() {
+    };
+
+    _closeLogin = () => {
         LoginDialog.close();
-    }
-});
+    };
+}
 
 module.exports = GlobalHeader;

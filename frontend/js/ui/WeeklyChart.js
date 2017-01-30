@@ -29,4 +29,4 @@ function WeeklyChart({ data }) {
     </div>;
 }
 
-module.exports = WeeklyChart;
+export default WeeklyChart;

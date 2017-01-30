@@ -1,33 +1,58 @@
 @import "../../less/variables.less";
 
-:local(.button) {
+:local(.baseButton) {
     display: inline-block;
-    border: 1px solid fade(#000, 50%);
-    background: fade(#000, 60%);
     padding: 8px 16px;
     border-radius: 3px;
     cursor: pointer;
-
-    i { margin-right: 5px; }
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
 
     &:hover {
         box-shadow: 0 0 10px fade(#fff, 20%);
     }
 }
 
+:local(.button) {
+    composes: baseButton;
+    border: 1px solid fade(#000, 50%);
+    background: fade(#000, 60%);
+}
+
 :local(.interestedButton) {
     composes: button;
+
     i {
         color: #e67700;
     }
 }
 
-:local(.watchedButton) {
+:local(.addButton) {
     composes: button;
 
     i {
+        margin-right: 10px;
         color: @color-primary;
     }
+}
+
+:local(.editButton) {
+    composes: baseButton;
+
+    border: 1px solid @color-primary;
+    background-color: @color-primary;
+
+    i {
+        margin-right: 10px;
+        color: #fff;
+    }
+}
+
+:local(.editButtonSubtext) {
+    margin-left: 4px;
+    font-size: 13px;
+    font-weight: normal;
 }
 
 :local(.buttonSeparator) {

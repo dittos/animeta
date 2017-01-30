@@ -6,8 +6,8 @@ import {Link} from 'nuri';
 import * as util from '../util';
 import {App} from '../layouts';
 import LoginDialog from '../ui/LoginDialog';
-import Layout from '../ui/Layout';
-import Grid from '../ui/Grid';
+import * as Layout from '../ui/Layout';
+import * as Grid from '../ui/Grid';
 import Periods from '../Periods';
 import Styles from '../../less/table-period.less';
 
@@ -88,7 +88,7 @@ function getDate(value) {
     return util.zerofill(value.getMonth() + 1) + '/' + util.zerofill(value.getDate()) + ' (' + weekday + ')';
 }
 
-var StatusButton = React.createClass({
+class StatusButton extends React.Component {
     render() {
         var {record} = this.props.item;
         if (record) {
@@ -106,13 +106,13 @@ var StatusButton = React.createClass({
                 작품 추가
             </a>;
         }
-    },
+    }
 
-    _onFavorite(event) {
+    _onFavorite = (event) => {
         event.preventDefault();
         this.props.onFavorite(this.props.item);
-    }
-});
+    };
+}
 
 function Poster({item}) {
     return <div className={Styles.poster}>
@@ -192,7 +192,7 @@ function nullslast(val) {
     return [!val, val];
 }
 
-var Table = React.createClass({
+class Table extends React.Component {
     render() {
         const {
             period,
@@ -224,16 +224,16 @@ var Table = React.createClass({
                 </Grid.Row>
             </div>
         );
-    },
+    }
 
-    _onSort(sort) {
+    _onSort = (sort) => {
         this.props.writeData(data => {
             data.ordering = sort;
             data.items = sortBy(data.items, comparatorMap[sort]);
         });
-    },
+    };
 
-    _onFavorite(item) {
+    _onFavorite = (item) => {
         const currentUser = this.props.data.currentUser;
 
         if (!currentUser) {
@@ -251,8 +251,8 @@ var Table = React.createClass({
                 item.record_count++;
             });
         });
-    }
-});
+    };
+}
 
 export default {
     component: App(Table),
