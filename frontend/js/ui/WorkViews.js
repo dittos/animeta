@@ -18,27 +18,29 @@ import WeeklyChart from './WeeklyChart';
 function Sidebar({ work, chart }) {
     const metadata = work.metadata;
     return <div className="work-sidebar">
-        {work.image_url ?
-            <img className="poster" src={work.image_url} /> :
-            <div className="poster poster-empty">No Image</div>}
-        {metadata && <div>
-            <p>
-                {metadata.studios && <b>{metadata.studios.join(', ')}</b>}
-                {metadata.studios && ' 제작'}
-                {metadata.source &&
-                    ' / ' + util.SOURCE_TYPE_MAP[metadata.source]}
-            </p>
-            {metadata.schedule.jp &&
-                <p><i className="fa fa-calendar" /> 첫 방영: {dateFnsFormat(metadata.schedule.jp.date, 'YYYY-MM-DD')}</p>}
-            <div className="links">
-            {metadata.links.website &&
-                <p><i className="fa fa-globe" /> <a href={metadata.links.website} target="_blank">공식 사이트</a></p>}
-            {metadata.links.namu &&
-                <p><i className="fa fa-globe" /> <a href={metadata.links.namu} target="_blank">나무위키</a></p>}
-            {metadata.links.ann &&
-                <p><i className="fa fa-globe" /> <a href={metadata.links.ann} target="_blank">AnimeNewsNetwork (영문)</a></p>}
-            </div>
-        </div>}
+        <div className="hide-mobile">
+            {work.image_url ?
+                <img className="poster" src={work.image_url} /> :
+                <div className="poster poster-empty">No Image</div>}
+            {metadata && <div>
+                <p>
+                    {metadata.studios && <b>{metadata.studios.join(', ')}</b>}
+                    {metadata.studios && ' 제작'}
+                    {metadata.source &&
+                        ' / ' + util.SOURCE_TYPE_MAP[metadata.source]}
+                </p>
+                {metadata.schedule.jp &&
+                    <p><i className="fa fa-calendar" /> 첫 방영: {dateFnsFormat(metadata.schedule.jp.date, 'YYYY-MM-DD')}</p>}
+                <div className="links">
+                {metadata.links.website &&
+                    <p><i className="fa fa-globe" /> <a href={metadata.links.website} target="_blank">공식 사이트</a></p>}
+                {metadata.links.namu &&
+                    <p><i className="fa fa-globe" /> <a href={metadata.links.namu} target="_blank">나무위키</a></p>}
+                {metadata.links.ann &&
+                    <p><i className="fa fa-globe" /> <a href={metadata.links.ann} target="_blank">AnimeNewsNetwork (영문)</a></p>}
+                </div>
+            </div>}
+        </div>
         <h3 className="section-title">주간 인기 작품</h3>
         <WeeklyChart data={chart} />
     </div>;
@@ -64,76 +66,41 @@ function getCoverImageStyle(work) {
 }
 
 export class Work extends React.Component {
-    state = {
-        showSidebar: true
-    };
-
-    componentDidMount() {
-        this._relayout();
-        $(window).on('resize', this._relayout);
-    }
-
-    componentWillUnmount() {
-        $(window).off('resize', this._relayout);
-    }
-
     render() {
         const work = this.props.work;
-        const isSpecial = util.isSpecialWork(work);
-        return <Layout.Stack>
-            <div>
+        return <Grid.Row>
+            <Grid.Column size={9} pull="left" className="work-main-container">
                 <div className="work-header"
                     style={getCoverImageStyle(work)}>
                     <div className="work-header-special" />
-                    <Grid.Row>
-                        <Grid.Column size={9}>
-                            <h1 className="title">{work.title}</h1>
-                            <div className="stats">
-                                {!isSpecial && work.rank &&
-                                    <span className="stat stat-rank">
-                                        <i className="fa fa-bar-chart" />
-                                        전체 {work.rank}위
-                                    </span>}
-                                <span className="stat stat-users">
-                                    <i className="fa fa-user" />
-                                    {work.record_count}명이 기록 남김
-                                </span>
-                            </div>
-                            <SpecialWorkStatus
-                                work={work}
-                                record={work.record}
-                                onInterestedClick={this._markInterested}
-                            />
-                        </Grid.Column>
-                    </Grid.Row>
+                    <h1 className="title">{work.title}</h1>
+                    <div className="stats">
+                        {work.rank &&
+                            <span className="stat stat-rank">
+                                <i className="fa fa-bar-chart" />
+                                전체 {work.rank}위
+                            </span>}
+                        <span className="stat stat-users">
+                            <i className="fa fa-user" />
+                            {work.record_count}명이 기록 남김
+                        </span>
+                    </div>
+                    <SpecialWorkStatus
+                        work={work}
+                        record={work.record}
+                        onInterestedClick={this._markInterested}
+                    />
                 </div>
-                <Grid.Row>
-                    <Grid.Column size={9}
-                        className="work-content">
-                        {this.props.children}
-                        {!this.state.showSidebar &&
-                            <h3 className="section-title">주간 인기 작품</h3>}
-                        {!this.state.showSidebar &&
-                            <WeeklyChart data={this.props.chart} />}
-                    </Grid.Column>
-                </Grid.Row>
-            </div>
-            {this.state.showSidebar &&
-                <Grid.Row>
-                    <Grid.Column pull="right" size={3}>
-                        <Sidebar work={work}
-                            chart={this.props.chart} />
-                    </Grid.Column>
-                </Grid.Row>}
-        </Layout.Stack>;
+                <div className="work-content">
+                    {this.props.children}
+                </div>
+            </Grid.Column>
+            <Grid.Column size={3} pull="right">
+                <Sidebar work={work}
+                    chart={this.props.chart} />
+            </Grid.Column>
+        </Grid.Row>;
     }
-
-    _relayout = () => {
-        var width = $(window).width();
-        var nextState = {showSidebar: width > 480};
-        if (this.state.showSidebar != nextState.showSidebar)
-            this.setState(nextState);
-    };
 
     _markInterested = () => {
         const currentUser = this.props.currentUser;
@@ -180,7 +147,6 @@ export class WorkIndex extends React.Component {
             hasMorePosts,
             excludePostID,
         } = this.props;
-        const isSpecial = util.isSpecialWork(work);
 
         var videoQuery = work.title;
         if (episode) {
@@ -190,8 +156,7 @@ export class WorkIndex extends React.Component {
             posts = posts.filter(post => post.id !== excludePostID);
         }
         return <div>
-            {!isSpecial && <VideoSearch query={videoQuery} />}
-            {isSpecial && <SpecialWork />}
+            <VideoSearch query={videoQuery} />
             {posts && posts.length > 0 && <div className="section section-post">
                 <h2 className="section-title"><i className="fa fa-comment" /> 감상평</h2>
                 {posts.map(post => <Post post={post} key={post.id} />)}
