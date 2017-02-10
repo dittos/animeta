@@ -224,7 +224,8 @@
 
     .work-header {
         text-align: center;
-        padding: 40px 0;
+        // Compensate paddings removed from .work-main-container
+        padding: 40px @grid-spacing;
         background: #333;
         .title, .stats {
             text-shadow: 0 1px 0 #000;
