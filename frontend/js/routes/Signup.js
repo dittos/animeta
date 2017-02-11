@@ -3,16 +3,15 @@ import React from 'react';
 import {App} from '../layouts';
 // TODO: css module
 
-var Signup = React.createClass({
-    getInitialState() {
-        return {
-            submitted: false,
-            username: '',
-            password: '',
-            passwordCheck: '',
-            errors: null
-        };
-    },
+class Signup extends React.Component {
+    state = {
+        submitted: false,
+        username: '',
+        password: '',
+        passwordCheck: '',
+        errors: null
+    };
+
     render() {
         return <div className="signup-form" onSubmit={this._onSubmit}>
             <div className="signup-header">
@@ -40,7 +39,8 @@ var Signup = React.createClass({
                 {!this.state.submitted && <button type="submit" className="btn-signup" disabled={!this._isValid()}>회원 가입</button>}
             </form>
         </div>;
-    },
+    }
+
     _renderError() {
         if (!this.state.errors)
             return null;
@@ -50,8 +50,18 @@ var Signup = React.createClass({
         return <div className="signup-errors">
             {error}
         </div>;
-    },
-    _onSubmit(event) {
+    }
+
+    _isValid() {
+        return this.state.username.length > 0 &&
+            this.state.username.length <= 30 &&
+            this.state.username.match(/^[A-Za-z0-9_]+$/) &&
+            this.state.password.length > 0 &&
+            this.state.passwordCheck.length > 0 &&
+            this.state.passwordCheck == this.state.password;
+    }
+
+    _onSubmit = (event) => {
         event.preventDefault();
         this.setState({submitted: true});
         $.post('/api/v2/accounts', {
@@ -67,16 +77,8 @@ var Signup = React.createClass({
                     errors: result.errors
                 });
         });
-    },
-    _isValid() {
-        return this.state.username.length > 0 &&
-            this.state.username.length <= 30 &&
-            this.state.username.match(/^[A-Za-z0-9_]+$/) &&
-            this.state.password.length > 0 &&
-            this.state.passwordCheck.length > 0 &&
-            this.state.passwordCheck == this.state.password;
-    }
-});
+    };
+}
 
 export default {
     component: App(Signup),

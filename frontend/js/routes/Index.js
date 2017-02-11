@@ -3,7 +3,7 @@ import React from 'react';
 import {Link} from 'nuri';
 import * as util from '../util';
 import {App} from '../layouts';
-import Grid from '../ui/Grid';
+import * as Grid from '../ui/Grid';
 import TimeAgo from '../ui/TimeAgo';
 import WeeklyChart from '../ui/WeeklyChart';
 import PostComment from '../ui/PostComment';
@@ -11,12 +11,11 @@ import LoadMore from '../ui/LoadMore';
 import Styles from '../../less/index.less';
 // TODO: css module
 
-var Index = React.createClass({
-    getInitialState() {
-        return {
-            isLoading: false
-        };
-    },
+class Index extends React.Component {
+    state = {
+        isLoading: false,
+    };
+
     componentDidMount() {
         // Show less posts initially in mobile
         if ($(window).width() <= 480) {
@@ -24,7 +23,8 @@ var Index = React.createClass({
                 data.posts = data.posts.slice(0, 3);
             });
         }
-    },
+    }
+
     render() {
         return <Grid.Row>
             <Grid.Column size={8} pull="left">
@@ -35,14 +35,16 @@ var Index = React.createClass({
                 <WeeklyChart data={this.props.data.chart} />
             </Grid.Column>
         </Grid.Row>;
-    },
+    }
+
     _renderTimeline(posts) {
         return <div className={Styles.timeline}>
             <h2 className={Styles.sectionTitle}>최근 감상평</h2>
             {posts.map(this._renderPost)}
             <LoadMore onClick={this._loadMore} isLoading={this.state.isLoading} />
         </div>;
-    },
+    }
+
     _renderPost(post) {
         return <div className={Styles.post}>
             <div className="meta">
@@ -55,8 +57,9 @@ var Index = React.createClass({
             </div>
             <PostComment post={post} className="comment" />
         </div>;
-    },
-    async _loadMore() {
+    }
+
+    _loadMore = async () => {
         this.setState({isLoading: true});
         const result = await this.props.loader.call('/posts', {
             before_id: this.props.data.posts[this.props.data.posts.length - 1].id,
@@ -68,8 +71,8 @@ var Index = React.createClass({
         this.props.writeData(data => {
             data.posts = data.posts.concat(result);
         });
-    }
-});
+    };
+}
 
 export default {
     component: App(Index),

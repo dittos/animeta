@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from 'nuri';
 import {App} from '../layouts';
-import Layout from '../ui/Layout';
+import * as Layout from '../ui/Layout';
 // TODO: css module
 
 class Header extends React.Component {

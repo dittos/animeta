@@ -1,16 +1,16 @@
 import React from 'react';
-import WorkViews from '../ui/WorkViews';
-import {getStatusDisplay, isSpecialWork} from '../util';
+import * as WorkViews from '../ui/WorkViews';
+import {getStatusDisplay} from '../util';
 import {App} from '../layouts';
 // TODO: css module
 
 const POSTS_PER_PAGE = 10;
 
-var Post = React.createClass({
+class Post extends React.Component {
     componentDidMount() {
         // lazy load
         this._loadMorePosts();
-    },
+    }
 
     render() {
         const {
@@ -42,9 +42,9 @@ var Post = React.createClass({
                 />
             </WorkViews.Work>
         );
-    },
+    }
 
-    async _loadMorePosts() {
+    _loadMorePosts = async () => {
         const {
             work,
             posts,
@@ -60,8 +60,8 @@ var Post = React.createClass({
             data.posts = data.posts.concat(result.slice(0, POSTS_PER_PAGE));
             data.hasMorePosts = result.length > POSTS_PER_PAGE;
         });
-    }
-});
+    };
+}
 
 const Component = App(Post);
 
@@ -69,7 +69,7 @@ export default {
     component: (props) => {
         return <Component
             {...props}
-            globalHeaderProps={{mobileSpecial: isSpecialWork(props.data.work)}}
+            globalHeaderProps={{mobileSpecial: true}}
         />;
     },
 

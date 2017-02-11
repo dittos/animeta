@@ -5,32 +5,31 @@ import {Modal} from 'react-overlays';
 import Styles from './LoginDialog.less';
 import ModalStyles from './Modal.less';
 
-var LoginDialog = React.createClass({
-    statics: {
-        open() {
-            var container = document.getElementById('dialog-container');
-            if (!container) {
-                container = document.createElement('div');
-                container.id = 'dialog-container';
-                document.body.appendChild(container);
-            }
-            ReactDOM.render(<LoginDialog onClose={LoginDialog.close} />, container);
-        },
-        close() {
-            var container = document.getElementById('dialog-container');
-            if (!container)
-                return;
-            ReactDOM.unmountComponentAtNode(container);
-            document.body.removeChild(container);
+class LoginDialog extends React.Component {
+    static open() {
+        var container = document.getElementById('dialog-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'dialog-container';
+            document.body.appendChild(container);
         }
-    },
-    getInitialState() {
-        return {
-            submitted: false,
-            errors: false,
-            isTransient: true
-        };
-    },
+        ReactDOM.render(<LoginDialog onClose={LoginDialog.close} />, container);
+    }
+
+    static close() {
+        var container = document.getElementById('dialog-container');
+        if (!container)
+            return;
+        ReactDOM.unmountComponentAtNode(container);
+        document.body.removeChild(container);
+    }
+
+    state = {
+        submitted: false,
+        errors: false,
+        isTransient: true
+    };
+
     render() {
         return <Modal
             show={true}
@@ -68,8 +67,9 @@ var LoginDialog = React.createClass({
                 </form>
             </div>
         </Modal>;
-    },
-    _onSubmit(event) {
+    }
+
+    _onSubmit = (event) => {
         event.preventDefault();
         this.setState({submitted: true});
         $.post('/api/v2/auth', {
@@ -89,7 +89,7 @@ var LoginDialog = React.createClass({
                 });
             }
         });
-    }
-});
+    };
+}
 
 export default LoginDialog;

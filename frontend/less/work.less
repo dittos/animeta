@@ -1,50 +1,33 @@
 @import "base.less";
 
 .work-header {
-    background-color: #333;
-    color: #fff;
     padding: 24px 0;
     font-size: 14px;
+    border-bottom: 1px solid @color-border;
 
     .title {
         margin: 0;
         font-size: 2em;
+        color: @color-text-dark;
     }
 
     .stats {
-        color: #ccc;
+        color: @color-text-dark;
         margin: 8px 0 16px;
 
         .stat {
-            margin-right: 16px;
             i {
                 margin-right: 4px;
             }
         }
-    }
 
-    .btn-status {
-        display: inline-block;
-        cursor: pointer;
-        padding: 8px 16px;
-        border-radius: 5px;
-        text-decoration: none;
-        font-weight: bold;
-        background: @color-main;
-        color: #fff;
-        i {
-            margin-right: 10px;
-        }
-        .episode {
-            font-weight: normal;
-            font-size: 0.9em;
-            margin-left: 4px;
+        .stat-rank {
+            margin-right: 16px;
         }
     }
 }
 
 .work-sidebar {
-    height: 0; // Do not block other elements
     padding-top: 24px;
 
     .poster {
@@ -166,31 +149,6 @@
         .section-title {
             margin-bottom: 16px;
         }
-        .video-row {
-            clear: both;
-        }
-        .video-item {
-            vertical-align: top;
-            padding: 0 10px 10px 0;
-            float: left;
-            box-sizing: border-box;
-
-            a {
-                text-decoration: none;
-                color: #666;
-                &:hover {
-                    color: #999;
-                }
-            }
-        }
-        .date, .title { display: block; }
-        .thumbnail {
-            width: 100%;
-            min-height: 70px;
-            img { width: 100%; }
-        }
-        .title { font-size: 0.75em; }
-        .date { font-size: 0.7em; padding-top: 4px; }
     }
 
     .section-post {
@@ -255,26 +213,36 @@
 }
 
 @media (max-width: 480px) {
+    .work-main-container {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
     .work-header-special {
         padding-top: @nav-height;
     }
 
     .work-header {
         text-align: center;
-        padding: 40px 0;
+        // Compensate paddings removed from .work-main-container
+        padding: 40px @grid-spacing;
+        background: #333;
         .title, .stats {
             text-shadow: 0 1px 0 #000;
+            color: #fff;
         }
     }
 
-    .work-sidebar {
-        display: none;
+    .work-content {
+        // Compensate paddings removed from .work-main-container
+        padding-left: @grid-spacing;
+        padding-right: @grid-spacing;
     }
 }
 
 @media (min-width: 481px) {
     .work-header {
         // Suppress background image
-        background: #333 !important;
+        background: #fff !important;
     }
 }
