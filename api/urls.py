@@ -9,6 +9,7 @@ from api.v2.user import UserView
 from api.v2.user_categories import UserCategoriesView
 from api.v2.user_password import UserPasswordView
 from api.v2.user_records import UserRecordsView
+from api.v2.user_records_summary import UserRecordsSummaryView
 from api.v2.user_posts import UserPostsView
 from api.v2.category import CategoryView
 from api.v2.post import PostView
@@ -33,6 +34,7 @@ urlpatterns = [
     url(r'^v2/users/(?P<name>[\w.@+-]+)/categories$',
         UserCategoriesView.as_view()),
     url(r'^v2/users/(?P<name>[\w.@+-]+)/records$', UserRecordsView.as_view()),
+    url(r'^v2/users/(?P<name>[\w.@+-]+)/records/summary$', UserRecordsSummaryView.as_view()),
     url(r'^v2/users/(?P<name>[\w.@+-]+)/posts$', UserPostsView.as_view()),
     url(r'^v2/records/(?P<id>[0-9]+)$', RecordView.as_view()),
     url(r'^v2/records/(?P<id>[0-9]+)/posts$', RecordPostsView.as_view()),

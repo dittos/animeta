@@ -24,6 +24,11 @@ class UserRecordsView(BaseView):
         status_type = request.GET.get('status_type')
         if status_type:
             records = records.filter(status_type=StatusType[status_type])
+        category_id = request.GET.get('category_id')
+        if category_id:
+            if category_id == '0':
+                category_id = None
+            records = records.filter(category_id=category_id)
         limit = request.GET.get('limit')
         if limit:
             try:

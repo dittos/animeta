@@ -424,7 +424,8 @@ class UserPostsViewTest(TestCase):
 class UserRecordsViewTest(TestCase):
     def test_get(self):
         context = TestContext()
-        record1 = context.new_record(status_type='watching')
+        category = context.new_category()
+        record1 = context.new_record(status_type='watching', category_id=category['id'])
         record2 = context.new_record(status_type='finished')
 
         response = self.client.get(context.user_path + '/records')
@@ -445,6 +446,23 @@ class UserRecordsViewTest(TestCase):
             'sort': 'date',
             'status_type': 'watching',
             'limit': '1'
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(response.json()[0], record1)
+
+        # category_id=0 means uncategorized record
+        response = self.client.get(context.user_path + '/records', {
+            'sort': 'date',
+            'category_id': '0',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(response.json()[0], record2)
+
+        response = self.client.get(context.user_path + '/records', {
+            'sort': 'date',
+            'category_id': category['id'],
         })
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 1)
@@ -541,6 +559,56 @@ class UserRecordsViewTest(TestCase):
         # Adding a record with already existing title is not allowed
         response = context.post(path, data)
         self.assertEqual(response.status_code, 422)
+
+
+class UserRecordsSummaryViewTest(TestCase):
+    def test_get_empty(self):
+        context = TestContext()
+        path = context.user_path + '/records/summary'
+
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data, {
+            u'count': 0,
+            u'count_by_status_type': {
+                u'watching': 0,
+                u'finished': 0,
+                u'interested': 0,
+                u'suspended': 0,
+            },
+            u'count_by_category': {
+                u'0': 0,
+            },
+        })
+
+    def test_get_non_empty(self):
+        context = TestContext()
+        path = context.user_path + '/records/summary'
+
+        category = context.new_category()
+        context.new_record(status_type='watching', category_id=category['id'])
+        context.new_record(status_type='finished')
+        context.new_record(status_type='suspended')
+        context.new_record(status_type='interested')
+
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data, {
+            u'count': 4,
+            u'count_by_status_type': {
+                u'watching': 1,
+                u'finished': 1,
+                u'interested': 1,
+                u'suspended': 1,
+            },
+            u'count_by_category': {
+                u'0': 3,
+                unicode(category['id']): 1,
+            },
+        })
+
 
 class RecordViewTest(TestCase):
     def test_get(self):
