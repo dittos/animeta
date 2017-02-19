@@ -136,7 +136,7 @@ var LibraryHeader = React.createClass({
                 <label>상태: </label>
                 <select value={this.props.statusTypeFilter}
                     onChange={this._onStatusTypeFilterChange}>
-                    <option value="">전체 ({this.props.count})</option>
+                    <option value="">전체 ({this.props.statusTypeStats._all})</option>
                 {['watching', 'finished', 'suspended', 'interested'].map(statusType => {
                     return <option value={statusType}>{util.STATUS_TYPE_TEXT[statusType]} ({this.props.statusTypeStats[statusType] || 0})</option>;
                 })}
@@ -146,7 +146,7 @@ var LibraryHeader = React.createClass({
                 <label>분류: </label>
                 <select value={this.props.categoryFilter}
                     onChange={this._onCategoryFilterChange}>
-                    <option value="">전체 ({this.props.count})</option>
+                    <option value="">전체 ({this.props.categoryStats._all})</option>
                 {[{id: 0, name: '미분류'}].concat(this.props.categoryList).map(category => {
                     return <option value={category.id}>{category.name} ({this.props.categoryStats[category.id] || 0})</option>;
                 })}
@@ -182,6 +182,7 @@ var Library = React.createClass({
         if (!sort) sort = 'date';
         var {
             count,
+            filteredCount,
             records,
             categoryStats,
             statusTypeStats,
@@ -196,7 +197,7 @@ var Library = React.createClass({
         return <div className="library">
             <LibraryHeader
                 count={count}
-                filteredCount={records.length}
+                filteredCount={filteredCount}
                 sortBy={sort}
                 statusTypeFilter={type}
                 statusTypeStats={statusTypeStats}

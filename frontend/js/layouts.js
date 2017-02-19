@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from 'nuri';
 import GlobalHeader from './ui/GlobalHeader';
-import Layout from './ui/Layout';
+import * as Layout from './ui/Layout';
 
 export function App(Component) {
     return (props) => <div>
