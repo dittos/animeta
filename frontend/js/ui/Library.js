@@ -101,23 +101,20 @@ function groupRecordsByDate(records) {
     return groups;
 }
 
-var LibraryItemView = React.createClass({
-    render() {
-        var record = this.props.record;
-        var content;
-        content = (
+function LibraryItem({ record }) {
+    return (
+        <li className={'library-group-item item-' + record.status_type}>
             <Link to={`/records/${record.id}/`}>
                 <span className="item-title">{record.title}</span>
                 <span className="item-status">{util.getStatusText(record)}</span>
                 {record.has_newer_episode &&
                     <span className="item-updated">up!</span>}
             </Link>
-        );
-        return <li className={'library-group-item item-' + record.status_type}>{content}</li>;
-    }
-});
+        </li>
+    );
+}
 
-var LibraryHeader = React.createClass({
+class LibraryHeader extends React.Component {
     render() {
         return <div className="library-header">
             <p>
@@ -154,30 +151,35 @@ var LibraryHeader = React.createClass({
                 {' '}{this.props.canEdit && <Link to="/records/category/">관리</Link>}
             </p>
         </div>;
-    },
+    }
 
     _updateQuery(updates) {
         this.props.onUpdateQuery(updates);
-    },
-
-    _onStatusTypeFilterChange(e) {
-        this._updateQuery({type: e.target.value});
-    },
-
-    _onCategoryFilterChange(e) {
-        this._updateQuery({category: e.target.value});
     }
-});
 
-var Library = React.createClass({
-    contextTypes: {
+    _onStatusTypeFilterChange = (e) => {
+        this._updateQuery({type: e.target.value});
+    };
+
+    _onCategoryFilterChange = (e) => {
+        this._updateQuery({category: e.target.value});
+    };
+}
+
+class Library extends React.Component {
+    contextTypes = {
         controller: React.PropTypes.object,
-    },
+    };
 
     render() {
         if (this.props.count === 0) {
-            return this._renderEmpty();
+            return <div>
+                <h2>아직 기록이 하나도 없네요.</h2>
+                {this.props.canEdit &&
+                    <p>위에 있는 <Link to="/records/add/" className="add-record">작품 추가</Link>를 눌러 감상 기록을 등록할 수 있습니다.</p>}
+            </div>;
         }
+
         var {type, category, sort} = this.props.query;
         if (!sort) sort = 'date';
         var {
@@ -212,33 +214,21 @@ var Library = React.createClass({
             {groups.map(group => <div className="library-group" key={group.key} id={'group' + group.index}>
                 <h2 className="library-group-title">{group.key}</h2>
                 <ul className="library-group-items">
-                    {group.items.map(record => <LibraryItemView
+                    {group.items.map(record => <LibraryItem
                         key={record.id}
                         record={record} />)}
                 </ul>
             </div>)}
         </div>;
-    },
+    }
 
-    _renderEmpty() {
-        var help;
-        if (this.props.canEdit) {
-            help = <p>위에 있는 <Link to="/records/add/" className="add-record">작품 추가</Link>를 눌러 감상 기록을 등록할 수 있습니다.</p>;
-        }
-
-        return <div>
-            <h2>아직 기록이 하나도 없네요.</h2>
-            {help}
-        </div>;
-    },
-
-    _onUpdateQuery(updates) {
+    _onUpdateQuery = (updates) => {
         const basePath = `/users/${encodeURIComponent(this.props.user.name)}/`;
         this.context.controller.load({
             path: basePath,
             query: {...this.props.query, ...updates}
         })
-    }
-});
+    };
+}
 
 export default Library;
