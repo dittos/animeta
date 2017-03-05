@@ -4,6 +4,7 @@ from django.db import transaction
 from django.contrib.auth.models import User
 from api.v2 import BaseView
 from api.serializers import serialize_record, serialize_post
+from api.services import user_records
 from work.models import get_or_create_work
 from record.models import Record, History, StatusType
 
@@ -15,15 +16,20 @@ class UserRecordsView(BaseView):
             request.GET.get('include_has_newer_episode') == 'true'
         if request.user != user:
             include_has_newer_episode = False
-        records = user.record_set.all()
-        sort = request.GET.get('sort')
+
+        record_filter = self._build_record_filter(request)
+        queryset = user.record_set.all()
+        if record_filter.status_type_set:
+            queryset = queryset.filter(status_type=record_filter.status_type)
+        if record_filter.category_id_set:
+            queryset = queryset.filter(category_id=record_filter.category_id)
+
+        records = queryset
+        sort = request.GET.get('sort', 'date')
         if sort == 'date':
             records = records.order_by('-updated_at')
         elif sort == 'title':
             records = records.order_by('title')
-        status_type = request.GET.get('status_type')
-        if status_type:
-            records = records.filter(status_type=StatusType[status_type])
         limit = request.GET.get('limit')
         if limit:
             try:
@@ -31,10 +37,38 @@ class UserRecordsView(BaseView):
                 records = records[:limit]
             except ValueError:
                 pass
-        return [serialize_record(
+        data = [serialize_record(
             record,
             include_has_newer_episode=include_has_newer_episode
         ) for record in records]
+
+        with_counts = request.GET.get('with_counts') == 'true'
+        if not with_counts:
+            return data
+
+        return {
+            'counts': user_records.count(user, record_filter),
+            'data': data,
+        }
+
+    def _build_record_filter(self, request):
+        status_type = request.GET.get('status_type')
+        if status_type:
+            status_type = StatusType[status_type]
+        else:
+            status_type = None
+
+        category_id = request.GET.get('category_id')
+        if category_id:
+            category_id_set = True
+            category_id = int(category_id)
+            if category_id == 0:
+                category_id = None
+        else:
+            category_id_set = False
+            category_id = None
+
+        return user_records.RecordFilter(status_type, category_id, category_id_set)
 
     @transaction.atomic
     def post(self, request, name):
