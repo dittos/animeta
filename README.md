@@ -32,6 +32,8 @@ http://animeta.net/
 ### 의존성 설치
 
     npm install
+    git submodule init
+    ./build-external.sh
 
 ### 설정
 
