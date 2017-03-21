@@ -13,11 +13,19 @@ const ImageSources = {
 class ImageUploadForm extends React.Component {
   constructor(props) {
     super(props);
-    const metadata = this.props.work.metadata;
-    this.state = {
+    this.state = this._buildState(props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState(this._buildState(nextProps));
+  }
+
+  _buildState({ work }) {
+    const metadata = work.metadata;
+    return {
       source: ImageSources.ANN,
       options: {
-        annId: metadata && metadata.ann_id,
+        annId: (metadata && metadata.ann_id) || '',
       }
     };
   }

@@ -104,7 +104,7 @@ class WorkDetail extends React.Component {
           <textarea
             rows={10}
             cols={50}
-            value={work.raw_metadata}
+            value={work.raw_metadata || ''}
             onChange={e => {
               work.raw_metadata = e.target.value;
               this.setState({ work });
