@@ -144,7 +144,7 @@ class GlobalHeader extends React.Component {
     render() {
         const { useRouterLink, mobileSpecial = false } = this.props;
         const Link = useRouterLink ? CompatLink : 'a';
-        const showNotice = false;
+        const showNotice = true;
         return <div className={mobileSpecial ? Styles.mobileSpecialContainer : Styles.container}>
             <Header mobileSpecial={mobileSpecial}>
                 <Layout.LeftRight className={Styles.headerInner}
@@ -153,11 +153,7 @@ class GlobalHeader extends React.Component {
             </Header>
             {showNotice && !mobileSpecial && <Layout.CenteredFullWidth className={Styles.notice}>
                 <Link href="/table/" className={Styles.noticeLink}>
-                    <b>2017년 1월</b> 신작
-                </Link>
-                <span className={Styles.noticeSeparator}>&ndash;</span>
-                <Link href="/works/%EB%84%88%EC%9D%98%20%EC%9D%B4%EB%A6%84%EC%9D%80./" className={Styles.noticeLink}>
-                    <b>너의 이름은.</b> 국내 개봉
+                    2017년 4월 신작 확인하세요~
                 </Link>
             </Layout.CenteredFullWidth>}
         </div>;
