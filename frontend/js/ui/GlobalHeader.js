@@ -144,7 +144,7 @@ class GlobalHeader extends React.Component {
     render() {
         const { useRouterLink, mobileSpecial = false } = this.props;
         const Link = useRouterLink ? CompatLink : 'a';
-        const showNotice = true;
+        const showNotice = false;
         return <div className={mobileSpecial ? Styles.mobileSpecialContainer : Styles.container}>
             <Header mobileSpecial={mobileSpecial}>
                 <Layout.LeftRight className={Styles.headerInner}
