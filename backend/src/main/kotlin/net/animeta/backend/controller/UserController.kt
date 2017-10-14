@@ -1,25 +1,25 @@
 package net.animeta.backend.controller
 
 import net.animeta.backend.dto.UserDTO
+import net.animeta.backend.exception.ApiException
 import net.animeta.backend.model.User
 import net.animeta.backend.repository.UserRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.UserSerializer
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/v3/users/{name}")
+@RequestMapping("/v2/users/{name}")
 class UserController(val userRepository: UserRepository, val userSerializer: UserSerializer) {
     @GetMapping
-    fun get(@PathVariable name: String, @CurrentUser currentUser: User?): ResponseEntity<UserDTO> {
+    fun get(@PathVariable name: String, @CurrentUser currentUser: User?): UserDTO {
         val user = userRepository.findByUsername(name)
         if (user == null) {
-            return ResponseEntity.notFound().build()
+            throw ApiException.notFound()
         }
-        return ResponseEntity.ok(userSerializer.serialize(user, currentUser))
+        return userSerializer.serialize(user, currentUser)
     }
 }

@@ -15,5 +15,6 @@ data class User(
         var twitterSetting: TwitterSetting?,
 
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+        @OrderBy("position, id")
         var categories: List<Category>
 )
