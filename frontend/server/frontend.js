@@ -166,10 +166,10 @@ server.get('/library/', (req, res, next) => {
 
 async function userHandler(req, res, username, currentUser) {
     if (!currentUser) {
-        currentUser = await backend.getCurrentUser(req);
+        currentUser = await newBackend.getCurrentUser(req);
     }
     const [owner, records] = await Promise.all([
-        backend.callNew(req, `/users/${username}`),
+        newBackend.call(req, `/users/${username}`),
         backend.call(req, `/users/${username}/records`, {
             include_has_newer_episode: JSON.stringify(true)
         }),
@@ -202,7 +202,7 @@ server.get('/users/:username/history/:id/', (req, res) => {
 server.get('/users/:username/feed/', (req, res, next) => {
     const {username} = req.params;
     Promise.all([
-        backend.call(req, `/users/${username}`),
+        newBackend.call(req, `/users/${username}`),
         backend.call(req, `/users/${username}/posts`),
     ]).then(([owner, posts]) => {
         res.type('application/atom+xml; charset=UTF-8')
@@ -305,7 +305,7 @@ server.use((req, res, next) => {
     }
     if (path.match(/^\/[\w.@+-]+$/)) {
         const username = path.substring(1);
-        backend.call(req, `/users/${username}`).then(user => {
+        newBackend.call(req, `/users/${username}`).then(user => {
             res.redirect(`/users/${user.name}/`);
         }).catch(err => {
             if (err === HttpNotFound) {
