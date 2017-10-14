@@ -6,12 +6,15 @@ import org.springframework.stereotype.Service
 
 @Service
 class UserSerializer(val categorySerializer: CategorySerializer) {
-    fun serialize(user: User, viewer: User?, includeCategories: Boolean = true) =
-        UserDTO(
+    fun serialize(user: User, viewer: User?, includeCategories: Boolean = true): UserDTO {
+        val isViewer = viewer != null && user.id == viewer.id
+        return UserDTO(
                 id = user.id,
                 name = user.username,
                 date_joined = user.date_joined.toInstant().toEpochMilli(),
-                is_twitter_connected = if (viewer != null && user.id == viewer.id) viewer.twitterSetting != null else null,
+                is_twitter_connected = if (isViewer) viewer!!.twitterSetting != null else null,
+                connected_services = if (isViewer) { if (viewer!!.twitterSetting != null) listOf("twitter") else listOf() } else null,
                 categories = if (includeCategories) user.categories.map(categorySerializer::serialize) else null
         )
+    }
 }
