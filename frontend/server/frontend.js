@@ -15,25 +15,33 @@ import app from '../js/routes';
 
 const DEBUG = process.env.NODE_ENV !== 'production';
 const backend = new Backend(config.backend.baseUrl);
+const newBackend = new Backend(config.newBackend.baseUrl);
 injectLoaderFactory(serverRequest => {
     serverRequest.loaderCalls = [];
 
+    const call = (backend, path, params) => {
+        const startTime = now();
+        return backend.callRaw(serverRequest, path, params).then(({response, body}) => {
+            const e2eTime = now() - startTime;
+            serverRequest.loaderCalls.push({
+                path,
+                e2eTime,
+                time: parseFloat(response.headers['x-processing-time']) * 1000,
+            });
+            return body;
+        });
+    };
+
     return {
         call(path, params) {
-            const startTime = now();
-            return backend.callRaw(serverRequest, path, params).then(({response, body}) => {
-                const e2eTime = now() - startTime;
-                serverRequest.loaderCalls.push({
-                    path,
-                    e2eTime,
-                    time: parseFloat(response.headers['x-processing-time']) * 1000,
-                });
-                return body;
-            });
+            return call(backend, path, params);
+        },
+        callNew(path, params) {
+            return call(newBackend, path, params);
         },
         getCurrentUser() {
             const startTime = now();
-            return backend.getCurrentUser(serverRequest).then(r => {
+            return newBackend.getCurrentUser(serverRequest).then(r => {
                 const e2eTime = now() - startTime;
                 serverRequest.loaderCalls.push({path: '(currentUser)', e2eTime});
                 return r;
@@ -60,20 +68,31 @@ server.use((req, res, next) => {
     next();
 });
 
+function onProxyReq(proxyReq, req, res, options) {
+    if (req.cookies.sessionid && !req.headers['x-animeta-session-key']) {
+        proxyReq.setHeader('x-animeta-session-key', req.cookies.sessionid);
+    }
+}
+
 const proxy = httpProxy.createProxyServer({
     target: config.backend.baseUrl,
     changeOrigin: config.backend.remote ? true : false,
     cookieDomainRewrite: config.backend.remote ? '' : false,
 });
+proxy.on('proxyReq', onProxyReq);
 
-proxy.on('proxyReq', (proxyReq, req, res, options) => {
-    if (req.cookies.sessionid && !req.headers['x-animeta-session-key']) {
-        proxyReq.setHeader('x-animeta-session-key', req.cookies.sessionid);
-    }
+const newProxy = httpProxy.createProxyServer({
+    target: config.newBackend.baseUrl,
+    changeOrigin: false,
+    cookieDomainRewrite: false,
 });
+newProxy.on('proxyReq', onProxyReq);
 
 server.use('/api', (req, res) => {
     proxy.web(req, res);
+});
+server.use('/newapi', (req, res) => {
+    newProxy.web(req, res);
 });
 
 function renderDefault(res, locals, content, callback) {
@@ -150,7 +169,7 @@ async function userHandler(req, res, username, currentUser) {
         currentUser = await backend.getCurrentUser(req);
     }
     const [owner, records] = await Promise.all([
-        backend.call(req, `/users/${username}`),
+        backend.callNew(req, `/users/${username}`),
         backend.call(req, `/users/${username}/records`, {
             include_has_newer_episode: JSON.stringify(true)
         }),
