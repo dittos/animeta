@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/v2/me")
 class CurrentUserController(val userSerializer: UserSerializer) {
     @GetMapping
-    fun get(@CurrentUser currentUser: User?): UserDTO {
+    fun get(@CurrentUser(required = false) currentUser: User?): UserDTO {
         if (currentUser == null) {
             throw ApiException("Not logged in", HttpStatus.FORBIDDEN)
         }

@@ -2,10 +2,12 @@ package net.animeta.backend.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import django.Signing
+import net.animeta.backend.exception.ApiException
 import net.animeta.backend.model.User
 import net.animeta.backend.repository.UserRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.MethodParameter
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.support.WebDataBinderFactory
 import org.springframework.web.context.request.NativeWebRequest
@@ -26,6 +28,16 @@ class CurrentUserArgumentResolver(val userRepository: UserRepository,
                                  mavContainer: ModelAndViewContainer,
                                  webRequest: NativeWebRequest,
                                  binderFactory: WebDataBinderFactory): User? {
+        val annotation = parameter.getParameterAnnotation(CurrentUser::class.java)
+        val user = extractUser(webRequest)
+        if (annotation.required && user == null) {
+            throw ApiException("Login required.", HttpStatus.UNAUTHORIZED)
+        } else {
+            return user
+        }
+    }
+
+    private fun extractUser(webRequest: NativeWebRequest): User? {
         val header = webRequest.getHeader("x-animeta-session-key")
         if (header == null) {
             return null

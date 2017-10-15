@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/v2/users/{name}")
 class UserController(val userRepository: UserRepository, val userSerializer: UserSerializer) {
     @GetMapping
-    fun get(@PathVariable name: String, @CurrentUser currentUser: User?): UserDTO {
+    fun get(@PathVariable name: String, @CurrentUser(required = false) currentUser: User?): UserDTO {
         val user = userRepository.findByUsername(name) ?: throw ApiException.notFound()
         return userSerializer.serialize(user, currentUser)
     }
