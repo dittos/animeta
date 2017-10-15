@@ -19,8 +19,14 @@ apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'kotlin-spring'
 apply plugin: 'kotlin-jpa'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'war'
+apply plugin: 'idea'
+
+allOpen {
+    annotation 'javax.persistence.Entity'
+}
 
 war {
     baseName = 'backend'
@@ -41,6 +47,8 @@ dependencies {
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.8.9"
     compile "com.squareup.okio:okio:1.9.0"
     compile "com.google.guava:guava:23.2-jre"
+    compile "com.querydsl:querydsl-jpa:4.1.3"
+    kapt "com.querydsl:querydsl-apt:4.1.3:jpa"
     compile "org.postgresql:postgresql:42.1.4"
     testCompile "org.springframework.boot:spring-boot-starter-test"
 }
@@ -50,4 +58,11 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+idea {
+    module {
+        def kaptMain = file('build/generated/source/kapt/main')
+        sourceDirs += kaptMain
+        generatedSourceDirs += kaptMain
+    }
 }

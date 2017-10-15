@@ -203,7 +203,7 @@ server.get('/users/:username/feed/', (req, res, next) => {
     const {username} = req.params;
     Promise.all([
         newBackend.call(req, `/users/${username}`),
-        backend.call(req, `/users/${username}/posts`),
+        newBackend.call(req, `/users/${username}/posts`),
     ]).then(([owner, posts]) => {
         res.type('application/atom+xml; charset=UTF-8')
             .end(renderFeed(owner, posts));

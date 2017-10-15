@@ -5,11 +5,13 @@ import javax.persistence.*
 @Entity
 @Table(name = "record_category")
 data class Category(
-        @Id
+        @get:Id
         var id: Int,
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "user_id")
+        @get:ManyToOne(fetch = FetchType.LAZY)
+        @get:JoinColumn(name = "user_id")
         var user: User,
         var name: String,
-        var position: Int
+        var position: Int,
+        @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "category")
+        var records: List<Record>
 )

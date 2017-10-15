@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 class UserController(val userRepository: UserRepository, val userSerializer: UserSerializer) {
     @GetMapping
     fun get(@PathVariable name: String, @CurrentUser currentUser: User?): UserDTO {
-        val user = userRepository.findByUsername(name)
-        if (user == null) {
-            throw ApiException.notFound()
-        }
+        val user = userRepository.findByUsername(name) ?: throw ApiException.notFound()
         return userSerializer.serialize(user, currentUser)
     }
 }
