@@ -60,7 +60,7 @@ class Index extends React.Component {
 
     _loadMore = async () => {
         this.setState({isLoading: true});
-        const result = await this.props.loader.call('/posts', {
+        const result = await this.props.loader.callNew('/posts', {
             before_id: this.props.data.posts[this.props.data.posts.length - 1].id,
             min_record_count: 2
         });
@@ -79,7 +79,7 @@ export default {
     async load({ loader }) {
         const [currentUser, posts, chart] = await Promise.all([
             loader.getCurrentUser(),
-            loader.call('/posts', {min_record_count: 2, count: 10}),
+            loader.callNew('/posts', {min_record_count: 2, count: 10}),
             loader.call('/charts/works/weekly', {limit: 5}),
         ]);
         return {

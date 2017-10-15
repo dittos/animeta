@@ -76,7 +76,7 @@ export default {
         const {id} = params;
         const [currentUser, post, chart] = await Promise.all([
             loader.getCurrentUser(),
-            loader.call(`/posts/${id}`),
+            loader.callNew(`/posts/${id}`),
             loader.call('/charts/works/weekly', {limit: 5}),
         ]);
         const work = await loader.call(`/works/${post.record.work_id}`);

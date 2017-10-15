@@ -3,7 +3,7 @@ var $ = require('jquery');
 var _pendingPostID = 0;
 
 function fetchRecordPosts(recordID) {
-    return dispatch => $.get('/api/v2/records/' + recordID + '/posts').then(result => {
+    return dispatch => $.get('/newapi/v2/records/' + recordID + '/posts').then(result => {
         dispatch({
             type: 'loadRecordPosts',
             recordID: recordID,
