@@ -5,7 +5,6 @@ import com.google.common.cache.CacheBuilder
 import com.mysema.commons.lang.CloseableIterator
 import com.querydsl.core.types.Expression
 import com.querydsl.core.types.Projections
-import com.querydsl.core.types.dsl.Wildcard
 import com.querydsl.jpa.HQLTemplates
 import com.querydsl.jpa.impl.JPAQuery
 import net.animeta.backend.chart.ChartItem
@@ -56,12 +55,13 @@ class ChartController(val entityManager: EntityManager,
 
     private fun getPopularWorksOfWeek(week: SundayStartWeek): CloseableIterator<Pair<Int, Int>> {
         val range = week.instantRange(defaultTimeZone)
+        val factor = history.user.countDistinct()
         return JPAQuery<History>(entityManager, HQLTemplates.DEFAULT)
-                .select(Projections.constructor(Pair::class.java, history.work.id, Wildcard.count) as Expression<Pair<Int, Int>>)
+                .select(Projections.constructor(Pair::class.java, history.work.id, factor) as Expression<Pair<Int, Int>>)
                 .from(history)
                 .where(history.updatedAt.between(Timestamp.from(range.lowerEndpoint()), Timestamp.from(range.upperEndpoint())))
                 .groupBy(history.work.id)
-                .orderBy(Wildcard.count.desc())
+                .orderBy(factor.desc())
                 .iterate()
     }
 }
