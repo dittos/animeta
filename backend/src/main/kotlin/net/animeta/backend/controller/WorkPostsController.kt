@@ -8,6 +8,7 @@ import net.animeta.backend.model.History
 import net.animeta.backend.model.QHistory.history
 import net.animeta.backend.repository.WorkRepository
 import net.animeta.backend.serializer.PostSerializer
+import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.web.bind.annotation.*
 import javax.persistence.EntityManager
 
@@ -25,7 +26,7 @@ class WorkPostsController(val workRepository: WorkRepository,
         val query = JPAQuery<History>(entityManager, HQLTemplates.DEFAULT)
                 .select(history).from(history)
                 .where(history.work.eq(work))
-                .setHint("javax.persistence.fetchgraph", entityManager.getEntityGraph("history.withUser"))
+                .setHint(EntityGraph.EntityGraphType.LOAD.key, entityManager.getEntityGraph("history.withUser"))
                 .where(history.comment.ne(""))
                 .orderBy(history.id.desc())
         if (beforeId != null) {

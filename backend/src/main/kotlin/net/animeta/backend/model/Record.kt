@@ -21,8 +21,9 @@ data class Record(
         @get:ManyToOne(fetch = FetchType.LAZY)
         @get:JoinColumn(name = "category_id")
         var category: Category?,
-        var updated_at: Timestamp?,
-        @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "record")
-        @get:OrderBy("id DESC")
-        var histories: List<History>
-)
+        var updated_at: Timestamp?
+) {
+    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "record")
+    @get:OrderBy("id DESC")
+    var histories: List<History> = listOf()
+}

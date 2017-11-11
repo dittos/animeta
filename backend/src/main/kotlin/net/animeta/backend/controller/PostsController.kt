@@ -6,6 +6,7 @@ import net.animeta.backend.dto.PostDTO
 import net.animeta.backend.model.History
 import net.animeta.backend.model.QHistory.history
 import net.animeta.backend.serializer.PostSerializer
+import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -21,7 +22,7 @@ class PostsController(val entityManager: EntityManager, val postSerializer: Post
             @RequestParam(defaultValue = "32") count: Int): List<PostDTO> {
         val query = JPAQuery<History>(entityManager, HQLTemplates.DEFAULT)
                 .select(history).from(history)
-                .setHint("javax.persistence.fetchgraph", entityManager.getEntityGraph("history.withUserAndRecord"))
+                .setHint(EntityGraph.EntityGraphType.LOAD.key, entityManager.getEntityGraph("history.withUserAndRecord"))
                 .where(history.comment.ne(""))
                 .orderBy(history.id.desc())
         if (beforeId != null) {

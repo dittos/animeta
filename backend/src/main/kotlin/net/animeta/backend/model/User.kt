@@ -16,8 +16,5 @@ data class User(
 
         @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
         @get:OrderBy("position, id")
-        var categories: List<Category>,
-
-        @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-        var histories: List<History>
+        var categories: List<Category>
 )
