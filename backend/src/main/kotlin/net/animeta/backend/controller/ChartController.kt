@@ -25,8 +25,6 @@ import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 import javax.persistence.EntityManager
 
-private val defaultTimeZone = ZoneId.of("Asia/Seoul")
-
 @RestController
 @RequestMapping("/v2/charts")
 class ChartController(val entityManager: EntityManager,
@@ -34,6 +32,7 @@ class ChartController(val entityManager: EntityManager,
                       val workSerializer: WorkSerializer) {
     data class ChartItemWork(val id: Int, val title: String, val image_url: String?)
 
+    private val defaultTimeZone = ZoneId.of("Asia/Seoul")
     private val weeklyPopularWorksCache: Cache<SundayStartWeek, List<ChartItem<ChartItemWork>>> = CacheBuilder.newBuilder()
             .maximumSize(1) // Keep only one (last) week
             .expireAfterWrite(1, TimeUnit.HOURS)
