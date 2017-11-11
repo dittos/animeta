@@ -1,16 +1,18 @@
 package django;
 
-import java.io.IOException;
-import java.util.zip.Inflater;
-
 import com.google.common.io.BaseEncoding;
 import okio.Buffer;
 import okio.InflaterSource;
 
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.time.Duration;
+import java.util.zip.Inflater;
+
 public class Signing {
     static final BaseEncoding BASE64 = BaseEncoding.base64Url().omitPadding();
 
-    public static <T> T loadString(String s, String key, String salt, Serializer<T> serializer, int maxAge) throws IOException {
+    public static <T> T loadString(String s, String key, String salt, Serializer<T> serializer, @Nullable Duration maxAge) throws IOException {
         String base64d = new TimestampSigner(key, salt).unsign(s, maxAge);
         boolean decompress = false;
         if (base64d.startsWith(".")) {

@@ -13,11 +13,13 @@ import org.springframework.web.bind.support.WebDataBinderFactory
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.method.support.ModelAndViewContainer
+import java.time.Duration
 
 @Component
 class CurrentUserArgumentResolver(val userRepository: UserRepository,
                                   @Value("\${animeta.security.secret-key}") val secretKey: String) : HandlerMethodArgumentResolver {
     private val objectMapper = ObjectMapper().readerFor(DjangoAuthSession::class.java)
+    private val sessionCookieAge = Duration.ofDays(14) // 2 weeks
 
     override fun supportsParameter(parameter: MethodParameter): Boolean {
         return parameter.hasParameterAnnotation(CurrentUser::class.java) &&
@@ -42,7 +44,11 @@ class CurrentUserArgumentResolver(val userRepository: UserRepository,
         if (header == null) {
             return null
         }
-        val session: DjangoAuthSession = Signing.loadString(header, secretKey, "django.contrib.sessions.backends.signed_cookies", objectMapper::readValue, Int.MAX_VALUE)
-        return userRepository.findOne(session.userId.toIntOrNull())
+        try {
+            val session: DjangoAuthSession = Signing.loadString(header, secretKey, "django.contrib.sessions.backends.signed_cookies", objectMapper::readValue, sessionCookieAge)
+            return userRepository.findOne(session.userId.toIntOrNull())
+        } catch (e: Exception) {
+            return null
+        }
     }
 }
