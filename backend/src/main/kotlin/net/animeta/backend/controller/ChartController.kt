@@ -59,7 +59,7 @@ class ChartController(val entityManager: EntityManager,
         return JPAQuery<History>(entityManager, HQLTemplates.DEFAULT)
                 .select(Projections.constructor(Pair::class.java, history.work.id, Wildcard.count) as Expression<Pair<Int, Int>>)
                 .from(history)
-                .where(history.updated_at.between(Timestamp.from(range.lowerEndpoint()), Timestamp.from(range.upperEndpoint())))
+                .where(history.updatedAt.between(Timestamp.from(range.lowerEndpoint()), Timestamp.from(range.upperEndpoint())))
                 .groupBy(history.work.id)
                 .orderBy(Wildcard.count.desc())
                 .iterate()

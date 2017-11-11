@@ -30,6 +30,7 @@ data class History(
         @get:Enumerated(EnumType.ORDINAL)
         var status_type: StatusType,
         var comment: String,
-        var updated_at: Timestamp?,
+        @get:Column(name = "updated_at")
+        var updatedAt: Timestamp?,
         var contains_spoiler: Boolean
 )
