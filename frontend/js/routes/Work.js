@@ -69,7 +69,7 @@ export default {
         const {title, episode} = params;
         const [currentUser, work, chart] = await Promise.all([
             loader.getCurrentUser(),
-            loader.call(`/works/_/${encodeURIComponent(title)}`),
+            loader.callNew('/works/by-title', {title}),
             loader.callNew('/charts/works/weekly', {limit: 5}),
         ]);
         const postsParams = {count: POSTS_PER_PAGE + 1};
