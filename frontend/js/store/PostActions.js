@@ -37,7 +37,7 @@ function createPost(recordID, post, publishOptions) {
 
 function deletePost(postID) {
     return dispatch => $.ajax({
-        url: '/api/v2/posts/' + postID,
+        url: '/newapi/v2/posts/' + postID,
         type: 'DELETE'
     }).then(result => {
         dispatch({

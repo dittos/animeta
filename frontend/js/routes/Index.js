@@ -80,7 +80,7 @@ export default {
         const [currentUser, posts, chart] = await Promise.all([
             loader.getCurrentUser(),
             loader.callNew('/posts', {min_record_count: 2, count: 10}),
-            loader.call('/charts/works/weekly', {limit: 5}),
+            loader.callNew('/charts/works/weekly', {limit: 5}),
         ]);
         return {
             currentUser,
