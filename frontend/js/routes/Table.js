@@ -261,7 +261,7 @@ export default {
         const {period} = params;
         const [currentUser, items] = await Promise.all([
             loader.getCurrentUser(),
-            loader.call(`/table/periods/${period}`, {
+            loader.callNew(`/table/periods/${period}`, {
                 only_first_period: JSON.stringify(true)
             }),
         ]);

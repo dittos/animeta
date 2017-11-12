@@ -170,7 +170,7 @@ async function userHandler(req, res, username, currentUser) {
     }
     const [owner, records] = await Promise.all([
         newBackend.call(req, `/users/${username}`),
-        backend.call(req, `/users/${username}/records`, {
+        newBackend.call(req, `/users/${username}/records`, {
             include_has_newer_episode: JSON.stringify(true)
         }),
     ]);
@@ -224,7 +224,7 @@ server.get('/records/add/*', currentUserHandler);
 server.get('/records/category/', currentUserHandler);
 
 function recordHandler(req, res, next) {
-    backend.call(req, `/records/${req.params.id}`)
+    newBackend.call(req, `/records/${req.params.id}`)
         .then(record => userHandler(req, res, record.user.name))
         .catch(next);
 }
