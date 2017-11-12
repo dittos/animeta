@@ -10,6 +10,10 @@ data class Period(val year: Int, val period: Int) {
         }
     }
 
+    override fun toString(): String {
+        return "${year}Q${period}"
+    }
+
     companion object {
         private val pattern = "([0-9]{4})Q([1-4])".toRegex()
 

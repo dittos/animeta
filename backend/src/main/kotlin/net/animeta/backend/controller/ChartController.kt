@@ -46,8 +46,9 @@ class ChartController(val entityManager: EntityManager,
                     diff(ranked(a.asSequence()).take(128), ranked(b.asSequence()))
                 }
             }
+            val works = workRepository.findAll(chart.map { it.`object` }).associateBy { it.id }
             chart.map { it.map { id ->
-                val work = workRepository.findOne(id)
+                val work = works[id]!!
                 ChartItemWork(work.id, work.title, workSerializer.getImageUrl(work))
             } }
         }.take(limit)

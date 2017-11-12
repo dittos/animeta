@@ -9,4 +9,6 @@ interface RecordRepository : CrudRepository<Record, Int> {
     fun countByWork(work: Work): Int
 
     fun findOneByWorkAndUser(work: Work, user: User): Record?
+
+    fun findAllByUserAndWorkIdIn(user: User, workIds: Iterable<Int>): List<Record>
 }
