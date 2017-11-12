@@ -33,7 +33,7 @@ class WorkSerializer(val entityManager: EntityManager,
     fun serialize(work: Work, viewer: User? = null, full: Boolean = false): WorkDTO {
         val index = work.indexes.firstOrNull()
         return WorkDTO(
-                id = work.id,
+                id = work.id!!,
                 title = work.title,
                 image_url = getImageUrl(work),
                 alt_titles = if (full) {

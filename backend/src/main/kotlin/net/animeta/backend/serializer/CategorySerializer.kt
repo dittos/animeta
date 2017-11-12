@@ -7,5 +7,5 @@ import org.springframework.stereotype.Service
 @Service
 class CategorySerializer {
     fun serialize(category: Category) =
-        CategoryDTO(id = category.id, name = category.name)
+        CategoryDTO(id = category.id!!, name = category.name)
 }

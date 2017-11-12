@@ -6,7 +6,8 @@ import javax.persistence.*
 @Table(name = "record_category")
 data class Category(
         @get:Id
-        var id: Int,
+        @get:GeneratedValue(strategy = GenerationType.IDENTITY)
+        var id: Int? = null,
         @get:ManyToOne(fetch = FetchType.LAZY)
         @get:JoinColumn(name = "user_id")
         var user: User,

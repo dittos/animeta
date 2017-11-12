@@ -23,7 +23,7 @@ data class Record(
         var category: Category?,
         var updated_at: Timestamp?
 ) {
-    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "record")
+    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "record", cascade = arrayOf(CascadeType.ALL))
     @get:OrderBy("id DESC")
     var histories: List<History> = listOf()
 }

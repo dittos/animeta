@@ -6,6 +6,7 @@ import javax.persistence.*
 @Table(name = "work_titlemapping")
 data class TitleMapping(
         @get:Id
+        @get:GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Int? = null,
         @get:ManyToOne(fetch = FetchType.LAZY)
         @get:JoinColumn(name = "work_id")

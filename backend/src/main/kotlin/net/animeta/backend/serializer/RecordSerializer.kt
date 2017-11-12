@@ -13,7 +13,7 @@ class RecordSerializer(val userSerializer: UserSerializer,
         return RecordDTO(
                 id = record.id,
                 user_id = record.user.id,
-                work_id = record.work.id,
+                work_id = record.work.id!!,
                 category_id = record.category?.id,
                 title = record.title,
                 status = record.status,

@@ -49,7 +49,7 @@ class ChartController(val entityManager: EntityManager,
             val works = workRepository.findAll(chart.map { it.`object` }).associateBy { it.id }
             chart.map { it.map { id ->
                 val work = works[id]!!
-                ChartItemWork(work.id, work.title, workSerializer.getImageUrl(work))
+                ChartItemWork(work.id!!, work.title, workSerializer.getImageUrl(work))
             } }
         }.take(limit)
     }
