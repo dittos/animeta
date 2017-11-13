@@ -4,11 +4,6 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "search_workperiodindex")
-@NamedEntityGraphs(
-        NamedEntityGraph(name = "workPeriodIndex.work.withIndex",
-                attributeNodes = arrayOf(NamedAttributeNode(value = "work", subgraph = "indexes")),
-                subgraphs = arrayOf(NamedSubgraph(name = "indexes", attributeNodes = arrayOf(NamedAttributeNode("indexes")))))
-)
 data class WorkPeriodIndex(
         @get:Id
         var id: Int? = null,

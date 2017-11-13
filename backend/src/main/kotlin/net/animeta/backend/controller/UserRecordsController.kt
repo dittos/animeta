@@ -1,23 +1,21 @@
 package net.animeta.backend.controller
 
-import com.querydsl.jpa.HQLTemplates
-import com.querydsl.jpa.impl.JPAQuery
+import net.animeta.backend.db.Datastore
+import net.animeta.backend.db.query
 import net.animeta.backend.dto.RecordDTO
 import net.animeta.backend.exception.ApiException
 import net.animeta.backend.model.QRecord.record
-import net.animeta.backend.model.Record
 import net.animeta.backend.model.StatusType
 import net.animeta.backend.model.User
 import net.animeta.backend.repository.UserRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.RecordSerializer
 import org.springframework.web.bind.annotation.*
-import javax.persistence.EntityManager
 
 @RestController
 @RequestMapping("/v2/users/{name}/records")
 class UserRecordsController(val userRepository: UserRepository,
-                            val entityManager: EntityManager,
+                            val datastore: Datastore,
                             val recordSerializer: RecordSerializer) {
     @GetMapping
     fun get(@PathVariable name: String,
@@ -29,19 +27,17 @@ class UserRecordsController(val userRepository: UserRepository,
         val user = userRepository.findByUsername(name) ?: throw ApiException.notFound()
         val includeHasNewerEpisode = includeHasNewerEpisodeParam && currentUser?.id == user.id
         val statusType = statusTypeParam?.toUpperCase()?.let { StatusType.valueOf(it) }
-        val query = JPAQuery<Record>(entityManager, HQLTemplates.DEFAULT)
-                .select(record).from(record)
-                .where(record.user.eq(user))
+        var query = record.query.filter(record.user.eq(user))
         if (statusType != null) {
-            query.where(record.status_type.eq(statusType))
+            query = query.filter(record.status_type.eq(statusType))
         }
         when (sort) {
             "date", null -> query.orderBy(record.updated_at.desc())
             "title" -> query.orderBy(record.title.asc())
         }
         if (limit != null) {
-            query.limit(limit.toLong())
+            query = query.limit(limit)
         }
-        return query.fetch().map { recordSerializer.serialize(it, includeHasNewerEpisode = includeHasNewerEpisode) }
+        return datastore.query(query).map { recordSerializer.serialize(it, includeHasNewerEpisode = includeHasNewerEpisode) }
     }
 }

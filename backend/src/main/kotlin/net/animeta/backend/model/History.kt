@@ -5,15 +5,6 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "record_history")
-@NamedEntityGraphs(
-        NamedEntityGraph(name = "history.withUser",
-                attributeNodes = arrayOf(NamedAttributeNode("user"))),
-        NamedEntityGraph(name = "history.withRecord",
-                attributeNodes = arrayOf(NamedAttributeNode("record"))),
-        NamedEntityGraph(name = "history.withUserAndRecord",
-                attributeNodes = arrayOf(NamedAttributeNode("user"),
-                        NamedAttributeNode("record")))
-)
 data class History(
         @get:Id
         var id: Int,

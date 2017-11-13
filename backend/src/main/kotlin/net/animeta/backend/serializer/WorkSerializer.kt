@@ -3,28 +3,24 @@ package net.animeta.backend.serializer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.net.UrlEscapers
-import com.querydsl.core.types.Expression
-import com.querydsl.core.types.Projections
-import com.querydsl.core.types.dsl.Wildcard
-import com.querydsl.jpa.HQLTemplates
-import com.querydsl.jpa.impl.JPAQuery
-import net.animeta.backend.dto.*
-import net.animeta.backend.model.History
+import net.animeta.backend.dto.WorkDTO
+import net.animeta.backend.dto.WorkLinks
+import net.animeta.backend.dto.WorkMetadata
+import net.animeta.backend.dto.WorkSchedule
 import net.animeta.backend.model.Period
-import net.animeta.backend.model.QHistory.history
 import net.animeta.backend.model.User
 import net.animeta.backend.model.Work
 import net.animeta.backend.repository.RecordRepository
+import net.animeta.backend.service.WorkService
 import org.springframework.stereotype.Service
 import java.io.IOException
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.temporal.Temporal
-import javax.persistence.EntityManager
 
 @Service
-class WorkSerializer(val entityManager: EntityManager,
+class WorkSerializer(val workService: WorkService,
                      val recordRepository: RecordRepository,
                      val recordSerializer: RecordSerializer,
                      val objectMapper: ObjectMapper) {
@@ -41,7 +37,7 @@ class WorkSerializer(val entityManager: EntityManager,
                 } else {
                     null
                 },
-                episodes = if (full) getEpisodes(work) else null,
+                episodes = if (full) workService.getEpisodes(work) else null,
                 record_count = index?.record_count ?: recordRepository.countByWork(work),
                 rank = index?.rank,
                 record = if (viewer != null) {
@@ -66,38 +62,6 @@ class WorkSerializer(val entityManager: EntityManager,
         if (work.image_filename != null)
             return "https://animeta.net/media/" + work.image_filename
         return null
-    }
-
-    fun getEpisodes(work: Work): List<Episode> {
-        val query = JPAQuery<History>(entityManager, HQLTemplates.DEFAULT)
-                .select(Projections.constructor(Pair::class.java, history.status, Wildcard.count) as Expression<Pair<String, Int>>)
-                .from(history)
-                .where(history.work.eq(work))
-                .where(history.comment.ne(""))
-                .groupBy(history.status)
-        val result = query.fetch()
-                .mapNotNull { (status, count) ->
-                    val statusNumber = status.toIntOrNull()
-                    if (statusNumber != null)
-                        Episode(number = statusNumber, post_count = count)
-                    else
-                        null
-                }
-                .associateBy { it.number }
-                .toMutableMap()
-        val query2 = JPAQuery<History>(entityManager, HQLTemplates.DEFAULT)
-                .select(Projections.constructor(Pair::class.java, history.status, Wildcard.count) as Expression<Pair<String, Int>>)
-                .from(history)
-                .where(history.work.eq(work))
-                .where(history.comment.eq(""))
-                .groupBy(history.status)
-        for ((status, count) in query2.fetch()) {
-            val statusNumber = status.toIntOrNull()
-            if (statusNumber != null && !result.containsKey(statusNumber) && count > 1) {
-                result[statusNumber] = Episode(number = statusNumber, post_count = null)
-            }
-        }
-        return result.values.sortedBy { it.number }
     }
 
     fun serializeMetadata(work: Work, item: JsonNode): WorkMetadata {
