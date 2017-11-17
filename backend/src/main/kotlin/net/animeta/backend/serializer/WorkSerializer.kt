@@ -74,7 +74,7 @@ class WorkSerializer(val workService: WorkService,
         val links = WorkLinks(
                 website = item["website"]?.asText(),
                 namu = item["namu_ref"]?.asText()?.let { namuLink(it) },
-                ann_id = item["ann_id"]?.asText()?.let { "http://www.animenewsnetwork.com/encyclopedia/anime.php?id=${it}" }
+                ann = item["ann_id"]?.asText()?.let { "http://www.animenewsnetwork.com/encyclopedia/anime.php?id=${it}" }
         )
 
         val period = item["periods"]?.let { readStringList(it) }
