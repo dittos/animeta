@@ -17,7 +17,7 @@ function addRecord(userName, record) {
 }
 
 function getRecordEndpoint(recordID) {
-    return '/api/v2/records/' + recordID;
+    return '/newapi/v2/records/' + recordID;
 }
 
 function updateRecord(recordID, updates) {

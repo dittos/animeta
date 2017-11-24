@@ -107,7 +107,7 @@ export function searchWork(q, {minRecordCount = 2}) {
   const params = new URLSearchParams();
   params.append('q', q);
   params.append('min_record_count', minRecordCount);
-  return fetchWithSession(`/api/v2/search?${params}`);
+  return fetchWithSession(`/newapi/v2/search?${params}`);
 }
 
 export function getStudios() {

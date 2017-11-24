@@ -16,7 +16,7 @@ function connectedService(serviceID) {
 
 export function disconnectService(serviceID) {
     return dispatch => $.ajax({
-        url: '/api/v2/me/external-services/' + serviceID,
+        url: '/newapi/v2/me/external-services/' + serviceID,
         type: 'DELETE'
     }).then(() => {
         dispatch({

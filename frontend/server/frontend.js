@@ -303,7 +303,7 @@ server.use((req, res, next) => {
         res.redirect(url);
         return;
     }
-    if (path.match(/^\/[\w.@+-]+$/)) {
+    if (path.match(/^\/[\w.@+-]+$/) && !path.match(/^\/apple-touch-icon/)) {
         const username = path.substring(1);
         newBackend.call(req, `/users/${username}`).then(user => {
             res.redirect(`/users/${user.name}/`);
