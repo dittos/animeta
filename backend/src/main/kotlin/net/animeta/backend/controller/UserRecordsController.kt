@@ -32,8 +32,8 @@ class UserRecordsController(val userRepository: UserRepository,
             query = query.filter(record.status_type.eq(statusType))
         }
         when (sort) {
-            "date", null -> query.orderBy(record.updated_at.desc())
-            "title" -> query.orderBy(record.title.asc())
+            "date", null -> query = query.orderBy(record.updated_at.desc())
+            "title" -> query = query.orderBy(record.title.asc())
         }
         if (limit != null) {
             query = query.limit(limit)
