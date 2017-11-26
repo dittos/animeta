@@ -44,6 +44,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-data-jpa"
     compile "org.springframework.boot:spring-boot-starter-web"
     providedRuntime "org.springframework.boot:spring-boot-starter-tomcat"
+    compile "org.springframework.social:spring-social-twitter"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
     compile "com.squareup.okio:okio:1.9.0"

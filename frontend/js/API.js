@@ -19,7 +19,7 @@ export function changePassword(oldPassword, newPassword1, newPassword2) {
 // External Services
 
 export function disconnectTwitter() {
-    return $.ajax({type: 'DELETE', url: '/api/v2/me/external-services/twitter'});
+    return $.ajax({type: 'DELETE', url: '/newapi/v2/me/external-services/twitter'});
 }
 
 // User Records

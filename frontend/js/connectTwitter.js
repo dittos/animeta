@@ -16,7 +16,7 @@ export default function connectTwitter() {
                     _twitterConnectPromise = null;
                 }
             };
-            window.open('/api/v2/me/external-services/twitter/connect');
+            window.open('/newapi/v2/me/external-services/twitter/connect');
         });
     }
     return _twitterConnectPromise;
