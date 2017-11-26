@@ -2,3 +2,6 @@ spring.datasource.url=jdbc:postgresql://host:port/database_name
 spring.datasource.username=
 spring.datasource.password=
 animeta.security.secret-key=
+#server.port=8081
+#spring.jpa.show-sql=true
+#spring.jpa.properties.hibernate.format_sql=true

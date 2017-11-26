@@ -8,6 +8,9 @@ def deploy():
 def deploy_api():
     _deploy(api=True)
 
+def deploy_newapi():
+    _deploy(newapi=True)
+
 def deploy_frontend():
     _deploy(frontend=True)
 
@@ -17,22 +20,28 @@ def deploy_frontend_server():
 def deploy_servers():
     _deploy(api=True, frontend_server=True)
 
-def _deploy(api=False, frontend=False, frontend_server=False):
+def _deploy(api=False, newapi=False, frontend=False, frontend_server=False):
     if frontend:
         frontend_server = True
 
     local('git push')
     with cd('/home/ditto/animeta'):
         run('git pull') # To get password prompt first
+        if newapi:
+            with lcd('backend'):
+                local('./gradlew build')
         if frontend:
             local('rm -f animeta/static/build/*')
             local('NODE_ENV=production ./node_modules/.bin/webpack')
+
         if frontend_server:
             run('./build-external.sh')
             run('npm install')
         if api:
             run('venv/bin/pip install -r ./requirements.txt')
             run('venv/bin/python manage.py migrate')
+        if newapi:
+            put('backend/build/libs/backend-1.0.0.war', 'backend.war.tmp')
         if frontend:
             run('mkdir -p animeta/static/build')
             put('animeta/static/build/*', 'animeta/static/build/')
@@ -40,7 +49,10 @@ def _deploy(api=False, frontend=False, frontend_server=False):
         if frontend_server:
             run('rm -rf frontend-dist')
             run('./node_modules/.bin/babel frontend --ignore external/** -d frontend-dist --copy-files')
+
         if api:
             run('touch ~/uwsgi-services/animeta.ini')
+        if newapi:
+            run('mv backend.war.tmp backend-1.0.0.war')
         if frontend_server:
             run('pm2 gracefulReload animeta')

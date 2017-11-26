@@ -1,68 +1,73 @@
 package net.animeta.backend.controller
 
-import com.google.common.cache.Cache
-import com.google.common.cache.CacheBuilder
-import com.mysema.commons.lang.CloseableIterator
-import com.querydsl.core.types.Expression
-import com.querydsl.core.types.Projections
-import com.querydsl.jpa.HQLTemplates
-import com.querydsl.jpa.impl.JPAQuery
+import com.google.common.net.UrlEscapers
 import net.animeta.backend.chart.ChartItem
-import net.animeta.backend.chart.SundayStartWeek
-import net.animeta.backend.chart.diff
-import net.animeta.backend.chart.ranked
-import net.animeta.backend.model.History
-import net.animeta.backend.model.QHistory.history
-import net.animeta.backend.repository.WorkRepository
-import net.animeta.backend.serializer.WorkSerializer
+import net.animeta.backend.chart.ChartRange
+import net.animeta.backend.chart.MonthRange
+import net.animeta.backend.chart.SundayStartWeekRange
+import net.animeta.backend.service.ChartService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.sql.Timestamp
-import java.time.ZoneId
-import java.util.concurrent.TimeUnit
-import javax.persistence.EntityManager
+import java.time.LocalDate
 
 @RestController
 @RequestMapping("/v2/charts")
-class ChartController(val entityManager: EntityManager,
-                      val workRepository: WorkRepository,
-                      val workSerializer: WorkSerializer) {
-    data class ChartItemWork(val id: Int, val title: String, val image_url: String?)
+class ChartController(val chartService: ChartService) {
+    data class GetResponse(val title: String, val start: LocalDate?, val end: LocalDate?, val has_diff: Boolean, val items: List<ChartItem<ChartItemObject>>)
+    data class ChartItemObject(val link: String, val text: String)
 
-    private val defaultTimeZone = ZoneId.of("Asia/Seoul")
-    private val weeklyPopularWorksCache: Cache<SundayStartWeek, List<ChartItem<ChartItemWork>>> = CacheBuilder.newBuilder()
-            .maximumSize(1) // Keep only one (last) week
-            .expireAfterWrite(1, TimeUnit.HOURS)
-            .build()
+    private fun weekly() = SundayStartWeekRange.now(chartService.defaultTimeZone()).prev()
+    private fun monthly() = MonthRange.now(chartService.defaultTimeZone()).prev()
+    private fun overall() = null
 
     @GetMapping("/works/weekly")
-    fun getWeeklyPopularWorks(@RequestParam limit: Int): List<ChartItem<ChartItemWork>> {
-        val lastWeek = SundayStartWeek.now(defaultTimeZone).prev()
-        return weeklyPopularWorksCache.get(lastWeek) {
-            val chart = getPopularWorksOfWeek(lastWeek).use { a ->
-                getPopularWorksOfWeek(lastWeek.prev()).use { b ->
-                    diff(ranked(a.asSequence()).take(128), ranked(b.asSequence()))
-                }
-            }
-            val works = workRepository.findAll(chart.map { it.`object` }).associateBy { it.id }
-            chart.map { it.map { id ->
-                val work = works[id]!!
-                ChartItemWork(work.id!!, work.title, workSerializer.getImageUrl(work))
-            } }
-        }.take(limit)
+    fun getWeeklyWorks(@RequestParam limit: Int) = chartService.getPopularWorks(weekly(), limit)
+
+    @GetMapping("/popular-works/weekly")
+    fun getWeeklyPopularWorks(@RequestParam limit: Int) = getPopularWorks(weekly(), limit)
+
+    @GetMapping("/popular-works/monthly")
+    fun getMonthlyPopularWorks(@RequestParam limit: Int) = getPopularWorks(monthly(), limit)
+
+    @GetMapping("/popular-works/overall")
+    fun getOverallPopularWorks(@RequestParam limit: Int) = getPopularWorks(overall(), limit)
+
+    @GetMapping("/active-users/weekly")
+    fun getWeeklyActiveUsers(@RequestParam limit: Int) = getActiveUsers(weekly(), limit)
+
+    @GetMapping("/active-users/monthly")
+    fun getMonthlyActiveUsers(@RequestParam limit: Int) = getActiveUsers(monthly(), limit)
+
+    @GetMapping("/active-users/overall")
+    fun getOverallActiveUsers(@RequestParam limit: Int) = getActiveUsers(overall(), limit)
+
+    private fun getPopularWorks(range: ChartRange?, limit: Int): GetResponse {
+        val items = chartService.getPopularWorks(range, limit)
+        return GetResponse(
+                title = "인기 작품",
+                start = range?.startDate(),
+                end = range?.endDate(),
+                has_diff = range != null,
+                items = items.map { it.map { ChartItemObject(
+                        link = "/works/${UrlEscapers.urlPathSegmentEscaper().escape(it.title)}/",
+                        text = it.title
+                ) } }
+        )
     }
 
-    private fun getPopularWorksOfWeek(week: SundayStartWeek): CloseableIterator<Pair<Int, Int>> {
-        val range = week.instantRange(defaultTimeZone)
-        val factor = history.user.countDistinct()
-        return JPAQuery<History>(entityManager, HQLTemplates.DEFAULT)
-                .select(Projections.constructor(Pair::class.java, history.work.id, factor) as Expression<Pair<Int, Int>>)
-                .from(history)
-                .where(history.updatedAt.between(Timestamp.from(range.lowerEndpoint()), Timestamp.from(range.upperEndpoint())))
-                .groupBy(history.work.id)
-                .orderBy(factor.desc())
-                .iterate()
+    private fun getActiveUsers(range: ChartRange?, limit: Int): GetResponse {
+        val items = chartService.getActiveUsers(range, limit)
+        return GetResponse(
+                title = "활발한 사용자",
+                start = range?.startDate(),
+                end = range?.endDate(),
+                has_diff = range != null,
+                items = items.map { it.map { ChartItemObject(
+                        link = "/users/${UrlEscapers.urlPathSegmentEscaper().escape(it.username)}/",
+                        text = it.username
+                ) } }
+        )
     }
 }
