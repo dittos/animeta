@@ -59,7 +59,7 @@ export async function login(username, password){
 }
 
 export function getCurrentUser() {
-  return fetchWithSession('/api/v2/me');
+  return fetchWithSession('/newapi/v2/me');
 }
 
 export function getWorks({ orphans = false, offset = 0 }) {

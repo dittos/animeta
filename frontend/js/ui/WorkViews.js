@@ -111,7 +111,7 @@ export class Work extends React.Component {
             return;
         }
 
-        $.post(`/api/v2/users/${encodeURIComponent(currentUser.name)}/records`, {
+        $.post(`/newapi/v2/users/${encodeURIComponent(currentUser.name)}/records`, {
             work_title: this.props.work.title,
             status_type: 'interested',
         }).then(result => {

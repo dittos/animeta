@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service
 class PostSerializer(val userSerializer: UserSerializer, val recordSerializer: RecordSerializer) {
     fun serialize(history: History, includeRecord: Boolean = false, includeUser: Boolean = false): PostDTO {
         return PostDTO(
-                id = history.id,
-                record_id = history.record.id,
+                id = history.id!!,
+                record_id = history.record.id!!,
                 status = history.status,
                 status_type = history.status_type.name.toLowerCase(),
                 comment = history.comment,

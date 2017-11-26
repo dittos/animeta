@@ -88,6 +88,10 @@ class LoginDialog extends React.Component {
                     errors: true
                 });
             }
+        }, () => {
+            this.setState({
+                submitted: false
+            });
         });
     };
 }

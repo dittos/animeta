@@ -20,11 +20,11 @@ class WorkService(val workRepository: WorkRepository,
                   val titleMappingRepository: TitleMappingRepository,
                   val entityManager: EntityManager) {
     fun getOrCreate(title: String): Work {
-        val key = normalizeTitle(title)
-        val mapping = titleMappingRepository.findOneByTitle(key)
+        val mapping = titleMappingRepository.findOneByTitle(title)
         if (mapping != null) {
             return mapping.work
         }
+        val key = normalizeTitle(title)
         val similarMapping = titleMappingRepository.findOneByKey(key)
         if (similarMapping != null) {
             val mapping = titleMappingRepository.save(TitleMapping(

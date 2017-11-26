@@ -25,7 +25,7 @@ export function disconnectTwitter() {
 // User Records
 
 export function createRecord(userName, {title, statusType, categoryID}) {
-    return $.post(`/api/v2/users/${userName}/records`, {
+    return $.post(`/newapi/v2/users/${userName}/records`, {
         work_title: title,
         status_type: statusType,
         category_id: categoryID,
@@ -35,21 +35,21 @@ export function createRecord(userName, {title, statusType, categoryID}) {
 // Record
 
 export function updateRecordTitle(recordID, title) {
-    return $.post(`/api/v2/records/${recordID}`, {title: title});
+    return $.post(`/newapi/v2/records/${recordID}`, {title: title});
 }
 
 export function updateRecordCategoryID(recordID, categoryID) {
-    return $.post(`/api/v2/records/${recordID}`, {category_id: categoryID});
+    return $.post(`/newapi/v2/records/${recordID}`, {category_id: categoryID});
 }
 
 export function deleteRecord(recordID) {
-    return $.ajax({type: 'DELETE', url: `/api/v2/records/${recordID}`});
+    return $.ajax({type: 'DELETE', url: `/newapi/v2/records/${recordID}`});
 }
 
 // Record Posts
 
 export function getRecordPosts(recordID) {
-    return $.get(`/api/v2/records/${recordID}/posts`);
+    return $.get(`/newapi/v2/records/${recordID}/posts`);
 }
 
 export function createPost(recordID, {status, statusType, comment, containsSpoiler, publishTwitter}) {
@@ -65,13 +65,13 @@ export function createPost(recordID, {status, statusType, comment, containsSpoil
 // Post
 
 export function deletePost(postID) {
-    return $.ajax({type: 'DELETE', url: `/api/v2/posts/${postID}`});
+    return $.ajax({type: 'DELETE', url: `/newapi/v2/posts/${postID}`});
 }
 
 // User Posts
 
 export function getUserPosts(userName, count, beforeID) {
-    return $.get(`/api/v2/users/${userName}/posts`, {
+    return $.get(`/newapi/v2/users/${userName}/posts`, {
         count,
         before_id: beforeID,
     });
@@ -80,23 +80,23 @@ export function getUserPosts(userName, count, beforeID) {
 // Category
 
 export function renameCategory(categoryID, categoryName) {
-    return $.post(`/api/v2/categories/${categoryID}`, {name: categoryName});
+    return $.post(`/newapi/v2/categories/${categoryID}`, {name: categoryName});
 }
 
 export function removeCategory(categoryID) {
-    return $.ajax({type: 'DELETE', url: `/api/v2/categories/${categoryID}`});
+    return $.ajax({type: 'DELETE', url: `/newapi/v2/categories/${categoryID}`});
 }
 
 // User Categories
 
 export function addCategory(userName, categoryName) {
-    return $.post(`/api/v2/users/${userName}/categories`, {name: categoryName});
+    return $.post(`/newapi/v2/users/${userName}/categories`, {name: categoryName});
 }
 
 export function updateCategoryOrder(userName, categoryIDs) {
     return $.ajax({
         type: 'PUT',
-        url: `/api/v2/users/${userName}/categories`,
+        url: `/newapi/v2/users/${userName}/categories`,
         data: {ids: categoryIDs}
     });
 }

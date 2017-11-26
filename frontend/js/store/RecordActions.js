@@ -8,7 +8,7 @@ function loadRecords(records) {
 }
 
 function addRecord(userName, record) {
-    return dispatch => $.post('/api/v2/users/' + userName + '/records', record).then(result => {
+    return dispatch => $.post('/newapi/v2/users/' + userName + '/records', record).then(result => {
         dispatch({
             type: 'addRecord',
             record: result.record

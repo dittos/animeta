@@ -242,7 +242,7 @@ class Table extends React.Component {
             return;
         }
 
-        $.post(`/api/v2/users/${encodeURIComponent(currentUser.name)}/records`, {
+        $.post(`/newapi/v2/users/${encodeURIComponent(currentUser.name)}/records`, {
             work_title: item.title,
             status_type: 'interested',
         }).then(result => {
