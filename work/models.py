@@ -13,10 +13,6 @@ class Work(models.Model):
     original_image_filename = models.CharField(max_length=100, null=True, blank=False)
     blacklisted = models.BooleanField(default=False)
 
-    @property
-    def popularity(self):
-        return self.record_set.count()
-
     def __unicode__(self):
         return self.title
 

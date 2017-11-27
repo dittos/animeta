@@ -72,33 +72,3 @@ class History(models.Model):
     class Meta:
         ordering = ['-id']
         get_latest_by = 'updated_at'
-
-
-def get_episodes(work):
-    result = {}
-    q = (work.history_set.exclude(comment='')
-         .order_by('status').values('status')
-         .annotate(models.Count('status')))
-    for row in q:
-        try:
-            number = int(row['status'])
-        except ValueError:
-            continue
-        result[number] = {
-            'number': number,
-            'post_count': row['status__count']
-        }
-    q2 = (work.history_set.filter(comment='')
-          .order_by('status').values('status')
-          .annotate(models.Count('status')))
-    for row in q2:
-        try:
-            number = int(row['status'])
-        except ValueError:
-            continue
-        if number in result:
-            continue
-        if row['status__count'] <= 1:
-            continue
-        result[number] = {'number': number}
-    return sorted(result.values(), key=lambda episode: episode['number'])

@@ -1,8 +1,25 @@
 # -*- coding: utf-8 -*-
+import time
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from api.v2 import BaseView
-from api.serializers import serialize_user
+
+__all__ = ['AccountsView']
+
+
+def serialize_user(user):
+    return {
+        'id': user.id,
+        'name': user.username,
+        'date_joined': serialize_datetime(user.date_joined),
+    }
+
+
+def serialize_datetime(dt):
+    if dt is None:
+        return None
+    seconds = time.mktime(dt.timetuple()) + dt.microsecond / 1000000.0
+    return int(seconds * 1000)
 
 
 class AccountsView(BaseView):

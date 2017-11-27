@@ -53,29 +53,3 @@ def _make_key(c):
 
 def make_key(s):
     return u''.join(map(_make_key, s))
-
-
-def make_regex(q):
-    # We don't need to escape the key. Special characters are removed already.
-    return '.*' + u'.*'.join(filter(None, map(_make_key, q))) + '.*'
-
-
-def search_works(q, min_record_count=2):
-    regex = make_regex(q)
-    work_ids = (WorkTitleIndex.objects.filter(key__regex=regex)
-                .values('work_id'))
-    return WorkIndex.objects.filter(
-        work_id__in=work_ids,
-        record_count__gt=min_record_count - 1,
-        blacklisted=False,
-    ).order_by('rank')
-
-
-def suggest_works(q):
-    work_ids = (WorkTitleIndex.objects.filter(key__startswith=make_key(q))
-                .values('work_id'))
-    return WorkIndex.objects.filter(
-        work_id__in=work_ids,
-        record_count__gt=1,
-        blacklisted=False,
-    ).order_by('rank')

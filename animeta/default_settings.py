@@ -94,9 +94,7 @@ INSTALLED_APPS = (
     'animeta',
     'work',
     'record',
-    'user',
     'connect',
-    'chart',
     'api',
     'search',
 )
