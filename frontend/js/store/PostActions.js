@@ -20,7 +20,7 @@ function createPost(recordID, post, publishOptions) {
             recordID, post, context, publishOptions
         });
         // TODO: handle failure case
-        return $.post('/api/v2/records/' + recordID + '/posts', {
+        return $.post('/newapi/v2/records/' + recordID + '/posts', {
             ...post,
             publish_twitter: publishOptions.has('twitter') ? 'on' : 'off'
         }).then(result => {

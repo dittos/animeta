@@ -62,7 +62,7 @@ class UserRecordsController(val userRepository: UserRepository,
 
     @PostMapping
     @Transactional
-    fun post(@PathVariable name: String,
+    fun create(@PathVariable name: String,
              @CurrentUser currentUser: User,
              @RequestParam("work_title") title: String,
              @RequestParam("category_id", required = false) categoryId: Int?,
