@@ -1,16 +1,36 @@
 package django;
 
-import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
-import java.util.Objects;
+import com.google.common.hash.Hashing;
 
 import javax.crypto.Mac;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-
-import com.google.common.hash.Hashing;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.util.Objects;
 
 public class Crypto {
     private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
+    private static final byte[] DEFAULT_ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".getBytes();
+    private static final SecureRandom SECURE_RANDOM;
+
+    static {
+        if (System.getProperty("django.crypto.insecure_rng") != null) {
+            // /dev/random is slow in some environment
+            SECURE_RANDOM = new SecureRandom();
+        } else {
+            try {
+                SECURE_RANDOM = SecureRandom.getInstanceStrong();
+            } catch (NoSuchAlgorithmException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+    }
 
     public static byte[] saltedHmac(String keySalt, byte[] value, String secret) {
         byte[] key = Hashing.sha1().hashString(keySalt + secret, StandardCharsets.UTF_8).asBytes();
@@ -21,6 +41,22 @@ public class Crypto {
         } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static byte[] getRandomString() {
+        return getRandomString(12);
+    }
+
+    public static byte[] getRandomString(int length) {
+        return getRandomString(length, DEFAULT_ALLOWED_CHARS);
+    }
+
+    public static byte[] getRandomString(int length, byte[] allowedChars) {
+        byte[] buf = new byte[length];
+        for (int i = 0; i < length; i++) {
+            buf[i] = allowedChars[SECURE_RANDOM.nextInt(allowedChars.length)];
+        }
+        return buf;
     }
 
     public static boolean constantTimeCompare(String a, String b) {
@@ -36,5 +72,15 @@ public class Crypto {
             result |= a.charAt(i) ^ b.charAt(i);
         }
         return result == 0;
+    }
+
+    public static byte[] pbkdf2(char[] password, byte[] salt, int iterations) {
+        try {
+            KeySpec spec = new PBEKeySpec(password, salt, iterations, 256);
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            return skf.generateSecret(spec).getEncoded();
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

@@ -1,5 +1,7 @@
 package django;
 
+import static com.google.common.primitives.Chars.indexOf;
+
 public final class BaseConverter {
     public static final BaseConverter BASE62 = new BaseConverter("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray());
 
@@ -36,14 +38,5 @@ public final class BaseConverter {
         } else {
             return x;
         }
-    }
-
-    private static int indexOf(char[] s, char c) {
-        for (int i = 0; i < s.length; i++) {
-            if (s[i] == c) {
-                return i;
-            }
-        }
-        return -1;
     }
 }
