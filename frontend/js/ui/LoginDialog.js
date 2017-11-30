@@ -72,7 +72,7 @@ class LoginDialog extends React.Component {
     _onSubmit = (event) => {
         event.preventDefault();
         this.setState({submitted: true});
-        $.post('/api/v2/auth', {
+        $.post('/newapi/v2/auth', {
             'username': this.refs.username.value,
             'password': this.refs.password.value,
             'transient': this.state.isTransient ? 'true' : 'false'

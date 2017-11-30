@@ -1,6 +1,5 @@
 package net.animeta.backend.security
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import django.Signing
 import net.animeta.backend.exception.ApiException
 import net.animeta.backend.model.User
@@ -18,7 +17,6 @@ import java.time.Duration
 @Component
 class CurrentUserArgumentResolver(val userRepository: UserRepository,
                                   @Value("\${animeta.security.secret-key}") val secretKey: String) : HandlerMethodArgumentResolver {
-    private val objectMapper = ObjectMapper().readerFor(DjangoAuthSession::class.java)
     private val sessionCookieAge = Duration.ofDays(14) // 2 weeks
 
     override fun supportsParameter(parameter: MethodParameter): Boolean {
@@ -45,7 +43,9 @@ class CurrentUserArgumentResolver(val userRepository: UserRepository,
             return null
         }
         try {
-            val session: DjangoAuthSession = Signing.loadString(header, secretKey, "django.contrib.sessions.backends.signed_cookies", objectMapper::readValue, sessionCookieAge)
+            val session: DjangoAuthSession = Signing.loadString(header, secretKey, "django.contrib.sessions.backends.signed_cookies", DjangoAuthSession, sessionCookieAge)
+            // TODO: handle _session_expiry
+            // TODO: handle _auth_user_hash
             return userRepository.findOne(session.userId.toIntOrNull())
         } catch (e: Exception) {
             return null

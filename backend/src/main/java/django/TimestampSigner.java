@@ -9,6 +9,16 @@ public class TimestampSigner extends Signer {
         super(key, salt);
     }
 
+    @Override
+    public String sign(String value) {
+        value = value + SEPARATOR + timestamp();
+        return super.sign(value);
+    }
+
+    private String timestamp() {
+        return BaseConverter.BASE62.encode(System.currentTimeMillis() / 1000L);
+    }
+
     @Override public String unsign(String signedValue) {
         return unsign(signedValue, null);
     }

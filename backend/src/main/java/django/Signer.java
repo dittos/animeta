@@ -11,8 +11,12 @@ public class Signer {
         this.salt = salt;
     }
 
-    public String signature(String value) {
+    private String signature(String value) {
         return base64Hmac(salt + "signer", value.getBytes(), key);
+    }
+
+    public String sign(String value) {
+        return value + SEPARATOR + signature(value);
     }
 
     public String unsign(String signedValue) {

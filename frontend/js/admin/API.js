@@ -42,7 +42,7 @@ export async function login(username, password){
   const data = new FormData();
   data.append('username', username);
   data.append('password', password);
-  const resp = await fetch('/api/v2/auth', {
+  const resp = await fetch('/newapi/v2/auth', {
     method: 'POST',
     body: data,
     headers: {

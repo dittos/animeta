@@ -9,7 +9,10 @@ data class User(
         @get:Id
         var id: Int,
         var username: String,
-        var date_joined: Timestamp
+        var date_joined: Timestamp,
+        var password: String,
+        @get:Column(name = "is_active")
+        var active: Boolean
 ) {
         @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
         var twitterSettings: List<TwitterSetting> = listOf()

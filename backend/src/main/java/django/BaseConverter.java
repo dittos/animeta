@@ -21,6 +21,39 @@ public final class BaseConverter {
         }
     }
 
+    public String encode(long number) {
+        String s = Long.toString(number);
+
+        boolean neg = s.charAt(0) == '-';
+
+        long x = 0L;
+        for (int i = neg ? 1 : 0; i < s.length(); i++) {
+            int index = indexOf(DECIMAL_DIGITS, s.charAt(i));
+            if (index == -1) {
+                throw new IllegalArgumentException();
+            }
+            x = Math.addExact(Math.multiplyExact(x, DECIMAL_DIGITS.length), index);
+        }
+
+        String res;
+        if (x == 0) {
+            res = "" + digits[0];
+        } else {
+            res = "";
+            while (x > 0) {
+                int digit = Math.toIntExact(x % digits.length);
+                res = digits[digit] + res;
+                x /= digits.length;
+            }
+        }
+
+        if (neg) {
+            return "-" + res;
+        } else {
+            return res;
+        }
+    }
+
     public long decode(String s) {
         boolean neg = s.charAt(0) == sign;
 

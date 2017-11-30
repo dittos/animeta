@@ -3,13 +3,13 @@ import $ from 'jquery';
 // Login Session
 
 export function logout() {
-    return $.ajax({type: 'DELETE', url: '/api/v2/auth'});
+    return $.ajax({type: 'DELETE', url: '/newapi/v2/auth'});
 }
 
 // Account
 
 export function changePassword(oldPassword, newPassword1, newPassword2) {
-    return $.post('/api/v2/me/password', {
+    return $.post('/newapi/v2/me/password', {
         old_password: oldPassword,
         new_password1: newPassword1,
         new_password2: newPassword2,
