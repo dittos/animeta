@@ -53,7 +53,7 @@ export function getRecordPosts(recordID) {
 }
 
 export function createPost(recordID, {status, statusType, comment, containsSpoiler, publishTwitter}) {
-    return $.post(`/api/v2/records/${recordID}/posts`, {
+    return $.post(`/newapi/v2/records/${recordID}/posts`, {
         status,
         status_type: statusType,
         comment,

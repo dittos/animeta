@@ -79,7 +79,7 @@ export default {
             loader.callNew(`/posts/${id}`),
             loader.callNew('/charts/works/weekly', {limit: 5}),
         ]);
-        const work = await loader.call(`/works/${post.record.work_id}`);
+        const work = await loader.callNew(`/works/${post.record.work_id}`);
         return {
             currentUser,
             post,
