@@ -14,7 +14,8 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @RequestMapping("/v2/auth")
 class AuthController(private val authService: AuthService,
-                     @Value("\${animeta.security.secret-key}") val secretKey: String) {
+                     @Value("\${animeta.security.secret-key}") val secretKey: String,
+                     @Value("\${animeta.security.session-cookie-domain:#{null}}") val sessionCookieDomain: String?) {
     data class AuthResult(val ok: Boolean, val session_key: String? = null)
 
     @GetMapping
@@ -35,7 +36,9 @@ class AuthController(private val authService: AuthService,
         // TODO: set _auth_user_hash
         val sessionKey = Signing.toString(session, secretKey, "django.contrib.sessions.backends.signed_cookies", DjangoAuthSession, true)
         val cookie = Cookie("sessionid", sessionKey)
-        // TODO: configurable domain
+        if (sessionCookieDomain != null) {
+            cookie.domain = sessionCookieDomain
+        }
         cookie.path = "/"
         if (transient) {
             // A negative value means that the cookie is not stored persistently and will be deleted when the Web browser exits.
@@ -51,7 +54,9 @@ class AuthController(private val authService: AuthService,
     @DeleteMapping
     fun logout(servletResponse: HttpServletResponse): AuthResult {
         val cookie = Cookie("sessionid", "")
-        // TODO: configurable domain
+        if (sessionCookieDomain != null) {
+            cookie.domain = sessionCookieDomain
+        }
         cookie.path = "/"
         cookie.maxAge = 0 // delete
         cookie.isHttpOnly = true

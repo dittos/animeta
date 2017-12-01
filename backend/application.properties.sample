@@ -2,6 +2,7 @@ spring.datasource.url=jdbc:postgresql://host:port/database_name
 spring.datasource.username=
 spring.datasource.password=
 animeta.security.secret-key=
+#animeta.security.session-cookie-domain=
 spring.social.twitter.app-id=
 spring.social.twitter.app-secret=
 
