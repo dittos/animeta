@@ -1,8 +1,9 @@
 package net.animeta.backend.chart
 
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.temporal.WeekFields
+import java.time.temporal.TemporalAdjusters
 
 data class SundayStartWeekRange(val sunday: LocalDate) : ChartRange {
     companion object {
@@ -11,8 +12,7 @@ data class SundayStartWeekRange(val sunday: LocalDate) : ChartRange {
         }
 
         fun including(date: LocalDate): SundayStartWeekRange {
-            val field = WeekFields.SUNDAY_START.dayOfWeek()
-            return SundayStartWeekRange(date.with(field, field.range().minimum))
+            return SundayStartWeekRange(date.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)))
         }
     }
 
