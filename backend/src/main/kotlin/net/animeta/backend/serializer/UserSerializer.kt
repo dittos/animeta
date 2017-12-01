@@ -9,7 +9,7 @@ class UserSerializer(val categorySerializer: CategorySerializer) {
     fun serialize(user: User, viewer: User? = null, includeCategories: Boolean = true): UserDTO {
         val isViewer = viewer != null && user.id == viewer.id
         return UserDTO(
-                id = user.id,
+                id = user.id!!,
                 name = user.username,
                 date_joined = user.date_joined.toInstant().toEpochMilli(),
                 is_twitter_connected = if (isViewer) !viewer!!.twitterSettings.isEmpty() else null,

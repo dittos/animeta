@@ -7,12 +7,21 @@ import javax.persistence.*
 @Table(name = "auth_user")
 data class User(
         @get:Id
-        var id: Int,
+        @get:GeneratedValue(strategy = GenerationType.IDENTITY)
+        var id: Int? = null,
         var username: String,
-        var date_joined: Timestamp,
-        var password: String,
+        var first_name: String = "",
+        var last_name: String = "",
+        var email: String = "",
+        var password: String = "",
+        @get:Column(name = "is_staff")
+        var staff: Boolean = false,
         @get:Column(name = "is_active")
-        var active: Boolean
+        var active: Boolean = true,
+        @get:Column(name = "is_superuser")
+        var superuser: Boolean = false,
+        var last_login: Timestamp? = null,
+        var date_joined: Timestamp
 ) {
         @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
         var twitterSettings: List<TwitterSetting> = listOf()

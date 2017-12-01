@@ -8,7 +8,6 @@ import net.animeta.backend.serializer.UserSerializer
 import net.animeta.backend.service.AuthService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import java.util.*
 
 @RestController
 @RequestMapping("/v2/me")
@@ -35,7 +34,7 @@ class CurrentUserController(private val userSerializer: UserSerializer,
         if (!authService.checkPassword(currentUser, oldPassword)) {
             throw ApiException("Old password is wrong", HttpStatus.FORBIDDEN)
         }
-        if (!Arrays.equals(newPassword1, newPassword2)) {
+        if (!newPassword1.contentEquals(newPassword2)) {
             throw ApiException("New password confirmation failed", HttpStatus.BAD_REQUEST)
         }
         authService.changePassword(currentUser, newPassword1)

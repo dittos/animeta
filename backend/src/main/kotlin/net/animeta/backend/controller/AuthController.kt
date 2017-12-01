@@ -1,21 +1,14 @@
 package net.animeta.backend.controller
 
-import django.Signing
 import net.animeta.backend.model.User
 import net.animeta.backend.security.CurrentUser
-import net.animeta.backend.security.DjangoAuthSession
 import net.animeta.backend.service.AuthService
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.bind.annotation.*
-import java.time.Duration
-import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletResponse
 
 @RestController
 @RequestMapping("/v2/auth")
-class AuthController(private val authService: AuthService,
-                     @Value("\${animeta.security.secret-key}") val secretKey: String,
-                     @Value("\${animeta.security.session-cookie-domain:#{null}}") val sessionCookieDomain: String?) {
+class AuthController(private val authService: AuthService) {
     data class AuthResult(val ok: Boolean, val session_key: String? = null)
 
     @GetMapping
@@ -31,36 +24,13 @@ class AuthController(private val authService: AuthService,
         if (user == null || !user.active) {
             return AuthResult(false)
         }
-        val session = DjangoAuthSession(userId = user.id.toString())
-        // TODO: set _session_expiry
-        // TODO: set _auth_user_hash
-        val sessionKey = Signing.toString(session, secretKey, "django.contrib.sessions.backends.signed_cookies", DjangoAuthSession, true)
-        val cookie = Cookie("sessionid", sessionKey)
-        if (sessionCookieDomain != null) {
-            cookie.domain = sessionCookieDomain
-        }
-        cookie.path = "/"
-        if (transient) {
-            // A negative value means that the cookie is not stored persistently and will be deleted when the Web browser exits.
-            cookie.maxAge = -1
-        } else {
-            cookie.maxAge = Duration.ofDays(14).seconds.toInt()
-        }
-        cookie.isHttpOnly = true
-        servletResponse.addCookie(cookie)
+        val sessionKey = authService.login(user, servletResponse, persistent = !transient)
         return AuthResult(ok = true, session_key = sessionKey)
     }
 
     @DeleteMapping
     fun logout(servletResponse: HttpServletResponse): AuthResult {
-        val cookie = Cookie("sessionid", "")
-        if (sessionCookieDomain != null) {
-            cookie.domain = sessionCookieDomain
-        }
-        cookie.path = "/"
-        cookie.maxAge = 0 // delete
-        cookie.isHttpOnly = true
-        servletResponse.addCookie(cookie)
+        authService.logout(servletResponse)
         return AuthResult(true)
     }
 }

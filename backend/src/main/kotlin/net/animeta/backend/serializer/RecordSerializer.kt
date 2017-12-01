@@ -12,7 +12,7 @@ class RecordSerializer(val userSerializer: UserSerializer,
     fun serialize(record: Record, includeHasNewerEpisode: Boolean = false, includeUser: Boolean = false): RecordDTO {
         return RecordDTO(
                 id = record.id!!,
-                user_id = record.user.id,
+                user_id = record.user.id!!,
                 work_id = record.work.id!!,
                 category_id = record.category?.id,
                 title = record.title,
