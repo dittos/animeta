@@ -63,7 +63,7 @@ class Signup extends React.Component {
     _onSubmit = (event) => {
         event.preventDefault();
         this.setState({submitted: true});
-        $.post('/api/v2/accounts', {
+        $.post('/newapi/v2/accounts', {
             'username': this.state.username,
             'password1': this.state.password,
             'password2': this.state.passwordCheck
@@ -75,6 +75,10 @@ class Signup extends React.Component {
                     submitted: false,
                     errors: result.errors
                 });
+        }, () => {
+            this.setState({
+                submitted: false
+            });
         });
     };
 }
