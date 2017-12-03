@@ -13,7 +13,8 @@ data class Query<T>(val entityClass: Class<T>,
                     val predicates: List<Predicate> = listOf(),
                     val orderSpecifiers: List<OrderSpecifier<*>>? = null,
                     val relatedPaths: List<Path<*>> = listOf(),
-                    val limit: Int? = null) {
+                    val limit: Int? = null,
+                    val offset: Int? = null) {
     fun selectRelated(vararg paths: Path<*>): Query<T> {
         return copy(relatedPaths = relatedPaths + paths)
     }
@@ -28,5 +29,9 @@ data class Query<T>(val entityClass: Class<T>,
 
     fun limit(limit: Int): Query<T> {
         return copy(limit = limit)
+    }
+
+    fun offset(offset: Int): Query<T> {
+        return copy(offset = offset)
     }
 }

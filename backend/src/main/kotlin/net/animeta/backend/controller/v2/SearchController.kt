@@ -15,12 +15,12 @@ class SearchController(private val searchService: SearchService) {
     fun search(@RequestParam("q") query: String,
                @RequestParam("min_record_count", defaultValue = "2") minRecordCount: Int): List<SearchResultItem> {
         return searchService.searchWorks(query, limit = 30, minRecordCount = minRecordCount)
-                .map { SearchResultItem(it.title, it.record_count, it.work_id) }
+                .map { SearchResultItem(it.title, it.record_count, it.work.id!!) }
     }
 
     @GetMapping("/suggest")
     fun suggest(@RequestParam("q") query: String): List<SearchResultItem> {
         return searchService.suggestWorks(query, limit = 30)
-                .map { SearchResultItem(it.title, it.record_count, it.work_id) }
+                .map { SearchResultItem(it.title, it.record_count, it.work.id!!) }
     }
 }

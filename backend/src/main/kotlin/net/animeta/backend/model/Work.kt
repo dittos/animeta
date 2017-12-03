@@ -14,17 +14,20 @@ data class Work(
         var id: Int? = null,
         var title: String,
         var image_filename: String?,
+        var raw_metadata: String?,
         @get:Type(type = "jsonb")
         var metadata: String?,
         var blacklisted: Boolean
 ) {
-    @get:OneToMany(fetch = FetchType.LAZY)
-    @get:JoinColumn(name = "work_id")
+    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = arrayOf(CascadeType.REMOVE), orphanRemoval = true)
     var indexes: List<WorkIndex> = listOf()
+
+    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = arrayOf(CascadeType.REMOVE), orphanRemoval = true)
+    var titleIndexes: List<WorkTitleIndex> = listOf()
 
     @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work")
     var histories: List<History> = listOf()
 
-    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work")
-    var titleMappings: List<TitleMapping> = listOf()
+    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = arrayOf(CascadeType.REMOVE), orphanRemoval = true)
+    var titleMappings: MutableList<TitleMapping> = mutableListOf()
 }

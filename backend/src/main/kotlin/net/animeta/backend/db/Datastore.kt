@@ -24,6 +24,9 @@ class Datastore(val entityManager: EntityManager) {
         if (query.limit != null) {
             jpaQuery.limit(query.limit.toLong())
         }
+        if (query.offset != null) {
+            jpaQuery.offset(query.offset.toLong())
+        }
         return jpaQuery.fetch()
     }
 }

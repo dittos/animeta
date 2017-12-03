@@ -58,10 +58,14 @@ class WorkSerializer(val workService: WorkService,
         )
     }
 
-    fun getImageUrl(work: Work): String? {
+    fun getImagePath(work: Work): String? {
         if (work.image_filename != null)
-            return "https://animeta.net/media/" + work.image_filename
+            return "/media/" + work.image_filename
         return null
+    }
+
+    fun getImageUrl(work: Work): String? {
+        return getImagePath(work)?.let { "https://animeta.net" + it }
     }
 
     fun serializeMetadata(work: Work, item: JsonNode): WorkMetadata {

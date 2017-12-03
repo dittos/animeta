@@ -67,40 +67,43 @@ export function getWorks({ orphans = false, offset = 0 }) {
   params.append('offset', offset);
   if (orphans)
     params.append('orphans', '1');
-  return fetchWithSession(`/api/admin/works?${params}`);
+  return fetchWithSession(`/newapi/admin/works?${params}`);
 }
 
 export function createWork(title) {
-  return fetchWithSession(`/api/admin/works`, {
+  return fetchWithSession(`/newapi/admin/works`, {
     method: 'POST',
     body: JSON.stringify({ title }),
+    headers: {'Content-Type': 'application/json'},
   });
 }
 
 export function getWork(id) {
-  return fetchWithSession(`/api/admin/works/${id}`);
+  return fetchWithSession(`/newapi/admin/works/${id}`);
 }
 
 export function editWork(id, request) {
-  return fetchWithSession(`/api/admin/works/${id}`, {
+  return fetchWithSession(`/newapi/admin/works/${id}`, {
     method: 'POST',
     body: JSON.stringify(request),
+    headers: {'Content-Type': 'application/json'},
   });
 }
 
 export function deleteWork(id) {
-  return fetchWithSession(`/api/admin/works/${id}`, {method: 'DELETE'});
+  return fetchWithSession(`/newapi/admin/works/${id}`, {method: 'DELETE'});
 }
 
 export function addTitleMapping(workId, titleMapping) {
-  return fetchWithSession(`/api/admin/works/${workId}/title-mappings`, {
+  return fetchWithSession(`/newapi/admin/works/${workId}/title-mappings`, {
     method: 'POST',
     body: JSON.stringify(titleMapping),
+    headers: {'Content-Type': 'application/json'},
   });
 }
 
 export function deleteTitleMapping(id) {
-  return fetchWithSession(`/api/admin/title-mappings/${id}`, {method: 'DELETE'});
+  return fetchWithSession(`/newapi/admin/title-mappings/${id}`, {method: 'DELETE'});
 }
 
 export function searchWork(q, {minRecordCount = 2}) {
@@ -108,8 +111,4 @@ export function searchWork(q, {minRecordCount = 2}) {
   params.append('q', q);
   params.append('min_record_count', minRecordCount);
   return fetchWithSession(`/newapi/v2/search?${params}`);
-}
-
-export function getStudios() {
-  return fetchWithSession('/api/admin/studios');
 }

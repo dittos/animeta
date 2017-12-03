@@ -47,6 +47,7 @@ dependencies {
     compile "org.springframework.social:spring-social-twitter"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"
     compile "com.squareup.okio:okio:1.9.0"
     compile "com.google.guava:guava:23.2-jre"
     compile "com.querydsl:querydsl-jpa:4.1.3"

@@ -37,6 +37,7 @@ class WorkService(val workRepository: WorkRepository,
             val work = workRepository.save(Work(
                     title = title,
                     image_filename = null,
+                    raw_metadata = null,
                     metadata = null,
                     blacklisted = false
             ))
