@@ -1,4 +1,4 @@
-package net.animeta.backend.controller
+package net.animeta.backend.controller.v2
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder

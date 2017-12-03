@@ -1,4 +1,4 @@
-package net.animeta.backend.controller
+package net.animeta.backend.controller.v2
 
 import net.animeta.backend.service.SearchService
 import org.springframework.web.bind.annotation.GetMapping

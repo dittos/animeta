@@ -1,4 +1,4 @@
-package net.animeta.backend.controller
+package net.animeta.backend.controller.v2
 
 import net.animeta.backend.dto.UserDTO
 import net.animeta.backend.model.User

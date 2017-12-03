@@ -1,4 +1,4 @@
-package net.animeta.backend.controller
+package net.animeta.backend.controller.v2
 
 import com.google.common.net.UrlEscapers
 import net.animeta.backend.chart.ChartItem
@@ -50,10 +50,14 @@ class ChartController(val chartService: ChartService) {
                 start = range?.startDate(),
                 end = range?.endDate(),
                 has_diff = range != null,
-                items = items.map { it.map { ChartItemObject(
-                        link = "/works/${UrlEscapers.urlPathSegmentEscaper().escape(it.title)}/",
-                        text = it.title
-                ) } }
+                items = items.map {
+                    it.map {
+                        ChartItemObject(
+                                link = "/works/${UrlEscapers.urlPathSegmentEscaper().escape(it.title)}/",
+                                text = it.title
+                        )
+                    }
+                }
         )
     }
 
@@ -64,10 +68,14 @@ class ChartController(val chartService: ChartService) {
                 start = range?.startDate(),
                 end = range?.endDate(),
                 has_diff = range != null,
-                items = items.map { it.map { ChartItemObject(
-                        link = "/users/${UrlEscapers.urlPathSegmentEscaper().escape(it.username)}/",
-                        text = it.username
-                ) } }
+                items = items.map {
+                    it.map {
+                        ChartItemObject(
+                                link = "/users/${UrlEscapers.urlPathSegmentEscaper().escape(it.username)}/",
+                                text = it.username
+                        )
+                    }
+                }
         )
     }
 }

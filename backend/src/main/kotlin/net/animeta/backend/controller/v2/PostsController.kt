@@ -1,4 +1,4 @@
-package net.animeta.backend.controller
+package net.animeta.backend.controller.v2
 
 import net.animeta.backend.db.Datastore
 import net.animeta.backend.db.query
