@@ -18,6 +18,7 @@ import net.animeta.backend.repository.WorkRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.WorkSerializer
 import net.animeta.backend.service.WorkService
+import net.animeta.backend.service.admin.ImageService
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/admin")
 class AdminController(private val datastore: Datastore,
                       private val workService: WorkService,
+                      private val imageService: ImageService,
                       private val workRepository: WorkRepository,
                       private val recordRepository: RecordRepository,
                       private val titleMappingRepository: TitleMappingRepository,
@@ -86,7 +88,7 @@ class AdminController(private val datastore: Datastore,
                 id = work.id!!,
                 title = work.title,
                 image_filename = work.image_filename,
-                image_path = null, // XXX
+                image_path = workSerializer.getImagePath(work),
                 raw_metadata = work.raw_metadata ?: "",
                 metadata = work.metadata?.let { objectMapper.readTree(it) },
                 title_mappings = titleMappings,
@@ -94,7 +96,7 @@ class AdminController(private val datastore: Datastore,
         )
     }
 
-    data class CrawlImageOptions(val source: String)
+    data class CrawlImageOptions(val source: String, val annId: String?, val url: String?)
     data class EditWorkRequest(val primaryTitleMappingId: Int?,
                                val mergeWorkId: Int?,
                                val forceMerge: Boolean?,
@@ -175,10 +177,14 @@ class AdminController(private val datastore: Datastore,
         val work = workRepository.findOne(id)
         when (options.source) {
             "ann" -> {
-                // TODO
+                work.original_image_filename = imageService.downloadAnnPoster(options.annId!!)
+                work.image_filename = imageService.generateThumbnail(work.original_image_filename!!, removeAnnWatermark = true)
+                workRepository.save(work)
             }
             "url" -> {
-                // TODO
+                work.original_image_filename = imageService.downloadPoster(options.url!!)
+                work.image_filename = imageService.generateThumbnail(work.original_image_filename!!)
+                workRepository.save(work)
             }
         }
     }
