@@ -1,10 +1,13 @@
 # 애니메타
 
-http://animeta.net/
+https://animeta.net/
 
-크게 백엔드 API 서버 (Django)와 프론트엔드 서버 (Node.js, Express) 및 프론트엔드 (React)로 구성되어 있습니다.
+크게 백엔드 API 서버 (Kotlin, Spring Boot)와 프론트엔드 서버 (Node.js, Express) 및 프론트엔드 (React)로 구성되어 있습니다.
 
-## 백엔드 API 서버
+
+## DB 초기화
+
+`backend-legacy` 디렉토리에서 작업합니다.
 
 ### 필요한 것들
 
@@ -22,9 +25,18 @@ http://animeta.net/
     cp animeta/settings.py.example animeta/settings.py
     python manage.py syncdb
 
+
+## 백엔드 서버
+
+`backend` 디렉토리에서 작업합니다.
+
+### 설정
+
+`application.properties.sample`을 가지고 `application.properties`를 작성합니다.
+
 ### 개발 서버 실행
 
-    python manage.py runserver
+    ./gradlew bootRun
 
 
 ## 프론트엔드 / 프론트엔드 서버
