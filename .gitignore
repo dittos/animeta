@@ -3,11 +3,9 @@
 *.orig
 backup
 env
-settings_local.py
 node_modules
-animeta/settings.py
+backend-legacy/animeta/settings.py
 animeta/static/build/
-animeta/assets.py
 animeta/media/
 .coverage
 htmlcov

@@ -3,7 +3,7 @@ from fabric.api import *
 env.hosts = ['animeta.net']
 
 def deploy():
-    _deploy(api=True, frontend=True)
+    _deploy(newapi=True, frontend=True)
 
 def deploy_api():
     _deploy(api=True)
@@ -18,7 +18,7 @@ def deploy_frontend_server():
     _deploy(frontend_server=True)
 
 def deploy_servers():
-    _deploy(api=True, frontend_server=True)
+    _deploy(newapi=True, frontend_server=True)
 
 def _deploy(api=False, newapi=False, frontend=False, frontend_server=False):
     if frontend:
@@ -38,8 +38,9 @@ def _deploy(api=False, newapi=False, frontend=False, frontend_server=False):
             run('./build-external.sh')
             run('npm install')
         if api:
-            run('venv/bin/pip install -r ./requirements.txt')
-            run('venv/bin/python manage.py migrate')
+            with cd('backend-legacy'):
+                run('venv/bin/pip install -r ./requirements.txt')
+                run('venv/bin/python manage.py migrate')
         if newapi:
             put('backend/build/libs/backend-1.0.0.war', 'backend.war.tmp')
         if frontend:
@@ -50,8 +51,6 @@ def _deploy(api=False, newapi=False, frontend=False, frontend_server=False):
             run('rm -rf frontend-dist')
             run('./node_modules/.bin/babel frontend --ignore external/** -d frontend-dist --copy-files')
 
-        if api:
-            run('touch ~/uwsgi-services/animeta.ini')
         if newapi:
             run('mv backend.war.tmp backend-1.0.0.war')
         if frontend_server:
