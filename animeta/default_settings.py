@@ -69,7 +69,6 @@ STATICFILES_FINDERS = (
 ADMIN_MEDIA_PREFIX = '/media/'
 
 MIDDLEWARE_CLASSES = (
-    'animeta.middleware.PerfMeasureMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -95,17 +94,8 @@ INSTALLED_APPS = (
     'work',
     'record',
     'connect',
-    'api',
     'search',
 )
 
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/library/'
-
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
-
-# Support AbstractUser.get_absolute_url
-ABSOLUTE_URL_OVERRIDES = {
-    'auth.user': lambda o: '/users/%s/' % o.username,
-}

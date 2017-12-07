@@ -17,13 +17,3 @@ class TwitterSetting(models.Model):
 class FacebookSetting(models.Model):
     user = models.ForeignKey(User)
     key = models.CharField(max_length=255)
-
-
-def get_connected_services(user):
-    services = []
-    try:
-        TwitterSetting.objects.get(user=user)
-        services.append('twitter')
-    except TwitterSetting.DoesNotExist:
-        pass
-    return services
