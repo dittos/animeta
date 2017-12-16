@@ -8,7 +8,7 @@ import org.springframework.data.repository.CrudRepository
 
 interface TitleMappingRepository : CrudRepository<TitleMapping, Int> {
     fun findOneByTitle(title: String): TitleMapping?
-    fun findOneByKey(key: String): TitleMapping?
+    fun findFirstByKey(key: String): TitleMapping?
     fun countByKeyAndWorkIsNot(key: String, work: Work): Int
 
     @Modifying

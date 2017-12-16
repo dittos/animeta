@@ -25,7 +25,7 @@ class WorkService(val workRepository: WorkRepository,
             return mapping.work
         }
         val key = normalizeTitle(title)
-        val similarMapping = titleMappingRepository.findOneByKey(key)
+        val similarMapping = titleMappingRepository.findFirstByKey(key)
         if (similarMapping != null) {
             val mapping = titleMappingRepository.save(TitleMapping(
                     work = similarMapping.work,
