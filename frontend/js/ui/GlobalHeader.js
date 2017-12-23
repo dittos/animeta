@@ -144,7 +144,7 @@ class GlobalHeader extends React.Component {
     render() {
         const { useRouterLink, mobileSpecial = false } = this.props;
         const Link = useRouterLink ? CompatLink : 'a';
-        const showNotice = false;
+        const showNotice = true;
         return <div className={mobileSpecial ? Styles.mobileSpecialContainer : Styles.container}>
             <Header mobileSpecial={mobileSpecial}>
                 <Layout.LeftRight className={Styles.headerInner}
@@ -153,7 +153,7 @@ class GlobalHeader extends React.Component {
             </Header>
             {showNotice && !mobileSpecial && <Layout.CenteredFullWidth className={Styles.notice}>
                 <Link href="/table/" className={Styles.noticeLink}>
-                    10월 신작 살펴보기!
+                    2018년 1월 신작 살펴보기!
                 </Link>
             </Layout.CenteredFullWidth>}
         </div>;
