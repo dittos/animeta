@@ -3,14 +3,12 @@ package net.animeta.backend.service.admin
 import com.google.common.io.Files
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
+import org.springframework.http.client.OkHttp3ClientHttpRequestFactory
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RequestCallback
 import org.springframework.web.client.ResponseExtractor
 import org.springframework.web.client.RestTemplate
 import org.w3c.dom.NodeList
-import org.xml.sax.InputSource
 import java.io.File
-import java.io.InputStreamReader
 import java.io.IOException
 import java.util.*
 import javax.xml.parsers.DocumentBuilderFactory
@@ -91,7 +89,7 @@ class ImageService constructor (@Value("\${animeta.media.root_dir}") mediaRootDi
     }
 
     private fun download(url: String, dest: File) {
-        val restTemplate = RestTemplate()
+        val restTemplate = RestTemplate(OkHttp3ClientHttpRequestFactory())
         restTemplate.execute(url, HttpMethod.GET, null,
                 ResponseExtractor {
                     it.use {
