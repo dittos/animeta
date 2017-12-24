@@ -15,6 +15,7 @@ data class Work(
         var title: String,
         var image_filename: String?,
         var original_image_filename: String? = null,
+        var image_center_y: Double = 0.0,
         var raw_metadata: String?,
         @get:Type(type = "jsonb")
         var metadata: String?,

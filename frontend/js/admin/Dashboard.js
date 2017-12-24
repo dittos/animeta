@@ -30,6 +30,8 @@ class Dashboard extends React.Component {
     const nextOffset = offset + works.length;
     return (
       <div>
+        <button onClick={() => API.clearCache()}>Clear cache</button>
+
         <h2>Recently added</h2>
 
         <ul>

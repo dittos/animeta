@@ -29,7 +29,7 @@ class ChartService(val entityManager: EntityManager,
                    val workRepository: WorkRepository,
                    val userRepository: UserRepository,
                    val workSerializer: WorkSerializer) {
-    data class ChartItemWork(val id: Int, val title: String, val image_url: String?)
+    data class ChartItemWork(val id: Int, val title: String, val image_url: String?, val image_center_y: Double)
     data class ChartItemUser(val username: String)
 
     private val maxLimit = 100
@@ -45,6 +45,10 @@ class ChartService(val entityManager: EntityManager,
                     .build()
 
     fun defaultTimeZone() = ZoneId.of("Asia/Seoul")
+
+    fun invalidateWorkCache() {
+        popularWorksCache.invalidateAll()
+    }
 
     fun getPopularWorks(range: ChartRange?, limit: Int): List<ChartItem<ChartItemWork>> {
         return popularWorksCache.get(Optional.ofNullable(range)) { getPopularWorksUncached(range) }.take(limit)
@@ -65,7 +69,7 @@ class ChartService(val entityManager: EntityManager,
         val works = workRepository.findAll(chart.map { it.`object` }).associateBy { it.id }
         return chart.map { it.map { id ->
             val work = works[id]!!
-            ChartItemWork(work.id!!, work.title, workSerializer.getImageUrl(work))
+            ChartItemWork(work.id!!, work.title, workSerializer.getImageUrl(work), work.image_center_y)
         } }
     }
 

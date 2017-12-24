@@ -32,6 +32,7 @@ class WorkSerializer(val workService: WorkService,
                 id = work.id!!,
                 title = work.title,
                 image_url = getImageUrl(work),
+                image_center_y = work.image_center_y,
                 alt_titles = if (full) {
                     work.titleMappings.map { it.title }.filterNot { it == work.title }
                 } else {

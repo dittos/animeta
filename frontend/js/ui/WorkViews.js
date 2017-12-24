@@ -58,7 +58,8 @@ function getCoverImageStyle(work) {
     if (work.image_url) {
         return {
             background: (!modernGradientSupported ? '-webkit-' : '') + 'linear-gradient(rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0) 100%),' +
-                'url(' + work.image_url + ') 0 40% no-repeat',
+                'url(' + work.image_url + ') 0 ' +
+                (work.image_center_y * 100) + '% no-repeat',
             backgroundSize: 'cover'
         };
     }

@@ -3,6 +3,7 @@ package net.animeta.backend.controller.admin
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import net.animeta.backend.controller.v2.TablePeriodController
 import net.animeta.backend.db.Datastore
 import net.animeta.backend.db.query
 import net.animeta.backend.dto.WorkDTO
@@ -17,6 +18,7 @@ import net.animeta.backend.repository.TitleMappingRepository
 import net.animeta.backend.repository.WorkRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.WorkSerializer
+import net.animeta.backend.service.ChartService
 import net.animeta.backend.service.WorkService
 import net.animeta.backend.service.admin.ImageService
 import org.springframework.http.HttpStatus
@@ -32,7 +34,9 @@ class AdminController(private val datastore: Datastore,
                       private val recordRepository: RecordRepository,
                       private val titleMappingRepository: TitleMappingRepository,
                       private val historyRepository: HistoryRepository,
+                      private val chartService: ChartService,
                       private val workSerializer: WorkSerializer,
+                      private val tablePeriodController: TablePeriodController,
                       private val objectMapper: ObjectMapper) {
     @GetMapping("/works")
     fun getWorks(@CurrentUser currentUser: User,
@@ -65,6 +69,7 @@ class AdminController(private val datastore: Datastore,
             val title: String,
             val image_filename: String?,
             val image_path: String?,
+            val image_center_y: Double,
             val raw_metadata: String,
             val metadata: JsonNode?,
             val title_mappings: List<TitleMappingDTO>,
@@ -89,6 +94,7 @@ class AdminController(private val datastore: Datastore,
                 title = work.title,
                 image_filename = work.image_filename,
                 image_path = workSerializer.getImagePath(work),
+                image_center_y = work.image_center_y,
                 raw_metadata = work.raw_metadata ?: "",
                 metadata = work.metadata?.let { objectMapper.readTree(it) },
                 title_mappings = titleMappings,
@@ -102,7 +108,8 @@ class AdminController(private val datastore: Datastore,
                                val forceMerge: Boolean?,
                                val rawMetadata: String?,
                                val crawlImage: CrawlImageOptions?,
-                               val blacklisted: Boolean?)
+                               val blacklisted: Boolean?,
+                               val imageCenterY: Double?)
 
     @PostMapping("/works/{id}")
     @Transactional
@@ -121,6 +128,16 @@ class AdminController(private val datastore: Datastore,
         }
         if (request.crawlImage != null) {
             crawlImage(id, request.crawlImage)
+        }
+        if (request.blacklisted != null) {
+            val work = workRepository.findOne(id)
+            work.blacklisted = request.blacklisted
+            workRepository.save(work)
+        }
+        if (request.imageCenterY != null) {
+            val work = workRepository.findOne(id)
+            work.image_center_y = request.imageCenterY
+            workRepository.save(work)
         }
         return getWork(currentUser, id)
     }
@@ -231,6 +248,14 @@ class AdminController(private val datastore: Datastore,
             throw ApiException("Record exists", HttpStatus.FORBIDDEN)
         }
         titleMappingRepository.delete(mapping)
+        return DeleteResponse(true)
+    }
+
+    @DeleteMapping("/caches")
+    fun clearCache(@CurrentUser currentUser: User): DeleteResponse {
+        checkPermission(currentUser)
+        chartService.invalidateWorkCache()
+        tablePeriodController.invalidateCache()
         return DeleteResponse(true)
     }
 

@@ -27,6 +27,10 @@ class TablePeriodController(val datastore: Datastore,
             .expireAfterWrite(1, TimeUnit.HOURS)
             .build()
 
+    fun invalidateCache() {
+        cache.invalidateAll()
+    }
+
     @GetMapping
     fun get(@PathVariable("period") periodParam: String,
             @RequestParam("only_first_period", defaultValue = "false") onlyFirstPeriod: Boolean,

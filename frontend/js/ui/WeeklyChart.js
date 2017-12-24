@@ -16,14 +16,18 @@ function WeeklyChart({ data }) {
             }
             var work = item.object;
             return <Link to={getWorkURL(work.title)}
-                className={Styles.item}>
+                className={Styles.item}
+                style={work.image_url ? {
+                    backgroundImage: `url("${work.image_url}")`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: `0 ${work.image_center_y * 100}%`,
+                    backgroundRepeat: 'no-repeat',
+                } : {}}>
                 <div className="chart-item-text">
                     <span className="rank">{item.rank}위</span>
                     <span className="title">{work.title}</span>
                     {diff}
                 </div>
-                {work.image_url &&
-                    <img src={work.image_url} />}
             </Link>;
         })}
     </div>;

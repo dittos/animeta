@@ -19,6 +19,7 @@ data class WorkDTO(
         val id: Int,
         val title: String,
         val image_url: String?,
+        val image_center_y: Double,
         val alt_titles: List<String>?,
         val episodes: List<Episode>?,
         val record_count: Int,

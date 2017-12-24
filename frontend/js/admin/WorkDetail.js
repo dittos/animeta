@@ -11,6 +11,7 @@ import {
 import * as API from './API';
 import WorkMergeForm from './WorkMergeForm';
 import ImageUploadForm from './ImageUploadForm';
+import ImageCropper from './ImageCropper';
 
 class WorkDetail extends React.Component {
   state = {
@@ -123,6 +124,13 @@ class WorkDetail extends React.Component {
         />
 
         {work.image_path && (
+          <ImageCropper
+            url={work.image_path}
+            position={work.image_center_y}
+            onSave={this._saveImageCenter}
+          />
+        )}
+        {work.image_path && (
           <img src={work.image_path} alt={`Poster for ${work.title}`} />
         )}
       </div>
@@ -160,6 +168,14 @@ class WorkDetail extends React.Component {
         source,
         ...options,
       }
+    }).then(this._reload, e => {
+      alert(e.message);
+    });
+  };
+
+  _saveImageCenter = y => {
+    API.editWork(this.state.work.id, {
+      imageCenterY: y
     }).then(this._reload, e => {
       alert(e.message);
     });

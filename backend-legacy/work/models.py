@@ -9,6 +9,7 @@ class Work(models.Model):
     metadata = JSONField(null=True)
     image_filename = models.CharField(max_length=100, null=True, blank=False)
     original_image_filename = models.CharField(max_length=100, null=True, blank=False)
+    image_center_y = models.FloatField(default=0.0)
     blacklisted = models.BooleanField(default=False)
 
 
