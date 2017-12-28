@@ -10,6 +10,7 @@
     },
     "rules": {
         "comma-dangle": 0,
+        "no-unused-vars": 1,
         "react/jsx-no-duplicate-props": 1,
         "react/jsx-no-undef": 1,
         "react/jsx-uses-react": 1,

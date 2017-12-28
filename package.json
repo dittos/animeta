@@ -75,9 +75,7 @@
     "webpack-dev-server": "^2.9.7"
   },
   "scripts": {
-    "start": "concurrently \"npm run start-server\" \"npm run start-assets\"",
-    "start-server": "babel-node frontend/frontendServer.js",
-    "start-assets": "webpack-dev-server --inline",
+    "start": "babel-node frontend/frontendServer.js",
     "build-assets": "NODE_ENV=production webpack",
     "build-dist": "babel frontend --ignore external/** -d frontend-dist --copy-files",
     "test": "jest"

@@ -8,7 +8,6 @@ import serializeJS from 'serialize-javascript';
 import ReactDOMServer from 'react-dom/server';
 import Backend, {HttpNotFound} from './backend';
 import renderFeed from './renderFeed';
-import assetFilenames from '../assets.json';
 import config from '../config.json';
 import {render, injectLoaderFactory} from 'nuri/server';
 import app from '../js/routes';
@@ -50,7 +49,42 @@ injectLoaderFactory(serverRequest => {
     };
 });
 
-const server = express();
+var server;
+var getAssetFilenames;
+if (DEBUG) {
+    const webpack = require('webpack');
+    const WebpackDevServer = require('webpack-dev-server');
+    const webpackConfig = require('../../webpack.config.js');
+    const wdsOptions = {
+        serverSideRender: true,
+        publicPath: '/static/build/',
+        contentBase: false,
+        host: 'localhost',
+        port: 3000,
+        inline: true,
+    };
+    WebpackDevServer.addDevServerEntrypoints(webpackConfig, wdsOptions);
+    const compiler = webpack(webpackConfig);
+    const wds = new WebpackDevServer(compiler, wdsOptions);
+    server = wds.app;
+    module.exports = wds;
+
+    const {getAssets} = require('./assets');
+    getAssetFilenames = function(res) {
+        const statsObj = res.locals.webpackStats;
+        if (!statsObj) {
+            throw new Error('webpack-dev-middleware is unavailable');
+        }
+        return getAssets(compiler, statsObj);
+    };
+} else {
+    server = express();
+    module.exports = server;
+    const assetFilenames = require('../assets.json');
+    getAssetFilenames = function() {
+        return assetFilenames;
+    };
+}
 
 server.set('view engine', 'ejs');
 server.set('views', __dirname);
@@ -107,7 +141,7 @@ function renderDefault(res, locals, content, callback) {
         DEBUG,
         STATIC_URL: '/static/',
         ASSET_BASE: config.assetBase || '',
-        assetFilenames,
+        assetFilenames: getAssetFilenames(res),
         title: '',
         meta: {},
         stylesheets: [],
@@ -186,6 +220,7 @@ async function userHandler(req, res, username, currentUser) {
         owner,
         records
     };
+    const assetFilenames = getAssetFilenames(res);
     renderDefault(res, {
         title: `${owner.name} 사용자`,
         preloadData,
@@ -240,6 +275,7 @@ server.get('/records/:id/', recordHandler);
 server.get('/records/:id/delete/', recordHandler);
 
 server.get('/admin/', (req, res) => {
+    const assetFilenames = getAssetFilenames(res);
     renderDefault(res, {
         title: `Admin`,
         preloadData: {},
@@ -266,6 +302,7 @@ server.get('*', (req, res, next) => {
             res.status(errorStatus);
 
         preloadData.daum_api_key = config.daumAPIKey; // XXX
+        const assetFilenames = getAssetFilenames(res);
         renderDefault(res, {
             preloadData,
             title,
@@ -325,5 +362,3 @@ server.use((req, res, next) => {
     }
     next();
 });
-
-module.exports = server;

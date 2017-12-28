@@ -7,6 +7,7 @@ var AssetsPlugin = require('assets-webpack-plugin');
 var clientDefinePlugin = new webpack.DefinePlugin({
     'process.env.CLIENT': JSON.stringify(true),
 });
+var config;
 
 module.exports = config = {
     context: __dirname + '/frontend',
