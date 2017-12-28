@@ -21,17 +21,17 @@ module.exports = config = {
         common: './js/common.js'
     },
     output: {
-        path: 'animeta/static/build',
+        path: path.resolve(__dirname, 'animeta/static/build'),
         publicPath: '/static/build/',
         filename: '[name].js'
     },
     module: {
-        loaders: [
-            { test: /\.js[x]?$/, exclude: /node_modules/, loader: 'babel-loader' },
-            { test: /\.json$/, loader: 'json-loader' },
-            { test: /\.less$/, loader: ExtractTextPlugin.extract('style', 'css?localIdentName=[name]_[local]_[hash:base64:5]!autoprefixer!less') },
-            { test: /\.css$/, loader: ExtractTextPlugin.extract('style', 'css!autoprefixer') },
-            { test: /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/, loader: 'url' }
+        rules: [
+            { test: /\.js[x]?$/, exclude: /node_modules/, use: 'babel-loader' },
+            { test: /\.json$/, use: 'json-loader' },
+            { test: /\.less$/, use: ExtractTextPlugin.extract({fallback: 'style-loader', use: 'css-loader?localIdentName=[name]_[local]_[hash:base64:5]!autoprefixer-loader!less-loader'}) },
+            { test: /\.css$/, use: ExtractTextPlugin.extract({fallback: 'style-loader', use: 'css-loader!autoprefixer-loader'}) },
+            { test: /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/, use: 'url-loader' }
         ]
     }
 };
@@ -49,7 +49,10 @@ if (process.env.NODE_ENV == 'production') {
 
     var uglifyPlugin = new webpack.optimize.UglifyJsPlugin();
 
-    var commonsPlugin = new webpack.optimize.CommonsChunkPlugin('common', 'common-[hash].js');
+    var commonsPlugin = new webpack.optimize.CommonsChunkPlugin({
+        name: 'common',
+        filename: 'common-[hash].js',
+    });
 
     config.plugins = [
         moduleReplacePlugin,
@@ -64,18 +67,20 @@ if (process.env.NODE_ENV == 'production') {
 } else {
     console.log('* Development Build');
 
-    var commonsPlugin = new webpack.optimize.CommonsChunkPlugin('common', 'common.js');
+    var commonsPlugin = new webpack.optimize.CommonsChunkPlugin({
+        name: 'common',
+        filename: 'common.js',
+    });
 
     config.plugins = [
         commonsPlugin,
         new ExtractTextPlugin('[name].css')
     ].concat(config.plugins);
     config.devtool = 'cheap-source-map';
-    config.module.preLoaders = [
-        {
-            test: /\.js$/,
-            exclude: /node_modules/,
-            loader: 'eslint-loader'
-        }
-    ];
+    config.module.rules.push({
+        enforce: 'pre',
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: 'eslint-loader',
+    });
 }

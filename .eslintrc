@@ -1,17 +1,6 @@
 {
     "extends": "eslint:recommended",
     "parser": "babel-eslint",
-    "ecmaFeatures": {
-        "arrowFunctions": true,
-        "blockBindings": true,
-        "classes": true,
-        "jsx": true,
-        "destructuring": true,
-        "objectLiteralShorthandMethods": true,
-        "experimentalObjectRestSpread": true,
-        "modules": true,
-        "templateStrings": true
-    },
     "plugins": [
         "react"
     ],

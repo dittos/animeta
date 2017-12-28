@@ -73,6 +73,11 @@ function onProxyReq(proxyReq, req, res, options) {
         proxyReq.setHeader('x-animeta-session-key', req.cookies.sessionid);
     }
 }
+function onProxyError(err, req, res) {
+    console.error(err);
+    res.writeHead(500, { 'content-type': 'text/plain' });
+    res.end('API error');
+}
 
 const proxy = httpProxy.createProxyServer({
     target: config.backend.baseUrl,
@@ -80,6 +85,7 @@ const proxy = httpProxy.createProxyServer({
     cookieDomainRewrite: config.backend.remote ? '' : false,
 });
 proxy.on('proxyReq', onProxyReq);
+proxy.on('error', onProxyError);
 
 const newProxy = httpProxy.createProxyServer({
     target: config.newBackend.baseUrl,
@@ -87,6 +93,7 @@ const newProxy = httpProxy.createProxyServer({
     cookieDomainRewrite: false,
 });
 newProxy.on('proxyReq', onProxyReq);
+newProxy.on('error', onProxyError);
 
 server.use('/api', (req, res) => {
     proxy.web(req, res);
