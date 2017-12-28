@@ -1,5 +1,6 @@
 var React = require('react');
 var {plusOne} = require('../util');
+var Styles = require('./StatusInput.less');
 
 var StatusInputView = React.createClass({
     getDefaultProps() {
@@ -21,9 +22,7 @@ var StatusInputView = React.createClass({
                 onChange={this._onChange}
                 ref="input" />
             {showSuffix ? '화' : null}
-            <span className="plus-one" style={{cursor: 'pointer'}} onClick={this._onClickPlus}>
-                <img src={require('../../img/plus.gif')} alt="+1" />
-            </span>
+            <span className={Styles.plus} style={{cursor: 'pointer'}} onClick={this._onClickPlus} />
         </span>;
     },
 
@@ -32,7 +31,8 @@ var StatusInputView = React.createClass({
             this.props.onChange(event.target.value);
     },
 
-    _onClickPlus() {
+    _onClickPlus(event) {
+        event.preventDefault();
         this.props.onChange(plusOne(this.props.value));
     }
 });
