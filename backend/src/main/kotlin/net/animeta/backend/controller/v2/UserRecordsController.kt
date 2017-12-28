@@ -17,11 +17,13 @@ import net.animeta.backend.repository.UserRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.PostSerializer
 import net.animeta.backend.serializer.RecordSerializer
+import net.animeta.backend.service.UserRecordsService
 import net.animeta.backend.service.WorkService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import java.sql.Timestamp
 import java.time.Instant
+import java.util.*
 import javax.transaction.Transactional
 
 @RestController
@@ -31,24 +33,36 @@ class UserRecordsController(val userRepository: UserRepository,
                             val categoryRepository: CategoryRepository,
                             val historyRepository: HistoryRepository,
                             val workService: WorkService,
+                            val userRecordsService: UserRecordsService,
                             val datastore: Datastore,
                             val recordSerializer: RecordSerializer,
                             val postSerializer: PostSerializer) {
     data class CreateResponse(val record: RecordDTO, val post: PostDTO)
+    data class GetWithCountsResponse(val data: List<RecordDTO>, val counts: UserRecordsService.RecordCounts)
 
     @GetMapping
     fun get(@PathVariable name: String,
             @CurrentUser(required = false) currentUser: User?,
             @RequestParam("include_has_newer_episode", defaultValue = "false") includeHasNewerEpisodeParam: Boolean,
             @RequestParam("status_type", required = false) statusTypeParam: String?,
+            @RequestParam("category_id", required = false) categoryIdParam: Int?,
             @RequestParam(required = false) sort: String?,
-            @RequestParam(required = false) limit: Int?): List<RecordDTO> {
+            @RequestParam(required = false) limit: Int?,
+            @RequestParam("with_counts", defaultValue = "false") withCounts: Boolean): Any {
         val user = userRepository.findByUsername(name) ?: throw ApiException.notFound()
         val includeHasNewerEpisode = includeHasNewerEpisodeParam && currentUser?.id == user.id
-        val statusType = statusTypeParam?.toUpperCase()?.let { StatusType.valueOf(it) }
+        val statusType = if (statusTypeParam != null && statusTypeParam != "") {
+            StatusType.valueOf(statusTypeParam.toUpperCase())
+        } else {
+            null
+        }
         var query = record.query.filter(record.user.eq(user))
         if (statusType != null) {
             query = query.filter(record.status_type.eq(statusType))
+        }
+        val categoryId: Optional<Int>? = categoryIdParam?.let { Optional.of(it) }?.filter { it != 0 }
+        if (categoryId != null) {
+            query = query.filter(categoryId.map { record.category.id.eq(it) }.orElse(record.category.isNull))
         }
         when (sort) {
             "date", null -> query = query.orderBy(record.updated_at.desc())
@@ -57,7 +71,11 @@ class UserRecordsController(val userRepository: UserRepository,
         if (limit != null) {
             query = query.limit(limit)
         }
-        return datastore.query(query).map { recordSerializer.serialize(it, includeHasNewerEpisode = includeHasNewerEpisode) }
+        val data = datastore.query(query).map { recordSerializer.serialize(it, includeHasNewerEpisode = includeHasNewerEpisode) }
+        if (!withCounts) {
+            return data
+        }
+        return GetWithCountsResponse(data, userRecordsService.count(user, statusType, categoryId))
     }
 
     @PostMapping
