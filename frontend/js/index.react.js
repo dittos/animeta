@@ -14,12 +14,8 @@ injectLoader({
         return $.get('/api/v2' + path, params);
     },
 
-    callNew(path, params) {
-        return $.get('/newapi/v2' + path, params);
-    },
-
     getCurrentUser() {
-        return $.ajax({url: '/newapi/v2/me', __silent__: true}).then(undefined, jqXHR => {
+        return $.ajax({url: '/api/v2/me', __silent__: true}).then(undefined, jqXHR => {
             var deferred = $.Deferred();
             if (jqXHR.statusCode)
                 deferred.resolve(null);

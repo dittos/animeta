@@ -8,7 +8,7 @@ function loadCategories(categories) {
 }
 
 function addCategory(userName, categoryName) {
-    return dispatch => $.post('/newapi/v2/users/' + userName + '/categories', {name: categoryName}).then(category => {
+    return dispatch => $.post('/api/v2/users/' + userName + '/categories', {name: categoryName}).then(category => {
         dispatch({
             type: 'addCategory',
             category
@@ -18,7 +18,7 @@ function addCategory(userName, categoryName) {
 
 function renameCategory(categoryID, categoryName) {
     return dispatch => $.ajax({
-        url: '/newapi/v2/categories/' + categoryID,
+        url: '/api/v2/categories/' + categoryID,
         type: 'POST',
         data: {name: categoryName}
     }).then(category => {
@@ -31,7 +31,7 @@ function renameCategory(categoryID, categoryName) {
 
 function removeCategory(categoryID) {
     return dispatch => $.ajax({
-        url: '/newapi/v2/categories/' + categoryID,
+        url: '/api/v2/categories/' + categoryID,
         type: 'DELETE'
     }).then(() => {
         dispatch({
@@ -43,7 +43,7 @@ function removeCategory(categoryID) {
 
 function updateCategoryOrder(userName, categoryIDs) {
     return dispatch => $.ajax({
-        url: '/newapi/v2/users/' + userName + '/categories',
+        url: '/api/v2/users/' + userName + '/categories',
         type: 'PUT',
         data: {ids: categoryIDs}
     }).then(categories => {

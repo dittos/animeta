@@ -14,7 +14,6 @@ import app from '../js/routes';
 
 const DEBUG = process.env.NODE_ENV !== 'production';
 const backend = new Backend(config.backend.baseUrl);
-const newBackend = new Backend(config.newBackend.baseUrl);
 injectLoaderFactory(serverRequest => {
     serverRequest.loaderCalls = [];
 
@@ -35,12 +34,9 @@ injectLoaderFactory(serverRequest => {
         call(path, params) {
             return call(backend, path, params);
         },
-        callNew(path, params) {
-            return call(newBackend, path, params);
-        },
         getCurrentUser() {
             const startTime = now();
-            return newBackend.getCurrentUser(serverRequest).then(r => {
+            return backend.getCurrentUser(serverRequest).then(r => {
                 const e2eTime = now() - startTime;
                 serverRequest.loaderCalls.push({path: '(currentUser)', e2eTime});
                 return r;
@@ -121,19 +117,11 @@ const proxy = httpProxy.createProxyServer({
 proxy.on('proxyReq', onProxyReq);
 proxy.on('error', onProxyError);
 
-const newProxy = httpProxy.createProxyServer({
-    target: config.newBackend.baseUrl,
-    changeOrigin: false,
-    cookieDomainRewrite: false,
-});
-newProxy.on('proxyReq', onProxyReq);
-newProxy.on('error', onProxyError);
-
 server.use('/api', (req, res) => {
     proxy.web(req, res);
 });
 server.use('/newapi', (req, res) => {
-    newProxy.web(req, res);
+    proxy.web(req, res);
 });
 
 function renderDefault(res, locals, content, callback) {
@@ -207,11 +195,11 @@ server.get('/library/', (req, res, next) => {
 
 async function userHandler(req, res, username, currentUser) {
     if (!currentUser) {
-        currentUser = await newBackend.getCurrentUser(req);
+        currentUser = await backend.getCurrentUser(req);
     }
     const [owner, records] = await Promise.all([
-        newBackend.call(req, `/users/${username}`),
-        newBackend.call(req, `/users/${username}/records`, {
+        backend.call(req, `/users/${username}`),
+        backend.call(req, `/users/${username}/records`, {
             include_has_newer_episode: JSON.stringify(true)
         }),
     ]);
@@ -244,8 +232,8 @@ server.get('/users/:username/history/:id/', (req, res) => {
 server.get('/users/:username/feed/', (req, res, next) => {
     const {username} = req.params;
     Promise.all([
-        newBackend.call(req, `/users/${username}`),
-        newBackend.call(req, `/users/${username}/posts`),
+        backend.call(req, `/users/${username}`),
+        backend.call(req, `/users/${username}/posts`),
     ]).then(([owner, posts]) => {
         res.type('application/atom+xml; charset=UTF-8')
             .end(renderFeed(owner, posts));
@@ -266,7 +254,7 @@ server.get('/records/add/*', currentUserHandler);
 server.get('/records/category/', currentUserHandler);
 
 function recordHandler(req, res, next) {
-    newBackend.call(req, `/records/${req.params.id}`)
+    backend.call(req, `/records/${req.params.id}`)
         .then(record => userHandler(req, res, record.user.name))
         .catch(next);
 }
@@ -349,7 +337,7 @@ server.use((req, res, next) => {
     }
     if (path.match(/^\/[\w.@+-]+$/) && !path.match(/^\/apple-touch-icon/)) {
         const username = path.substring(1);
-        newBackend.call(req, `/users/${username}`).then(user => {
+        backend.call(req, `/users/${username}`).then(user => {
             res.redirect(`/users/${user.name}/`);
         }).catch(err => {
             if (err === HttpNotFound) {

@@ -22,7 +22,7 @@ function Work({data, writeData, loader}) {
             params.before_id = posts[posts.length - 1].id;
         if (episode)
             params.episode = episode;
-        const result = await loader.callNew(`/works/${work.id}/posts`, params);
+        const result = await loader.call(`/works/${work.id}/posts`, params);
         writeData(data => {
             data.posts = data.posts.concat(result.slice(0, POSTS_PER_PAGE));
             data.hasMorePosts = result.length > POSTS_PER_PAGE;
@@ -69,13 +69,13 @@ export default {
         const {title, episode} = params;
         const [currentUser, work, chart] = await Promise.all([
             loader.getCurrentUser(),
-            loader.callNew('/works/by-title', {title}),
-            loader.callNew('/charts/works/weekly', {limit: 5}),
+            loader.call('/works/by-title', {title}),
+            loader.call('/charts/works/weekly', {limit: 5}),
         ]);
         const postsParams = {count: POSTS_PER_PAGE + 1};
         if (episode)
             postsParams.episode = episode;
-        const posts = await loader.callNew(`/works/${work.id}/posts`, postsParams);
+        const posts = await loader.call(`/works/${work.id}/posts`, postsParams);
         return {
             currentUser,
             work,

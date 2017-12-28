@@ -73,7 +73,7 @@ var LibraryHistory = React.createClass({
         var params = {count: this.props.pageSize};
         if (this.state.posts.length > 0)
             params.before_id = this.state.posts[this.state.posts.length - 1].id;
-        $.get('/newapi/v2/users/' + this.props.user.name + '/posts', params).then(data => {
+        $.get('/api/v2/users/' + this.props.user.name + '/posts', params).then(data => {
             if (this.isMounted())
                 this.setState({
                     hasMore: data.length >= this.props.pageSize,

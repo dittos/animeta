@@ -42,7 +42,7 @@ export async function login(username, password){
   const data = new FormData();
   data.append('username', username);
   data.append('password', password);
-  const resp = await fetch('/newapi/v2/auth', {
+  const resp = await fetch('/api/v2/auth', {
     method: 'POST',
     body: data,
     headers: {
@@ -59,7 +59,7 @@ export async function login(username, password){
 }
 
 export function getCurrentUser() {
-  return fetchWithSession('/newapi/v2/me');
+  return fetchWithSession('/api/v2/me');
 }
 
 export function getWorks({ orphans = false, offset = 0 }) {
@@ -67,11 +67,11 @@ export function getWorks({ orphans = false, offset = 0 }) {
   params.append('offset', offset);
   if (orphans)
     params.append('orphans', '1');
-  return fetchWithSession(`/newapi/admin/works?${params}`);
+  return fetchWithSession(`/api/admin/works?${params}`);
 }
 
 export function createWork(title) {
-  return fetchWithSession(`/newapi/admin/works`, {
+  return fetchWithSession(`/api/admin/works`, {
     method: 'POST',
     body: JSON.stringify({ title }),
     headers: {'Content-Type': 'application/json'},
@@ -79,11 +79,11 @@ export function createWork(title) {
 }
 
 export function getWork(id) {
-  return fetchWithSession(`/newapi/admin/works/${id}`);
+  return fetchWithSession(`/api/admin/works/${id}`);
 }
 
 export function editWork(id, request) {
-  return fetchWithSession(`/newapi/admin/works/${id}`, {
+  return fetchWithSession(`/api/admin/works/${id}`, {
     method: 'POST',
     body: JSON.stringify(request),
     headers: {'Content-Type': 'application/json'},
@@ -91,11 +91,11 @@ export function editWork(id, request) {
 }
 
 export function deleteWork(id) {
-  return fetchWithSession(`/newapi/admin/works/${id}`, {method: 'DELETE'});
+  return fetchWithSession(`/api/admin/works/${id}`, {method: 'DELETE'});
 }
 
 export function addTitleMapping(workId, titleMapping) {
-  return fetchWithSession(`/newapi/admin/works/${workId}/title-mappings`, {
+  return fetchWithSession(`/api/admin/works/${workId}/title-mappings`, {
     method: 'POST',
     body: JSON.stringify(titleMapping),
     headers: {'Content-Type': 'application/json'},
@@ -103,16 +103,16 @@ export function addTitleMapping(workId, titleMapping) {
 }
 
 export function deleteTitleMapping(id) {
-  return fetchWithSession(`/newapi/admin/title-mappings/${id}`, {method: 'DELETE'});
+  return fetchWithSession(`/api/admin/title-mappings/${id}`, {method: 'DELETE'});
 }
 
 export function searchWork(q, {minRecordCount = 2}) {
   const params = new URLSearchParams();
   params.append('q', q);
   params.append('min_record_count', minRecordCount);
-  return fetchWithSession(`/newapi/v2/search?${params}`);
+  return fetchWithSession(`/api/v2/search?${params}`);
 }
 
 export function clearCache() {
-  return fetchWithSession('/newapi/admin/caches', {method: 'DELETE'});
+  return fetchWithSession('/api/admin/caches', {method: 'DELETE'});
 }

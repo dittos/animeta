@@ -3,7 +3,7 @@ var $ = require('jquery');
 var _pendingPostID = 0;
 
 function fetchRecordPosts(recordID) {
-    return dispatch => $.get('/newapi/v2/records/' + recordID + '/posts').then(result => {
+    return dispatch => $.get('/api/v2/records/' + recordID + '/posts').then(result => {
         dispatch({
             type: 'loadRecordPosts',
             recordID: recordID,
@@ -20,7 +20,7 @@ function createPost(recordID, post, publishOptions) {
             recordID, post, context, publishOptions
         });
         // TODO: handle failure case
-        return $.post('/newapi/v2/records/' + recordID + '/posts', {
+        return $.post('/api/v2/records/' + recordID + '/posts', {
             ...post,
             publish_twitter: publishOptions.has('twitter') ? 'on' : 'off'
         }).then(result => {
@@ -37,7 +37,7 @@ function createPost(recordID, post, publishOptions) {
 
 function deletePost(postID) {
     return dispatch => $.ajax({
-        url: '/newapi/v2/posts/' + postID,
+        url: '/api/v2/posts/' + postID,
         type: 'DELETE'
     }).then(result => {
         dispatch({

@@ -52,7 +52,7 @@ class Post extends React.Component {
         var params = {count: POSTS_PER_PAGE + 1, episode: post.status};
         if (posts && posts.length > 0)
             params.before_id = posts[posts.length - 1].id;
-        const result = await this.props.loader.callNew(`/works/${work.id}/posts`, params);
+        const result = await this.props.loader.call(`/works/${work.id}/posts`, params);
         this.props.writeData(data => {
             if (!data.posts)
                 data.posts = [];
@@ -76,10 +76,10 @@ export default {
         const {id} = params;
         const [currentUser, post, chart] = await Promise.all([
             loader.getCurrentUser(),
-            loader.callNew(`/posts/${id}`),
-            loader.callNew('/charts/works/weekly', {limit: 5}),
+            loader.call(`/posts/${id}`),
+            loader.call('/charts/works/weekly', {limit: 5}),
         ]);
-        const work = await loader.callNew(`/works/${post.record.work_id}`);
+        const work = await loader.call(`/works/${post.record.work_id}`);
         return {
             currentUser,
             post,

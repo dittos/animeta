@@ -242,7 +242,7 @@ class Table extends React.Component {
             return;
         }
 
-        $.post(`/newapi/v2/users/${encodeURIComponent(currentUser.name)}/records`, {
+        $.post(`/api/v2/users/${encodeURIComponent(currentUser.name)}/records`, {
             work_title: item.title,
             status_type: 'interested',
         }).then(result => {
@@ -261,7 +261,7 @@ export default {
         const {period} = params;
         const [currentUser, items] = await Promise.all([
             loader.getCurrentUser(),
-            loader.callNew(`/table/periods/${period}`, {
+            loader.call(`/table/periods/${period}`, {
                 only_first_period: JSON.stringify(true)
             }),
         ]);

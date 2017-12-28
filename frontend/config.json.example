@@ -3,9 +3,6 @@
         "baseUrl": "https://animeta.net/api-internal",
         "remote": true
     },
-    "newBackend": {
-        "baseUrl": "http://127.0.0.1:8080/newapi"
-    },
     "daumAPIKey": "",
     "assetBase": ""
 }
