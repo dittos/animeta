@@ -8,14 +8,6 @@ export default class {
         this.endpoint = baseUrl + '/v2';
     }
 
-    async callRaw(req, path, params) {
-        const {response, body} = await this._call(req, path, params);
-        if (response.statusCode === 404) {
-            throw HttpNotFound;
-        }
-        return {response, body: JSON.parse(body)};
-    }
-
     async call(req, path, params) {
         const {response, body} = await this._call(req, path, params);
         if (response.statusCode === 404) {

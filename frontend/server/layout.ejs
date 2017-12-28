@@ -44,11 +44,37 @@
       ga('send', 'pageview');
     </script>
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<% if (assetFilenames.common) { %>
-    <link href="<%= ASSET_BASE %><%= assetFilenames.common.css %>" rel="stylesheet">
-<% } %>
-<% stylesheets.forEach(path => { %>
-    <link href="<%= ASSET_BASE %><%= path %>" rel="stylesheet">
+<% assetEntries.forEach(entry => { %>
+    <% if (assetFilenames[entry].css) { %>
+    <link href="<%= ASSET_BASE %><%= assetFilenames[entry].css %>" rel="stylesheet">
+    <% } %>
 <% }) %>
 </head>
 <body>
+<div id="app"><%- content %></div>
+<script src="//cdn.ravenjs.com/3.5.1/raven.min.js"></script>
+<% if (!DEBUG) { %>
+<script>
+try {
+    Raven.config('http://980ebdd0a1e4424985cf699705d1738f@sentry.sapzil.org/2', {
+        ignoreErrors: ['hideGuidePopup']
+    }).install();
+} catch (e) {}
+</script>
+<% } %>
+<% assetEntries.forEach(entry => { %>
+    <% if (assetFilenames[entry].js) { %>
+    <script type="text/javascript" src="<%= ASSET_BASE %><%= assetFilenames[entry].js %>"></script>
+    <% } %>
+<% }) %>
+<script>
+var PreloadData = <%- serializeJS(preloadData || {}, {isJSON: true}) %>;
+<% if (checksum != null) { %>
+document.querySelector('#app [data-reactroot]').setAttribute('data-react-checksum', <%= checksum %>);
+<% } %>
+if (window.startApp) {
+    window.startApp(PreloadData);
+}
+</script>
+</body>
+</html>

@@ -3,7 +3,6 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import csurf from 'csurf';
 import httpProxy from 'http-proxy';
-import now from 'performance-now';
 import serializeJS from 'serialize-javascript';
 import ReactDOMServer from 'react-dom/server';
 import Backend, {HttpNotFound} from './backend';
@@ -15,72 +14,18 @@ import app from '../js/routes';
 const DEBUG = process.env.NODE_ENV !== 'production';
 const backend = new Backend(config.backend.baseUrl);
 injectLoaderFactory(serverRequest => {
-    serverRequest.loaderCalls = [];
-
-    const call = (backend, path, params) => {
-        const startTime = now();
-        return backend.callRaw(serverRequest, path, params).then(({response, body}) => {
-            const e2eTime = now() - startTime;
-            serverRequest.loaderCalls.push({
-                path,
-                e2eTime,
-                time: parseFloat(response.headers['x-processing-time']) * 1000,
-            });
-            return body;
-        });
-    };
-
     return {
         call(path, params) {
-            return call(backend, path, params);
+            return backend.call(serverRequest, path, params);
         },
         getCurrentUser() {
-            const startTime = now();
-            return backend.getCurrentUser(serverRequest).then(r => {
-                const e2eTime = now() - startTime;
-                serverRequest.loaderCalls.push({path: '(currentUser)', e2eTime});
-                return r;
-            });
+            return backend.getCurrentUser(serverRequest);
         },
     };
 });
 
-var server;
+const server = express();
 var getAssetFilenames;
-if (DEBUG) {
-    const webpack = require('webpack');
-    const WebpackDevServer = require('webpack-dev-server');
-    const webpackConfig = require('../../webpack.config.js');
-    const wdsOptions = {
-        serverSideRender: true,
-        publicPath: '/static/build/',
-        contentBase: false,
-        host: 'localhost',
-        port: 3000,
-        inline: true,
-    };
-    WebpackDevServer.addDevServerEntrypoints(webpackConfig, wdsOptions);
-    const compiler = webpack(webpackConfig);
-    const wds = new WebpackDevServer(compiler, wdsOptions);
-    server = wds.app;
-    module.exports = wds;
-
-    const {getAssets} = require('./assets');
-    getAssetFilenames = function(res) {
-        const statsObj = res.locals.webpackStats;
-        if (!statsObj) {
-            throw new Error('webpack-dev-middleware is unavailable');
-        }
-        return getAssets(compiler, statsObj);
-    };
-} else {
-    server = express();
-    module.exports = server;
-    const assetFilenames = require('../assets.json');
-    getAssetFilenames = function() {
-        return assetFilenames;
-    };
-}
 
 server.set('view engine', 'ejs');
 server.set('views', __dirname);
@@ -124,7 +69,7 @@ server.use('/newapi', (req, res) => {
     proxy.web(req, res);
 });
 
-function renderDefault(res, locals, content, callback) {
+function renderDefault(res, locals, content) {
     const context = {
         DEBUG,
         STATIC_URL: '/static/',
@@ -132,43 +77,15 @@ function renderDefault(res, locals, content, callback) {
         assetFilenames: getAssetFilenames(res),
         title: '',
         meta: {},
-        stylesheets: [],
-        scripts: [],
         checksum: null,
         serializeJS,
+        content,
 
         ...locals,
     };
 
-    function renderFooter() {
-        server.render('footer', context, (err, footer) => {
-            res.write('</div>' + footer);
-            res.end();
-        });
-    }
-
     res.type('text/html');
-    res.render('layout', context, (err, header) => {
-        if (err) {
-            if (callback) {
-                callback(err);
-                return;
-            }
-            throw err;
-        }
-
-        res.write(header + '<div id="app">');
-        if (typeof content === 'string') {
-            res.write(content);
-            renderFooter();
-        } else {
-            // stream
-            content.on('end', () => {
-                context.checksum = content.checksum;
-                renderFooter();
-            }).pipe(res, {end: false});
-        }
-    });
+    res.render('layout', context);
 }
 
 server.get('/robots.txt', (req, res) => {
@@ -208,12 +125,10 @@ async function userHandler(req, res, username, currentUser) {
         owner,
         records
     };
-    const assetFilenames = getAssetFilenames(res);
     renderDefault(res, {
         title: `${owner.name} 사용자`,
         preloadData,
-        stylesheets: [assetFilenames.library.css],
-        scripts: [assetFilenames.library.js],
+        assetEntries: ['common', 'library'],
     }, '');
 }
 
@@ -263,17 +178,14 @@ server.get('/records/:id/', recordHandler);
 server.get('/records/:id/delete/', recordHandler);
 
 server.get('/admin/', (req, res) => {
-    const assetFilenames = getAssetFilenames(res);
     renderDefault(res, {
         title: `Admin`,
         preloadData: {},
-        stylesheets: [assetFilenames.admin.css],
-        scripts: [assetFilenames.admin.js],
+        assetEntries: ['common', 'admin'],
     }, '');
 });
 
 server.get('*', (req, res, next) => {
-    const startTime = now();
     render(app, req).then(result => {
         const {preloadData, title, meta, errorStatus, redirectURI, element} = result;
 
@@ -290,16 +202,12 @@ server.get('*', (req, res, next) => {
             res.status(errorStatus);
 
         preloadData.daum_api_key = config.daumAPIKey; // XXX
-        const assetFilenames = getAssetFilenames(res);
         renderDefault(res, {
             preloadData,
             title,
             meta,
-            stylesheets: [assetFilenames.index.css],
-            scripts: [assetFilenames.index.js],
-        }, ReactDOMServer.renderToString(element), err => {
-            next(err);
-        });
+            assetEntries: ['common', 'index'],
+        }, ReactDOMServer.renderToString(element));
     }).catch(err => {
         if (err === HttpNotFound) {
             next();
@@ -350,3 +258,37 @@ server.use((req, res, next) => {
     }
     next();
 });
+
+if (DEBUG) {
+    const webpack = require('webpack');
+    const WebpackDevServer = require('webpack-dev-server');
+    const webpackConfig = require('../../webpack.config.js');
+    const wdsOptions = {
+        serverSideRender: true,
+        publicPath: '/static/build/',
+        contentBase: false,
+        host: 'localhost',
+        port: 3000,
+        inline: true,
+    };
+    WebpackDevServer.addDevServerEntrypoints(webpackConfig, wdsOptions);
+    const compiler = webpack(webpackConfig);
+    const wds = new WebpackDevServer(compiler, wdsOptions);
+    wds.use(server);
+    module.exports = wds;
+
+    const {getAssets} = require('./assets');
+    getAssetFilenames = function(res) {
+        const statsObj = res.locals.webpackStats;
+        if (!statsObj) {
+            throw new Error('webpack-dev-middleware is unavailable');
+        }
+        return getAssets(compiler, statsObj);
+    };
+} else {
+    module.exports = server;
+    const assetFilenames = require('../assets.json');
+    getAssetFilenames = function() {
+        return assetFilenames;
+    };
+}
