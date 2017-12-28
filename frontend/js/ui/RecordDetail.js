@@ -3,6 +3,7 @@ var React = require('react');
 var cx = require('classnames');
 var {connect} = require('react-redux');
 var Router = require('react-router');
+import { Modal } from 'react-overlays';
 var util = require('../util');
 var TimeAgo = require('./TimeAgo');
 var PostComposer = require('./PostComposer');
@@ -15,6 +16,7 @@ var PostStore = require('../store/PostStore');
 var CategoryStore = require('../store/CategoryStore');
 var ExternalServiceStore = require('../store/ExternalServiceStore');
 var Styles = require('./RecordDetail.less');
+import ModalStyles from '../ui/Modal.less';
 
 var TitleEditView = React.createClass({
     componentDidMount() {
@@ -101,7 +103,7 @@ var HeaderView = React.createClass({
             toolbar = (
                 <div className="record-detail-toolbar">
                     {editTitleButton}
-                    <Router.Link to={`/records/${this.props.recordId}/delete/`} className="btn btn-delete">삭제</Router.Link>
+                    <a href="#" className="btn btn-delete" onClick={this._onDelete}>삭제</a>
                     <CategoryEditView
                         categoryList={this.props.categoryList}
                         selectedId={this.props.categoryId}
@@ -130,7 +132,12 @@ var HeaderView = React.createClass({
                 this.setState({isEditingTitle: false});
             }
         });
-    }
+    },
+
+    _onDelete(event) {
+        event.preventDefault();
+        this.props.onDelete();
+    },
 });
 
 var PostView = React.createClass({
@@ -158,7 +165,33 @@ var PostView = React.createClass({
     }
 });
 
+function DeleteRecordModal({record, onConfirm, onCancel}) {
+    return <Modal
+        show={true}
+        className={ModalStyles.container}
+        backdropClassName={ModalStyles.backdrop}
+        onHide={onCancel}
+    >
+        <div className={ModalStyles.dialog}>
+            <div className={ModalStyles.header}>
+                <h2 className={ModalStyles.title}>기록 삭제</h2>
+            </div>
+            <p>'{record.title}'에 대한 기록을 모두 삭제합니다. </p>
+            <p>주의: <strong>일단 삭제하면 되돌릴 수 없으니</strong> 신중하게 생각하세요.</p>
+            <button className={ModalStyles.cancelButton} onClick={onCancel}>취소</button>
+            <button className={ModalStyles.dangerConfirmButton} onClick={onConfirm}>삭제</button>
+        </div>
+    </Modal>;
+}
+
 var RecordDetail = React.createClass({
+    getInitialState() {
+        return {
+            isLoading: false,
+            showDeleteModal: false,
+        };
+    },
+
     componentDidMount() {
         this.loadPosts();
     },
@@ -196,6 +229,7 @@ var RecordDetail = React.createClass({
                 categoryId={this.props.record.category_id}
                 categoryList={this.props.categoryList}
                 dispatch={this.props.dispatch}
+                onDelete={() => this.setState({showDeleteModal: true})}
             />
             {composer}
             <div className={Styles.posts}>
@@ -212,12 +246,24 @@ var RecordDetail = React.createClass({
                     />;
                 })}
             </div>
+
+            {this.state.showDeleteModal &&
+                <DeleteRecordModal
+                    record={this.props.record}
+                    onConfirm={this._onDelete}
+                    onCancel={() => this.setState({showDeleteModal: false})}
+                />}
         </div>;
     },
 
     _onSave(post, publishOptions) {
         this.props.dispatch(PostActions.createPost(this.props.record.id, post, publishOptions));
         this.props.onSave();
+    },
+
+    _onDelete() {
+        this.props.dispatch(RecordActions.deleteRecord(this.props.record.id));
+        this.props.onDelete();
     }
 });
 
@@ -226,10 +272,16 @@ var RecordDetailRoute = Router.withRouter(React.createClass({
         return <RecordDetail
             {...this.props}
             onSave={this._onSave}
+            onDelete={this._onDelete}
         />;
     },
 
     _onSave() {
+        // TODO: preserve sort mode
+        this.props.router.push(this.props.router.libraryPath);
+    },
+
+    _onDelete() {
         // TODO: preserve sort mode
         this.props.router.push(this.props.router.libraryPath);
     }

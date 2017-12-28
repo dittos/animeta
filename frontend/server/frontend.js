@@ -175,7 +175,7 @@ function recordHandler(req, res, next) {
 }
 
 server.get('/records/:id/', recordHandler);
-server.get('/records/:id/delete/', recordHandler);
+server.get('/records/:id/delete/', recordHandler); // TODO: remove
 
 server.get('/admin/', (req, res) => {
     renderDefault(res, {

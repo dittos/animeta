@@ -99,7 +99,6 @@ function runApp() {
             <IndexRoute component={require('./ui/Library')} />
             <Route path="/records/add/(:title/)" component={require('./ui/AddRecord')} />
             <Route path="/records/category/" component={require('./ui/ManageCategory')} />
-            <Route path="/records/:recordId/delete/" component={require('./ui/DeleteRecord')} />
             <Route path="/records/:recordId/" component={require('./ui/RecordDetail')} />
             <Route path={locationStrategy.libraryPath + "history/"} component={require('./ui/LibraryHistory')} />
         </Route>
