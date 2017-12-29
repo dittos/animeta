@@ -1,3 +1,0 @@
-[submodule "frontend/external"]
-	path = frontend/external
-	url = https://github.com/dittos/nuri

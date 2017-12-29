@@ -28,7 +28,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.10.3",
     "nprogress": "^0.2.0",
-    "nuri": "file:frontend/external",
+    "nuri": "dittos/nuri-builds#d29a6dce331e07e50a2c9f357cee44b9b385b12a",
     "path-to-regexp": "^1.3.0",
     "performance-now": "^0.2.0",
     "postcss": "^5.0.13",

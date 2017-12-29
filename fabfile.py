@@ -35,7 +35,6 @@ def _deploy(api=False, newapi=False, frontend=False, frontend_server=False):
             local('NODE_ENV=production ./node_modules/.bin/webpack')
 
         if frontend_server:
-            run('./build-external.sh')
             run('npm install')
         if api:
             with cd('backend-legacy'):
