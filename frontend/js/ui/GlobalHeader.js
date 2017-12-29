@@ -184,12 +184,12 @@ class GlobalHeader extends React.Component {
         var user = this.props.currentUser;
         if (user) {
             return <div className={Styles.accountMenu}>
-                <a href={`/users/${user.name}/`} className={Styles.userButton}
+                <Link to={`/users/${user.name}/`} className={Styles.userButton}
                     onClick={this._toggleUserMenu}>
                     <i className="fa fa-user" />
                     {user.name}
                     <i className="fa fa-caret-down" />
-                </a>
+                </Link>
                 {this.state.showUserMenu &&
                     <DropdownUserMenu
                         user={user}
