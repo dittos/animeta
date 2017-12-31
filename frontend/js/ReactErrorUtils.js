@@ -1,3 +1,4 @@
+/* global Raven */
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -26,8 +27,10 @@ var ReactErrorUtils = {
   invokeGuardedCallback: function (name, func, a, b) {
     try {
       try {
-          func = Raven.wrap(func);
-      } catch (e) {}
+        func = Raven.wrap(func);
+      } catch (e) {
+        // ignore
+      }
       return func(a, b);
     } catch (x) {
       if (caughtError === null) {

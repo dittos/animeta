@@ -32,7 +32,7 @@ def _deploy(api=False, newapi=False, frontend=False, frontend_server=False):
                 local('./gradlew build')
         if frontend:
             local('rm -f animeta/static/build/*')
-            local('NODE_ENV=production ./node_modules/.bin/webpack')
+            local('npm run build-assets')
 
         if frontend_server:
             run('npm install')
@@ -48,7 +48,7 @@ def _deploy(api=False, newapi=False, frontend=False, frontend_server=False):
             put('frontend/assets.json', 'frontend/')
         if frontend_server:
             run('rm -rf frontend-dist')
-            run('./node_modules/.bin/babel frontend --ignore external/** -d frontend-dist --copy-files')
+            run('npm run build-dist')
 
         if newapi:
             run('mv backend.war.tmp backend-1.0.0.war')

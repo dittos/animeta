@@ -210,7 +210,7 @@ server.use((req, res, next) => {
 if (DEBUG) {
     const webpack = require('webpack');
     const WebpackDevServer = require('webpack-dev-server');
-    const webpackConfig = require('../../webpack.config.js');
+    const webpackConfig = require('../webpack.config.dev.js');
     const wdsOptions = {
         serverSideRender: true,
         publicPath: '/static/build/',
