@@ -10,6 +10,11 @@ import PostRoute from './routes/Post';
 import WorkRoute from './routes/Work';
 import TableRoute from './routes/Table';
 import SettingsRoute from './routes/Settings';
+import UserRoute from './routes/User';
+import UserHistoryRoute from './routes/UserHistory';
+import RecordRoute from './routes/Record';
+import AddRecordRoute from './routes/AddRecord';
+import ManageCategoryRoute from './routes/ManageCategory';
 
 var app = createApp();
 
@@ -32,5 +37,11 @@ app.route('/table/', {
 });
 app.route('/table/:period/', TableRoute);
 app.route('/settings/', SettingsRoute);
+app.route('/users/:username/', UserRoute);
+app.route('/users/:username/history/', UserHistoryRoute);
+app.route('/records/add/', AddRecordRoute);
+app.route('/records/add/:title+/', AddRecordRoute);
+app.route('/records/category/', ManageCategoryRoute);
+app.route('/records/:recordId/', RecordRoute);
 
 export default app;

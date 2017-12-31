@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import React from 'react';
 import {App} from '../layouts';
+// TODO: css module
 
 class Signup extends React.Component {
     state = {

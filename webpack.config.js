@@ -16,7 +16,6 @@ module.exports = config = {
         clientDefinePlugin
     ],
     entry: {
-        library: './js/library.react.js',
         index: './js/index.react.js',
         admin: './js/admin.react.js',
         common: './js/common.js'

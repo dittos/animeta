@@ -122,9 +122,9 @@ export class Work extends React.Component {
 }
 
 export function Post({ post }) {
-    return <div className={cx({'post-item': true})}>
+    return <div className={cx({'work-post-item': true})}>
         <div className="meta">
-            <a href={'/users/' + post.user.name + '/'} className="user">{post.user.name}</a>
+            <Link to={`/users/${post.user.name}/`} className="user">{post.user.name}</Link>
             {post.status &&
                 <i className="fa fa-caret-right separator" />}
             {post.status &&

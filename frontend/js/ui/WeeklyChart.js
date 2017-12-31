@@ -2,6 +2,7 @@ import React from 'react';
 import {Link} from 'nuri';
 import {getWorkURL} from '../util';
 import Styles from './WeeklyChart.less';
+// TODO: css module
 
 function WeeklyChart({ data }) {
     return <div>

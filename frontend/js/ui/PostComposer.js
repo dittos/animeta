@@ -2,7 +2,7 @@ var React = require('react');
 var LinkedStateMixin = require('react-addons-linked-state-mixin');
 var StatusInput = require('./StatusInput');
 var util = require('../util');
-var ExternalServiceActions = require('../store/ExternalServiceActions');
+var LocalStorage = require('../LocalStorage');
 var Styles = require('./PostComposer.less');
 
 var PostComposer = React.createClass({
@@ -10,18 +10,23 @@ var PostComposer = React.createClass({
 
     getInitialState() {
         return {
-            statusType: this.props.initialStatusType,
-            status: util.plusOne(this.props.currentStatus),
+            statusType: this.props.record.status_type,
+            status: util.plusOne(this.props.record.status),
             comment: '',
-            publishOptions: this.props.initialPublishOptions,
+            publishTwitter: false,
             containsSpoiler: false,
         };
     },
 
+    componentDidMount() {
+        this.setState({publishTwitter: LocalStorage.getItem('publishTwitter') === 'true'});
+    },
+
     render() {
+        const {record, currentUser} = this.props;
         var currentStatus;
-        if (this.props.currentStatus) {
-            currentStatus = <span className={Styles.currentProgress}>{this.props.currentStatus} &rarr; </span>;
+        if (record.status) {
+            currentStatus = <span className={Styles.currentProgress}>{record.status} &rarr; </span>;
         }
         return <form className={Styles.postComposer}>
             <div className={Styles.progress}>
@@ -49,7 +54,7 @@ var PostComposer = React.createClass({
                 </label>
                 <label>
                     <input type="checkbox" name="publish_twitter"
-                        checked={this._isTwitterConnected() && this.state.publishOptions.has('twitter')}
+                        checked={currentUser.is_twitter_connected && this.state.publishTwitter}
                         onChange={this._onPublishTwitterChange} />
                     {' 트위터에 공유'}
                 </label>
@@ -58,39 +63,25 @@ var PostComposer = React.createClass({
         </form>;
     },
 
-    _onSubmit(event) {
-        event.preventDefault();
-        this.props.onSave({
-            status: this.state.status,
-            status_type: this.state.statusType,
-            comment: this.state.comment,
-            contains_spoiler: this.state.containsSpoiler,
-        }, this.state.publishOptions.intersect(this.props.connectedServices));
-    },
-
     _onStatusChange(newValue) {
         this.setState({status: newValue});
     },
 
     _onPublishTwitterChange(event) {
-        if (!this._isTwitterConnected()) {
-            this.props.dispatch(ExternalServiceActions.connectTwitter()).then(() => {
-                this.setState({publishOptions: this.state.publishOptions.add('twitter')});
+        if (!this.props.currentUser.is_twitter_connected) {
+            this.props.onTwitterConnect().then(() => {
+                this.setState({publishTwitter: true});
             });
         } else {
-            var {publishOptions} = this.state;
-            if (event.target.checked) {
-                publishOptions = publishOptions.add('twitter');
-            } else {
-                publishOptions = publishOptions.remove('twitter');
-            }
-            this.setState({publishOptions});
+            this.setState({publishTwitter: event.target.checked});
         }
     },
 
-    _isTwitterConnected() {
-        return this.props.connectedServices.has('twitter');
-    }
+    _onSubmit(event) {
+        event.preventDefault();
+        const {status, statusType, comment, containsSpoiler, publishTwitter} = this.state;
+        this.props.onSave({status, statusType, comment, containsSpoiler, publishTwitter});
+    },
 });
 
 module.exports = PostComposer;
