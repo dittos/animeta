@@ -209,7 +209,13 @@ class Library extends React.Component {
                 canEdit={this.props.canEdit}
                 onUpdateQuery={this._onUpdateQuery} />
             {sort == 'title' && <p className="library-toc">
-                건너뛰기: {groups.map(group => <a href={'#group' + group.index}>{group.key}</a>)}
+                건너뛰기: {groups.map(group => <a
+                    href={'#group' + group.index}
+                    key={group.key}
+                    onClick={this._scrollToGroup}
+                >
+                    {group.key}
+                </a>)}
             </p>}
             {groups.map(group => <div className="library-group" key={group.key} id={'group' + group.index}>
                 <h2 className="library-group-title">{group.key}</h2>
@@ -228,6 +234,14 @@ class Library extends React.Component {
             path: basePath,
             query: {...this.props.query, ...updates}
         })
+    };
+
+    _scrollToGroup = (event) => {
+        event.preventDefault();
+        const id = event.target.hash.substring(1);
+        const el = document.getElementById(id);
+        if (!el) return;
+        window.scrollBy(0, el.getBoundingClientRect().top - 50);
     };
 }
 
