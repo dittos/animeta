@@ -192,11 +192,21 @@ var Record = React.createClass({
     },
 
     componentDidMount() {
-        this.loadPosts();
+        this.loadPosts(this.props);
     },
 
-    loadPosts() {
-        getRecordPosts(this.props.data.record.id).then(data => {
+    componentWillReceiveProps(nextProps) {
+        if (this.props.data.record.id !== nextProps.data.record.id) {
+            this.loadPosts(nextProps);
+        }
+    },
+
+    loadPosts(props) {
+        this.setState({
+            posts: [],
+            showDeleteModal: false,
+        });
+        getRecordPosts(props.data.record.id).then(data => {
             if (this.isMounted()) {
                 this.setState({
                     posts: data.posts,
@@ -213,7 +223,7 @@ var Record = React.createClass({
         if (canEdit) {
             composer = (
                 <PostComposer
-                    key={'post-composer-' + record.updated_at}
+                    key={'post-composer' + record.id + '/' + record.updated_at}
                     record={record}
                     currentUser={currentUser}
                     onSave={this._createPost}
@@ -224,6 +234,7 @@ var Record = React.createClass({
         const canDeletePosts = canEdit && posts.length > 1;
         return <div className="view-record-detail">
             <HeaderView
+                key={'header' + record.id}
                 record={record}
                 currentUser={currentUser}
                 onTitleChange={this._updateTitle}
@@ -276,7 +287,7 @@ var Record = React.createClass({
     _deletePost(post) {
         if (confirm('삭제 후에는 복구할 수 없습니다.\n기록을 정말로 삭제하시겠습니까?')) {
             deletePost(post.id).then(result => {
-                this.loadPosts();
+                this.loadPosts(this.props);
                 this.props.writeData(data => {
                     data.record = result.record;
                 });
