@@ -77,7 +77,6 @@ function renderDefault(res, locals, content) {
         assetFilenames: getAssetFilenames(res),
         title: '',
         meta: {},
-        checksum: null,
         serializeJS,
         content,
 

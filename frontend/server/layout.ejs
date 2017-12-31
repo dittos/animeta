@@ -52,11 +52,11 @@
 </head>
 <body>
 <div id="app"><%- content %></div>
-<script src="//cdn.ravenjs.com/3.5.1/raven.min.js"></script>
+<script src="https://cdn.ravenjs.com/3.21.0/raven.min.js" crossorigin="anonymous"></script>
 <% if (!DEBUG) { %>
 <script>
 try {
-    Raven.config('http://980ebdd0a1e4424985cf699705d1738f@sentry.sapzil.org/2', {
+    Raven.config('https://0d5693f7775146c0881c305a452bb70b@sentry.io/265318', {
         ignoreErrors: ['hideGuidePopup']
     }).install();
 } catch (e) {}
@@ -69,9 +69,6 @@ try {
 <% }) %>
 <script>
 var PreloadData = <%- serializeJS(preloadData || {}, {isJSON: true}) %>;
-<% if (checksum != null) { %>
-document.querySelector('#app [data-reactroot]').setAttribute('data-react-checksum', <%= checksum %>);
-<% } %>
 if (window.startApp) {
     window.startApp(PreloadData);
 }
