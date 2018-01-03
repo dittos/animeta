@@ -9,9 +9,7 @@ import Backend, {HttpNotFound} from './backend';
 import renderFeed from './renderFeed';
 import config from '../config.json';
 import {render, injectLoaderFactory} from 'nuri/server';
-import app from '../js/routes';
 
-const DEBUG = process.env.NODE_ENV !== 'production';
 const backend = new Backend(config.backend.baseUrl);
 injectLoaderFactory(serverRequest => {
     return {
@@ -25,16 +23,11 @@ injectLoaderFactory(serverRequest => {
 });
 
 const server = express();
-var getAssetFilenames;
 
 server.set('view engine', 'ejs');
 server.set('views', __dirname);
 server.set('strict routing', true);
 server.set('etag', false);
-
-if (DEBUG) {
-    server.use('/static', express.static(__dirname + '/../../animeta/static'));
-}
 
 server.use(cookieParser());
 server.use(csurf({cookie: true}));
@@ -71,10 +64,8 @@ server.use('/newapi', (req, res) => {
 
 function renderDefault(res, locals, content) {
     const context = {
-        DEBUG,
         STATIC_URL: '/static/',
         ASSET_BASE: config.assetBase || '',
-        assetFilenames: getAssetFilenames(res),
         title: '',
         meta: {},
         serializeJS,
@@ -133,8 +124,13 @@ server.get('/admin/', (req, res) => {
     }, '');
 });
 
-server.get('*', (req, res, next) => {
-    render(app, req).then(result => {
+server.use((req, res, next) => {
+    if (req.method !== 'GET') {
+        next();
+        return;
+    }
+
+    render(res.locals.nuriApp, req).then(result => {
         const {preloadData, title, meta, errorStatus, redirectURI, element} = result;
 
         if (errorStatus === 404) {
@@ -207,36 +203,4 @@ server.use((req, res, next) => {
     next();
 });
 
-if (DEBUG) {
-    const webpack = require('webpack');
-    const WebpackDevServer = require('webpack-dev-server');
-    const webpackConfig = require('../webpack.config.js')({ prod: false });
-    const wdsOptions = {
-        serverSideRender: true,
-        publicPath: '/static/build/',
-        contentBase: false,
-        host: 'localhost',
-        port: 3000,
-        inline: true,
-    };
-    WebpackDevServer.addDevServerEntrypoints(webpackConfig, wdsOptions);
-    const compiler = webpack(webpackConfig);
-    const wds = new WebpackDevServer(compiler, wdsOptions);
-    wds.use(server);
-    module.exports = wds;
-
-    const {getAssets} = require('./assets');
-    getAssetFilenames = function(res) {
-        const statsObj = res.locals.webpackStats;
-        if (!statsObj) {
-            throw new Error('webpack-dev-middleware is unavailable');
-        }
-        return getAssets(compiler, statsObj);
-    };
-} else {
-    module.exports = server;
-    const assetFilenames = require('../assets.json');
-    getAssetFilenames = function() {
-        return assetFilenames;
-    };
-}
+module.exports = server;

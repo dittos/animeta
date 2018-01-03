@@ -15,4 +15,5 @@ frontend/assets.json
 frontend/config.json
 .idea
 *.iml
+frontend/server/bundle.js*
 frontend-dist/

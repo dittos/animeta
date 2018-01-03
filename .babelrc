@@ -6,5 +6,8 @@
     ],
     "plugins": [
         "babel-plugin-transform-class-properties"
+    ],
+    "ignore": [
+        "frontend/server/bundle.js"
     ]
 }
