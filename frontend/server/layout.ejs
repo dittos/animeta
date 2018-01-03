@@ -45,8 +45,8 @@
     </script>
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <% assetEntries.forEach(entry => { %>
-    <% if (assetFilenames[entry].css) { %>
-    <link href="<%= ASSET_BASE %><%= assetFilenames[entry].css %>" rel="stylesheet">
+    <% if (assets[entry].css) { %>
+    <link href="<%= ASSET_BASE %><%= assets[entry].css %>" rel="stylesheet">
     <% } %>
 <% }) %>
 </head>
@@ -63,8 +63,8 @@ try {
 </script>
 <% } %>
 <% assetEntries.forEach(entry => { %>
-    <% if (assetFilenames[entry].js) { %>
-    <script type="text/javascript" src="<%= ASSET_BASE %><%= assetFilenames[entry].js %>"></script>
+    <% if (assets[entry].js) { %>
+    <script type="text/javascript" src="<%= ASSET_BASE %><%= assets[entry].js %>"></script>
     <% } %>
 <% }) %>
 <script>

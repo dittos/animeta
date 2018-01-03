@@ -4,21 +4,38 @@ var AssetsPlugin = require('assets-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 function styleLoader(env, loaders) {
-    return ExtractTextPlugin.extract({
-        fallback: 'style-loader',
-        use: loaders,
-    });
+    if (env.server) {
+        return loaders;
+    }
+    if (env.prod) {
+        return ExtractTextPlugin.extract({
+            fallback: 'style-loader',
+            use: loaders,
+        });
+    }
+    return ['style-loader'].concat(loaders);
+}
+
+function hot(env, entry) {
+    if (!env.prod && !env.server) {
+        return ['webpack-hot-middleware/client?reload=true', entry];
+    }
+    return entry;
 }
 
 module.exports = (env) => {
     const config = {
         context: __dirname,
-        entry: {
-            index: './js/index.react.js',
-            admin: './js/admin.react.js',
-            common: './js/common.js',
+        entry: env.server ? './js/routes.js' : {
+            index: hot(env, './js/index.react.js'),
+            admin: hot(env, './js/admin.react.js'),
+            common: hot(env, './js/common.js'),
         },
-        output: {
+        output: env.server ? {
+            path: env.outputPath || path.join(__dirname, '../frontend-dist'),
+            filename: 'bundle.js',
+            libraryTarget: 'commonjs2',
+        } : {
             path: path.join(__dirname, '../animeta/static/build'),
             publicPath: '/static/build/',
             filename: '[name]-[hash].js'
@@ -38,7 +55,7 @@ module.exports = (env) => {
                     test: /\.less$/,
                     use: styleLoader(env, [
                         {
-                            loader: 'css-loader',
+                            loader: env.server ? 'css-loader/locals' : 'css-loader',
                             options: {
                                 localIdentName: '[name]_[local]_[hash:base64:5]'
                             }
@@ -53,24 +70,43 @@ module.exports = (env) => {
                 },
             ]
         },
-        plugins: [
+        plugins: [],
+        devtool: env.prod ? 'source-map' : 'cheap-source-map',
+    };
+    if (env.server) {
+        Object.assign(config, {
+            target: 'node',
+            node: false,
+            externals: [
+                require('webpack-node-externals')()
+            ]
+        });
+    } else {
+        config.plugins.push(
             new AssetsPlugin({
                 path: __dirname,
                 filename: 'assets.json',
             }),
-            new ExtractTextPlugin('[name]-[contenthash].css'),
             new webpack.optimize.CommonsChunkPlugin({
                 name: 'common',
                 filename: 'common-[hash].js',
-            }),
-        ],
-        devtool: env.prod ? 'source-map' : 'cheap-source-map',
-    };
+            })
+        );
+        if (env.prod) {
+            config.plugins.push(
+                new webpack.NormalModuleReplacementPlugin(
+                    /ReactErrorUtils$/, path.join(__dirname, 'js/ReactErrorUtils.js')
+                ),
+                new ExtractTextPlugin('[name]-[contenthash].css')
+            );
+        } else {
+            config.plugins.push(
+                new webpack.HotModuleReplacementPlugin()
+            );
+        }
+    }
     if (env.prod) {
         config.plugins.push(
-            new webpack.NormalModuleReplacementPlugin(
-                /ReactErrorUtils$/, path.join(__dirname, 'js/ReactErrorUtils.js')
-            ),
             new webpack.DefinePlugin({
                 'process.env.NODE_ENV': JSON.stringify('production'),
             }),

@@ -15,7 +15,6 @@
     "cookie": "^0.1.3",
     "cookie-parser": "^1.4.3",
     "core-js": "^1.1.1",
-    "css-modules-require-hook": "^4.0.0",
     "csurf": "^1.9.0",
     "date-fns": "^1.27.1",
     "ejs": "^2.3.4",
@@ -23,7 +22,6 @@
     "history": "^2.1.1",
     "http-proxy": "^1.16.2",
     "jquery": "^2.1.4",
-    "less": "^2.5.3",
     "lodash": "^4.17.4",
     "nprogress": "^0.2.0",
     "nuri": "dittos/nuri-builds#d29a6dce331e07e50a2c9f357cee44b9b385b12a",
@@ -41,6 +39,7 @@
     "react-router": "^2.8.1",
     "regenerator": "^0.8.36",
     "request": "^2.65.0",
+    "require-from-string": "^2.0.1",
     "serialize-javascript": "^1.3.0",
     "typeahead.js": "^0.10.5"
   },
@@ -62,11 +61,14 @@
     "style-loader": "^0.19.1",
     "url-loader": "^0.6.2",
     "webpack": "^3.10.0",
-    "webpack-dev-server": "^2.9.7"
+    "webpack-dev-middleware": "^2.0.3",
+    "webpack-hot-middleware": "^2.21.0",
+    "webpack-node-externals": "^1.6.0"
   },
   "scripts": {
-    "start": "babel-node frontend/frontendServer.js",
+    "start": "babel-node frontend/server/devServer.js",
     "build-assets": "webpack --config frontend/webpack.config.js --env.prod",
-    "build-dist": "babel frontend --ignore external/** -d frontend-dist --copy-files"
+    "build-server": "webpack --config frontend/webpack.config.js --env.server --env.prod",
+    "build-dist": "babel frontend -d frontend-dist --copy-files"
   }
 }

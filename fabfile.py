@@ -47,8 +47,10 @@ def _deploy(api=False, newapi=False, frontend=False, frontend_server=False):
             put('animeta/static/build/*', 'animeta/static/build/')
             put('frontend/assets.json', 'frontend/')
         if frontend_server:
+            local('npm run build-server')
             run('rm -rf frontend-dist')
             run('npm run build-dist')
+            put('frontend-dist/bundle.js', 'frontend-dist/')
 
         if newapi:
             run('mv backend.war.tmp backend-1.0.0.war')

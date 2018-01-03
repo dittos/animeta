@@ -1,8 +1,15 @@
+const express = require('express');
+const webpack = require('webpack');
+const MemoryFileSystem = require('memory-fs');
+const webpackDevMiddleware = require('webpack-dev-middleware');
+const webpackHotMiddleware = require('webpack-hot-middleware');
+const requireFromString = require('require-from-string');
+const { createServer } = require('./frontend');
 const getAssetKind = require('assets-webpack-plugin/lib/getAssetKind')
 const isHMRUpdate = require('assets-webpack-plugin/lib/isHMRUpdate')
 const isSourceMap = require('assets-webpack-plugin/lib/isSourceMap')
 
-exports.getAssets = function(compiler, statsObj) {
+function getAssets(compiler, statsObj) {
     // Copied from https://github.com/kossnocorp/assets-webpack-plugin/blob/master/index.js
     const stats = statsObj.toJson({
         hash: true,
@@ -46,4 +53,30 @@ exports.getAssets = function(compiler, statsObj) {
     }, {})
 
     return output;
-};
+}
+
+const webpackConfigFactory = require('../webpack.config.js');
+const serverWebpackConfig = webpackConfigFactory({ server: true, prod: false, outputPath: '/' });
+const webpackConfig = webpackConfigFactory({ server: false, prod: false });
+const compiler = webpack(webpackConfig);
+
+const serverCompiler = webpack(serverWebpackConfig);
+const serverVfs = new MemoryFileSystem();
+serverCompiler.outputFileSystem = serverVfs;
+serverCompiler.run(() => {
+    const code = serverVfs.readFileSync('/bundle.js').toString('utf8');
+    const appModule = requireFromString(code);
+    const app = appModule.default || appModule;
+    const server = express();
+    server.use(webpackDevMiddleware(compiler, {
+        publicPath: webpackConfig.output.publicPath,
+        serverSideRender: true,
+    }));
+    server.use(webpackHotMiddleware(compiler));
+    server.use('/static', express.static(__dirname + '/../../animeta/static'));
+    createServer({
+        server,
+        app,
+        getAssets: (res) => getAssets(compiler, res.locals.webpackStats),
+    }).listen(3000);
+});
