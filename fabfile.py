@@ -26,6 +26,7 @@ def _deploy(api=False, newapi=False, frontend=False, frontend_server=False):
 
     local('git push')
     with cd('/home/ditto/animeta'):
+        run('rm -f package-lock.json')
         run('git pull') # To get password prompt first
         if newapi:
             with lcd('backend'):
