@@ -1,7 +1,7 @@
 var $ = require('jquery');
-if (process.env.CLIENT) {
-    var _jQuery = global.jQuery;
-    global.jQuery = $;
+if (typeof window !== 'undefined') {
+    var _jQuery = window.jQuery;
+    window.jQuery = $;
     require('typeahead.js');
-    global.jQuery = _jQuery;
+    window.jQuery = _jQuery;
 }

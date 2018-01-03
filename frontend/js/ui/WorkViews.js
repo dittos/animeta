@@ -47,7 +47,7 @@ function Sidebar({ work, chart }) {
 }
 
 var modernGradientSupported = (() => {
-    if (!process.env.CLIENT)
+    if (typeof window === 'undefined')
         return true;
     var el = document.createElement('div');
     el.style.cssText = 'background-image: linear-gradient(white,white);';
