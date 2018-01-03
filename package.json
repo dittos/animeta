@@ -62,12 +62,11 @@
     "style-loader": "^0.19.1",
     "url-loader": "^0.6.2",
     "webpack": "^3.10.0",
-    "webpack-dev-server": "^2.9.7",
-    "webpack-merge": "^4.1.1"
+    "webpack-dev-server": "^2.9.7"
   },
   "scripts": {
     "start": "babel-node frontend/frontendServer.js",
-    "build-assets": "webpack --config frontend/webpack.config.prod.js",
+    "build-assets": "webpack --config frontend/webpack.config.js --env.prod",
     "build-dist": "babel frontend --ignore external/** -d frontend-dist --copy-files"
   }
 }
