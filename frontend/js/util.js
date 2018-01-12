@@ -87,7 +87,3 @@ export var SOURCE_TYPE_MAP = {
     'visualnovel': '비주얼 노벨 원작',
     'novel': '소설 원작'
 };
-
-export function isSpecialWork(work) {
-    return work.title === '너의 이름은.';
-}

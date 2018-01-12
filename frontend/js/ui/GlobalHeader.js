@@ -1,6 +1,6 @@
 import $ from 'jquery';
-import React from 'react';
-import {Link as RouterLink} from 'nuri';
+import * as React from 'react';
+import { Link } from 'nuri';
 import * as Layout from './Layout';
 var Typeahead = require('./Typeahead');
 import LoginDialog from './LoginDialog';
@@ -31,19 +31,19 @@ class DropdownUserMenu extends React.Component {
     render() {
         return <div className={Styles.userMenu}
             onClick={e => e.stopPropagation()}>
-            <RouterLink to={`/users/${this.props.user.name}/`}>기록 관리</RouterLink>
-            <RouterLink to="/settings/">설정</RouterLink>
+            <Link to={`/users/${this.props.user.name}/`}>기록 관리</Link>
+            <Link to="/settings/">설정</Link>
             {this.state.records && <div>
                 <div className={Styles.userMenuSeparator}>
                     바로가기
                 </div>
                 {this.state.records.map(record =>
-                    <RouterLink to={`/records/${record.id}/`}>
+                    <Link to={`/records/${record.id}/`}>
                         {record.title}
                         <span className={Styles.quickRecordStatus}>{getStatusDisplay(record)}</span>
-                    </RouterLink>
+                    </Link>
                 )}
-                <RouterLink to={`/users/${this.props.user.name}/`} className={Styles.quickRecordViewAll}>전체 보기</RouterLink>
+                <Link to={`/users/${this.props.user.name}/`} className={Styles.quickRecordViewAll}>전체 보기</Link>
             </div>}
         </div>;
     }
@@ -89,51 +89,6 @@ class Search extends React.Component {
     }
 }
 
-function CompatLink(linkProps) {
-    var {href, ...props} = linkProps;
-    return <RouterLink to={href} {...props} />;
-}
-
-class Header extends React.Component {
-    state = {
-        transparent: true,
-    };
-
-    componentDidMount() {
-        $(document).on('scroll', this._onScroll);
-    }
-
-    componentWillUnmount() {
-        $(document).off('scroll', this._onScroll);
-    }
-
-    render() {
-        const { mobileSpecial, children } = this.props;
-        return (
-            <Layout.CenteredFullWidth className={mobileSpecial && this.state.transparent ? Styles.mobileSpecialHeader : Styles.header}>
-                {children}
-            </Layout.CenteredFullWidth>
-        );
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-        return nextState.transparent !== this.state.transparent ||
-            nextProps.mobileSpecial !== this.props.mobileSpecial ||
-            nextProps.children !== this.props.children;
-    }
-
-    _onScroll = () => {
-        if (!this.props.mobileSpecial)
-            return;
-
-        if ($(document).scrollTop() < 150) {
-            this.setState({ transparent: true });
-        } else {
-            this.setState({ transparent: false });
-        }
-    };
-}
-
 class GlobalHeader extends React.Component {
     state = {
         showMenu: false,
@@ -141,38 +96,56 @@ class GlobalHeader extends React.Component {
     };
 
     render() {
-        const { useRouterLink, mobileSpecial = false } = this.props;
-        const Link = useRouterLink ? CompatLink : 'a';
         const showNotice = true;
-        return <div className={mobileSpecial ? Styles.mobileSpecialContainer : Styles.container}>
-            <Header mobileSpecial={mobileSpecial}>
+        return <div className={Styles.container}>
+            <Layout.CenteredFullWidth className={Styles.header}>
                 <Layout.LeftRight className={Styles.headerInner}
-                    left={this._renderLeft(Link)}
-                    right={this._renderRight(Link)} />
-            </Header>
-            {showNotice && !mobileSpecial && <Layout.CenteredFullWidth className={Styles.notice}>
-                <Link href="/table/" className={Styles.noticeLink}>
+                    left={this._renderLeft()}
+                    right={this._renderRight()} />
+            </Layout.CenteredFullWidth>
+
+            {showNotice && <Layout.CenteredFullWidth className={Styles.notice}>
+                <Link to="/table/" className={Styles.noticeLink}>
                     2018년 1월 신작 살펴보기!
                 </Link>
             </Layout.CenteredFullWidth>}
+
+            {!this.props.currentUser && (
+                <div className={Styles.hero}>
+                    <Layout.CenteredFullWidth>
+                        <div className={Styles.slogan}>
+                            애니 보고 나서,{' '}
+                            <span className={Styles.sloganBrand}>애니메타</span>
+                        </div>
+                        <div className={Styles.subSlogan}>
+                            애니메타는 애니메이션 감상 기록 관리 서비스입니다.
+                        </div>
+
+                        <div className={Styles.heroActions}>
+                            <a href="/login/" onClick={this._openLogin} className={Styles.heroLoginButton}>로그인</a>
+                            <Link to="/signup/" className={Styles.heroSignUpButton}>가입하기</Link>
+                        </div>
+                    </Layout.CenteredFullWidth>
+                </div>
+            )}
         </div>;
     }
 
-    _renderLeft(Link) {
+    _renderLeft() {
         return <div>
             <div className={this.state.showMenu ? Styles.menuToggleActive : Styles.menuToggleNormal}
                 onClick={this._toggleMenu}>
                 <i className="fa fa-bars" />
             </div>
             <div className={Styles.logo}>
-                <Link href="/">애니메타</Link>
+                <Link to="/">애니메타</Link>
             </div>
             <Search />
             <div className={Styles.globalMenu}
                 style={this.state.showMenu ? {display: 'block'} : {}}>
-                <Link href="/">홈</Link>
-                <Link href="/charts/works/weekly/">순위</Link>
-                <Link href="/table/">분기별 신작</Link>
+                <Link to="/">홈</Link>
+                <Link to="/charts/works/weekly/">순위</Link>
+                <Link to="/table/">분기별 신작</Link>
             </div>
             <div className={Styles.feedbackMenu}>
                 <a href="/support/"><i className="fa fa-bullhorn" />{' '}버그 제보 / 건의</a>
@@ -180,7 +153,7 @@ class GlobalHeader extends React.Component {
         </div>;
     }
 
-    _renderRight(Link) {
+    _renderRight() {
         var user = this.props.currentUser;
         if (user) {
             return <div className={Styles.accountMenu}>
@@ -198,8 +171,8 @@ class GlobalHeader extends React.Component {
             </div>;
         } else {
             return <div className={Styles.accountMenu}>
-                <Link href="/login/" className={Styles.loginButton} onClick={this._openLogin}>로그인</Link>
-                <Link href="/signup/" className={Styles.signUpButton}>회원 가입</Link>
+                <Link to="/login/" className={Styles.loginButton} onClick={this._openLogin}>로그인</Link>
+                <Link to="/signup/" className={Styles.signUpButton}>회원 가입</Link>
             </div>;
         }
     }

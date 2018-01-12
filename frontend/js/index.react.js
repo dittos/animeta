@@ -6,7 +6,6 @@ import nprogress from 'nprogress';
 import app from './routes';
 import '../less/nprogress.less';
 import '../less/chart.less';
-import '../less/work.less';
 import '../less/signup.less';
 
 injectLoader({

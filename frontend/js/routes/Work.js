@@ -1,7 +1,6 @@
 import React from 'react';
 import * as WorkViews from '../ui/WorkViews';
 import {App} from '../layouts';
-import {isSpecialWork} from '../util';
 
 const POSTS_PER_PAGE = 10;
 
@@ -14,7 +13,6 @@ function Work({data, writeData, loader}) {
         hasMorePosts,
         currentUser,
     } = data;
-    const isSpecial = isSpecialWork(work);
 
     async function loadMorePosts() {
         var params = {count: POSTS_PER_PAGE + 1};
@@ -39,12 +37,13 @@ function Work({data, writeData, loader}) {
         work={work}
         chart={chart}
         currentUser={currentUser}
+        episode={episode}
         onRecordChange={applyRecord}
     >
-        {!isSpecial && <WorkViews.Episodes
+        <WorkViews.Episodes
             work={work}
             activeEpisodeNumber={episode}
-        />}
+        />
         <WorkViews.WorkIndex
             work={work}
             episode={episode}
@@ -55,15 +54,8 @@ function Work({data, writeData, loader}) {
     </WorkViews.Work>;
 }
 
-const Component = App(Work);
-
 export default {
-    component: (props) => {
-        return <Component
-            {...props}
-            globalHeaderProps={{mobileSpecial: true}}
-        />;
-    },
+    component: App(Work),
 
     async load({ params, loader }) {
         const {title, episode} = params;

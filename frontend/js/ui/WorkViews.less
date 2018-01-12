@@ -1,0 +1,180 @@
+@import "../../less/base.less";
+
+@media (min-width: 481px) {
+    :local(.container) {
+        background-color: @color-bg-lightest;
+        overflow: hidden;
+    }
+}
+
+// Common
+
+:local(.sectionTitle) {
+    line-height: 1;
+    font-size: 1.2em;
+    font-weight: normal;
+    margin-bottom: 0;
+    padding-bottom: 16px;
+    i {
+        margin-right: 4px;
+    }
+}
+
+// Main
+
+:local(.main) {
+    padding: 16px 0;
+    
+    @media (min-width: 481px) {
+        background-color: #fff;
+        box-shadow: 0 0 20px @color-shadow;
+        border-radius: 2px;
+        margin-top: 16px;
+        margin-left: -16px;
+        padding: 16px;
+    }
+}
+
+// Main > Header
+
+:local(.header) {
+    padding-bottom: 8px;
+    overflow: hidden;
+}
+
+@poster-width: 144px;
+@mobile-poster-width: 120px;
+
+:local(.poster) {
+    float: left;
+    width: @poster-width;
+    border-radius: 2px;
+
+    @media (max-width: 480px) {
+        width: @mobile-poster-width;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+    }
+}
+
+:local(.headerContent) {
+    font-size: 14px;
+}
+
+:local(.headerContentWithPoster) {
+    composes: headerContent;
+    padding-top: 16px;
+    padding-left: 16px;
+    margin-left: @poster-width;
+
+    @media (max-width: 480px) {
+        margin-left: @mobile-poster-width;
+    }
+}
+
+:local(.title) {
+    margin: 0;
+    font-size: 24px;
+    color: @color-text-dark;
+
+    @media (max-width: 480px) {
+        font-size: 20px;
+    }
+}
+
+:local(.stats) {
+    color: @color-text-light;
+    font-size: 13px;
+    margin: 10px 0 16px;
+}
+
+:local(.stat) {
+    display: block;
+    line-height: 1.8;
+    i {
+        width: 16px;
+        text-align: center;
+        margin-right: 4px;
+    }
+}
+
+:local(.rankStat) {
+    composes: stat;
+    margin-right: 16px;
+}
+
+:local(.userStat) {
+    composes: stat;
+}
+
+// Main > Content
+
+:local(.content) {
+    clear: left;
+}
+
+:local(.episodes) {
+    padding: 16px 0;
+
+    a {
+        margin-right: 16px;
+        text-decoration: none;
+        color: #666;
+        white-space: nowrap;
+        // Added for nowrap (see http://stackoverflow.com/questions/21198456/text-doesnt-wrap-properly-between-elements-having-white-space-nowrap)
+        display: inline-block;
+        // TODO: css module
+        &.recent, &.has-post {
+            font-weight: bold;
+        }
+        &:hover {
+            color: #999;
+        }
+        &.active, &.active:hover {
+            color: @color-main;
+        }
+    }
+}
+
+// Sidebar
+
+:local(.sidebar) {
+    @media (min-width: 481px) {
+        padding-top: 24px;
+    }
+}
+
+:local(.metadataSection) {
+    padding-bottom: 8px;
+}
+
+:local(.metadata) {
+    color: @color-text-dark;
+    padding: 8px 0;
+
+    p {
+        font-size: 14px;
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+}
+
+:local(.metadataLinks) {
+    p {
+        margin: 0;
+        line-height: 1.6;
+        font-size: 13px;
+    }
+    a {
+        color: @color-text-dark;
+        text-decoration: none;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+:local(.videosSection) {
+    overflow: hidden;
+    padding-bottom: 24px;
+}

@@ -2,14 +2,20 @@ import React from 'react';
 import * as WorkViews from '../ui/WorkViews';
 import {getStatusDisplay} from '../util';
 import {App} from '../layouts';
-// TODO: css module
+import { Post as PostComponent } from '../ui/Post';
 
 const POSTS_PER_PAGE = 10;
 
 class Post extends React.Component {
     componentDidMount() {
         // lazy load
-        this._loadMorePosts();
+        this._loadMorePosts(this.props.data);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (!nextProps.data.posts) {
+            this._loadMorePosts(nextProps.data);
+        }
     }
 
     render() {
@@ -24,14 +30,13 @@ class Post extends React.Component {
             <WorkViews.Work
                 work={work}
                 chart={chart}
+                episode={post.status}
             >
                 <WorkViews.Episodes
                     work={work}
                     activeEpisodeNumber={post.status}
                 />
-                <div className="post-detail">
-                    <WorkViews.Post post={post} />
-                </div>
+                <PostComponent post={post} showTitle={false} highlighted={true} />
                 <WorkViews.WorkIndex
                     work={work}
                     episode={post.status}
@@ -44,12 +49,7 @@ class Post extends React.Component {
         );
     }
 
-    _loadMorePosts = async () => {
-        const {
-            work,
-            posts,
-            post,
-        } = this.props.data;
+    _loadMorePosts = async ({ work, posts, post }) => {
         var params = {count: POSTS_PER_PAGE + 1, episode: post.status};
         if (posts && posts.length > 0)
             params.before_id = posts[posts.length - 1].id;
@@ -63,15 +63,8 @@ class Post extends React.Component {
     };
 }
 
-const Component = App(Post);
-
 export default {
-    component: (props) => {
-        return <Component
-            {...props}
-            globalHeaderProps={{mobileSpecial: true}}
-        />;
-    },
+    component: App(Post),
 
     async load({ params, loader }) {
         const {id} = params;

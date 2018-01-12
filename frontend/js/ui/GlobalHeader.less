@@ -5,32 +5,13 @@
     padding-top: @nav-height;
 }
 
-:local(.mobileSpecialContainer) {
-    @media (min-width: 481px) {
-        padding-top: @nav-height;
-    }
-}
-
-:local(.transparentHeader) {
+:local(.header) {
     line-height: 1;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: @z-header;
-    transition: 0.2s ease-in-out background-color;
-}
-
-:local(.mobileSpecialHeader) {
-    composes: transparentHeader;
-
-    @media (min-width: 481px) {
-        background-color: @color-primary;
-    }
-}
-
-:local(.header) {
-    composes: transparentHeader;
     background-color: @color-primary;
 }
 
@@ -45,6 +26,67 @@
     color: @color-text-dark;
     border-bottom: 1px solid @color-border;
     text-align: center;
+}
+
+:local(.hero) {
+    display: none; // TODO
+    padding-top: 32px;
+    padding-bottom: 32px;
+    background: @color-bg-lightest;
+}
+
+:local(.slogan) {
+    text-align: center;
+    font-size: 32px;
+    color: @color-text-dark;
+}
+
+:local(.sloganBrand) {
+    color: @color-primary;
+    white-space: nowrap;
+}
+
+:local(.subSlogan) {
+    text-align: center;
+    padding-top: 16px;
+    color: @color-text-light;
+    font-size: 16px;
+}
+
+:local(.heroActions) {
+    padding-top: 32px;
+    text-align: center;
+}
+
+@large-button-height: 48px;
+@large-button-hpadding: 20px;
+
+:local(.largeButton) {
+    display: inline-block;
+    border: 1px solid;
+    border-radius: 4px;
+    font-size: 18px;
+    height: @large-button-height - 1px * 2;
+    line-height: @large-button-height - 1px * 2;
+    padding: 0 @large-button-hpadding;
+    cursor: pointer;
+    vertical-align: middle;
+    text-decoration: none;
+}
+
+:local(.heroLoginButton) {
+    composes: largeButton;
+    border-color: @color-border;
+    background: #fff;
+    color: @color-text-dark;
+}
+
+:local(.heroSignUpButton) {
+    composes: largeButton;
+    border-color: @color-primary;
+    background: @color-primary;
+    color: @color-primary-muted;
+    margin-left: 16px;
 }
 
 :local(.noticeSeparator) {

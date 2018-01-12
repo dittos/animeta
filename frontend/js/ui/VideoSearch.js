@@ -21,48 +21,8 @@ function shorten(str, limit) {
     return str;
 }
 
-function Grid({ items, itemsPerRow, spacing, createItemElement }) {
-    const rows = [];
-    let currentRow = [];
-    const rowWrapperStyle = {
-        clear: 'both',
-        marginLeft: -spacing + 'px',
-        marginBottom: spacing + 'px',
-        overflow: 'hidden', // height
-    };
-    const itemWrapperStyle = {
-        'float': 'left',
-        width: (100 / itemsPerRow) + '%',
-        boxSizing: 'border-box',
-        paddingLeft: spacing + 'px',
-    };
-    for (var i = 0; i < items.length; i++) {
-        if (i > 0 && i % itemsPerRow === 0) {
-            rows.push(
-                <div style={rowWrapperStyle} key={i}>{currentRow}</div>
-            );
-            currentRow = [];
-        }
-        currentRow.push(
-            <div style={itemWrapperStyle} key={i}>
-                {createItemElement(items[i])}
-            </div>
-        );
-    }
-    if (currentRow.length > 0) {
-        rows.push(
-            <div style={rowWrapperStyle} key="last">{currentRow}</div>
-        );
-    }
-    return <div>
-        {rows}
-        <div style={{clear: 'both'}} />
-    </div>;
-}
-
 class VideoSearch extends React.Component {
     state = {
-        itemsPerRow: 5,
         isLoading: true,
         hasMore: true,
         result: [],
@@ -70,12 +30,7 @@ class VideoSearch extends React.Component {
     };
 
     componentDidMount() {
-        $(window).on('resize', this._onResize);
-        this._relayout(() => this._loadMore());
-    }
-
-    componentWillUnmount() {
-        $(window).off('resize', this._onResize);
+        this._loadMore();
     }
 
     componentWillReceiveProps(nextProps) {
@@ -97,7 +52,7 @@ class VideoSearch extends React.Component {
             data: {
                 apikey: PreloadData.daum_api_key,
                 output: 'json',
-                result: this.state.itemsPerRow * 2,
+                result: 10,
                 q: this.props.query,
                 pageno: page
             },
@@ -120,7 +75,6 @@ class VideoSearch extends React.Component {
             isLoading,
             result,
             page,
-            itemsPerRow,
             hasMore,
         } = this.state;
         if (result.length === 0)
@@ -128,30 +82,21 @@ class VideoSearch extends React.Component {
 
         var limit = result.length;
         if (page === 1) {
-            limit = Math.min(limit, itemsPerRow);
+            limit = Math.min(limit, 5);
         }
 
-        // TODO: css modules
-        return <div className="section section-video">
-            <h2 className="section-title">
-                <i className="fa fa-film" /> 동영상
-            </h2>
-            <Grid
-                items={result.slice(0, limit)}
-                itemsPerRow={itemsPerRow}
-                spacing={10}
-                createItemElement={item => (
-                    <div className={Styles.item}>
-                        <a href={item.link} target="_blank">
-                            <div className={Styles.thumbnail}>
-                                <img src={item.thumbnail} />
-                            </div>
-                            <div className={Styles.title} dangerouslySetInnerHTML={{__html: shorten(fixTitle(item.title), 30)}} />
-                        </a>
+        return <div>
+            {result.slice(0, limit).map(item => (
+                <a href={item.link} target="_blank" className={Styles.item}>
+                    <div className={Styles.thumbnail}>
+                        <img src={item.thumbnail} />
+                    </div>
+                    <div className={Styles.itemContent}>
+                        <div className={Styles.title} dangerouslySetInnerHTML={{__html: shorten(fixTitle(item.title), 35)}} />
                         <div className={Styles.date}>{formatDate(item.pubDate)}</div>
                     </div>
-                )}
-            />
+                </a>
+            ))}
             {hasMore &&
                 <LoadMore
                     isLoading={isLoading}
@@ -160,20 +105,6 @@ class VideoSearch extends React.Component {
                 />}
         </div>;
     }
-
-    _onResize = () => {
-        this._relayout();
-    };
-
-    _relayout = (cb) => {
-        var width = $(window).width();
-        if (width <= 768)
-            this.setState({itemsPerRow: 3}, cb);
-        else if (width <= 960)
-            this.setState({itemsPerRow: 4}, cb);
-        else
-            this.setState({itemsPerRow: 5}, cb);
-    };
 }
 
 export default VideoSearch;

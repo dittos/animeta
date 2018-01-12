@@ -1,40 +1,49 @@
 @import "../../less/variables.less";
 
+@poster-width: 100px;
+
 :local(.item) {
-    position: relative;
-    display: block;
-    height: 160px;
-    overflow: hidden;
-    margin-top: 8px;
+    padding-bottom: 8px;
     text-decoration: none;
-    font-size: 14px;
-    background-color: @color-main;
-    img {
-        display: block;
-        width: 100%;
-        margin-top: -10%;
-    }
-    .chart-item-text {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 8px;
-        background-color: rgba(0, 0, 0, 0.5);
-        color: #fff;
-    }
-    .rank {
-        color: #eee;
-        font-size: 0.9em;
-        margin-right: 8px;
-    }
-    .title {
-        font-weight: bold;
-    }
-    .down, .up {
-        font-size: 0.8em;
-        margin-left: 8px;
-    }
-    .down { color: blue; }
-    .up { color: red; }
+    clear: both;
+    display: block;
+    overflow: hidden;
+    color: @color-text-dark;
+}
+
+:local(.content) {
+    margin-left: @poster-width;
+    padding-left: 10px;
+}
+
+:local(.title) {
+    font-weight: bold;
+    font-size: 16px;
+    padding: 8px 0;
+}
+
+:local(.rank) {
+    font-size: 13px;
+}
+
+:local(.up) {
+    color: red;
+}
+:local(.down) {
+    color: blue;
+}
+
+:local(.poster) {
+    float: left;
+    width: @poster-width;
+    height: @poster-width / 3 * 4;
+    overflow: hidden;
+    position: relative;
+    border-radius: 2px;
+}
+
+:local(.posterImage) {
+    display: block;
+    width: 100%;
+    height: auto;
 }
