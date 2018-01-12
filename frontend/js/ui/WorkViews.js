@@ -81,7 +81,9 @@ export class Work extends React.Component {
         return (
             <div className={Styles.header}>
                 {work.image_url &&
-                    <img className={Styles.poster} src={work.image_url} />}
+                    <div className={Styles.poster}>
+                        <img className={Styles.posterImage} src={work.image_url} />
+                    </div>}
                 <div className={work.image_url ? Styles.headerContentWithPoster : Styles.headerContent}>
                     <h1 className={Styles.title}>{work.title}</h1>
                     <div className={Styles.stats}>

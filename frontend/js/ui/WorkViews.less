@@ -40,6 +40,11 @@
 :local(.header) {
     padding-bottom: 8px;
     overflow: hidden;
+
+    @media (max-width: 480px) {
+        display: flex;
+        align-items: center;
+    }
 }
 
 @poster-width: 144px;
@@ -48,12 +53,19 @@
 :local(.poster) {
     float: left;
     width: @poster-width;
-    border-radius: 2px;
 
     @media (max-width: 480px) {
+        flex: none;
         width: @mobile-poster-width;
         box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
     }
+}
+
+:local(.posterImage) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 2px;
 }
 
 :local(.headerContent) {
@@ -62,12 +74,13 @@
 
 :local(.headerContentWithPoster) {
     composes: headerContent;
-    padding-top: 16px;
+    padding-top: 8px;
     padding-left: 16px;
     margin-left: @poster-width;
 
     @media (max-width: 480px) {
-        margin-left: @mobile-poster-width;
+        padding-top: 0;
+        margin-left: 0;
     }
 }
 
@@ -75,6 +88,8 @@
     margin: 0;
     font-size: 24px;
     color: @color-text-dark;
+    word-break: keep-all;
+    word-wrap: break-word;
 
     @media (max-width: 480px) {
         font-size: 20px;
