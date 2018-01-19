@@ -26,7 +26,7 @@ class UserRecordsService(private val entityManager: EntityManager) {
                 .fetch()
         val filtered = filterCounts(counts, statusType, categoryId)
         val countByStatusType = mutableMapOf("_all" to 0)
-        for (row in filterCounts(counts, statusType, null)) {
+        for (row in filterCounts(counts, null, categoryId)) {
             countByStatusType.compute("_all") { _, value -> (value ?: 0) + row.count }
             countByStatusType.compute(row.statusType.name.toLowerCase()) { _, value -> (value ?: 0) + row.count }
         }
