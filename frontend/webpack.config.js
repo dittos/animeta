@@ -38,7 +38,7 @@ module.exports = (env) => {
         } : {
             path: path.join(__dirname, '../animeta/static/build'),
             publicPath: '/static/build/',
-            filename: '[name]-[hash].js'
+            filename: env.prod ? '[name]-[hash].js' : '[name].js',
         },
         module: {
             rules: [
@@ -89,8 +89,7 @@ module.exports = (env) => {
             }),
             new webpack.optimize.CommonsChunkPlugin({
                 name: 'common',
-                filename: 'common-[hash].js',
-            })
+            }),
         );
         if (env.prod) {
             config.plugins.push(
