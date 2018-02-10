@@ -89,7 +89,7 @@ module.exports = (env) => {
             }),
             new webpack.optimize.CommonsChunkPlugin({
                 name: 'common',
-            }),
+            })
         );
         if (env.prod) {
             config.plugins.push(
