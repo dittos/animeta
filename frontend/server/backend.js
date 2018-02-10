@@ -16,8 +16,8 @@ export default class {
         return JSON.parse(body);
     }
 
-    async getCurrentUser(req) {
-        const {response, body} = await this._call(req, '/me');
+    async getCurrentUser(req, params) {
+        const {response, body} = await this._call(req, '/me', params);
         if (response.statusCode !== 200) {
             return null;
         }

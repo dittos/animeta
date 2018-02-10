@@ -17,8 +17,8 @@ injectLoaderFactory(serverRequest => {
         call(path, params) {
             return backend.call(serverRequest, path, params);
         },
-        getCurrentUser() {
-            return backend.getCurrentUser(serverRequest);
+        getCurrentUser(params) {
+            return backend.getCurrentUser(serverRequest, params);
         },
     };
 });

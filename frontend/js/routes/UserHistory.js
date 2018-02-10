@@ -1,28 +1,14 @@
 import React from 'react';
-import cx from 'classnames';
-import {Link} from 'nuri';
-import * as util from '../util';
 import {getUserPosts} from '../API';
 import {User} from '../layouts';
-import TimeAgo from '../ui/TimeAgo';
-import PostComment from '../ui/PostComment';
+import * as Layout from '../ui/Layout';
 import LoadMore from '../ui/LoadMore';
-// TODO: css module
+import { Post } from '../ui/Post';
+import * as Styles from './UserHistory.less';
 
 function getDateHeader(post) {
     var date = new Date(post.updated_at);
     return date.getFullYear() + '/' + (date.getMonth() + 1);
-}
-
-function Post({post}) {
-    return <div className={cx({'post-item': true, 'no-comment': !post.comment})}>
-        <Link to={util.getWorkURL(post.record.title)} className="title">{post.record.title}</Link>
-        <div className={'progress progress-' + post.status_type}>{util.getStatusText(post)}</div>
-        <div className="meta">
-            <Link to={util.getPostURL(post)} className="time"><TimeAgo time={new Date(post.updated_at)} /></Link>
-        </div>
-        <PostComment post={post} className="comment" />
-    </div>;
 }
 
 var UserHistory = React.createClass({
@@ -58,15 +44,15 @@ var UserHistory = React.createClass({
         if (unknownGroup.length)
             groups.push({key: '?', items: unknownGroup});
 
-        return <div className="library-history">
+        return <Layout.CenteredFullWidth>
             {groups.map(group =>
-                <div className="library-history-group">
-                    <div className="library-history-group-title">{group.key}</div>
-                    {group.items.map(post => <Post post={post} />)}
+                <div className={Styles.group}>
+                    <div className={Styles.groupTitle}>{group.key}</div>
+                    {group.items.map(post => <Post post={post} showUser={false} showStatusType={true} />)}
                 </div>)}
             {this.state.hasMore &&
                 <LoadMore isLoading={this.state.isLoading} onClick={this._loadMore} />}
-        </div>;
+        </Layout.CenteredFullWidth>;
     },
     _loadMore() {
         this.setState({isLoading: true});
@@ -91,7 +77,9 @@ export default {
         const {username} = params;
         const [currentUser, user] = await Promise.all([
             loader.getCurrentUser(),
-            loader.call(`/users/${encodeURIComponent(username)}`),
+            loader.call(`/users/${encodeURIComponent(username)}`, {
+                include_stats: true,
+            }),
         ]);
         return {
             currentUser,

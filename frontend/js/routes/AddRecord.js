@@ -2,7 +2,7 @@ import React from 'react';
 import {createRecord} from '../API';
 import {User} from '../layouts';
 import Typeahead from '../ui/Typeahead';
-// TODO: css module
+import * as Styles from './AddRecord.less';
 
 var CategorySelect = React.createClass({
     render() {
@@ -35,7 +35,7 @@ var AddRecord = React.createClass({
     },
 
     render() {
-        return <form className="record-add-form">
+        return <form className={Styles.form}>
             <table>
                 <tbody>
                 <tr>
@@ -114,7 +114,9 @@ export default {
     component: User(AddRecord),
 
     async load({ loader, params }) {
-        const currentUser = await loader.getCurrentUser();
+        const currentUser = await loader.getCurrentUser({
+            include_stats: true,
+        });
         return {
             currentUser,
             user: currentUser, // for layout

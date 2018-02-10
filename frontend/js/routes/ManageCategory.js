@@ -1,29 +1,30 @@
 /* global confirm */
 import React from 'react';
-import cx from 'classnames';
 import {User} from '../layouts';
 import Sortable from '../ui/Sortable';
+import {CenteredFullWidth} from '../ui/Layout';
 import {
     renameCategory,
     removeCategory,
     addCategory,
     updateCategoryOrder,
 } from '../API';
-// TODO: css module
+import * as Styles from './ManageCategory.less';
 
 var CategoryItem = React.createClass({
     getInitialState() {
         return {isEditing: false};
     },
     render() {
+        const itemClassName = this.props.isSorting ? Styles.sortingItem : Styles.item;
         if (!this.props.isSorting && this.state.isEditing)
-            return <div className="category-item editing">
+            return <div className={itemClassName}>
                 <form onSubmit={this._onSubmit}>
-                    <input className="name"
+                    <input
                         value={this.state.name}
                         onChange={this._onChange} />
                     <button type="submit">변경</button>
-                    <span className="btn btn-cancel"
+                    <span className={Styles.itemAction}
                         onClick={this._endEditing}>취소</span>
                 </form>
             </div>;
@@ -31,14 +32,14 @@ var CategoryItem = React.createClass({
             var actions;
             if (!this.props.isSorting) {
                 actions = [
-                    <span className="btn btn-rename"
+                    <span className={Styles.itemAction}
                         onClick={this._startEditing}>이름 바꾸기</span>,
-                    <span className="btn btn-remove"
+                    <span className={Styles.itemAction}
                         onClick={this.props.onRemove}>삭제</span>
                 ];
             }
-            return <div className="category-item">
-                <span className="name">{this.props.category.name}</span>
+            return <div className={itemClassName}>
+                <span className={Styles.itemName}>{this.props.category.name}</span>
                 {actions}
             </div>;
         }
@@ -68,39 +69,36 @@ var ManageCategory = React.createClass({
     render() {
         const isSorting = this.state.sortingCategories != null;
 
-        return <div className={cx({
-            'manage-category': true,
-            'sorting': isSorting,
-        })}>
-            <h2>분류 관리</h2>
+        return <CenteredFullWidth>
+            <div className={Styles.title}>분류 관리</div>
             {isSorting ?
                 <Sortable onSwap={this._onSwap}>
                     {this.state.sortingCategories.map(this._renderItem)}
                 </Sortable>
                 : this.props.data.categories.map(this._renderItem)}
 
-            <div className="sort">
+            <div className={Styles.sort}>
                 {isSorting ?
                     <div>
                         항목을 드래그하여 순서를 바꿀 수 있습니다.{' '}
-                        <button className="btn-sort" onClick={this._endSorting}>
+                        <button className={Styles.button} onClick={this._endSorting}>
                             저장
                         </button>
                     </div>
-                    : <button className="btn-sort" onClick={this._beginSorting}>
+                    : <button className={Styles.button} onClick={this._beginSorting}>
                         순서 바꾸기
                     </button>}
             </div>
 
             {!isSorting &&
                 <div>
-                    <h2>분류 추가</h2>
+                    <div className={Styles.title}>분류 추가</div>
                     <form onSubmit={this._addCategory}>
                         분류 이름: <input size={12} ref="nameInput" />
-                        <button className="btn-add">추가</button>
+                        <button className={Styles.button}>추가</button>
                     </form>
                 </div>}
-        </div>;
+        </CenteredFullWidth>;
     },
 
     _renderItem(category) {
@@ -170,7 +168,9 @@ export default {
     component: User(ManageCategory),
 
     async load({ loader }) {
-        const currentUser = await loader.getCurrentUser();
+        const currentUser = await loader.getCurrentUser({
+            include_stats: true,
+        });
         return {
             currentUser,
             user: currentUser, // for layout

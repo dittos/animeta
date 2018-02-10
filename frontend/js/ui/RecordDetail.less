@@ -1,11 +1,91 @@
+@import "../../less/base.less";
+
+:local(.header) {
+    float: left;
+    margin-bottom: 16px;
+}
+
+:local(.title) {
+    float: left;
+    margin: 0 1em 0 0;
+    font-size: 20px;
+    a {
+        color: @color-text-title;
+        text-decoration: none;
+        &:hover {
+            color: @color-text-light;
+            border-bottom: 1px dashed @color-text-light;
+        }
+    }
+}
+
+:local(.toolbar) {
+    float: left;
+
+    @media (max-width: 480px) {
+        clear: both;
+        margin-top: 16px;
+    }
+}
+
+:local(.titleForm) {
+    float: left;
+
+    input {
+        width: 15em;
+    }
+}
+
+:local(.toolbarButton) {
+    float: left;
+    vertical-align: middle;
+    text-decoration: none;
+    padding: 0 5px;
+    line-height: 22px;
+    border-radius: 2px;
+    font-size: 13px;
+    border: 1px solid @color-text-dark;
+    background: #fff;
+    color: @color-text-dark;
+}
+
+:local(.deleteButton) {
+    composes: toolbarButton;
+    margin-left: 1em;
+    color: @color-danger;
+    border-color: @color-danger;
+}
+
+:local(.categoryForm) {
+    composes: toolbarButton;
+
+    float: left;
+    margin-left: 1em;
+    position: relative;
+    label {
+        color: @color-text-light;
+    }
+    select {
+        position: absolute;
+        left: 0; top: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        border: 0;
+        cursor: pointer;
+    }
+}
+
 :local(.posts) {
 
 }
 
 :local(.post) {
+    // TODO: css module
     clear: both;
     margin: 16px 0;
     line-height: 1.8;
+    font-size: 14px;
 
     &.no-comment {
         .meta {
@@ -25,7 +105,7 @@
         font-size: 12px;
     }
     .time {
-        color: #666;
+        color: @color-text-light;
         text-decoration: none;
         &:hover {
             text-decoration: underline;
@@ -33,7 +113,7 @@
     }
     .btn-delete {
         margin-left: 8px;
-        color: #f00;
+        color: @color-danger;
         text-decoration: none;
         cursor: pointer;
         &:hover {
@@ -43,6 +123,6 @@
 }
 
 :local(.spoilerMark) {
-    color: #666;
+    color: @color-text-light;
     margin-right: 8px;
 }

@@ -96,7 +96,7 @@ class GlobalHeader extends React.Component {
     };
 
     render() {
-        const showNotice = true;
+        const showNotice = false;
         return <div className={Styles.container}>
             <Layout.CenteredFullWidth className={Styles.header}>
                 <Layout.LeftRight className={Styles.headerInner}

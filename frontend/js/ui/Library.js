@@ -6,6 +6,8 @@ var diffWeeks = require('date-fns/difference_in_calendar_weeks');
 var diffMonths = require('date-fns/difference_in_calendar_months');
 var {Link} = require('nuri');
 var util = require('../util');
+import * as Styles from './Library.less';
+import * as Grid from './Grid';
 
 function getDateHeader(record) {
     const now = new Date();
@@ -103,73 +105,71 @@ function groupRecordsByDate(records) {
 
 function LibraryItem({ record }) {
     return (
-        <li className={'library-group-item item-' + record.status_type}>
+        <div className={`${Styles.groupItem} item-${record.status_type}`}>
             <Link to={`/records/${record.id}/`}>
                 <span className="item-title">{record.title}</span>
                 <span className="item-status">{util.getStatusText(record)}</span>
                 {record.has_newer_episode &&
                     <span className="item-updated">up!</span>}
             </Link>
-        </li>
+        </div>
     );
 }
 
-class LibraryHeader extends React.Component {
+class LibraryFilter extends React.Component {
     render() {
-        return <div className="library-header">
-            <p>
-                작품이 {this.props.count}개 등록되어 있습니다.
-                {this.props.count != this.props.filteredCount &&
-                    ' (' + this.props.filteredCount + '개 표시중)'}
-            </p>
-            <p className="sort-by">
-                정렬:
-                <span onClick={() => this._updateQuery({sort: 'date'})}
-                    className={'btn ' + (this.props.sortBy == 'date' && 'active')}>시간순</span>
-                <span onClick={() => this._updateQuery({sort: 'title'})}
-                    className={'btn ' + (this.props.sortBy == 'title' && 'active')}>제목순</span>
-            </p>
-            <p>
-                <label>상태: </label>
-                <select value={this.props.statusTypeFilter}
-                    onChange={this._onStatusTypeFilterChange}>
-                    <option value="">전체 ({this.props.statusTypeStats._all})</option>
-                {['watching', 'finished', 'suspended', 'interested'].map(statusType => {
-                    return <option value={statusType}>{util.STATUS_TYPE_TEXT[statusType]} ({this.props.statusTypeStats[statusType] || 0})</option>;
-                })}
-                </select>
-            </p>
-            <p>
-                <label>분류: </label>
-                <select value={this.props.categoryFilter}
-                    onChange={this._onCategoryFilterChange}>
-                    <option value="">전체 ({this.props.categoryStats._all})</option>
-                {[{id: 0, name: '미분류'}].concat(this.props.categoryList).map(category => {
-                    return <option value={category.id}>{category.name} ({this.props.categoryStats[category.id] || 0})</option>;
-                })}
-                </select>
-                {' '}{this.props.canEdit && <Link to="/records/category/">관리</Link>}
-            </p>
+        return <div className={Styles.filter}>
+            <div className={Styles.filterGroup}>
+                <div className={Styles.filterGroupTitle}>상태</div>
+                <div className={this.props.statusTypeFilter === '' ? Styles.filterGroupItemActive : Styles.filterGroupItem}>
+                    <Link {...this.props.getLinkParams({ type: '' })}>
+                        전체 ({this.props.statusTypeStats._all})
+                    </Link>
+                </div>
+                {['watching', 'finished', 'suspended', 'interested'].map(statusType => (
+                    <div className={this.props.statusTypeFilter === statusType ? Styles.filterGroupItemActive : Styles.filterGroupItem}>
+                        <Link {...this.props.getLinkParams({ type: statusType })}>
+                            {util.STATUS_TYPE_TEXT[statusType]} ({this.props.statusTypeStats[statusType] || 0})
+                        </Link>
+                    </div>
+                ))}
+            </div>
+            <div className={Styles.filterGroup}>
+                <div className={Styles.filterGroupTitle}>분류</div>
+                <div className={this.props.categoryFilter === '' ? Styles.filterGroupItemActive : Styles.filterGroupItem}>
+                    <Link {...this.props.getLinkParams({ category: '' })}>
+                        전체 ({this.props.categoryStats._all})
+                    </Link>
+                </div>
+                {[{id: 0, name: '미분류'}].concat(this.props.categoryList).map(category => (
+                    <div className={this.props.categoryFilter === String(category.id) ? Styles.filterGroupItemActive : Styles.filterGroupItem}>
+                        <Link {...this.props.getLinkParams({ category: String(category.id) })}>
+                            {category.name} ({this.props.categoryStats[category.id] || 0})
+                        </Link>
+                    </div>
+                ))}
+                {' '}{this.props.canEdit && (
+                    <Link to="/records/category/" className={Styles.manageCategoryButton}>
+                        <i className="fa fa-cog" /> 분류 관리
+                    </Link>
+                )}
+            </div>
         </div>;
     }
-
-    _updateQuery(updates) {
-        this.props.onUpdateQuery(updates);
-    }
-
-    _onStatusTypeFilterChange = (e) => {
-        this._updateQuery({type: e.target.value});
-    };
-
-    _onCategoryFilterChange = (e) => {
-        this._updateQuery({category: e.target.value});
-    };
 }
 
 class Library extends React.Component {
     static contextTypes = {
         controller: React.PropTypes.object,
     };
+
+    state = {
+        mobileFilterVisible: false,
+    };
+
+    componentWillReceiveProps() {
+        this.setState({ mobileFilterVisible: false });
+    }
 
     render() {
         if (this.props.count === 0) {
@@ -180,7 +180,7 @@ class Library extends React.Component {
             </div>;
         }
 
-        var {type, category, sort} = this.props.query;
+        var {type = '', category = '', sort} = this.props.query;
         if (!sort) sort = 'date';
         var {
             count,
@@ -196,44 +196,80 @@ class Library extends React.Component {
         } else if (sort == 'title') {
             groups = groupRecordsByTitle(records);
         }
-        return <div className="library">
-            <LibraryHeader
-                count={count}
-                filteredCount={filteredCount}
-                sortBy={sort}
-                statusTypeFilter={type}
-                statusTypeStats={statusTypeStats}
-                categoryFilter={category}
-                categoryList={categoryList}
-                categoryStats={categoryStats}
-                canEdit={this.props.canEdit}
-                onUpdateQuery={this._onUpdateQuery} />
-            {sort == 'title' && <p className="library-toc">
-                건너뛰기: {groups.map(group => <a
-                    href={'#group' + group.index}
-                    key={group.key}
-                    onClick={this._scrollToGroup}
-                >
-                    {group.key}
-                </a>)}
-            </p>}
-            {groups.map(group => <div className="library-group" key={group.key} id={'group' + group.index}>
-                <h2 className="library-group-title">{group.key}</h2>
-                <ul className="library-group-items">
-                    {group.items.map(record => <LibraryItem
-                        key={record.id}
-                        record={record} />)}
-                </ul>
-            </div>)}
-        </div>;
+        return <Grid.Row className={Styles.library}>
+            <Grid.Column size={3} pull="left">
+                {this.props.canEdit && (
+                    <Link to="/records/add/" className={Styles.addRecordButton}>
+                        <i className="fa fa-plus" /> 작품 추가
+                    </Link>
+                )}
+                <div className={Styles.mobileFilterToggle} onClick={this._toggleMobileFilter}>
+                    {count !== filteredCount ? '필터 (사용중)' : '필터'}
+                    {' '}
+                    <i className={this.state.mobileFilterVisible ? "fa fa-caret-up" : "fa fa-caret-down"} />
+                </div>
+                <div className={Styles.filterGroup}>
+                    <span className={Styles.sortSwitchContainer}>
+                        <Link
+                            {...this._getLinkParams({sort: 'date'})}
+                            className={sort === 'date' ? Styles.sortSwitchActive : Styles.sortSwitch}
+                        >
+                            시간순
+                        </Link>
+                        <Link
+                            {...this._getLinkParams({sort: 'title'})}
+                            className={sort === 'title' ? Styles.sortSwitchActive : Styles.sortSwitch}
+                        >
+                            제목순
+                        </Link>
+                    </span>
+                    {sort === 'title' && (
+                        <div className={Styles.toc}>
+                            {groups.map(group => <a
+                                href={'#group' + group.index}
+                                key={group.key}
+                                onClick={this._scrollToGroup}
+                            >
+                                {group.key}
+                            </a>)}
+                        </div>
+                    )}
+                </div>
+                <div className={this.state.mobileFilterVisible ? '' : 'hide-mobile'}>
+                    <LibraryFilter
+                        count={count}
+                        filteredCount={filteredCount}
+                        sortBy={sort}
+                        groups={groups}
+                        scrollToGroup={this._scrollToGroup}
+                        statusTypeFilter={type}
+                        statusTypeStats={statusTypeStats}
+                        categoryFilter={category}
+                        categoryList={categoryList}
+                        categoryStats={categoryStats}
+                        canEdit={this.props.canEdit}
+                        getLinkParams={this._getLinkParams} />
+                </div>
+            </Grid.Column>
+            <Grid.Column size={9} pull="left">
+                {groups.map(group => <div className={Styles.group} key={group.key} id={'group' + group.index}>
+                    <h2 className={Styles.groupTitle}>{group.key}</h2>
+                    <div className={Styles.groupItems}>
+                        {group.items.map(record => <LibraryItem
+                            key={record.id}
+                            record={record} />)}
+                    </div>
+                </div>)}
+            </Grid.Column>
+        </Grid.Row>;
     }
 
-    _onUpdateQuery = (updates) => {
+    _getLinkParams = (updates) => {
         const basePath = `/users/${encodeURIComponent(this.props.user.name)}/`;
-        this.context.controller.load({
-            path: basePath,
-            query: {...this.props.query, ...updates}
-        })
+        return {
+            to: basePath,
+            queryParams: {...this.props.query, ...updates}
+        };
     };
 
     _scrollToGroup = (event) => {
@@ -242,6 +278,11 @@ class Library extends React.Component {
         const el = document.getElementById(id);
         if (!el) return;
         window.scrollBy(0, el.getBoundingClientRect().top - 50);
+    };
+
+    _toggleMobileFilter = (event) => {
+        event.preventDefault();
+        this.setState({ mobileFilterVisible: !this.state.mobileFilterVisible });
     };
 }
 

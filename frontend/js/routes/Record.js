@@ -19,8 +19,8 @@ import {
 } from '../API';
 import connectTwitter from '../connectTwitter';
 import {User} from '../layouts';
+import {CenteredFullWidth} from '../ui/Layout';
 import ModalStyles from '../ui/Modal.less';
-// TODO: css module
 
 var TitleEditView = React.createClass({
     componentDidMount() {
@@ -34,7 +34,7 @@ var TitleEditView = React.createClass({
 
     render() {
         return (
-            <div className="title-form">
+            <div className={Styles.titleForm}>
                 <input ref="titleInput" defaultValue={this.props.originalTitle} />
                 <button onClick={this._onSave}>저장</button>
                 {' '}<a href="#" onClick={this._onCancel}>취소</a>
@@ -61,7 +61,7 @@ var CategoryEditView = React.createClass({
             )[0].name;
         }
         return (
-            <span className="category-form btn">
+            <span className={Styles.categoryForm}>
                 <label>분류: </label>
                 {name} ▼
                 <select value={String(this.props.selectedId)} onChange={this._onChange}>
@@ -99,11 +99,11 @@ var HeaderView = React.createClass({
                 onSave={this._onTitleSave}
                 onCancel={() => this.setState({isEditingTitle: false})} />;
         } else {
-            titleEditor = <h1 className="record-detail-title">
+            titleEditor = <h1 className={Styles.title}>
                 <Link to={util.getWorkURL(record.title)}>{record.title}</Link>
             </h1>;
             editTitleButton = (
-                <a href="#" className="btn btn-edit-title" onClick={this._onTitleEditButtonClick}>
+                <a href="#" className={Styles.toolbarButton} onClick={this._onTitleEditButtonClick}>
                     제목 수정
                 </a>
             );
@@ -111,9 +111,9 @@ var HeaderView = React.createClass({
         var toolbar;
         if (canEdit) {
             toolbar = (
-                <div className="record-detail-toolbar">
+                <div className={Styles.toolbar}>
                     {editTitleButton}
-                    <a href="#" className="btn btn-delete" onClick={this._onDelete}>삭제</a>
+                    <a href="#" className={Styles.deleteButton} onClick={this._onDelete}>삭제</a>
                     <CategoryEditView
                         categoryList={currentUser.categories}
                         selectedId={record.category_id}
@@ -124,7 +124,7 @@ var HeaderView = React.createClass({
         }
 
         return (
-            <div className="record-detail-header">
+            <div className={Styles.header}>
                 {titleEditor}
                 {toolbar}
             </div>
@@ -232,7 +232,7 @@ var Record = React.createClass({
             );
         }
         const canDeletePosts = canEdit && posts.length > 1;
-        return <div className="view-record-detail">
+        return <CenteredFullWidth>
             <HeaderView
                 key={'header' + record.id}
                 record={record}
@@ -259,7 +259,7 @@ var Record = React.createClass({
                     onConfirm={this._deleteRecord}
                     onCancel={() => this.setState({showDeleteModal: false})}
                 />}
-        </div>;
+        </CenteredFullWidth>;
     },
 
     _updateTitle(title) {
@@ -325,7 +325,7 @@ export default {
         const {recordId} = params;
         const [currentUser, record] = await Promise.all([
             loader.getCurrentUser(),
-            loader.call(`/records/${recordId}`),
+            loader.call(`/records/${recordId}`, {include_user_stats: true}),
         ]);
         return {
             currentUser,

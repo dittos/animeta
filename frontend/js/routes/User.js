@@ -1,7 +1,6 @@
 import React from 'react';
 import {User as UserLayout} from '../layouts';
 import Library from '../ui/Library';
-import '../../less/library.less';
 
 class User extends React.Component {
     render() {
@@ -34,7 +33,9 @@ export default {
         const {type, category, sort} = query;
         const [currentUser, user, records] = await Promise.all([
             loader.getCurrentUser(),
-            loader.call(`/users/${encodeURIComponent(username)}`),
+            loader.call(`/users/${encodeURIComponent(username)}`, {
+                include_stats: true,
+            }),
             loader.call(`/users/${encodeURIComponent(username)}/records`, {
                 include_has_newer_episode: JSON.stringify(true),
                 sort,

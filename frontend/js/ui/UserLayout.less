@@ -1,0 +1,80 @@
+@import "../../less/variables.less";
+
+:local(.header) {
+    overflow: hidden;
+    box-shadow: 0 1px 3px 0 @color-shadow;
+}
+
+@user-header-height: 64px;
+
+:local(.profile) {
+    @media (max-width: 480px) {
+        padding: 16px 0;
+    }
+    @media (min-width: 481px) {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: @user-header-height;
+    }
+}
+
+:local(.title) {
+    margin: 0;
+    font-size: 20px;
+    a {
+        color: @color-text-title;
+        text-decoration: none;
+        &:hover {
+            color: @color-primary;
+        }
+    }
+}
+
+:local(.dateJoined) {
+    line-height: 2;
+    color: @color-text-light;
+    font-size: 12px;
+}
+
+:local(.nav) {
+    display: flex;
+    align-items: center;
+
+    @media (max-width: 480px) {
+        padding-bottom: 16px;
+    }
+
+    @media (min-width: 481px) {
+        height: @user-header-height;
+    }
+}
+
+:local(.navItem) {
+    text-decoration: none;
+    color: @color-text-dark;
+    margin-right: 20px;
+
+    @media (min-width: 481px) {
+        font-size: 12px;
+        text-align: center;
+    }
+
+    &:hover {
+        color: @color-text-light;
+    }
+}
+
+:local(.navItemCount) {
+    color: @color-primary;
+    font-weight: bold;
+
+    @media (min-width: 481px) {
+        display: block;
+        font-size: 20px;
+    }
+}
+
+:local(.content) {
+    padding: 16px 0;
+}

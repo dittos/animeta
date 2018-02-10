@@ -13,8 +13,8 @@ injectLoader({
         return $.get('/api/v2' + path, params);
     },
 
-    getCurrentUser() {
-        return $.ajax({url: '/api/v2/me', __silent__: true}).then(undefined, jqXHR => {
+    getCurrentUser(params) {
+        return $.ajax({url: '/api/v2/me', data: params, __silent__: true}).then(undefined, jqXHR => {
             var deferred = $.Deferred();
             if (jqXHR.statusCode)
                 deferred.resolve(null);
