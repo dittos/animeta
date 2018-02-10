@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service
 @Service
 class RecordSerializer(val userSerializer: UserSerializer,
                        val historyRepository: HistoryRepository) {
-    fun serialize(record: Record, includeHasNewerEpisode: Boolean = false, includeUser: Boolean = false): RecordDTO {
+    fun serialize(record: Record, includeHasNewerEpisode: Boolean = false, includeUser: Boolean = false,
+                  includeUserStats: Boolean = false): RecordDTO {
         return RecordDTO(
                 id = record.id!!,
                 user_id = record.user.id!!,
@@ -20,7 +21,7 @@ class RecordSerializer(val userSerializer: UserSerializer,
                 status_type = record.status_type.name.toLowerCase(),
                 updated_at = record.updated_at?.toInstant()?.toEpochMilli(),
                 has_newer_episode = if (includeHasNewerEpisode) hasNewerEpisode(record) else null,
-                user = if (includeUser) userSerializer.serialize(record.user, includeCategories = true) else null
+                user = if (includeUser) userSerializer.serialize(record.user, includeCategories = true, includeStats = includeUserStats) else null
         )
     }
 

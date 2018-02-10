@@ -15,6 +15,8 @@ interface HistoryRepository : CrudRepository<History, Int>, QueryDslPredicateExe
 
     fun countByRecord(record: Record): Int
 
+    fun countByUser(user: User): Int
+
     fun existsByWorkAndStatusAndUpdatedAtGreaterThan(work: Work, status: String, updatedAt: Timestamp): Boolean
 
     fun deleteByUserAndWork(user: User, work: Work)

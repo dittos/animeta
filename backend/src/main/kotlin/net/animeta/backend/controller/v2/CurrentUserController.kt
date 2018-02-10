@@ -14,11 +14,12 @@ import org.springframework.web.bind.annotation.*
 class CurrentUserController(private val userSerializer: UserSerializer,
                             private val authService: AuthService) {
     @GetMapping
-    fun get(@CurrentUser(required = false) currentUser: User?): UserDTO {
+    fun get(@CurrentUser(required = false) currentUser: User?,
+            @RequestParam("include_stats", defaultValue = "false") includeStats: Boolean): UserDTO {
         if (currentUser == null) {
             throw ApiException("Not logged in", HttpStatus.FORBIDDEN)
         }
-        return userSerializer.serialize(currentUser, currentUser)
+        return userSerializer.serialize(currentUser, currentUser, includeStats = includeStats)
     }
 
     data class ChangePasswordResponse(val ok: Boolean)

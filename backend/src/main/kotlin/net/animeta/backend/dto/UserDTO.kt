@@ -11,5 +11,7 @@ data class UserDTO(
         @get:JsonProperty("is_twitter_connected")
         val is_twitter_connected: Boolean?,
         val connected_services: List<String>?,
-        val categories: List<CategoryDTO>?
+        val categories: List<CategoryDTO>?,
+        val record_count: Int?,
+        val history_count: Int?
 )
