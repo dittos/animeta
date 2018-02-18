@@ -29,10 +29,11 @@ class RecordPostsController(val recordRepository: RecordRepository,
     data class CreateResponse(val record: RecordDTO, val post: PostDTO)
 
     @GetMapping
-    fun get(@PathVariable id: Int): GetResponse {
+    fun get(@PathVariable id: Int,
+            @RequestParam(required = false) options: PostSerializer.Options?): GetResponse {
         val record = recordRepository.findOne(id) ?: throw ApiException.notFound()
         val posts = record.histories
-        return GetResponse(posts.map { postSerializer.serialize(it) })
+        return GetResponse(posts.map { postSerializer.serialize(it, options ?: PostSerializer.legacyOptions()) })
     }
 
     @PostMapping
@@ -70,8 +71,8 @@ class RecordPostsController(val recordRepository: RecordRepository,
         }
 
         return CreateResponse(
-                record = recordSerializer.serialize(record),
-                post = postSerializer.serialize(history)
+                record = recordSerializer.serialize(record, RecordSerializer.legacyOptions()),
+                post = postSerializer.serialize(history, PostSerializer.legacyOptions())
         )
     }
 }

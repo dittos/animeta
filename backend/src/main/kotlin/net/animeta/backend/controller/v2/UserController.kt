@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.*
 class UserController(val userRepository: UserRepository, val userSerializer: UserSerializer) {
     @GetMapping
     fun get(@PathVariable name: String, @CurrentUser(required = false) currentUser: User?,
-            @RequestParam("include_stats", defaultValue = "false") includeStats: Boolean): UserDTO {
+            @RequestParam(required = false) options: UserSerializer.Options?,
+            /* deprecated */ @RequestParam("include_stats", defaultValue = "false") includeStats: Boolean): UserDTO {
         val user = userRepository.findByUsername(name) ?: throw ApiException.notFound()
-        return userSerializer.serialize(user, currentUser, includeStats = includeStats)
+        return userSerializer.serialize(user, currentUser,
+                options ?: UserSerializer.legacyOptions(includeStats = includeStats))
     }
 }

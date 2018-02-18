@@ -43,7 +43,7 @@ class WorkSerializer(val workService: WorkService,
                 rank = index?.rank,
                 record = if (viewer != null) {
                     recordRepository.findOneByWorkAndUser(work, viewer)
-                            ?.let { recordSerializer.serialize(it) }
+                            ?.let { recordSerializer.serialize(it, RecordSerializer.legacyOptions()) }
                 } else {
                     null
                 },

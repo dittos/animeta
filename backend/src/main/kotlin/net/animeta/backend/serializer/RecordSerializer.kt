@@ -9,8 +9,22 @@ import org.springframework.stereotype.Service
 @Service
 class RecordSerializer(val userSerializer: UserSerializer,
                        val historyRepository: HistoryRepository) {
-    fun serialize(record: Record, includeHasNewerEpisode: Boolean = false, includeUser: Boolean = false,
-                  includeUserStats: Boolean = false): RecordDTO {
+    data class Options(val hasNewerEpisode: Boolean = false, val user: UserSerializer.Options? = null)
+
+    companion object {
+        fun legacyOptions(includeHasNewerEpisode: Boolean = false, includeUser: Boolean = false,
+                          includeUserStats: Boolean = false) =
+                Options(
+                        hasNewerEpisode = includeHasNewerEpisode,
+                        user = if (includeUser) {
+                            UserSerializer.legacyOptions(includeCategories = true, includeStats = includeUserStats)
+                        } else {
+                            null
+                        }
+                )
+    }
+
+    fun serialize(record: Record, options: Options): RecordDTO {
         return RecordDTO(
                 id = record.id!!,
                 user_id = record.user.id!!,
@@ -20,8 +34,8 @@ class RecordSerializer(val userSerializer: UserSerializer,
                 status = record.status,
                 status_type = record.status_type.name.toLowerCase(),
                 updated_at = record.updated_at?.toInstant()?.toEpochMilli(),
-                has_newer_episode = if (includeHasNewerEpisode) hasNewerEpisode(record) else null,
-                user = if (includeUser) userSerializer.serialize(record.user, includeCategories = true, includeStats = includeUserStats) else null
+                has_newer_episode = if (options.hasNewerEpisode) hasNewerEpisode(record) else null,
+                user = if (options.user != null) userSerializer.serialize(record.user, options = options.user) else null
         )
     }
 

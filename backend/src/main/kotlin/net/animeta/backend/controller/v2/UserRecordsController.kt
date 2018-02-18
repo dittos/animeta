@@ -48,7 +48,8 @@ class UserRecordsController(val userRepository: UserRepository,
             @RequestParam("category_id", required = false) categoryIdParam: Int?,
             @RequestParam(required = false) sort: String?,
             @RequestParam(required = false) limit: Int?,
-            @RequestParam("with_counts", defaultValue = "false") withCounts: Boolean): Any {
+            @RequestParam("with_counts", defaultValue = "false") withCounts: Boolean,
+            @RequestParam(required = false) options: RecordSerializer.Options?): Any {
         val user = userRepository.findByUsername(name) ?: throw ApiException.notFound()
         val includeHasNewerEpisode = includeHasNewerEpisodeParam && currentUser?.id == user.id
         val statusType = if (statusTypeParam != null && statusTypeParam != "") {
@@ -71,7 +72,9 @@ class UserRecordsController(val userRepository: UserRepository,
         if (limit != null) {
             query = query.limit(limit)
         }
-        val data = datastore.query(query).map { recordSerializer.serialize(it, includeHasNewerEpisode = includeHasNewerEpisode) }
+        val data = datastore.query(query).map {
+            recordSerializer.serialize(it, options ?: RecordSerializer.legacyOptions(includeHasNewerEpisode = includeHasNewerEpisode))
+        }
         if (!withCounts) {
             return data
         }
@@ -124,8 +127,8 @@ class UserRecordsController(val userRepository: UserRepository,
         )
         historyRepository.save(history)
         return CreateResponse(
-                record = recordSerializer.serialize(record),
-                post = postSerializer.serialize(history)
+                record = recordSerializer.serialize(record, RecordSerializer.legacyOptions()),
+                post = postSerializer.serialize(history, PostSerializer.legacyOptions())
         )
     }
 }

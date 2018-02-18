@@ -5,6 +5,8 @@ import net.animeta.backend.db.query
 import net.animeta.backend.dto.PostDTO
 import net.animeta.backend.model.QHistory.history
 import net.animeta.backend.serializer.PostSerializer
+import net.animeta.backend.serializer.RecordSerializer
+import net.animeta.backend.serializer.UserSerializer
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -16,7 +18,8 @@ class PostsController(val datastore: Datastore, val postSerializer: PostSerializ
     @GetMapping
     fun get(@RequestParam("before_id", required = false) beforeId: Int?,
             @RequestParam("min_record_count", required = false) minRecordCount: Int?,
-            @RequestParam(defaultValue = "32") count: Int): List<PostDTO> {
+            @RequestParam(defaultValue = "32") count: Int,
+            @RequestParam(required = false) options: PostSerializer.Options?): List<PostDTO> {
         var query = history.query.selectRelated(history.user, history.record)
                 .filter(history.comment.ne(""))
                 .orderBy(history.id.desc())
@@ -28,6 +31,6 @@ class PostsController(val datastore: Datastore, val postSerializer: PostSerializ
         }
         val limit = minOf(count, 128)
         return datastore.query(query.limit(limit))
-                .map { postSerializer.serialize(it, includeRecord = true, includeUser = true) }
+                .map { postSerializer.serialize(it, options ?: PostSerializer.legacyOptions(includeRecord = true, includeUser = true)) }
     }
 }

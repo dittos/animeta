@@ -9,6 +9,7 @@ import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.PostSerializer
 import net.animeta.backend.serializer.RecordSerializer
+import net.animeta.backend.serializer.UserSerializer
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
@@ -20,9 +21,10 @@ class PostController(val historyRepository: HistoryRepository,
                      val postSerializer: PostSerializer,
                      val recordSerializer: RecordSerializer) {
     @GetMapping
-    fun get(@PathVariable id: Int): PostDTO {
+    fun get(@PathVariable id: Int,
+            @RequestParam(required = false) options: PostSerializer.Options?): PostDTO {
         val history = historyRepository.findOne(id) ?: throw ApiException.notFound()
-        return postSerializer.serialize(history, includeRecord = true, includeUser = true)
+        return postSerializer.serialize(history, options ?: PostSerializer.legacyOptions(includeRecord = true, includeUser = true))
     }
 
     data class DeleteResponse(val record: RecordDTO)
@@ -43,6 +45,6 @@ class PostController(val historyRepository: HistoryRepository,
         record.status = latestHistory.status
         record.status_type = latestHistory.status_type
         recordRepository.save(record)
-        return DeleteResponse(recordSerializer.serialize(record, includeUser = true))
+        return DeleteResponse(recordSerializer.serialize(record, RecordSerializer.legacyOptions(includeUser = true)))
     }
 }

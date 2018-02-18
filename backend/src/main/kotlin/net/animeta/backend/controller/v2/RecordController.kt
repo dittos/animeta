@@ -7,6 +7,7 @@ import net.animeta.backend.repository.CategoryRepository
 import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.RecordSerializer
+import net.animeta.backend.serializer.UserSerializer
 import net.animeta.backend.service.WorkService
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
@@ -20,9 +21,10 @@ class RecordController(val recordRepository: RecordRepository,
                        val workService: WorkService) {
     @GetMapping
     fun get(@PathVariable id: Int,
-            @RequestParam("include_user_stats", defaultValue = "false") includeUserStats: Boolean): RecordDTO {
+            @RequestParam(required = false) options: RecordSerializer.Options?,
+            /* deprecated */ @RequestParam("include_user_stats", defaultValue = "false") includeUserStats: Boolean): RecordDTO {
         val record = recordRepository.findOne(id) ?: throw ApiException.notFound()
-        return recordSerializer.serialize(record, includeUser = true, includeUserStats = includeUserStats)
+        return recordSerializer.serialize(record, options ?: RecordSerializer.legacyOptions(includeUser = true, includeUserStats = includeUserStats))
     }
 
     @PostMapping
@@ -53,7 +55,7 @@ class RecordController(val recordRepository: RecordRepository,
             }
         }
         recordRepository.save(record)
-        return recordSerializer.serialize(record, includeUser = true)
+        return recordSerializer.serialize(record, RecordSerializer.legacyOptions(includeUser = true))
     }
 
     data class DeleteResponse(val ok: Boolean)

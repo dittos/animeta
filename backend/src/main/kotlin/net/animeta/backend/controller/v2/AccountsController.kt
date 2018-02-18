@@ -16,10 +16,8 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @RequestMapping("/v2/accounts")
 class AccountsController(private val userRepository: UserRepository,
-                         private val authService: AuthService,
-                         private val userSerializer: UserSerializer) {
+                         private val authService: AuthService) {
     data class CreateResponse(val ok: Boolean,
-                              val user: UserDTO? = null,
                               val session_key: String? = null,
                               val errors: Map<String, String>? = null)
 
@@ -44,6 +42,7 @@ class AccountsController(private val userRepository: UserRepository,
         authService.setPassword(user, password1)
         userRepository.save(user)
         val sessionKey = authService.login(user, servletResponse, persistent = false)
-        return CreateResponse(ok = true, user = userSerializer.serialize(user), session_key = sessionKey)
+        return CreateResponse(ok = true,
+                session_key = sessionKey)
     }
 }

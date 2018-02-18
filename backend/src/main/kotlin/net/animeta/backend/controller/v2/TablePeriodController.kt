@@ -47,7 +47,7 @@ class TablePeriodController(val datastore: Datastore,
         }
         if (currentUser != null) {
             val records = recordRepository.findAllByUserAndWorkIdIn(currentUser, result.map { it.id })
-                    .map { recordSerializer.serialize(it) }
+                    .map { recordSerializer.serialize(it, RecordSerializer.legacyOptions()) }
                     .associateBy { it.work_id }
             return result.map { it.copy(record = records[it.id]) }
         }

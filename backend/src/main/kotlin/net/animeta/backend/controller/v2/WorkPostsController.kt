@@ -7,6 +7,7 @@ import net.animeta.backend.exception.ApiException
 import net.animeta.backend.model.QHistory.history
 import net.animeta.backend.repository.WorkRepository
 import net.animeta.backend.serializer.PostSerializer
+import net.animeta.backend.serializer.UserSerializer
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -18,7 +19,8 @@ class WorkPostsController(val workRepository: WorkRepository,
     fun get(@PathVariable id: Int,
             @RequestParam("before_id", required = false) beforeId: Int?,
             @RequestParam(required = false) episode: String?,
-            @RequestParam(defaultValue = "32") count: Int): List<PostDTO> {
+            @RequestParam(defaultValue = "32") count: Int,
+            @RequestParam(required = false) options: PostSerializer.Options?): List<PostDTO> {
         val work = workRepository.findOne(id) ?: throw ApiException.notFound()
         var query = history.query.selectRelated(history.user)
                 .filter(history.work.eq(work), history.comment.ne(""))
@@ -31,6 +33,6 @@ class WorkPostsController(val workRepository: WorkRepository,
         }
         val limit = minOf(count, 128)
         return datastore.query(query.limit(limit))
-                .map { postSerializer.serialize(it, includeUser = true) }
+                .map { postSerializer.serialize(it, options ?: PostSerializer.legacyOptions(includeUser = true)) }
     }
 }

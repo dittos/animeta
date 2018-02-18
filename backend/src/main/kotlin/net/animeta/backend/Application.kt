@@ -2,7 +2,11 @@ package net.animeta.backend
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import net.animeta.backend.dto.JsonToObjectConverter
 import net.animeta.backend.security.CurrentUserArgumentResolver
+import net.animeta.backend.serializer.PostSerializer
+import net.animeta.backend.serializer.RecordSerializer
+import net.animeta.backend.serializer.UserSerializer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -11,6 +15,7 @@ import org.springframework.boot.web.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
+import org.springframework.format.FormatterRegistry
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.social.twitter.connect.TwitterServiceProvider
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
@@ -43,9 +48,17 @@ class Application : SpringBootServletInitializer() {
     }
 
     @Configuration
-    class WebMvcConfig(val currentUserArgumentResolver: CurrentUserArgumentResolver) : WebMvcConfigurerAdapter() {
+    class WebMvcConfig(val currentUserArgumentResolver: CurrentUserArgumentResolver,
+                       val objectMapper: ObjectMapper) : WebMvcConfigurerAdapter() {
         override fun addArgumentResolvers(argumentResolvers: MutableList<HandlerMethodArgumentResolver>) {
             argumentResolvers.add(currentUserArgumentResolver)
+        }
+
+        override fun addFormatters(registry: FormatterRegistry) {
+            registry.addConverter(JsonToObjectConverter(objectMapper,
+                    UserSerializer.Options::class.java,
+                    RecordSerializer.Options::class.java,
+                    PostSerializer.Options::class.java))
         }
     }
 }
