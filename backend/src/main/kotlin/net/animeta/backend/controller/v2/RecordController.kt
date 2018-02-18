@@ -21,10 +21,9 @@ class RecordController(val recordRepository: RecordRepository,
                        val workService: WorkService) {
     @GetMapping
     fun get(@PathVariable id: Int,
-            @RequestParam(required = false) options: RecordSerializer.Options?,
-            /* deprecated */ @RequestParam("include_user_stats", defaultValue = "false") includeUserStats: Boolean): RecordDTO {
+            @RequestParam(defaultValue = "{}") options: RecordSerializer.Options): RecordDTO {
         val record = recordRepository.findOne(id) ?: throw ApiException.notFound()
-        return recordSerializer.serialize(record, options ?: RecordSerializer.legacyOptions(includeUser = true, includeUserStats = includeUserStats))
+        return recordSerializer.serialize(record, options)
     }
 
     @PostMapping
