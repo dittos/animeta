@@ -1,4 +1,32 @@
 import $ from 'jquery';
+import isPlainObject from 'lodash/isPlainObject';
+
+export function merge(a, b) {
+    if (isPlainObject(a) && isPlainObject(b)) {
+        // recursively merge() each matching property
+        const merged = {};
+        var k;
+        for (k in a) {
+            if (k in b) {
+                merged[k] = merge(a[k], b[k]);
+            } else {
+                merged[k] = a[k];
+            }
+        }
+        for (k in b) {
+            if (!(k in merged)) {
+                merged[k] = b[k];
+            }
+        }
+        return merged;
+    } else {
+        // (true, true) => true
+        // (true, false) => true
+        // (false, true) => true
+        // (false, false) => false
+        return a || b;
+    }
+}
 
 // Login Session
 
@@ -49,7 +77,9 @@ export function deleteRecord(recordID) {
 // Record Posts
 
 export function getRecordPosts(recordID) {
-    return $.get(`/api/v2/records/${recordID}/posts`);
+    return $.get(`/api/v2/records/${recordID}/posts`, {
+        options: JSON.stringify({})
+    });
 }
 
 export function createPost(recordID, {status, statusType, comment, containsSpoiler, publishTwitter}) {
@@ -74,6 +104,9 @@ export function getUserPosts(userName, count, beforeID) {
     return $.get(`/api/v2/users/${userName}/posts`, {
         count,
         before_id: beforeID,
+        options: JSON.stringify({
+            record: {},
+        })
     });
 }
 

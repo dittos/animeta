@@ -50,7 +50,13 @@ class Post extends React.Component {
     }
 
     _loadMorePosts = async ({ work, posts, post }) => {
-        var params = {count: POSTS_PER_PAGE + 1, episode: post.status};
+        var params = {
+            count: POSTS_PER_PAGE + 1,
+            episode: post.status,
+            options: {
+                user: {},
+            }
+        };
         if (posts && posts.length > 0)
             params.before_id = posts[posts.length - 1].id;
         const result = await this.props.loader.call(`/works/${work.id}/posts`, params);
@@ -69,8 +75,15 @@ export default {
     async load({ params, loader }) {
         const {id} = params;
         const [currentUser, post, chart] = await Promise.all([
-            loader.getCurrentUser(),
-            loader.call(`/posts/${id}`),
+            loader.getCurrentUser({
+                options: {}
+            }),
+            loader.call(`/posts/${id}`, {
+                options: {
+                    user: {},
+                    record: {},
+                }
+            }),
             loader.call('/charts/works/weekly', {limit: 5}),
         ]);
         const work = await loader.call(`/works/${post.record.work_id}`);

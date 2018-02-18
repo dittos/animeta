@@ -15,7 +15,12 @@ function Work({data, writeData, loader}) {
     } = data;
 
     async function loadMorePosts() {
-        var params = {count: POSTS_PER_PAGE + 1};
+        var params = {
+            count: POSTS_PER_PAGE + 1,
+            options: {
+                user: {},
+            }
+        };
         if (posts && posts.length > 0)
             params.before_id = posts[posts.length - 1].id;
         if (episode)
@@ -60,11 +65,18 @@ export default {
     async load({ params, loader }) {
         const {title, episode} = params;
         const [currentUser, work, chart] = await Promise.all([
-            loader.getCurrentUser(),
+            loader.getCurrentUser({
+                options: {}
+            }),
             loader.call('/works/by-title', {title}),
             loader.call('/charts/works/weekly', {limit: 5}),
         ]);
-        const postsParams = {count: POSTS_PER_PAGE + 1};
+        const postsParams = {
+            count: POSTS_PER_PAGE + 1,
+            options: {
+                user: {},
+            }
+        };
         if (episode)
             postsParams.episode = episode;
         const posts = await loader.call(`/works/${work.id}/posts`, postsParams);

@@ -32,16 +32,23 @@ export default {
         const {username} = params;
         const {type, category, sort} = query;
         const [currentUser, user, records] = await Promise.all([
-            loader.getCurrentUser(),
+            loader.getCurrentUser({
+                options: {},
+            }),
             loader.call(`/users/${encodeURIComponent(username)}`, {
-                include_stats: true,
+                options: {
+                    stats: true,
+                    categories: true,
+                }
             }),
             loader.call(`/users/${encodeURIComponent(username)}/records`, {
-                include_has_newer_episode: JSON.stringify(true),
                 sort,
                 status_type: type,
                 category_id: category,
-                with_counts: JSON.stringify(true),
+                with_counts: true,
+                options: {
+                    hasNewerEpisode: true
+                }
             }),
         ]);
         return {

@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import csurf from 'csurf';
 import httpProxy from 'http-proxy';
 import serializeJS from 'serialize-javascript';
+import isString from 'lodash/isString';
 import ReactDOMServer from 'react-dom/server';
 import Backend, {HttpNotFound} from './backend';
 import renderFeed from './renderFeed';
@@ -12,13 +13,26 @@ import {render, injectLoaderFactory} from 'nuri/server';
 
 const DEBUG = process.env.NODE_ENV !== 'production';
 const backend = new Backend(config.backend.baseUrl);
+
+function serializeParams(params) {
+    if (!params) {
+        return params;
+    }
+    const result = {};
+    for (var k in params) {
+        const v = params[k];
+        result[k] = isString(v) ? v : JSON.stringify(v);
+    }
+    return result;
+}
+
 injectLoaderFactory(serverRequest => {
     return {
         call(path, params) {
-            return backend.call(serverRequest, path, params);
+            return backend.call(serverRequest, path, serializeParams(params));
         },
         getCurrentUser(params) {
-            return backend.getCurrentUser(serverRequest, params);
+            return backend.getCurrentUser(serverRequest, serializeParams(params));
         },
     };
 });

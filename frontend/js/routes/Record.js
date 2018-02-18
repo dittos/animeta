@@ -324,8 +324,19 @@ export default {
     async load({ loader, params }) {
         const {recordId} = params;
         const [currentUser, record] = await Promise.all([
-            loader.getCurrentUser(),
-            loader.call(`/records/${recordId}`, {include_user_stats: true}),
+            loader.getCurrentUser({
+                options: {
+                    categories: true,
+                    twitter: true,
+                }
+            }),
+            loader.call(`/records/${recordId}`, {
+                options: {
+                    user: {
+                        stats: true,
+                    }
+                }
+            }),
         ]);
         return {
             currentUser,

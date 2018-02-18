@@ -115,7 +115,10 @@ export default {
 
     async load({ loader, params }) {
         const currentUser = await loader.getCurrentUser({
-            include_stats: true,
+            options: {
+                stats: true,
+                categories: true,
+            }
         });
         return {
             currentUser,

@@ -261,7 +261,9 @@ export default {
     async load({ params, loader }) {
         const {period} = params;
         const [currentUser, items] = await Promise.all([
-            loader.getCurrentUser(),
+            loader.getCurrentUser({
+                options: {}
+            }),
             loader.call(`/table/periods/${period}`, {
                 only_first_period: JSON.stringify(true)
             }),

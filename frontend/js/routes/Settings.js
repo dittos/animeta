@@ -114,7 +114,11 @@ export default {
     component: App(SettingsRoute),
 
     async load({ loader, redirect }) {
-        const currentUser = await loader.getCurrentUser();
+        const currentUser = await loader.getCurrentUser({
+            options: {
+                twitter: true,
+            }
+        });
         if (!currentUser)
             return redirect('/login/');
         return {

@@ -59,6 +59,7 @@
     "json-loader": "^0.5.4",
     "less": "^2.7.3",
     "less-loader": "^4.0.5",
+    "mocha": "^5.0.1",
     "style-loader": "^0.19.1",
     "url-loader": "^0.6.2",
     "webpack": "^3.10.0",
@@ -70,6 +71,7 @@
     "start": "babel-node frontend/server/devServer.js",
     "build-assets": "webpack --config frontend/webpack.config.js --env.prod",
     "build-server": "webpack --config frontend/webpack.config.js --env.server --env.prod",
-    "build-dist": "babel frontend -d frontend-dist --copy-files"
+    "build-dist": "babel frontend -d frontend-dist --copy-files",
+    "test": "mocha --require babel-register frontend/test"
   }
 }

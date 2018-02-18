@@ -76,9 +76,13 @@ export default {
     async load({ loader, params }) {
         const {username} = params;
         const [currentUser, user] = await Promise.all([
-            loader.getCurrentUser(),
+            loader.getCurrentUser({
+                options: {}
+            }),
             loader.call(`/users/${encodeURIComponent(username)}`, {
-                include_stats: true,
+                options: {
+                    stats: true,
+                }
             }),
         ]);
         return {

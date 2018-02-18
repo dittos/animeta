@@ -100,7 +100,9 @@ export default {
     async load({ params, loader }) {
         const {type, range} = params;
         const [currentUser, chart] = await Promise.all([
-            loader.getCurrentUser(),
+            loader.getCurrentUser({
+                options: {}
+            }),
             loader.call(`/charts/${CHART_TYPES[type]}/${range}`, {limit: 100}),
         ]);
         return {

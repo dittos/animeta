@@ -1,6 +1,7 @@
 /* global ga */
 /* global Raven */
 import $ from 'jquery';
+import isString from 'lodash/isString';
 import {injectLoader, render} from 'nuri/client';
 import nprogress from 'nprogress';
 import app from './routes';
@@ -8,13 +9,25 @@ import '../less/nprogress.less';
 import '../less/chart.less';
 import '../less/signup.less';
 
+function serializeParams(params) {
+    if (!params) {
+        return params;
+    }
+    const result = {};
+    for (var k in params) {
+        const v = params[k];
+        result[k] = isString(v) ? v : JSON.stringify(v);
+    }
+    return result;
+}
+
 injectLoader({
     call(path, params) {
-        return $.get('/api/v2' + path, params);
+        return $.get('/api/v2' + path, serializeParams(params));
     },
 
     getCurrentUser(params) {
-        return $.ajax({url: '/api/v2/me', data: params, __silent__: true}).then(undefined, jqXHR => {
+        return $.ajax({url: '/api/v2/me', data: serializeParams(params), __silent__: true}).then(undefined, jqXHR => {
             var deferred = $.Deferred();
             if (jqXHR.statusCode)
                 deferred.resolve(null);
