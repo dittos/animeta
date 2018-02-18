@@ -22,7 +22,8 @@ var CategoryItem = React.createClass({
                 <form onSubmit={this._onSubmit}>
                     <input
                         value={this.state.name}
-                        onChange={this._onChange} />
+                        onChange={this._onChange}
+                        maxLength={30} />
                     <button type="submit">변경</button>
                     <span className={Styles.itemAction}
                         onClick={this._endEditing}>취소</span>

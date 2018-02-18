@@ -63,7 +63,7 @@ var CategoryEditView = React.createClass({
         return (
             <span className={Styles.categoryForm}>
                 <label>분류: </label>
-                {name} ▼
+                {name} <i className="fa fa-caret-down" />
                 <select value={String(this.props.selectedId)} onChange={this._onChange}>
                     <option value="">지정 안함</option>
                     {this.props.categoryList.map(category =>
@@ -127,6 +127,7 @@ var HeaderView = React.createClass({
             <div className={Styles.header}>
                 {titleEditor}
                 {toolbar}
+                <div style={{clear: 'both'}} />
             </div>
         );
     },
@@ -219,18 +220,6 @@ var Record = React.createClass({
         const {user, record, currentUser} = this.props.data;
         const {posts} = this.state;
         const canEdit = currentUser && currentUser.id === record.user.id;
-        var composer;
-        if (canEdit) {
-            composer = (
-                <PostComposer
-                    key={'post-composer' + record.id + '/' + record.updated_at}
-                    record={record}
-                    currentUser={currentUser}
-                    onSave={this._createPost}
-                    onTwitterConnect={this._connectTwitter}
-                />
-            );
-        }
         const canDeletePosts = canEdit && posts.length > 1;
         return <CenteredFullWidth>
             <HeaderView
@@ -241,7 +230,17 @@ var Record = React.createClass({
                 onCategoryChange={this._updateCategory}
                 onDelete={() => this.setState({showDeleteModal: true})}
             />
-            {composer}
+            {canEdit && (
+                <div className={Styles.postComposerContainer}>
+                    <PostComposer
+                        key={'post-composer' + record.id + '/' + record.updated_at}
+                        record={record}
+                        currentUser={currentUser}
+                        onSave={this._createPost}
+                        onTwitterConnect={this._connectTwitter}
+                    />
+                </div>
+            )}
             <div className={Styles.posts}>
                 {posts.map(post => <PostView
                     key={post.id}

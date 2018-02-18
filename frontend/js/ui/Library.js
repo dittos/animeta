@@ -141,7 +141,7 @@ class LibraryFilter extends React.Component {
                         전체 ({this.props.categoryStats._all})
                     </Link>
                 </div>
-                {[{id: 0, name: '미분류'}].concat(this.props.categoryList).map(category => (
+                {[{id: 0, name: '지정 안함'}].concat(this.props.categoryList).map(category => (
                     <div className={this.props.categoryFilter === String(category.id) ? Styles.filterGroupItemActive : Styles.filterGroupItem}>
                         <Link {...this.props.getLinkParams({ category: String(category.id) })}>
                             {category.name} ({this.props.categoryStats[category.id] || 0})

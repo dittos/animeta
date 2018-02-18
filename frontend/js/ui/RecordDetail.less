@@ -1,13 +1,17 @@
 @import "../../less/base.less";
 
 :local(.header) {
-    float: left;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+
+    @media (min-width: 481px) {
+        padding-bottom: 16px;
+        border-bottom: 1px solid @color-border;
+    }
 }
 
 :local(.title) {
     float: left;
-    margin: 0 1em 0 0;
+    margin: 0;
     font-size: 20px;
     a {
         color: @color-text-title;
@@ -20,9 +24,10 @@
 }
 
 :local(.toolbar) {
-    float: left;
+    float: right;
 
     @media (max-width: 480px) {
+        float: left;
         clear: both;
         margin-top: 16px;
     }
@@ -36,22 +41,20 @@
     }
 }
 
+@toolbar-button-spacing: 20px;
+
 :local(.toolbarButton) {
     float: left;
     vertical-align: middle;
     text-decoration: none;
-    padding: 0 5px;
     line-height: 22px;
-    border-radius: 2px;
     font-size: 13px;
-    border: 1px solid @color-text-dark;
-    background: #fff;
     color: @color-text-dark;
 }
 
 :local(.deleteButton) {
     composes: toolbarButton;
-    margin-left: 1em;
+    margin-left: @toolbar-button-spacing;
     color: @color-danger;
     border-color: @color-danger;
 }
@@ -60,7 +63,7 @@
     composes: toolbarButton;
 
     float: left;
-    margin-left: 1em;
+    margin-left: @toolbar-button-spacing;
     position: relative;
     label {
         color: @color-text-light;
@@ -76,14 +79,16 @@
     }
 }
 
-:local(.posts) {
+:local(.postComposerContainer) {
+    padding-bottom: 20px;
+}
 
+:local(.posts) {
 }
 
 :local(.post) {
     // TODO: css module
-    clear: both;
-    margin: 16px 0;
+    padding-bottom: 16px;
     line-height: 1.8;
     font-size: 14px;
 
