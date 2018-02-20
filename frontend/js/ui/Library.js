@@ -8,6 +8,7 @@ var {Link} = require('nuri');
 var util = require('../util');
 import * as Styles from './Library.less';
 import * as Grid from './Grid';
+import { Switch, SwitchItem } from './Switch';
 
 function getDateHeader(record) {
     const now = new Date();
@@ -209,20 +210,22 @@ class Library extends React.Component {
                     <i className={this.state.mobileFilterVisible ? "fa fa-caret-up" : "fa fa-caret-down"} />
                 </div>
                 <div className={Styles.filterGroup}>
-                    <span className={Styles.sortSwitchContainer}>
-                        <Link
+                    <Switch>
+                        <SwitchItem
+                            Component={Link}
                             {...this._getLinkParams({sort: 'date'})}
-                            className={sort === 'date' ? Styles.sortSwitchActive : Styles.sortSwitch}
+                            active={sort === 'date'}
                         >
                             시간순
-                        </Link>
-                        <Link
+                        </SwitchItem>
+                        <SwitchItem
+                            Component={Link}
                             {...this._getLinkParams({sort: 'title'})}
-                            className={sort === 'title' ? Styles.sortSwitchActive : Styles.sortSwitch}
+                            active={sort === 'title'}
                         >
                             제목순
-                        </Link>
-                    </span>
+                        </SwitchItem>
+                    </Switch>
                     {sort === 'title' && (
                         <div className={Styles.toc}>
                             {groups.map(group => <a

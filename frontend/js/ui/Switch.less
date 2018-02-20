@@ -1,0 +1,26 @@
+@import "../../less/variables.less";
+
+:local(.container) {
+    border: 1px solid @color-primary;
+    border-radius: 2px;
+    line-height: 20px;
+    display: inline-block;
+}
+
+:local(.item) {
+    padding: 0 5px;
+    color: @color-text-dark;
+    display: inline-block;
+    cursor: pointer;
+    text-decoration: none;
+    &:hover {
+        color: @color-primary;
+    }
+}
+
+:local(.activeItem) {
+    composes: item;
+
+    background-color: @color-primary;
+    color: #fff !important;
+}

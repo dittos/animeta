@@ -10,6 +10,7 @@ import * as Layout from '../ui/Layout';
 import * as Grid from '../ui/Grid';
 import Periods from '../Periods';
 import Styles from '../../less/table-period.less';
+import { Switch, SwitchItem } from '../ui/Switch';
 // TODO: css module
 
 function formatPeriod(period) {
@@ -61,11 +62,6 @@ function Header({excludeKR, ordering, onSort, period}) {
             {value: 'recordCount', label: '인기'}
         ];
     }
-    var switches = options.map(option => {
-        return <span className={ordering == option.value ? 'active' : ''}
-            key={option.value}
-            onClick={() => onSort(option.value)}>{option.label}</span>;
-    });
     return (
         <Layout.LeftRight
             className={Styles.header}
@@ -73,9 +69,16 @@ function Header({excludeKR, ordering, onSort, period}) {
             right={<div className={Styles.settings}>
                 <div className={Styles.settingsItem}>
                     <label className="hide-mobile">정렬: </label>
-                    <div className={Styles.settingsSwitch}>
-                        {switches}
-                    </div>
+                    <Switch value={ordering} onChange={onSort}>
+                        {options.map(option => (
+                            <SwitchItem
+                                key={option.value}
+                                value={option.value}
+                            >
+                                {option.label}
+                            </SwitchItem>
+                        ))}
+                    </Switch>
                 </div>
             </div>}
         />
