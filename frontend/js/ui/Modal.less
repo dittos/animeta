@@ -17,8 +17,8 @@
 :local(.backdrop) {
     position: absolute;
     composes: fullSize;
-    background: #fff;
-    opacity: 0.75;
+    background: #000;
+    opacity: 0.4;
 }
 
 :local(.dialog) {
@@ -29,9 +29,9 @@
     box-sizing: border-box;
     background: #fff;
     border-radius: 5px;
-    overflow: hidden;
-    border: 1px solid @color-main;
+    overflow: hidden; // correct size when containing float
     padding: 20px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
 
     @media (max-width: 480px) {
         margin-top: 20px;

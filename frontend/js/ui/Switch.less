@@ -3,8 +3,14 @@
 :local(.container) {
     border: 1px solid @color-primary;
     border-radius: 2px;
-    line-height: 20px;
+    line-height: 22px;
     display: inline-block;
+}
+
+:local(.flexContainer) {
+    composes: container;
+    display: flex;
+    line-height: 28px;
 }
 
 :local(.item) {
@@ -13,6 +19,12 @@
     display: inline-block;
     cursor: pointer;
     text-decoration: none;
+    text-align: center; // for flex
+    flex: 1; // for flex
+    border-left: 1px solid @color-primary;
+    &:first-child {
+        border-left: 0;
+    }
     &:hover {
         color: @color-primary;
     }

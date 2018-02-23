@@ -9,7 +9,7 @@ export class Switch extends React.Component {
 
     render() {
         return (
-            <div className={Styles.container}>
+            <div className={this.props.flex ? Styles.flexContainer : Styles.container}>
                 {this.props.children}
             </div>
         );
