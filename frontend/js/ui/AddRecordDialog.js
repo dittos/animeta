@@ -135,6 +135,7 @@ class AddRecord extends React.Component {
         const currentUser = await getCurrentUser({ categories: true });
         this.setState({ currentUser }, () => {
             Typeahead.initSuggest(this.refs.title);
+            this.refs.title.focus();
         });
     }
 }
