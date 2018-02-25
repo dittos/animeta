@@ -9,6 +9,7 @@ var util = require('../util');
 import * as Styles from './Library.less';
 import * as Grid from './Grid';
 import { Switch, SwitchItem } from './Switch';
+import AddRecordDialog from './AddRecordDialog';
 
 function getDateHeader(record) {
     const now = new Date();
@@ -166,10 +167,14 @@ class Library extends React.Component {
 
     state = {
         mobileFilterVisible: false,
+        showAddModal: false,
     };
 
     componentWillReceiveProps() {
-        this.setState({ mobileFilterVisible: false });
+        this.setState({
+            mobileFilterVisible: false,
+            showAddModal: false,
+        });
     }
 
     render() {
@@ -177,7 +182,7 @@ class Library extends React.Component {
             return <div>
                 <h2>아직 기록이 하나도 없네요.</h2>
                 {this.props.canEdit &&
-                    <p>위에 있는 <Link to="/records/add/" className="add-record">작품 추가</Link>를 눌러 감상 기록을 등록할 수 있습니다.</p>}
+                    <p>위에 있는 <Link to="/records/add/" className="add-record" onClick={this._showAddModal}>작품 추가</Link>를 눌러 감상 기록을 등록할 수 있습니다.</p>}
             </div>;
         }
 
@@ -200,9 +205,16 @@ class Library extends React.Component {
         return <Grid.Row className={Styles.library}>
             <Grid.Column size={3} pull="left">
                 {this.props.canEdit && (
-                    <Link to="/records/add/" className={Styles.addRecordButton}>
+                    <Link to="/records/add/" className={Styles.addRecordButton} onClick={this._showAddModal}>
                         <i className="fa fa-plus" /> 작품 추가
                     </Link>
+                )}
+                {this.state.showAddModal && (
+                    /* TODO: automatically set selected filter state */
+                    <AddRecordDialog
+                        onCancel={() => this.setState({ showAddModal: false })}
+                        onCreate={this._recordCreated}
+                    />
                 )}
                 <div className={Styles.mobileFilterToggle} onClick={this._toggleMobileFilter}>
                     {count !== filteredCount ? '필터 (사용중)' : '필터'}
@@ -286,6 +298,16 @@ class Library extends React.Component {
     _toggleMobileFilter = (event) => {
         event.preventDefault();
         this.setState({ mobileFilterVisible: !this.state.mobileFilterVisible });
+    };
+
+    _showAddModal = (event) => {
+        event.preventDefault();
+        this.setState({ showAddModal: true });
+    };
+
+    _recordCreated = (result) => {
+        this.props.onAddRecord(result.record);
+        this.setState({ showAddModal: false });
     };
 }
 

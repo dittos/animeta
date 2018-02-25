@@ -21,8 +21,14 @@ class User extends React.Component {
             categoryList={user.categories}
             statusTypeStats={records.counts.by_status_type}
             canEdit={canEdit}
+            onAddRecord={this._addRecord}
         />;
     }
+
+    _addRecord = (record) => {
+        const basePath = `/users/${encodeURIComponent(this.props.data.user.name)}/`;
+        this.props.controller.load({path: basePath, query: {}});
+    };
 }
 
 export default {

@@ -1,0 +1,47 @@
+@import "../../less/base.less";
+
+:local(.form) {
+    clear: both;
+    margin: 0;
+    padding: 16px 0;
+}
+
+:local(.field) {
+    padding-bottom: 16px;
+    font-size: 14px;
+
+    label {
+        display: block;
+        color: @color-text-dark;
+        font-size: 13px;
+        padding-bottom: 8px;
+    }
+
+    select {
+        width: 100%;
+        height: 28px;
+        padding: 0 5px;
+        border: 1px solid @color-border-control;
+        border-radius: 2px;
+        color: @color-text-dark;
+        background: #fff;
+        font-size: inherit;
+    }
+
+    .twitter-typeahead {
+        width: 100%;
+    }
+
+    .tt-hint, .tt-input {
+        width: 100%;
+        line-height: 28px;
+        padding: 0 5px;
+        border: 1px solid @color-border-control;
+        border-radius: 2px;
+        font-size: inherit;
+        color: @color-text-dark;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+}

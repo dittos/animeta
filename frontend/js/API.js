@@ -30,6 +30,10 @@ export function merge(a, b) {
 
 // Login Session
 
+export function getCurrentUser(options = {}) {
+    return $.get('/api/v2/me', {options: JSON.stringify(options)})
+}
+
 export function logout() {
     return $.ajax({type: 'DELETE', url: '/api/v2/auth'});
 }

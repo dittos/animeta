@@ -15,7 +15,7 @@
 }
 
 :local(.backdrop) {
-    position: absolute;
+    position: fixed;
     composes: fullSize;
     background: #000;
     opacity: 0.4;
@@ -35,6 +35,7 @@
 
     @media (max-width: 480px) {
         margin-top: 20px;
+        margin-bottom: 20px;
     }
     @media (min-width: 481px) {
         position: absolute;
