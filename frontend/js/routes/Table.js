@@ -11,6 +11,7 @@ import * as Grid from '../ui/Grid';
 import Periods from '../Periods';
 import Styles from '../../less/table-period.less';
 import { Switch, SwitchItem } from '../ui/Switch';
+import AddRecordDialog from '../ui/AddRecordDialog';
 // TODO: css module
 
 function formatPeriod(period) {
@@ -93,6 +94,10 @@ function getDate(value) {
 }
 
 class StatusButton extends React.Component {
+    state = {
+        showAddModal: false,
+    };
+
     render() {
         var {record} = this.props.item;
         if (record) {
@@ -105,16 +110,28 @@ class StatusButton extends React.Component {
         } else {
             return <Link className={Styles.favoriteButtonNormal}
                 to={'/records/add/' + encodeURIComponent(this.props.item.title) + '/'}
-                onClick={this._onFavorite}>
+                onClick={this._showAddModal}>
                 <i className="fa fa-plus" />
                 작품 추가
+                {this.state.showAddModal &&
+                    <AddRecordDialog
+                        initialStatusType="interested"
+                        initialTitle={this.props.item.title}
+                        onCancel={() => this.setState({ showAddModal: false })}
+                        onCreate={this._recordAdded}
+                    />}
             </Link>;
         }
     }
 
-    _onFavorite = (event) => {
+    _showAddModal = (event) => {
         event.preventDefault();
-        this.props.onFavorite(this.props.item);
+        this.setState({ showAddModal: true });
+    };
+
+    _recordAdded = (result) => {
+        this.setState({ showAddModal: false });
+        this.props.onAddRecord(this.props.item, result.record);
     };
 }
 
@@ -127,7 +144,7 @@ function Poster({item}) {
     </div>;
 }
 
-function Item({item, onFavorite}) {
+function Item({item, onAddRecord}) {
     var {links, studios, source, schedule} = item.metadata;
     return (
         <div className={Styles.item}>
@@ -141,7 +158,7 @@ function Item({item, onFavorite}) {
                     {source && [' / ', <span className="source">{util.SOURCE_TYPE_MAP[source]}</span>]}
                 </div>
                 <div className={Styles.actions}>
-                    <StatusButton item={item} onFavorite={onFavorite} />
+                    <StatusButton item={item} onAddRecord={onAddRecord} />
                 </div>
                 <div className={Styles.schedules}>
                     {renderSchedule('jp', schedule.jp)}
@@ -221,7 +238,7 @@ class Table extends React.Component {
                             <Item
                                 key={item.id}
                                 item={item}
-                                onFavorite={this._onFavorite}
+                                onAddRecord={this._recordAdded}
                             />
                         </Grid.Column>
                     )}
@@ -237,23 +254,10 @@ class Table extends React.Component {
         });
     };
 
-    _onFavorite = (item) => {
-        const currentUser = this.props.data.currentUser;
-
-        if (!currentUser) {
-            alert('로그인 후 관심 등록할 수 있습니다.');
-            LoginDialog.open();
-            return;
-        }
-
-        $.post(`/api/v2/users/${encodeURIComponent(currentUser.name)}/records`, {
-            work_title: item.title,
-            status_type: 'interested',
-        }).then(result => {
-            this.props.writeData(() => {
-                item.record = result.record;
-                item.record_count++;
-            });
+    _recordAdded = (item, record) => {
+        this.props.writeData(() => {
+            item.record = record;
+            item.record_count++;
         });
     };
 }

@@ -87,7 +87,9 @@ class UserRecordsController(val userRepository: UserRepository,
              @CurrentUser currentUser: User,
              @RequestParam("work_title") title: String,
              @RequestParam("category_id", required = false) categoryId: Int?,
-             @RequestParam("status_type") statusTypeParam: String): CreateResponse {
+             @RequestParam("status_type") statusTypeParam: String,
+             @RequestParam(defaultValue = "") status: String,
+             @RequestParam(defaultValue = "") comment: String): CreateResponse {
         val user = userRepository.findByUsername(name) ?: throw ApiException.notFound()
         if (currentUser.id != user.id) {
             throw ApiException("Permission denied.", HttpStatus.FORBIDDEN)
@@ -110,7 +112,7 @@ class UserRecordsController(val userRepository: UserRepository,
                 work = work,
                 title = title,
                 category = category,
-                status = "",
+                status = status,
                 status_type = statusType,
                 updated_at = Timestamp.from(Instant.now())
         )
@@ -122,7 +124,7 @@ class UserRecordsController(val userRepository: UserRepository,
                 status = record.status,
                 status_type = record.status_type,
                 updatedAt = record.updated_at,
-                comment = "",
+                comment = comment,
                 contains_spoiler = false
         )
         historyRepository.save(history)

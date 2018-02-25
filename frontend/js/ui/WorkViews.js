@@ -100,29 +100,12 @@ export class Work extends React.Component {
                     <SpecialWorkStatus
                         work={work}
                         record={work.record}
-                        onInterestedClick={this._markInterested}
+                        onAddRecord={this.props.onRecordChange}
                     />
                 </div>
             </div>
         );
     }
-
-    _markInterested = () => {
-        const currentUser = this.props.currentUser;
-
-        if (!currentUser) {
-            alert('먼저 로그인 해 주세요.');
-            LoginDialog.open();
-            return;
-        }
-
-        $.post(`/api/v2/users/${encodeURIComponent(currentUser.name)}/records`, {
-            work_title: this.props.work.title,
-            status_type: 'interested',
-        }).then(result => {
-            this.props.onRecordChange(result.record);
-        });
-    };
 }
 
 export class WorkIndex extends React.Component {

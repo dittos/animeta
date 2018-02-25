@@ -1,42 +1,59 @@
 import React from 'react';
+import { Link } from 'nuri';
 import * as util from '../util';
+import AddRecordDialog from './AddRecordDialog';
 import Styles from './SpecialWorkStatus.less';
 
 class SpecialWorkStatus extends React.Component {
+    state = {
+        showAddModal: false,
+    };
+
     render() {
         const {
             work,
             record,
-            onInterestedClick,
         } = this.props;
 
         if (record) {
             return (
-                <a className={Styles.editButton}
-                    href={`/records/${record.id}/`}>
+                <Link className={Styles.editButton}
+                    to={`/records/${record.id}/`}>
                     <i className="fa fa-pencil" />
                     {util.STATUS_TYPE_TEXT[record.status_type]}
                     {record.status &&
                         <span className={Styles.editButtonSubtext}>@ {util.getStatusDisplay(record)}</span>}
-                </a>
+                </Link>
             );
         } else {
             return (
                 <div>
-                    <a className={Styles.addButton}
-                        href={'/records/add/' + encodeURIComponent(work.title) + '/'}>
+                    <Link className={Styles.addButton}
+                        to={'/records/add/' + encodeURIComponent(work.title) + '/'}
+                        onClick={this._showAddModal}>
                         <i className="fa fa-plus" />
                         작품 추가
-                    </a>
-                    <div className={Styles.buttonSeparator} />
-                    <div className={Styles.interestedButton}
-                        onClick={onInterestedClick}>
-                        <i className="fa fa-star" />
-                    </div>
+                    </Link>
+                    {this.state.showAddModal &&
+                        <AddRecordDialog
+                            initialTitle={work.title}
+                            onCancel={() => this.setState({ showAddModal: false })}
+                            onCreate={this._recordAdded}
+                        />}
                 </div>
             );
         }
     }
+
+    _showAddModal = (event) => {
+        event.preventDefault();
+        this.setState({ showAddModal: true });
+    };
+
+    _recordAdded = (result) => {
+        this.setState({ showAddModal: false });
+        this.props.onAddRecord(result.record);
+    };
 }
 
 export default SpecialWorkStatus;

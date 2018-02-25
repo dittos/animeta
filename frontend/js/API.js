@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import isPlainObject from 'lodash/isPlainObject';
+import isString from 'lodash/isString';
 
 export function merge(a, b) {
     if (isPlainObject(a) && isPlainObject(b)) {
@@ -28,10 +29,33 @@ export function merge(a, b) {
     }
 }
 
+export function serializeParams(params) {
+    if (!params) {
+        return params;
+    }
+    const result = {};
+    for (var k in params) {
+        const v = params[k];
+        result[k] = isString(v) ? v : JSON.stringify(v);
+    }
+    return result;
+}
+
 // Login Session
 
-export function getCurrentUser(options = {}) {
-    return $.get('/api/v2/me', {options: JSON.stringify(options)})
+export function getCurrentUser(params) {
+    return $.ajax({
+        url: '/api/v2/me',
+        data: serializeParams(params),
+        __silent__: true
+    }).then(undefined, jqXHR => {
+        var deferred = $.Deferred();
+        if (jqXHR.statusCode)
+            deferred.resolve(null);
+        else
+            deferred.reject(jqXHR);
+        return deferred;
+    });
 }
 
 export function logout() {
@@ -56,11 +80,13 @@ export function disconnectTwitter() {
 
 // User Records
 
-export function createRecord(userName, {title, statusType, categoryID}) {
+export function createRecord(userName, {title, statusType, status, categoryID, comment}) {
     return $.post(`/api/v2/users/${userName}/records`, {
         work_title: title,
         status_type: statusType,
         category_id: categoryID,
+        status,
+        comment,
     });
 }
 

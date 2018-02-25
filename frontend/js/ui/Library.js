@@ -212,6 +212,7 @@ class Library extends React.Component {
                 {this.state.showAddModal && (
                     /* TODO: automatically set selected filter state */
                     <AddRecordDialog
+                        initialStatusType="finished"
                         onCancel={() => this.setState({ showAddModal: false })}
                         onCreate={this._recordCreated}
                     />

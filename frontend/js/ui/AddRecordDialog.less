@@ -3,7 +3,7 @@
 :local(.form) {
     clear: both;
     margin: 0;
-    padding: 16px 0;
+    padding-bottom: 20px - 16px;
 }
 
 :local(.field) {
@@ -17,15 +17,29 @@
         padding-bottom: 8px;
     }
 
-    select {
-        width: 100%;
-        height: 28px;
-        padding: 0 5px;
+    input, textarea, select {
         border: 1px solid @color-border-control;
         border-radius: 2px;
         color: @color-text-dark;
         background: #fff;
         font-size: inherit;
+        box-sizing: border-box;
+    }
+
+    input {
+        line-height: 28px;
+        padding: 0 5px;
+    }
+
+    textarea {
+        width: 100%;
+        padding: 5px;
+    }
+
+    select {
+        width: 100%;
+        height: 28px;
+        padding: 0 5px;
     }
 
     .twitter-typeahead {
@@ -34,14 +48,5 @@
 
     .tt-hint, .tt-input {
         width: 100%;
-        line-height: 28px;
-        padding: 0 5px;
-        border: 1px solid @color-border-control;
-        border-radius: 2px;
-        font-size: inherit;
-        color: @color-text-dark;
-        -moz-box-sizing: border-box;
-        -webkit-box-sizing: border-box;
-        box-sizing: border-box;
     }
 }

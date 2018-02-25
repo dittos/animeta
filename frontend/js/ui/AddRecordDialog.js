@@ -1,9 +1,11 @@
 import React from 'react';
 import { Modal } from 'react-overlays';
 import { getCurrentUser, createRecord } from '../API';
-import Typeahead from '../ui/Typeahead';
-import { Switch, SwitchItem } from '../ui/Switch';
-import ModalStyles from '../ui/Modal.less';
+import Typeahead from './Typeahead';
+import { Switch, SwitchItem } from './Switch';
+import LoginDialog from './LoginDialog';
+import StatusInput from './StatusInput';
+import ModalStyles from './Modal.less';
 import * as Styles from './AddRecordDialog.less';
 
 class CategorySelect extends React.Component {
@@ -33,6 +35,8 @@ class AddRecord extends React.Component {
         this.state = {
             selectedCategoryId: '',
             statusType: props.initialStatusType || 'watching',
+            status: '',
+            comment: '',
             isRequesting: false,
             currentUser: null,
         };
@@ -78,12 +82,22 @@ class AddRecord extends React.Component {
                                 <SwitchItem value="suspended">중단</SwitchItem>
                             </Switch>
                         </div>
+                        {this.state.statusType !== 'interested' && (
+                            <div className={Styles.field}>
+                                <label>진행률 (선택 사항)</label>
+                                <StatusInput value={this.state.status} onChange={this._onStatusChange} />
+                            </div>
+                        )}
                         <div className={Styles.field}>
                             <label>분류</label>
                             <CategorySelect
                                 categoryList={currentUser.categories}
                                 selectedId={this.state.selectedCategoryId}
                                 onChange={this._onCategoryChange} />
+                        </div>
+                        <div className={Styles.field}>
+                            <label>감상평 (선택 사항)</label>
+                            <textarea value={this.state.comment} onChange={this._onCommentChange} />
                         </div>
                     </form>
                     <button
@@ -109,7 +123,19 @@ class AddRecord extends React.Component {
     };
 
     _onStatusTypeChange = (statusType) => {
-        this.setState({statusType});
+        const status = statusType === 'interested' ? '' : this.state.status;
+        this.setState({
+            statusType,
+            status,
+        });
+    };
+
+    _onStatusChange = (status) => {
+        this.setState({status});
+    };
+
+    _onCommentChange = (event) => {
+        this.setState({comment: event.target.value});
     };
 
     _onSubmit = (event) => {
@@ -121,7 +147,9 @@ class AddRecord extends React.Component {
         createRecord(currentUser.name, {
             title: this.refs.title.value,
             statusType: this.state.statusType,
+            status: this.state.status,
             categoryID: this.state.selectedCategoryId,
+            comment: this.state.comment,
         }).then(result => {
             this.props.onCreate(result);
         }).always(() => {
@@ -132,10 +160,18 @@ class AddRecord extends React.Component {
 
     async _load() {
         // TODO: cache
-        const currentUser = await getCurrentUser({ categories: true });
+        const currentUser = await getCurrentUser({ options: { categories: true } });
+        if (!currentUser) {
+            alert('로그인 후 추가할 수 있습니다.');
+            LoginDialog.open();
+            this.props.onCancel();
+            return;
+        }
         this.setState({ currentUser }, () => {
             Typeahead.initSuggest(this.refs.title);
-            this.refs.title.focus();
+            if (!this.props.initialTitle) {
+                this.refs.title.focus();
+            }
         });
     }
 }

@@ -30,8 +30,9 @@
     background: #fff;
     border-radius: 5px;
     overflow: hidden; // correct size when containing float
-    padding: 20px;
+    padding: 16px;
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+    font-size: 14px;
 
     @media (max-width: 480px) {
         margin-top: 20px;
@@ -47,7 +48,7 @@
 }
 
 :local(.header) {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
 :local(.closeButton) {
@@ -55,14 +56,15 @@
     border: none;
     background: transparent;
     cursor: pointer;
-    height: 24px;
+    height: 20px;
     padding: 0;
     color: #666;
 }
 
 :local(.title) {
-    font-size: 20px;
-    font-weight: normal;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 20px;
     margin: 0;
 }
 
@@ -71,8 +73,8 @@
     display: block;
     border: none;
     border-radius: 5px;
-    height: 40px;
-    padding: 0 20px;
+    height: 36px;
+    padding: 0 16px;
     color: #fff;
     font-size: 14px;
     font-weight: bold;

@@ -31,6 +31,7 @@ class Post extends React.Component {
                 work={work}
                 chart={chart}
                 episode={post.status}
+                onRecordChange={this._applyRecord}
             >
                 <WorkViews.Episodes
                     work={work}
@@ -65,6 +66,12 @@ class Post extends React.Component {
                 data.posts = [];
             data.posts = data.posts.concat(result.slice(0, POSTS_PER_PAGE));
             data.hasMorePosts = result.length > POSTS_PER_PAGE;
+        });
+    };
+
+    _applyRecord = (record) => {
+        this.props.writeData(data => {
+            data.work.record = record;
         });
     };
 }
