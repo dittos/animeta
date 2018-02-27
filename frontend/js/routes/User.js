@@ -25,7 +25,7 @@ class User extends React.Component {
         />;
     }
 
-    _addRecord = (record) => {
+    _addRecord = () => {
         const basePath = `/users/${encodeURIComponent(this.props.data.user.name)}/`;
         this.props.controller.load({path: basePath, query: {}});
     };

@@ -161,10 +161,6 @@ class LibraryFilter extends React.Component {
 }
 
 class Library extends React.Component {
-    static contextTypes = {
-        controller: React.PropTypes.object,
-    };
-
     state = {
         mobileFilterVisible: false,
         showAddModal: false,

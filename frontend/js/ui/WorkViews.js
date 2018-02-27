@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import React from 'react';
 import cx from 'classnames';
 import {Link} from 'nuri';
@@ -7,7 +6,6 @@ import * as Grid from './Grid';
 import * as util from '../util';
 import LoadMore from './LoadMore';
 import SpecialWorkStatus from './SpecialWorkStatus';
-import LoginDialog from './LoginDialog';
 import VideoSearch from './VideoSearch';
 import WeeklyChart from './WeeklyChart';
 import { Post } from './Post';

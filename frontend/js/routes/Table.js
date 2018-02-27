@@ -1,11 +1,9 @@
 import React from 'react';
-import $ from 'jquery';
 import sortBy from 'lodash/sortBy';
 import some from 'lodash/some';
 import {Link} from 'nuri';
 import * as util from '../util';
 import {App} from '../layouts';
-import LoginDialog from '../ui/LoginDialog';
 import * as Layout from '../ui/Layout';
 import * as Grid from '../ui/Grid';
 import Periods from '../Periods';
