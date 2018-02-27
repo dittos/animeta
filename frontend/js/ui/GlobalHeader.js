@@ -108,7 +108,9 @@ class GlobalHeader extends React.Component {
             <div className={Styles.logo}>
                 <Link to="/">애니메타</Link>
             </div>
-            <Search />
+            <div className={Styles.search}>
+                <SearchInput onSelect={this._openWork} />
+            </div>
             <div className={Styles.globalMenu}
                 style={this.state.showMenu ? {display: 'block'} : {}}>
                 <Link to="/">홈</Link>
@@ -117,8 +119,7 @@ class GlobalHeader extends React.Component {
             </div>
             <div className={Styles.feedbackMenu}>
                 <a href="/support/"><i className="fa fa-bullhorn" />{' '}버그 제보 / 건의</a>
-              <a href="/support/"><i className="fa fa-bullhorn" />{' '}버그 제보 / 건의</a>
-                </div>
+            </div>
         </div>;
     }
 
