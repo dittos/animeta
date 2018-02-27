@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal } from 'react-overlays';
 import { getCurrentUser, createRecord } from '../API';
-import Typeahead from './Typeahead';
+import * as Typeahead from './Typeahead';
 import { Switch, SwitchItem } from './Switch';
 import LoginDialog from './LoginDialog';
 import StatusInput from './StatusInput';

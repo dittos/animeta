@@ -2,10 +2,10 @@ import $ from 'jquery';
 import * as React from 'react';
 import { Link } from 'nuri';
 import * as Layout from './Layout';
-var Typeahead = require('./Typeahead');
 import LoginDialog from './LoginDialog';
 import Styles from './GlobalHeader.less';
 import {getStatusDisplay} from '../util';
+import SearchInput from '../ui/SearchInput';
 
 class DropdownUserMenu extends React.Component {
     state = {
@@ -53,43 +53,11 @@ class DropdownUserMenu extends React.Component {
     };
 }
 
-function openWork(title) {
-    location.href = '/works/' + encodeURIComponent(title) + '/';
-}
-
-class Search extends React.Component {
-    componentDidMount() {
-        Typeahead.init(this.refs.input,
-            {highlight: true, hint: false}, {
-                source: Typeahead.searchSource,
-                displayKey: 'title',
-                templates: Typeahead.templates
-            }).on('typeahead:selected', function(event, item) {
-                openWork(item.title);
-            }).on('keypress', function(event) {
-                if (event.keyCode == 13) {
-                    var self = this;
-                    var q = self.value;
-                    Typeahead.searchSource(q, function(data) {
-                        if (q != self.value || data.length === 0)
-                            return;
-                        if (data.filter(function(item) { return item.title == q; }).length == 1)
-                            openWork(q);
-                        else
-                            openWork(data[0].title);
-                    });
-                }
-            });
-    }
-
-    render() {
-        return <div className={Styles.search}>
-            <input type="search" placeholder="작품 검색" ref="input" />
-        </div>;
-    }
-}
-
 class GlobalHeader extends React.Component {
+    static contextTypes = {
+        controller: React.PropTypes.object,
+    };
+
     state = {
         showMenu: false,
         showUserMenu: false
@@ -149,7 +117,8 @@ class GlobalHeader extends React.Component {
             </div>
             <div className={Styles.feedbackMenu}>
                 <a href="/support/"><i className="fa fa-bullhorn" />{' '}버그 제보 / 건의</a>
-            </div>
+              <a href="/support/"><i className="fa fa-bullhorn" />{' '}버그 제보 / 건의</a>
+                </div>
         </div>;
     }
 
@@ -193,6 +162,15 @@ class GlobalHeader extends React.Component {
 
     _closeLogin = () => {
         LoginDialog.close();
+    };
+
+    _openWork = (title) => {
+        const path = '/works/' + encodeURIComponent(title) + '/';
+        if (this.context.controller) {
+            this.context.controller.load({path, query: {}});
+        } else {
+            location.href = path;
+        }
     };
 }
 

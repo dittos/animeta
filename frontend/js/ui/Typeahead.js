@@ -21,15 +21,15 @@ function cachingSource(source, maxSize) {
     };
 }
 
-var searchSource = cachingSource(throttle(function (q, cb) {
+export const searchSource = cachingSource(throttle(function (q, cb) {
     $.getJSON('/api/v2/search', {q: q}, cb);
 }, 200), 20);
 
-function init(node, viewOptions, sourceOptions) {
+export function init(node, viewOptions, sourceOptions) {
     return $(node).typeahead(viewOptions, sourceOptions);
 }
 
-function initSuggest(node) {
+export function initSuggest(node) {
     return init(node, null, {
         source: cachingSource(throttle(function (q, cb) {
             $.getJSON('/api/v2/search/suggest', {q: q}, cb);
@@ -39,7 +39,7 @@ function initSuggest(node) {
     });
 }
 
-var templates = {
+export const templates = {
     suggestion: function(item) {
         return $('<div />')
             .append($('<span class="title" />').text(item.title))
@@ -47,11 +47,4 @@ var templates = {
             .append($('<span class="count" />').text(item.n + '명 기록'))
             .html();
     }
-};
-
-module.exports = {
-    init,
-    initSuggest,
-    searchSource,
-    templates
 };

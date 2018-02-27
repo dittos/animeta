@@ -7,7 +7,7 @@ var util = require('../util');
 var LocalStorage = require('../LocalStorage');
 var TimeAgo = require('../ui/TimeAgo');
 var PostComposer = require('../ui/PostComposer');
-var Typeahead = require('../ui/Typeahead');
+import * as Typeahead from '../ui/Typeahead';
 import PostComment from '../ui/PostComment';
 var Styles = require('../ui/RecordDetail.less');
 import {
