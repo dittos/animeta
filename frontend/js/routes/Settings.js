@@ -111,7 +111,7 @@ class SettingsRoute extends React.Component {
 }
 
 export default {
-    component: App(SettingsRoute),
+    component: App(SettingsRoute, {activeMenu: 'user'}),
 
     async load({ loader, redirect }) {
         const currentUser = await loader.getCurrentUser({

@@ -31,7 +31,7 @@ class DropdownUserMenu extends React.Component {
     render() {
         return <div className={Styles.userMenu}
             onClick={e => e.stopPropagation()}>
-            <Link to={`/users/${this.props.user.name}/`}>기록 관리</Link>
+            <Link to={`/users/${this.props.user.name}/`}>내 기록</Link>
             <Link to="/settings/">설정</Link>
             {this.state.records && <div>
                 <div className={Styles.userMenuSeparator}>
@@ -54,22 +54,59 @@ class DropdownUserMenu extends React.Component {
 }
 
 class GlobalHeader extends React.Component {
-    static contextTypes = {
-        controller: React.PropTypes.object,
-    };
-
     state = {
-        showMenu: false,
         showUserMenu: false
     };
 
     render() {
         const showNotice = false;
+        const activeMenu = this.props.activeMenu;
+        const user = this.props.currentUser;
         return <div className={Styles.container}>
             <Layout.CenteredFullWidth className={Styles.header}>
-                <Layout.LeftRight className={Styles.headerInner}
-                    left={this._renderLeft()}
-                    right={this._renderRight()} />
+                <div className={Styles.headerInner}>
+                    <div className={`${Styles.logo} hide-mobile`}>
+                        <Link to="/">애니메타</Link>
+                    </div>
+                    <div className={Styles.globalMenu}>
+                        <Link to="/" className={activeMenu === 'home' ? Styles.activeGlobalMenuItem : Styles.globalMenuItem}>
+                            <span><i className="fa fa-home" /></span>
+                            <span className={Styles.globalMenuItemText}>홈</span>
+                        </Link>
+                        <Link to="/table/" className={activeMenu === 'search' ? Styles.activeGlobalMenuItem : Styles.globalMenuItem}>
+                            <span><i className="fa fa-search" style={{fontSize: '0.8em', verticalAlign: '10%'}} /></span>
+                            <span className={Styles.globalMenuItemText}>작품 찾기</span>
+                        </Link>
+                        <Link to={this.props.currentUser ? `/users/${this.props.currentUser.name}/` : '/login/'}
+                            className={activeMenu === 'user' ? Styles.activeGlobalMenuItem : Styles.globalMenuItem}
+                            onClick={this._openLoginIfNeeded}>
+                            <span><i className="fa fa-user" style={{fontSize: '0.85em', verticalAlign: '5%'}} /></span>
+                            <span className={Styles.globalMenuItemText}>내 기록</span>
+                        </Link>
+                        {/*<Link to="" className={`${activeMenu === 'more' ? Styles.activeGlobalMenuItem : Styles.globalMenuItem} show-mobile`}>
+                            <span><i className="fa fa-bars" style={{fontSize: '0.9em', verticalAlign: '5%'}} /></span>
+                        </Link>*/}
+                    </div>
+                    <div style={{flex: 1}} className="hide-mobile" />
+                    <div className={Styles.search}>
+                        <SearchInput />
+                    </div>
+                    {user && (
+                        <div className={`${Styles.accountMenu} hide-mobile`}>
+                            <Link to={`/users/${user.name}/`} className={Styles.userButton}
+                                onClick={this._toggleUserMenu}>
+                                <i className="fa fa-user" />
+                                {user.name}
+                                <i className="fa fa-caret-down" />
+                            </Link>
+                            {this.state.showUserMenu &&
+                                <DropdownUserMenu
+                                    user={user}
+                                    onClose={() => this.setState({showUserMenu: false})}
+                                    Link={Link} />}
+                        </div>
+                    )}
+                </div>
             </Layout.CenteredFullWidth>
 
             {showNotice && <Layout.CenteredFullWidth className={Styles.notice}>
@@ -78,7 +115,7 @@ class GlobalHeader extends React.Component {
                 </Link>
             </Layout.CenteredFullWidth>}
 
-            {!this.props.currentUser && (
+            {!this.props.currentUser && !this.props.noHero && (
                 <div className={Styles.hero}>
                     <Layout.CenteredFullWidth>
                         <div className={Styles.slogan}>
@@ -86,7 +123,8 @@ class GlobalHeader extends React.Component {
                             <span className={Styles.sloganBrand}>애니메타</span>
                         </div>
                         <div className={Styles.subSlogan}>
-                            애니메타는 애니메이션 감상 기록 관리 서비스입니다.
+                            애니메타는 애니메이션 감상 기록장입니다.<br />
+                            어떤 작품을 몇 화까지 봤는지 감상평과 함께 기록하실 수 있어요.
                         </div>
 
                         <div className={Styles.heroActions}>
@@ -99,61 +137,16 @@ class GlobalHeader extends React.Component {
         </div>;
     }
 
-    _renderLeft() {
-        return <div>
-            <div className={this.state.showMenu ? Styles.menuToggleActive : Styles.menuToggleNormal}
-                onClick={this._toggleMenu}>
-                <i className="fa fa-bars" />
-            </div>
-            <div className={Styles.logo}>
-                <Link to="/">애니메타</Link>
-            </div>
-            <div className={Styles.search}>
-                <SearchInput onSelect={this._openWork} />
-            </div>
-            <div className={Styles.globalMenu}
-                style={this.state.showMenu ? {display: 'block'} : {}}>
-                <Link to="/">홈</Link>
-                <Link to="/charts/works/weekly/">순위</Link>
-                <Link to="/table/">분기별 신작</Link>
-            </div>
-            <div className={Styles.feedbackMenu}>
-                <a href="/support/"><i className="fa fa-bullhorn" />{' '}버그 제보 / 건의</a>
-            </div>
-        </div>;
-    }
-
-    _renderRight() {
-        var user = this.props.currentUser;
-        if (user) {
-            return <div className={Styles.accountMenu}>
-                <Link to={`/users/${user.name}/`} className={Styles.userButton}
-                    onClick={this._toggleUserMenu}>
-                    <i className="fa fa-user" />
-                    {user.name}
-                    <i className="fa fa-caret-down" />
-                </Link>
-                {this.state.showUserMenu &&
-                    <DropdownUserMenu
-                        user={user}
-                        onClose={() => this.setState({showUserMenu: false})}
-                        Link={Link} />}
-            </div>;
-        } else {
-            return <div className={Styles.accountMenu}>
-                <Link to="/login/" className={Styles.loginButton} onClick={this._openLogin}>로그인</Link>
-                <Link to="/signup/" className={Styles.signUpButton}>회원 가입</Link>
-            </div>;
-        }
-    }
-
     _toggleUserMenu = (event) => {
         event.preventDefault();
         this.setState({showUserMenu: !this.state.showUserMenu});
     };
 
-    _toggleMenu = () => {
-        this.setState({showMenu: !this.state.showMenu});
+    _openLoginIfNeeded = (e) => {
+        if (!this.props.currentUser) {
+            e.preventDefault();
+            LoginDialog.open({ next: { redirectToUser: true } }); // FIXME
+        }
     };
 
     _openLogin = (e) => {
@@ -163,15 +156,6 @@ class GlobalHeader extends React.Component {
 
     _closeLogin = () => {
         LoginDialog.close();
-    };
-
-    _openWork = (title) => {
-        const path = '/works/' + encodeURIComponent(title) + '/';
-        if (this.context.controller) {
-            this.context.controller.load({path, query: {}});
-        } else {
-            location.href = path;
-        }
     };
 }
 

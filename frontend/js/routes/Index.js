@@ -51,7 +51,7 @@ class Index extends React.Component {
 }
 
 export default {
-    component: App(Index),
+    component: App(Index, { activeMenu: 'home' }),
 
     async load({ loader }) {
         const [currentUser, posts, chart] = await Promise.all([

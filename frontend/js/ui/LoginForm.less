@@ -1,0 +1,68 @@
+@import "../../less/variables.less";
+
+:local(.loginErrors) {
+    background-color: #ffa;
+    border: 1px solid #deb200;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 16px;
+    font-size: 13px;
+}
+
+:local(.loginRowGroup) {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+:local(.loginRow) {
+    position: relative;
+    height: 70px;
+
+    &:first-child {
+        border-bottom: 1px solid #ddd;
+    }
+
+    label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 2;
+        padding: 10px;
+        color: #666;
+        font-size: 12px;
+        font-weight: bold;
+        pointer-events: none;
+    }
+
+    input {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        padding: 35px 10px 10px;
+        line-height: 25px;
+        font-size: 18px;
+        width: 100%;
+        border: none;
+        background: #fff;
+        box-sizing: border-box;
+        &:focus {
+            background: #f8f8f8;
+        }
+    }
+}
+
+:local(.loginCheckRow) {
+    height: 36px;
+    line-height: 36px;
+    font-size: 14px;
+
+    input {
+        padding: 0;
+        margin-right: 10px;
+        vertical-align: middle;
+    }
+}

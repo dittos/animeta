@@ -2,7 +2,7 @@
 
 :local(.header) {
     overflow: hidden;
-    box-shadow: 0 1px 3px 0 @color-shadow;
+    border-bottom: 1px solid @color-border;
 }
 
 @user-header-height: 64px;
@@ -72,6 +72,21 @@
     @media (min-width: 481px) {
         display: block;
         font-size: 20px;
+    }
+}
+
+:local(.settingsNavItem) {
+    text-decoration: none;
+    color: @color-primary;
+    font-size: 14px;
+    i {
+        margin-right: 8px;
+    }
+
+    @media (min-width: 481px) {
+        border: 1px solid @color-primary;
+        border-radius: 2px;
+        padding: 8px 16px;
     }
 }
 

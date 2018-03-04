@@ -4,9 +4,10 @@ import * as Styles from './UserLayout.less';
 import * as Grid from './Grid';
 
 export default function UserLayout(props) {
-    const { user } = props.data;
+    const { user, currentUser } = props.data;
     const basePath = `/users/${encodeURIComponent(user.name)}/`;
     const joinedDate = new Date(user.date_joined);
+    const isCurrentUser = currentUser && currentUser.id === user.id;
     return <div>
         <div className={Styles.header}>
             <Grid.Row>
@@ -25,6 +26,13 @@ export default function UserLayout(props) {
                     <Link to={`${basePath}history/`} className={Styles.navItem}>
                         기록 <span className={Styles.navItemCount}>{user.history_count}</span>
                     </Link>
+                    <div style={{flex: 1}} />
+                    {isCurrentUser && (
+                        <Link to={`/settings/`} className={Styles.settingsNavItem}>
+                            <i className="fa fa-cog" />
+                            설정
+                        </Link>
+                    )}
                 </Grid.Column>
             </Grid.Row>
         </div>

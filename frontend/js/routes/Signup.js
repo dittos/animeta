@@ -85,6 +85,6 @@ class Signup extends React.Component {
 }
 
 export default {
-    component: App(Signup),
+    component: App(Signup, {noHero: true}),
     renderTitle: () => '회원 가입',
 };

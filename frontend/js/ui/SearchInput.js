@@ -2,6 +2,10 @@ import * as React from 'react';
 import * as Typeahead from './Typeahead';
 
 class SearchInput extends React.Component {
+    static contextTypes = {
+        controller: React.PropTypes.object,
+    };
+
     componentDidMount() {
         const onSelect = this._onSelect;
         this.$ = Typeahead.init(this.refs.input,
@@ -32,12 +36,21 @@ class SearchInput extends React.Component {
     }
 
     render() {
-        return <input type="search" placeholder="작품 검색" ref="input" />;
+        return <input type="search" placeholder="검색할 작품명 입력" ref="input" />;
     }
 
     _onSelect = (title) => {
         this.$.typeahead('close').typeahead('val', '');
-        this.props.onSelect(title);
+        if (this.props.onSelect) {
+            this.props.onSelect(title);
+        } else {
+            const path = '/works/' + encodeURIComponent(title) + '/';
+            if (this.context.controller) {
+                this.context.controller.load({path, query: {}});
+            } else {
+                location.href = path;
+            }
+        }
     };
 }
 

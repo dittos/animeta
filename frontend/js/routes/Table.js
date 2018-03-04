@@ -10,6 +10,7 @@ import Periods from '../Periods';
 import Styles from '../../less/table-period.less';
 import { Switch, SwitchItem } from '../ui/Switch';
 import AddRecordDialog from '../ui/AddRecordDialog';
+import SearchInput from '../ui/SearchInput';
 // TODO: css module
 
 function formatPeriod(period) {
@@ -222,6 +223,9 @@ class Table extends React.Component {
         return (
             <div className={Styles.container}>
                 <Layout.CenteredFullWidth>
+                    <div className={Styles.search}>
+                        <SearchInput />
+                    </div>
                     <Header
                         period={period}
                         ordering={ordering}
@@ -261,7 +265,7 @@ class Table extends React.Component {
 }
 
 export default {
-    component: App(Table),
+    component: App(Table, { activeMenu: 'search' }),
     
     async load({ params, loader }) {
         const {period} = params;

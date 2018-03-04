@@ -2,20 +2,24 @@ import React from 'react';
 import GlobalHeader from './ui/GlobalHeader';
 import UserLayout from './ui/UserLayout';
 
-export function App(Component) {
+export function App(Component, globalHeaderProps) {
     return (props) => <div>
         <GlobalHeader
             currentUser={props.data.currentUser}
-            {...props.globalHeaderProps}
+            {...globalHeaderProps}
         />
         <Component {...props} />
     </div>;
 }
 
 export function User(Component) {
-    return App((props) => {
-        return <UserLayout {...props}>
+    return (props) => <div>
+        <GlobalHeader
+            currentUser={props.data.currentUser}
+            activeMenu={props.data.currentUser && props.data.currentUser.id === props.data.user.id ? 'user' : null}
+        />
+        <UserLayout {...props}>
             <Component {...props} />
-        </UserLayout>;
-    });
+        </UserLayout>
+    </div>;
 }

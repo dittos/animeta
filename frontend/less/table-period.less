@@ -9,6 +9,34 @@
 
 // Header
 
+:local(.search) {
+    line-height: 1;
+    font-size: 14px;
+    margin-bottom: 20px;
+
+    .twitter-typeahead {
+        width: 100%;
+    }
+
+    .tt-hint, .tt-input {
+        height: 32px;
+        padding: 0 8px;
+        border: 1px solid @color-border;
+        border-radius: 4px;
+        background: @color-bg-lightest;
+        width: 100%;
+        box-sizing: border-box;
+
+        &:focus {
+            border-color: @color-primary;
+        }
+    }
+
+    @media (min-width: 769px) {
+        display: none;
+    }
+}
+
 :local(.header) {
     margin: 0 0 20px;
 }
