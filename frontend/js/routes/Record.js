@@ -23,7 +23,7 @@ import {User} from '../layouts';
 import {CenteredFullWidth} from '../ui/Layout';
 import ModalStyles from '../ui/Modal.less';
 
-var TitleEditView = React.createClass({
+class TitleEditView extends React.Component {
     componentDidMount() {
         var typeahead = Typeahead.initSuggest(this.refs.titleInput);
         typeahead.on('keypress', event => {
@@ -31,7 +31,7 @@ var TitleEditView = React.createClass({
                 this._onSave();
             }
         });
-    },
+    }
 
     render() {
         return (
@@ -41,19 +41,19 @@ var TitleEditView = React.createClass({
                 {' '}<a href="#" onClick={this._onCancel}>취소</a>
             </div>
         );
-    },
+    }
 
-    _onSave() {
+    _onSave = () => {
         this.props.onSave(this.refs.titleInput.value);
-    },
+    };
 
-    _onCancel(event) {
+    _onCancel = (event) => {
         event.preventDefault();
         this.props.onCancel();
-    }
-});
+    };
+}
 
-var CategoryEditView = React.createClass({
+class CategoryEditView extends React.Component {
     render() {
         var name = '지정 안함';
         if (this.props.selectedId) {
@@ -73,18 +73,16 @@ var CategoryEditView = React.createClass({
                 </select>
             </span>
         );
-    },
+    }
 
-    _onChange(event) {
+    _onChange = (event) => {
         var categoryId = event.target.value;
         this.props.onChange(categoryId);
-    }
-});
+    };
+}
 
-var HeaderView = React.createClass({
-    getInitialState() {
-        return {isEditingTitle: false};
-    },
+class HeaderView extends React.Component {
+    state = {isEditingTitle: false};
 
     render() {
         const {
@@ -131,24 +129,24 @@ var HeaderView = React.createClass({
                 <div style={{clear: 'both'}} />
             </div>
         );
-    },
+    }
 
-    _onTitleEditButtonClick(event) {
+    _onTitleEditButtonClick = (event) => {
         event.preventDefault();
         this.setState({isEditingTitle: true});
-    },
+    };
 
-    _onTitleSave(title) {
+    _onTitleSave = (title) => {
         this.props.onTitleChange(title).then(() => {
             this.setState({isEditingTitle: false});
         });
-    },
+    };
 
-    _onDelete(event) {
+    _onDelete = (event) => {
         event.preventDefault();
         this.props.onDelete();
-    }
-});
+    };
+}
 
 function PostView({post, canEdit, canDelete, onDelete}) {
     return (
@@ -185,37 +183,33 @@ function DeleteRecordModal({record, onConfirm, onCancel}) {
     </Modal>;
 }
 
-var Record = React.createClass({
-    getInitialState() {
-        return {
-            posts: [],
-            showDeleteModal: false,
-        };
-    },
+class Record extends React.Component {
+    state = {
+        posts: [],
+        showDeleteModal: false,
+    };
 
     componentDidMount() {
         this.loadPosts(this.props);
-    },
+    }
 
     componentWillReceiveProps(nextProps) {
         if (this.props.data.record.id !== nextProps.data.record.id) {
             this.loadPosts(nextProps);
         }
-    },
+    }
 
-    loadPosts(props) {
+    loadPosts = (props) => {
         this.setState({
             posts: [],
             showDeleteModal: false,
         });
         getRecordPosts(props.data.record.id).then(data => {
-            if (this.isMounted()) {
-                this.setState({
-                    posts: data.posts,
-                });
-            }
+            this.setState({
+                posts: data.posts,
+            });
         });
-    },
+    };
 
     render() {
         const {user, record, currentUser} = this.props.data;
@@ -260,31 +254,31 @@ var Record = React.createClass({
                     onCancel={() => this.setState({showDeleteModal: false})}
                 />}
         </CenteredFullWidth>;
-    },
+    }
 
-    _updateTitle(title) {
+    _updateTitle = (title) => {
         return updateRecordTitle(this.props.data.record.id, title).then(record => {
             this.props.writeData(data => {
                 data.record = record;
             });
         });
-    },
+    };
 
-    _updateCategory(categoryID) {
+    _updateCategory = (categoryID) => {
         return updateRecordCategoryID(this.props.data.record.id, categoryID).then(record => {
             this.props.writeData(data => {
                 data.record = record;
             });
         });
-    },
+    };
 
-    _deleteRecord() {
+    _deleteRecord = () => {
         deleteRecord(this.props.data.record.id).then(() => {
             this._redirectToUser();
         });
-    },
+    };
 
-    _deletePost(post) {
+    _deletePost = (post) => {
         if (confirm('삭제 후에는 복구할 수 없습니다.\n기록을 정말로 삭제하시겠습니까?')) {
             deletePost(post.id).then(result => {
                 this.loadPosts(this.props);
@@ -293,31 +287,31 @@ var Record = React.createClass({
                 });
             });
         }
-    },
+    };
 
-    _createPost(post) {
+    _createPost = (post) => {
         LocalStorage.setItem('publishTwitter', post.publishTwitter ? 'true' : 'false');
         createPost(this.props.data.record.id, post).then(() => {
             this._redirectToUser();
         });
-    },
+    };
 
-    _connectTwitter() {
+    _connectTwitter = () => {
         return connectTwitter().then(() => {
             this.props.writeData(data => {
                 data.currentUser.is_twitter_connected = true;
             });
         });
-    },
+    };
 
-    _redirectToUser() {
+    _redirectToUser = () => {
         const basePath = `/users/${encodeURIComponent(this.props.data.user.name)}/`;
         this.props.controller.load({
             path: basePath,
             query: {},
         });
-    }
-});
+    };
+}
 
 export default {
     component: User(Record),

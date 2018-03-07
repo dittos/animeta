@@ -11,16 +11,14 @@ function getDateHeader(post) {
     return date.getFullYear() + '/' + (date.getMonth() + 1);
 }
 
-var UserHistory = React.createClass({
-    getDefaultProps() {
-        return {pageSize: 32};
-    },
-    getInitialState() {
-        return {isLoading: true, hasMore: true, posts: []};
-    },
+class UserHistory extends React.Component {
+    static defaultProps = {pageSize: 32};
+    state = {isLoading: true, hasMore: true, posts: []};
+
     componentDidMount() {
         this._loadMore();
-    },
+    }
+
     render() {
         var groups = [];
         var unknownGroup = [];
@@ -53,22 +51,22 @@ var UserHistory = React.createClass({
             {this.state.hasMore &&
                 <LoadMore isLoading={this.state.isLoading} onClick={this._loadMore} />}
         </Layout.CenteredFullWidth>;
-    },
-    _loadMore() {
+    }
+
+    _loadMore = () => {
         this.setState({isLoading: true});
         var beforeID;
         if (this.state.posts.length > 0)
             beforeID = this.state.posts[this.state.posts.length - 1].id;
         getUserPosts(this.props.data.user.name, this.props.pageSize, beforeID).then(data => {
-            if (this.isMounted())
-                this.setState({
-                    hasMore: data.length >= this.props.pageSize,
-                    isLoading: false,
-                    posts: this.state.posts.concat(data)
-                });
+            this.setState({
+                hasMore: data.length >= this.props.pageSize,
+                isLoading: false,
+                posts: this.state.posts.concat(data)
+            });
         });
-    }
-});
+    };
+}
 
 export default {
     component: User(UserHistory),

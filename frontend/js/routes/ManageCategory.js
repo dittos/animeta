@@ -11,10 +11,9 @@ import {
 } from '../API';
 import * as Styles from './ManageCategory.less';
 
-var CategoryItem = React.createClass({
-    getInitialState() {
-        return {isEditing: false};
-    },
+class CategoryItem extends React.Component {
+    state = {isEditing: false};
+
     render() {
         const itemClassName = this.props.isSorting ? Styles.sortingItem : Styles.item;
         if (!this.props.isSorting && this.state.isEditing)
@@ -44,28 +43,30 @@ var CategoryItem = React.createClass({
                 {actions}
             </div>;
         }
-    },
-    _onChange(event) {
+    }
+
+    _onChange = (event) => {
         this.setState({name: event.target.value});
-    },
-    _startEditing() {
+    };
+
+    _startEditing = () => {
         this.setState({isEditing: true, name: this.props.category.name});
-    },
-    _endEditing() {
+    };
+
+    _endEditing = () => {
         this.setState({isEditing: false});
-    },
-    _onSubmit(event) {
+    };
+
+    _onSubmit = (event) => {
         event.preventDefault();
         this.props.onRename(this.state.name).then(() => this._endEditing());
-    }
-});
+    };
+}
 
-var ManageCategory = React.createClass({
-    getInitialState() {
-        return {
-            sortingCategories: null,
-        };
-    },
+class ManageCategory extends React.Component {
+    state = {
+        sortingCategories: null,
+    };
 
     render() {
         const isSorting = this.state.sortingCategories != null;
@@ -100,9 +101,9 @@ var ManageCategory = React.createClass({
                     </form>
                 </div>}
         </CenteredFullWidth>;
-    },
+    }
 
-    _renderItem(category) {
+    _renderItem = (category) => {
         const isSorting = this.state.sortingCategories != null;
         return <CategoryItem
             key={category.id}
@@ -111,13 +112,13 @@ var ManageCategory = React.createClass({
             onRemove={() => this._removeCategory(category)}
             onRename={(name) => this._renameCategory(category, name)}
         />
-    },
+    };
 
-    _beginSorting() {
+    _beginSorting = () => {
         this.setState({ sortingCategories: this.props.data.categories });
-    },
+    };
 
-    _endSorting() {
+    _endSorting = () => {
         const categoryIDs = this.state.sortingCategories.map(c => c.id);
         updateCategoryOrder(this.props.data.user.name, categoryIDs).then(categories => {
             this.setState({ sortingCategories: null });
@@ -125,17 +126,17 @@ var ManageCategory = React.createClass({
                 data.categories = categories;
             });
         });
-    },
+    };
 
-    _onSwap(i, j) {
+    _onSwap = (i, j) => {
         const nextList = this.state.sortingCategories.slice();
         var temp = nextList[i];
         nextList[i] = nextList[j];
         nextList[j] = temp;
         this.setState({sortingCategories: nextList});
-    },
+    };
 
-    _addCategory(event) {
+    _addCategory = (event) => {
         event.preventDefault();
         var input = this.refs.nameInput;
         addCategory(this.props.data.user.name, input.value).then(category => {
@@ -144,9 +145,9 @@ var ManageCategory = React.createClass({
                 data.categories.push(category);
             });
         });
-    },
+    };
 
-    _removeCategory(category) {
+    _removeCategory = (category) => {
         if (confirm('분류를 삭제해도 기록은 삭제되지 않습니다.\n분류를 삭제하시려면 [확인]을 누르세요.')) {
             removeCategory(category.id).then(() => {
                 this.props.writeData(data => {
@@ -154,16 +155,16 @@ var ManageCategory = React.createClass({
                 });
             });
         }
-    },
+    };
 
-    _renameCategory(category, name) {
+    _renameCategory = (category, name) => {
         return renameCategory(category.id, name).then(() => {
             this.props.writeData(() => {
                 category.name = name;
             });
         });
-    }
-});
+    };
+}
 
 export default {
     component: User(ManageCategory),

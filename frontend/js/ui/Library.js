@@ -174,14 +174,6 @@ class Library extends React.Component {
     }
 
     render() {
-        if (this.props.count === 0) {
-            return <div>
-                <h2>아직 기록이 하나도 없네요.</h2>
-                {this.props.canEdit &&
-                    <p>위에 있는 <Link to="/records/add/" className="add-record" onClick={this._showAddModal}>작품 추가</Link>를 눌러 감상 기록을 등록할 수 있습니다.</p>}
-            </div>;
-        }
-
         var {type = '', category = '', sort} = this.props.query;
         if (!sort) sort = 'date';
         var {
@@ -264,14 +256,23 @@ class Library extends React.Component {
                 </div>
             </Grid.Column>
             <Grid.Column size={9} pull="left">
-                {groups.map(group => <div className={Styles.group} key={group.key} id={'group' + group.index}>
-                    <h2 className={Styles.groupTitle}>{group.key}</h2>
-                    <div className={Styles.groupItems}>
-                        {group.items.map(record => <LibraryItem
-                            key={record.id}
-                            record={record} />)}
+                {this.props.count === 0 ? (
+                    <React.Fragment>
+                        <h2>아직 기록이 하나도 없네요.</h2>
+                        {this.props.canEdit &&
+                            <p><Link to="/records/add/" onClick={this._showAddModal}>작품 추가</Link>를 눌러 감상 기록을 등록할 수 있습니다.</p>}
+                    </React.Fragment>
+                ) : (
+                    groups.map(group => <div className={Styles.group} key={group.key} id={'group' + group.index}>
+                        <h2 className={Styles.groupTitle}>{group.key}</h2>
+                        <div className={Styles.groupItems}>
+                            {group.items.map(record => <LibraryItem
+                                key={record.id}
+                                record={record} />)}
+                        </div>
                     </div>
-                </div>)}
+                    )
+                )}
             </Grid.Column>
         </Grid.Row>;
     }

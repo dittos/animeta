@@ -1,10 +1,11 @@
 import * as React from 'react';
+import * as PropTypes from 'prop-types';
 import * as Styles from './Switch.less';
 
 export class Switch extends React.Component {
     static childContextTypes = {
-        switchValue: React.PropTypes.any,
-        switchOnChange: React.PropTypes.any,
+        switchValue: PropTypes.any,
+        switchOnChange: PropTypes.any,
     };
 
     render() {
@@ -25,8 +26,8 @@ export class Switch extends React.Component {
 
 export class SwitchItem extends React.Component {
     static contextTypes = {
-        switchValue: React.PropTypes.any,
-        switchOnChange: React.PropTypes.any,
+        switchValue: PropTypes.any,
+        switchOnChange: PropTypes.any,
     };
 
     render() {

@@ -2,7 +2,7 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var cx = require('classnames');
 
-var Sortable = React.createClass({
+class Sortable extends React.Component {
     render() {
         var i = 0;
         var items = React.Children.map(this.props.children, child =>
@@ -15,36 +15,34 @@ var Sortable = React.createClass({
                 onDrop={this.props.onDrop} />
         );
         return <div>{items}</div>;
-    },
+    }
 
-    _onMoveUp(i) {
+    _onMoveUp = (i) => {
         if (i > 0) {
             this.props.onSwap(i, i - 1);
         }
-    },
+    };
 
-    _onMoveDown(i) {
+    _onMoveDown = (i) => {
         if (i < React.Children.count(this.props.children) - 1) {
             this.props.onSwap(i, i + 1);
         }
-    }
-});
+    };
+}
 
-var SortableItem = React.createClass({
-    getInitialState() {
-        return {dragging: false};
-    },
+class SortableItem extends React.Component {
+    state = {dragging: false};
 
     componentDidUpdate(prevProps) {
         if (this.state.dragging && this.props.order != prevProps.order) {
             this._remeasure();
         }
         this._manageEventListeners(this.state.dragging);
-    },
+    }
 
     componentWillUnmount() {
         this._manageEventListeners(false);
-    },
+    }
 
     render() {
         var style = {};
@@ -57,9 +55,9 @@ var SortableItem = React.createClass({
             onMouseDown={this._onMouseDown}>
                 {this.props.component}
             </div>;
-    },
+    }
 
-    _manageEventListeners(isDragging) {
+    _manageEventListeners = (isDragging) => {
         var body = ReactDOM.findDOMNode(this).ownerDocument;
         if (isDragging && !this._registeredEventListeners) {
             body.addEventListener('mousemove', this._onMouseMove);
@@ -70,9 +68,9 @@ var SortableItem = React.createClass({
             body.removeEventListener('mouseup', this._onMouseUp);
             this._registeredEventListeners = false;
         }
-    },
+    };
 
-    _onMouseDown(event) {
+    _onMouseDown = (event) => {
         var bounds = ReactDOM.findDOMNode(this).getBoundingClientRect();
         this.setState({
             dragging: true,
@@ -81,16 +79,16 @@ var SortableItem = React.createClass({
             holdY: event.clientY - bounds.top,
             mouseY: event.clientY
         });
-    },
+    };
 
-    _onMouseUp() {
+    _onMouseUp = () => {
         this.setState({dragging: false});
         if (this.props.onDrop) {
             this.props.onDrop();
         }
-    },
+    };
 
-    _onMouseMove(event) {
+    _onMouseMove = (event) => {
         if (!this.state.dragging) {
             return;
         }
@@ -105,16 +103,16 @@ var SortableItem = React.createClass({
             this.props.onMoveDown(this.props.order);
         }
         this.setState({mouseY: mouseY});
-    },
+    };
 
-    _remeasure() {
+    _remeasure = () => {
         var offset = this.state.mouseY - this.state.origTop - this.state.holdY;
         var bounds = ReactDOM.findDOMNode(this).getBoundingClientRect();
         this.setState({
             origTop: bounds.top - offset,
             origBottom: bounds.bottom - offset
         });
-    }
-});
+    };
+}
 
 module.exports = Sortable;

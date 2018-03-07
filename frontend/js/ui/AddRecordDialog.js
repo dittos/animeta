@@ -153,8 +153,7 @@ class AddRecord extends React.Component {
         }).then(result => {
             this.props.onCreate(result);
         }).always(() => {
-            if (this.isMounted())
-                this.setState({isRequesting: false});
+            this.setState({isRequesting: false});
         });
     };
 
@@ -168,10 +167,15 @@ class AddRecord extends React.Component {
             return;
         }
         this.setState({ currentUser }, () => {
-            Typeahead.initSuggest(this.refs.title);
-            if (!this.props.initialTitle) {
-                this.refs.title.focus();
-            }
+            // FIXME
+            setTimeout(() => {
+                if (this.refs.title) {
+                    Typeahead.initSuggest(this.refs.title);
+                    if (!this.props.initialTitle) {
+                        this.refs.title.focus();
+                    }
+                }
+            }, 10);
         });
     }
 }

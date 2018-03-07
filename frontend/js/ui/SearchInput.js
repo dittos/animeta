@@ -1,9 +1,10 @@
 import * as React from 'react';
+import * as PropTypes from 'prop-types';
 import * as Typeahead from './Typeahead';
 
 class SearchInput extends React.Component {
     static contextTypes = {
-        controller: React.PropTypes.object,
+        controller: PropTypes.object,
     };
 
     componentDidMount() {

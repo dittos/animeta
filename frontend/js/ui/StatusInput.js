@@ -2,13 +2,11 @@ var React = require('react');
 var {plusOne} = require('../util');
 var Styles = require('./StatusInput.less');
 
-var StatusInputView = React.createClass({
-    getDefaultProps() {
-        return {
-            minSize: 3,
-            maxSize: 10
-        };
-    },
+class StatusInputView extends React.Component {
+    static defaultProps = {
+        minSize: 3,
+        maxSize: 10
+    };
 
     render() {
         var {style, value, ...props} = this.props;
@@ -24,17 +22,17 @@ var StatusInputView = React.createClass({
             {showSuffix ? '화' : null}
             <span className={Styles.plus} style={{cursor: 'pointer'}} onClick={this._onClickPlus} />
         </span>;
-    },
+    }
 
-    _onChange(event) {
+    _onChange = (event) => {
         if (this.props.onChange)
             this.props.onChange(event.target.value);
-    },
+    };
 
-    _onClickPlus(event) {
+    _onClickPlus = (event) => {
         event.preventDefault();
         this.props.onChange(plusOne(this.props.value));
-    }
-});
+    };
+}
 
 module.exports = StatusInputView;

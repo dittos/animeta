@@ -1,7 +1,6 @@
 if (!global._babelPolyfill) {
     require('babel-polyfill');
 }
-process.env = Object.assign({}, process.env);
 var { createServer } = require('./server/frontend');
 var port = process.env.PORT || 3000;
 
