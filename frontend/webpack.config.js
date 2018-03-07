@@ -93,9 +93,6 @@ module.exports = (env) => {
         );
         if (env.prod) {
             config.plugins.push(
-                new webpack.NormalModuleReplacementPlugin(
-                    /ReactErrorUtils$/, path.join(__dirname, 'js/ReactErrorUtils.js')
-                ),
                 new ExtractTextPlugin('[name]-[contenthash].css')
             );
         } else {
