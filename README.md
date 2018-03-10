@@ -44,13 +44,11 @@ https://animeta.net/
 ### 의존성 설치
 
     npm install
-    git submodule init
-    ./build-external.sh
 
 ### 설정
 
-    cp frontend/config.json.sample frontend/config.json
+`frontend-server/config.json.sample`을 가지고 `frontend-server/config.json`을 작성합니다.
 
-### 개발 서버 시작
+### 개발 서버 실행
 
     npm start

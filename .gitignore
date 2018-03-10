@@ -11,8 +11,9 @@ animeta/media/
 htmlcov
 .env
 *.db
-frontend/server/assets.json
-frontend/server/config.json
+frontend/assets.json
+frontend-server/config.json
+frontend-server/bundle.js*
 .idea
 *.iml
 frontend-dist/
