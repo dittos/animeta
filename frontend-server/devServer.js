@@ -59,7 +59,7 @@ function getAssets(compiler, statsObj) {
   return output;
 }
 
-const webpackConfigFactory = require('../webpack.config.js');
+const webpackConfigFactory = require('../frontend/webpack.config.js');
 const serverWebpackConfig = webpackConfigFactory({
   server: true,
   prod: false,
@@ -83,7 +83,7 @@ serverCompiler.run(() => {
     })
   );
   server.use(webpackHotMiddleware(compiler));
-  server.use('/static', express.static(__dirname + '/../../animeta/static'));
+  server.use('/static', express.static(__dirname + '/../animeta/static'));
   createServer({
     server,
     app,

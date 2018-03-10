@@ -35,7 +35,7 @@ module.exports = env => {
         },
     output: env.server
       ? {
-          path: env.outputPath || path.join(__dirname, '../frontend/server'),
+          path: env.outputPath || path.join(__dirname, '../frontend-server'),
           filename: 'bundle.js',
           libraryTarget: 'commonjs2',
         }
@@ -96,7 +96,7 @@ module.exports = env => {
   } else {
     config.plugins.push(
       new AssetsPlugin({
-        path: path.join(__dirname, 'server'),
+        path: __dirname,
         filename: 'assets.json',
       }),
       new webpack.optimize.CommonsChunkPlugin({

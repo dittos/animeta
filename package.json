@@ -48,7 +48,6 @@
     "autoprefixer-loader": "^3.1.0",
     "babel-cli": "^6.8.0",
     "babel-eslint": "^8.1.2",
-    "babel-loader": "^7.1.2",
     "babel-plugin-transform-class-properties": "^6.19.0",
     "css-loader": "^0.28.7",
     "eslint": "^4.14.0",
@@ -71,10 +70,10 @@
     "webpack-node-externals": "^1.6.0"
   },
   "scripts": {
-    "start": "babel-node frontend/server/devServer.js",
+    "start": "babel-node frontend-server/devServer.js",
     "build-assets": "webpack --config frontend/webpack.config.js --env.prod",
     "build-server": "webpack --config frontend/webpack.config.js --env.server --env.prod",
-    "build-dist": "babel frontend/server -d frontend-dist --copy-files",
+    "build-dist": "babel frontend-server -d frontend-dist --copy-files",
     "test": "cd frontend; mocha --require ts-node/register test"
   }
 }
