@@ -1,8 +1,8 @@
 root = true
 
-[*.{js,py}]
+[*.{py,java,kt}]
 indent_style = space
 indent_size = 4
 
-[frontend/js/admin/**.js]
+[frontend/**.js]
 indent_size = 2

@@ -7,11 +7,11 @@ import WorkDetail from './admin/WorkDetail';
 import 'bootstrap/dist/css/bootstrap.css';
 
 ReactDOM.render(
-    <Router history={hashHistory}>
-        <Route component={App}>
-            <Route path="/" component={Dashboard} />
-            <Route path="/works/:id" component={WorkDetail} />
-        </Route>
-    </Router>,
-    document.getElementById('app')
+  <Router history={hashHistory}>
+    <Route component={App}>
+      <Route path="/" component={Dashboard} />
+      <Route path="/works/:id" component={WorkDetail} />
+    </Route>
+  </Router>,
+  document.getElementById('app')
 );

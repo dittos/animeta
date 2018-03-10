@@ -19,13 +19,13 @@ import ManageCategoryRoute from './routes/ManageCategory';
 var app = createApp();
 
 app.title = routeTitle => {
-    return routeTitle + (routeTitle ? ' - ' : '') + '애니메타';
+  return routeTitle + (routeTitle ? ' - ' : '') + '애니메타';
 };
 
 app.route('/', IndexRoute);
 app.route('/login/', {
-    component: layouts.App(() => <LoginDialog next="/" />),
-    renderTitle: () => '로그인',
+  component: layouts.App(() => <LoginDialog next="/" />),
+  renderTitle: () => '로그인',
 });
 app.route('/signup/', SignupRoute);
 app.route('/charts/:type/:range/', ChartRoute);
@@ -33,7 +33,7 @@ app.route('/-:id', PostRoute);
 app.route('/works/:title+/ep/:episode/', WorkRoute);
 app.route('/works/:title+/', WorkRoute);
 app.route('/table/', {
-    load: ({ redirect }) => redirect(`/table/${Periods.current}/`),
+  load: ({ redirect }) => redirect(`/table/${Periods.current}/`),
 });
 app.route('/table/:period/', TableRoute);
 app.route('/settings/', SettingsRoute);

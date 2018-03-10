@@ -1,5 +1,5 @@
 if (!global._babelPolyfill) {
-    require('babel-polyfill');
+  require('babel-polyfill');
 }
 var { createServer } = require('./server/frontend');
 var port = process.env.PORT || 3000;
@@ -9,8 +9,8 @@ var app = appModule.default || appModule;
 var assets = require('./assets.json');
 
 createServer({
-    app,
-    getAssets: () => assets,
+  app,
+  getAssets: () => assets,
 }).listen(port, () => {
-    console.log('Server running at port', port);
+  console.log('Server running at port', port);
 });

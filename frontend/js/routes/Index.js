@@ -7,79 +7,75 @@ import { Post } from '../ui/Post';
 import Styles from '../../less/index.less';
 
 class Index extends React.Component {
-    state = {
-        isLoading: false,
-    };
+  state = {
+    isLoading: false,
+  };
 
-    render() {
-        return (
-            <Grid.Row>
-                <Grid.Column size={8} pull="left">
-                    {this._renderTimeline(this.props.data.posts)}
-                </Grid.Column>
-                <Grid.Column size={4} pull="right" className={Styles.sidebar}>
-                    <h2 className={Styles.sectionTitle}>주간 인기 작품</h2>
-                    <WeeklyChart data={this.props.data.chart} />
-                </Grid.Column>
-            </Grid.Row>
-        );
-    }
+  render() {
+    return (
+      <Grid.Row>
+        <Grid.Column size={8} pull="left">
+          {this._renderTimeline(this.props.data.posts)}
+        </Grid.Column>
+        <Grid.Column size={4} pull="right" className={Styles.sidebar}>
+          <h2 className={Styles.sectionTitle}>주간 인기 작품</h2>
+          <WeeklyChart data={this.props.data.chart} />
+        </Grid.Column>
+      </Grid.Row>
+    );
+  }
 
-    _renderTimeline(posts) {
-        return (
-            <div className={Styles.timeline}>
-                <h2 className={Styles.sectionTitle}>최근 감상평</h2>
-                {posts.map(post => <Post key={post.id} post={post} />)}
-                <LoadMore
-                    onClick={this._loadMore}
-                    isLoading={this.state.isLoading}
-                />
-            </div>
-        );
-    }
+  _renderTimeline(posts) {
+    return (
+      <div className={Styles.timeline}>
+        <h2 className={Styles.sectionTitle}>최근 감상평</h2>
+        {posts.map(post => <Post key={post.id} post={post} />)}
+        <LoadMore onClick={this._loadMore} isLoading={this.state.isLoading} />
+      </div>
+    );
+  }
 
-    _loadMore = async () => {
-        this.setState({ isLoading: true });
-        const result = await this.props.loader.call('/posts', {
-            before_id: this.props.data.posts[this.props.data.posts.length - 1]
-                .id,
-            min_record_count: 2,
-            options: {
-                user: {},
-                record: {},
-            },
-        });
-        this.setState({
-            isLoading: false,
-        });
-        this.props.writeData(data => {
-            data.posts = data.posts.concat(result);
-        });
-    };
+  _loadMore = async () => {
+    this.setState({ isLoading: true });
+    const result = await this.props.loader.call('/posts', {
+      before_id: this.props.data.posts[this.props.data.posts.length - 1].id,
+      min_record_count: 2,
+      options: {
+        user: {},
+        record: {},
+      },
+    });
+    this.setState({
+      isLoading: false,
+    });
+    this.props.writeData(data => {
+      data.posts = data.posts.concat(result);
+    });
+  };
 }
 
 export default {
-    component: App(Index, { activeMenu: 'home' }),
+  component: App(Index, { activeMenu: 'home' }),
 
-    async load({ loader }) {
-        const [currentUser, posts, chart] = await Promise.all([
-            loader.getCurrentUser({
-                options: {},
-            }),
-            loader.call('/posts', {
-                min_record_count: 2,
-                count: 10,
-                options: {
-                    user: {},
-                    record: {},
-                },
-            }),
-            loader.call('/charts/works/weekly', { limit: 5 }),
-        ]);
-        return {
-            currentUser,
-            posts,
-            chart,
-        };
-    },
+  async load({ loader }) {
+    const [currentUser, posts, chart] = await Promise.all([
+      loader.getCurrentUser({
+        options: {},
+      }),
+      loader.call('/posts', {
+        min_record_count: 2,
+        count: 10,
+        options: {
+          user: {},
+          record: {},
+        },
+      }),
+      loader.call('/charts/works/weekly', { limit: 5 }),
+    ]);
+    return {
+      currentUser,
+      posts,
+      chart,
+    };
+  },
 };
