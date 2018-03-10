@@ -1,7 +1,7 @@
 /* global PreloadData */
 import $ from 'jquery';
 import React from 'react';
-import LoadMore from './LoadMore';
+import { LoadMore } from './LoadMore';
 import Styles from './VideoSearch.less';
 
 function fixTitle(title) {

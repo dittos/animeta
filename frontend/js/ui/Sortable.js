@@ -1,8 +1,8 @@
-var React = require('react');
-var ReactDOM = require('react-dom');
-var cx = require('classnames');
+import * as React from 'react';
+import { findDOMNode } from 'react-dom';
+import cx from 'classnames';
 
-class Sortable extends React.Component {
+export class Sortable extends React.Component {
   render() {
     var i = 0;
     var items = React.Children.map(this.props.children, child => (
@@ -66,7 +66,7 @@ class SortableItem extends React.Component {
   }
 
   _manageEventListeners = isDragging => {
-    var body = ReactDOM.findDOMNode(this).ownerDocument;
+    var body = findDOMNode(this).ownerDocument;
     if (isDragging && !this._registeredEventListeners) {
       body.addEventListener('mousemove', this._onMouseMove);
       body.addEventListener('mouseup', this._onMouseUp);
@@ -79,7 +79,7 @@ class SortableItem extends React.Component {
   };
 
   _onMouseDown = event => {
-    var bounds = ReactDOM.findDOMNode(this).getBoundingClientRect();
+    var bounds = findDOMNode(this).getBoundingClientRect();
     this.setState({
       dragging: true,
       origTop: bounds.top,
@@ -115,12 +115,10 @@ class SortableItem extends React.Component {
 
   _remeasure = () => {
     var offset = this.state.mouseY - this.state.origTop - this.state.holdY;
-    var bounds = ReactDOM.findDOMNode(this).getBoundingClientRect();
+    var bounds = findDOMNode(this).getBoundingClientRect();
     this.setState({
       origTop: bounds.top - offset,
       origBottom: bounds.bottom - offset,
     });
   };
 }
-
-module.exports = Sortable;

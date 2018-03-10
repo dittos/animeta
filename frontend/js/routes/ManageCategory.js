@@ -1,7 +1,7 @@
 /* global confirm */
 import React from 'react';
 import { User } from '../layouts';
-import Sortable from '../ui/Sortable';
+import { Sortable } from '../ui/Sortable';
 import { CenteredFullWidth } from '../ui/Layout';
 import {
   renameCategory,
@@ -9,7 +9,7 @@ import {
   addCategory,
   updateCategoryOrder,
 } from '../API';
-import * as Styles from './ManageCategory.less';
+import Styles from './ManageCategory.less';
 
 class CategoryItem extends React.Component {
   state = { isEditing: false };

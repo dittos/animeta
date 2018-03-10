@@ -8,7 +8,7 @@ import isString from 'lodash/isString';
 import ReactDOMServer from 'react-dom/server';
 import Backend, { HttpNotFound } from './backend';
 import renderFeed from './renderFeed';
-import config from '../config.json';
+import config from './config.json';
 import { render, injectLoaderFactory } from 'nuri/server';
 
 const DEBUG = process.env.NODE_ENV !== 'production';

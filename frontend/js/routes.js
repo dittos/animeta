@@ -1,6 +1,6 @@
 import React from 'react';
 import { createApp } from 'nuri';
-import Periods from './Periods';
+import Periods from './Periods.json';
 import * as layouts from './layouts';
 import LoginDialog from './ui/LoginDialog';
 import IndexRoute from './routes/Index';

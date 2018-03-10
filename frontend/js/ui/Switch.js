@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
-import * as Styles from './Switch.less';
+import Styles from './Switch.less';
 
 export class Switch extends React.Component {
   static childContextTypes = {

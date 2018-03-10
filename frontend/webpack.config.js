@@ -35,7 +35,7 @@ module.exports = env => {
         },
     output: env.server
       ? {
-          path: env.outputPath || path.join(__dirname, '../frontend-dist'),
+          path: env.outputPath || path.join(__dirname, '../frontend/server'),
           filename: 'bundle.js',
           libraryTarget: 'commonjs2',
         }
@@ -53,9 +53,9 @@ module.exports = env => {
           use: 'eslint-loader',
         },
         {
-          test: /\.js[x]?$/,
+          test: /\.[tj]s[x]?$/,
           exclude: /node_modules/,
-          use: 'babel-loader',
+          use: 'ts-loader',
         },
         { test: /\.json$/, use: 'json-loader' },
         {
@@ -81,6 +81,9 @@ module.exports = env => {
         },
       ],
     },
+    resolve: {
+      extensions: ['.tsx', '.ts', '.js'],
+    },
     plugins: [],
     devtool: env.prod ? 'source-map' : 'cheap-source-map',
   };
@@ -93,7 +96,7 @@ module.exports = env => {
   } else {
     config.plugins.push(
       new AssetsPlugin({
-        path: __dirname,
+        path: path.join(__dirname, 'server'),
         filename: 'assets.json',
       }),
       new webpack.optimize.CommonsChunkPlugin({

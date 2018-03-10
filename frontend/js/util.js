@@ -50,7 +50,7 @@ export var STATUS_TYPE_TEXT = {
 export function getStatusText(record) {
   var status = getStatusDisplay(record);
   if (record.status_type != 'watching' || status === '') {
-    var statusTypeText = exports.STATUS_TYPE_TEXT[record.status_type];
+    var statusTypeText = STATUS_TYPE_TEXT[record.status_type];
     if (status !== '') {
       status += ' (' + statusTypeText + ')';
     } else {

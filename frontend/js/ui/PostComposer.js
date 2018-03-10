@@ -1,10 +1,9 @@
-var React = require('react');
-var StatusInput = require('./StatusInput');
-var util = require('../util');
-var LocalStorage = require('../LocalStorage');
-var Styles = require('./PostComposer.less');
+import * as React from 'react';
+import * as util from '../util';
+import { StatusInput } from './StatusInput';
+import Styles from './PostComposer.less';
 
-class PostComposer extends React.Component {
+export class PostComposer extends React.Component {
   state = {
     statusType: this.props.record.status_type,
     status: util.plusOne(this.props.record.status),
@@ -15,7 +14,7 @@ class PostComposer extends React.Component {
 
   componentDidMount() {
     this.setState({
-      publishTwitter: LocalStorage.getItem('publishTwitter') === 'true',
+      publishTwitter: window.localStorage.getItem('publishTwitter') === 'true',
     });
   }
 
@@ -123,5 +122,3 @@ class PostComposer extends React.Component {
     });
   };
 }
-
-module.exports = PostComposer;

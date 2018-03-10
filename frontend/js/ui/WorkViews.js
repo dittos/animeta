@@ -4,7 +4,7 @@ import { Link } from 'nuri';
 import { default as dateFnsFormat } from 'date-fns/format';
 import * as Grid from './Grid';
 import * as util from '../util';
-import LoadMore from './LoadMore';
+import { LoadMore } from './LoadMore';
 import SpecialWorkStatus from './SpecialWorkStatus';
 import VideoSearch from './VideoSearch';
 import WeeklyChart from './WeeklyChart';

@@ -4,10 +4,10 @@ const MemoryFileSystem = require('memory-fs');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const requireFromString = require('require-from-string');
-const { createServer } = require('./frontend');
 const getAssetKind = require('assets-webpack-plugin/lib/getAssetKind');
 const isHMRUpdate = require('assets-webpack-plugin/lib/isHMRUpdate');
 const isSourceMap = require('assets-webpack-plugin/lib/isSourceMap');
+import { createServer } from './frontend';
 
 function getAssets(compiler, statsObj) {
   // Copied from https://github.com/kossnocorp/assets-webpack-plugin/blob/master/index.js

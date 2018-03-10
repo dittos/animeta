@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link } from 'nuri';
-import * as Styles from './UserLayout.less';
+import Styles from './UserLayout.less';
 import * as Grid from './Grid';
 
 export default function UserLayout(props) {

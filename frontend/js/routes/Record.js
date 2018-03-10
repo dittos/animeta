@@ -1,15 +1,14 @@
 /* global confirm */
-var React = require('react');
-var cx = require('classnames');
+import * as React from 'react';
+import cx from 'classnames';
 import { Modal } from 'react-overlays';
 import { Link } from 'nuri';
-var util = require('../util');
-var LocalStorage = require('../LocalStorage');
-var TimeAgo = require('../ui/TimeAgo');
-var PostComposer = require('../ui/PostComposer');
+import * as util from '../util';
+import { TimeAgo } from '../ui/TimeAgo';
+import { PostComposer } from '../ui/PostComposer';
 import * as Typeahead from '../ui/Typeahead';
 import PostComment from '../ui/PostComment';
-var Styles = require('../ui/RecordDetail.less');
+import Styles from '../ui/RecordDetail.less';
 import {
   getRecordPosts,
   updateRecordTitle,
@@ -328,7 +327,7 @@ class Record extends React.Component {
   };
 
   _createPost = post => {
-    LocalStorage.setItem(
+    window.localStorage.setItem(
       'publishTwitter',
       post.publishTwitter ? 'true' : 'false'
     );

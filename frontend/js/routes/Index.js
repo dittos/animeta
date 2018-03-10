@@ -2,7 +2,7 @@ import React from 'react';
 import { App } from '../layouts';
 import * as Grid from '../ui/Grid';
 import WeeklyChart from '../ui/WeeklyChart';
-import LoadMore from '../ui/LoadMore';
+import { LoadMore } from '../ui/LoadMore';
 import { Post } from '../ui/Post';
 import Styles from '../../less/index.less';
 

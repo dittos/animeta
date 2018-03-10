@@ -4,9 +4,9 @@ import { getCurrentUser, createRecord } from '../API';
 import * as Typeahead from './Typeahead';
 import { Switch, SwitchItem } from './Switch';
 import LoginDialog from './LoginDialog';
-import StatusInput from './StatusInput';
+import { StatusInput } from './StatusInput';
 import ModalStyles from './Modal.less';
-import * as Styles from './AddRecordDialog.less';
+import Styles from './AddRecordDialog.less';
 
 class CategorySelect extends React.Component {
   render() {

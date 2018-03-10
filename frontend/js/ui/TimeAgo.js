@@ -2,7 +2,7 @@ import React from 'react';
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 import koLocale from 'date-fns/locale/ko';
 
-class TimeAgo extends React.Component {
+export class TimeAgo extends React.Component {
   state = {};
 
   render() {
@@ -38,5 +38,3 @@ class TimeAgo extends React.Component {
     });
   };
 }
-
-module.exports = TimeAgo;

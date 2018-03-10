@@ -1,22 +1,23 @@
-var React = require('react');
-var { plusOne } = require('../util');
-var Styles = require('./StatusInput.less');
+import * as React from 'react';
+import { plusOne } from '../util';
+import Styles from './StatusInput.less';
 
-class StatusInputView extends React.Component {
-  static defaultProps = {
-    minSize: 3,
-    maxSize: 10,
-  };
-
+export class StatusInput extends React.Component<{
+  value: string;
+  onChange: (value: string) => any;
+  style?: any;
+  minSize?: number;
+  maxSize?: number;
+}> {
   render() {
-    var { style, value, ...props } = this.props;
+    var { style, value, minSize = 3, maxSize = 10, ...props } = this.props;
     var showSuffix = value.match(/^(|.*\d)$/);
     var width =
-      Math.max(this.props.minSize, Math.min(this.props.maxSize, value.length)) +
+      Math.max(minSize, Math.min(maxSize, value.length)) +
       'em';
     style = { ...style, width, textAlign: 'right' };
     return (
-      <span>
+      <React.Fragment>
         <input
           {...props}
           style={style}
@@ -30,18 +31,16 @@ class StatusInputView extends React.Component {
           style={{ cursor: 'pointer' }}
           onClick={this._onClickPlus}
         />
-      </span>
+      </React.Fragment>
     );
   }
 
-  _onChange = event => {
+  _onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (this.props.onChange) this.props.onChange(event.target.value);
   };
 
-  _onClickPlus = event => {
+  _onClickPlus = (event: React.MouseEvent<any>) => {
     event.preventDefault();
     this.props.onChange(plusOne(this.props.value));
   };
 }
-
-module.exports = StatusInputView;

@@ -1,4 +1,26 @@
-import { getStatusText } from '../js/util';
+function getStatusDisplay(record) {
+  return record.status.trim().replace(/([0-9]+)$/, '$1화');
+}
+
+var STATUS_TYPE_TEXT = {
+  watching: '보는 중',
+  finished: '완료',
+  interested: '볼 예정',
+  suspended: '중단',
+};
+
+function getStatusText(record) {
+  var status = getStatusDisplay(record);
+  if (record.status_type != 'watching' || status === '') {
+    var statusTypeText = STATUS_TYPE_TEXT[record.status_type];
+    if (status !== '') {
+      status += ' (' + statusTypeText + ')';
+    } else {
+      status = statusTypeText;
+    }
+  }
+  return status;
+}
 
 export default (owner, posts) =>
   `<?xml version="1.0" encoding="utf-8"?>

@@ -2,9 +2,9 @@ import React from 'react';
 import { getUserPosts } from '../API';
 import { User } from '../layouts';
 import * as Layout from '../ui/Layout';
-import LoadMore from '../ui/LoadMore';
+import { LoadMore } from '../ui/LoadMore';
 import { Post } from '../ui/Post';
-import * as Styles from './UserHistory.less';
+import Styles from './UserHistory.less';
 
 function getDateHeader(post) {
   var date = new Date(post.updated_at);

@@ -1,6 +1,6 @@
 /* global Raven */
 import React from 'react';
-import GlobalHeader from './ui/GlobalHeader';
+import { GlobalHeader } from './ui/GlobalHeader';
 import UserLayout from './ui/UserLayout';
 
 class ErrorHandler extends React.Component {

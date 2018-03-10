@@ -61,7 +61,7 @@ class DropdownUserMenu extends React.Component {
   };
 }
 
-class GlobalHeader extends React.Component {
+export class GlobalHeader extends React.Component {
   state = {
     showUserMenu: false,
   };
@@ -230,5 +230,3 @@ class GlobalHeader extends React.Component {
     LoginDialog.close();
   };
 }
-
-module.exports = GlobalHeader;

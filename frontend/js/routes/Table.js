@@ -6,7 +6,7 @@ import * as util from '../util';
 import { App } from '../layouts';
 import * as Layout from '../ui/Layout';
 import * as Grid from '../ui/Grid';
-import Periods from '../Periods';
+import Periods from '../Periods.json';
 import Styles from '../../less/table-period.less';
 import { Switch, SwitchItem } from '../ui/Switch';
 import AddRecordDialog from '../ui/AddRecordDialog';

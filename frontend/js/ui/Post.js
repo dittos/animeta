@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Link } from 'nuri';
 import * as util from '../util';
-import TimeAgo from '../ui/TimeAgo';
+import { TimeAgo } from '../ui/TimeAgo';
 import PostComment from '../ui/PostComment';
 import Styles from './Post.less';
 

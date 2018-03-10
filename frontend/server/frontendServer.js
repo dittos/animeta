@@ -1,7 +1,7 @@
 if (!global._babelPolyfill) {
   require('babel-polyfill');
 }
-var { createServer } = require('./server/frontend');
+var { createServer } = require('./frontend');
 var port = process.env.PORT || 3000;
 
 var appModule = require('./bundle');
