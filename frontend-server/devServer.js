@@ -59,7 +59,8 @@ function getAssets(compiler, statsObj) {
   return output;
 }
 
-const webpackConfigFactory = require('../frontend/webpack.config.js');
+// Don't require directly to fool tsc
+const webpackConfigFactory = module.require('../frontend/webpack.config.js');
 const serverWebpackConfig = webpackConfigFactory({
   server: true,
   prod: false,

@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "outDir": "../frontend-dist/",
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es5",
+    "jsx": "react",
+    "allowJs": true,
+    "lib": [
+      "es2015",
+      "dom"
+    ]
+  },
+  "exclude": [
+    "bundle.js"
+  ]
+}
