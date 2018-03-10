@@ -14,28 +14,25 @@ def deploy_newapi():
 def deploy_frontend():
     _deploy(frontend=True)
 
-def deploy_frontend_server():
-    _deploy(frontend_server=True)
-
-def deploy_servers():
-    _deploy(newapi=True, frontend_server=True)
-
-def _deploy(api=False, newapi=False, frontend=False, frontend_server=False):
+def _deploy(api=False, newapi=False, frontend=False):
+    # local builds
+    if newapi:
+        with lcd('backend'):
+            local('./gradlew build')
     if frontend:
-        frontend_server = True
+        local('rm -f animeta/static/build/*')
+        local('npm run build-assets')  # -> animeta/static/build/*, frontend/assets.json
+        local('npm run build-server')  # -> frontend-server/bundle.js
+
+        local('rm -rf frontend-dist')
+        local('npm run build-dist')  # -> frontend-dist/*
 
     local('git push')
     with cd('/home/ditto/animeta'):
-        run('rm -f package-lock.json')
-        run('git pull') # To get password prompt first
-        if newapi:
-            with lcd('backend'):
-                local('./gradlew build')
+        # update
+        run('rm -f package-lock.json')  # Avoid conflict
+        run('git pull')
         if frontend:
-            local('rm -f animeta/static/build/*')
-            local('npm run build-assets')
-
-        if frontend_server:
             run('npm install')
         if api:
             with cd('backend-legacy'):
@@ -46,14 +43,14 @@ def _deploy(api=False, newapi=False, frontend=False, frontend_server=False):
         if frontend:
             run('mkdir -p animeta/static/build')
             put('animeta/static/build/*', 'animeta/static/build/')
-            put('frontend/assets.json', 'frontend/server/')
-        if frontend_server:
-            local('npm run build-server')
-            put('frontend/server/bundle.js', 'frontend/server/')
             run('rm -rf frontend-dist')
-            run('npm run build-dist')
+            run('mkdir frontend-dist')
+            put('frontend-dist/*', 'frontend-dist/')
+            put('frontend/assets.json', 'frontend-dist/')
+            run('cp frontend-server/config.json frontend-dist/')
 
+        # reload
         if newapi:
             run('mv backend.war.tmp backend-1.0.0.war')
-        if frontend_server:
+        if frontend:
             run('pm2 gracefulReload animeta')
