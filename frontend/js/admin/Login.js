@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { findDOMNode } from 'react-dom';
 import {
   FormGroup,
@@ -9,7 +9,7 @@ import {
 } from 'react-bootstrap';
 import * as API from './API';
 
-class Login extends Component {
+class Login extends React.Component {
   render() {
     return (
       <Modal.Dialog>

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { Link, withRouter } from 'react-router';
 import {
   Button,
@@ -14,7 +14,7 @@ import Login from './Login';
 import TitleAutosuggest from './TitleAutosuggest';
 import * as API from './API';
 
-class App extends Component {
+class App extends React.Component {
   state = {
     isLoading: true,
     currentUser: null,
