@@ -1,4 +1,4 @@
-import cookie from "cookie";
+import cookie from 'cookie';
 
 export function getToken() {
     return cookie.parse(document.cookie).crumb;

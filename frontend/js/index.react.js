@@ -1,7 +1,7 @@
 /* global ga */
 /* global Raven */
 import $ from 'jquery';
-import {injectLoader, render} from 'nuri/client';
+import { injectLoader, render } from 'nuri/client';
 import nprogress from 'nprogress';
 import app from './routes';
 import { serializeParams, getCurrentUser } from './API';
@@ -16,12 +16,11 @@ injectLoader({
 
     getCurrentUser(params) {
         return getCurrentUser(params);
-    }
+    },
 });
 
 $(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) => {
-    if (ajaxSettings.__silent__)
-        return;
+    if (ajaxSettings.__silent__) return;
 
     try {
         Raven.captureMessage(thrownError || jqXHR.statusText, {
@@ -31,8 +30,9 @@ $(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) => {
                 data: ajaxSettings.data,
                 status: jqXHR.status,
                 error: thrownError || jqXHR.statusText,
-                response: jqXHR.responseText && jqXHR.responseText.substring(0, 100)
-            }
+                response:
+                    jqXHR.responseText && jqXHR.responseText.substring(0, 100),
+            },
         });
     } catch (e) {
         try {
@@ -53,7 +53,7 @@ $(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) => {
     alert('서버 오류로 요청에 실패했습니다.');
 });
 
-window.startApp = (preloadData) => {
+window.startApp = preloadData => {
     nprogress.configure({
         trickleRate: 0.4,
         trickleSpeed: 600,

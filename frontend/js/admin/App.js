@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router';
-import { Button, FormGroup, Navbar, Nav, NavDropdown, MenuItem, Grid } from 'react-bootstrap';
+import {
+  Button,
+  FormGroup,
+  Navbar,
+  Nav,
+  NavDropdown,
+  MenuItem,
+  Grid,
+} from 'react-bootstrap';
 import Loading from './Loading';
 import Login from './Login';
 import TitleAutosuggest from './TitleAutosuggest';
@@ -15,14 +23,17 @@ class App extends Component {
   componentDidMount() {
     API.loadSession();
     if (API.hasSession()) {
-      API.getCurrentUser().then(currentUser => {
-        this.setState({
-          isLoading: false,
-          currentUser
-        });
-      }, () => {
-        this.setState({ isLoading: false });
-      });
+      API.getCurrentUser().then(
+        currentUser => {
+          this.setState({
+            isLoading: false,
+            currentUser,
+          });
+        },
+        () => {
+          this.setState({ isLoading: false });
+        }
+      );
     } else {
       this.setState({ isLoading: false });
     }
@@ -34,34 +45,36 @@ class App extends Component {
     }
 
     if (this.state.currentUser) {
-      return <div>
-        <Navbar>
-          <Navbar.Header>
-            <Navbar.Brand>
-              <Link to="/">animeta</Link>
-            </Navbar.Brand>
-          </Navbar.Header>
-          <Nav pullRight>
-            <NavDropdown id="navbar-user-dropdown" title={this.state.currentUser.name}>
-              <MenuItem onSelect={this._logout}>Logout</MenuItem>
-            </NavDropdown>
-          </Nav>
-          <Navbar.Form pullRight>
-            <FormGroup>
-              <TitleAutosuggest
-                onSelected={this._onTitleSelected}
-                ref="titleSearch"
-              />
-            </FormGroup>
-            {' '}
-            <Button onClick={this._addWork}>Add work</Button>
-          </Navbar.Form>
-        </Navbar>
+      return (
+        <div>
+          <Navbar>
+            <Navbar.Header>
+              <Navbar.Brand>
+                <Link to="/">animeta</Link>
+              </Navbar.Brand>
+            </Navbar.Header>
+            <Nav pullRight>
+              <NavDropdown
+                id="navbar-user-dropdown"
+                title={this.state.currentUser.name}
+              >
+                <MenuItem onSelect={this._logout}>Logout</MenuItem>
+              </NavDropdown>
+            </Nav>
+            <Navbar.Form pullRight>
+              <FormGroup>
+                <TitleAutosuggest
+                  onSelected={this._onTitleSelected}
+                  ref="titleSearch"
+                />
+              </FormGroup>{' '}
+              <Button onClick={this._addWork}>Add work</Button>
+            </Navbar.Form>
+          </Navbar>
 
-        <Grid>
-          {this.props.children}
-        </Grid>
-      </div>;
+          <Grid>{this.props.children}</Grid>
+        </div>
+      );
     } else {
       return <Login onLogin={this._login} />;
     }
@@ -76,7 +89,7 @@ class App extends Component {
     this.setState({ currentUser: null });
   };
 
-  _onTitleSelected = (item) => {
+  _onTitleSelected = item => {
     this.props.router.push(`/works/${item.id}`);
     this.refs.titleSearch.clear();
   };

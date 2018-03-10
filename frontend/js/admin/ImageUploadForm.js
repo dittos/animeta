@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  Button,
-  Nav,
-  NavItem,
-} from 'react-bootstrap';
+import { Button, Nav, NavItem } from 'react-bootstrap';
 
 const ImageSources = {
   ANN: 'ann',
@@ -26,17 +22,15 @@ class ImageUploadForm extends React.Component {
       source: ImageSources.ANN,
       options: {
         annId: (metadata && metadata.ann_id) || '',
-      }
+      },
     };
   }
 
   render() {
-    const {source, options} = this.state;
+    const { source, options } = this.state;
     return (
       <div>
-        <Nav bsStyle="tabs"
-          activeKey={source}
-          onSelect={this._setSource}>
+        <Nav bsStyle="tabs" activeKey={source} onSelect={this._setSource}>
           <NavItem eventKey={ImageSources.ANN}>ANN</NavItem>
           <NavItem eventKey={ImageSources.URL}>URL</NavItem>
         </Nav>
@@ -45,9 +39,13 @@ class ImageUploadForm extends React.Component {
             Download from ANN ID:
             <input
               value={options.annId}
-              onChange={e => this.setState({ options: {
-                annId: e.target.value
-              } })}
+              onChange={e =>
+                this.setState({
+                  options: {
+                    annId: e.target.value,
+                  },
+                })
+              }
             />
           </span>
         )}
@@ -56,9 +54,13 @@ class ImageUploadForm extends React.Component {
             Download from URL:
             <input
               value={options.url}
-              onChange={e => this.setState({ options: {
-                url: e.target.value
-              } })}
+              onChange={e =>
+                this.setState({
+                  options: {
+                    url: e.target.value,
+                  },
+                })
+              }
             />
           </span>
         )}

@@ -6,9 +6,14 @@ class TimeAgo extends React.Component {
     state = {};
 
     render() {
-        return <span title={this.state.title}>
-            {distanceInWordsToNow(this.props.time, {addSuffix: true, locale: koLocale})}
-        </span>;
+        return (
+            <span title={this.state.title}>
+                {distanceInWordsToNow(this.props.time, {
+                    addSuffix: true,
+                    locale: koLocale,
+                })}
+            </span>
+        );
     }
 
     componentDidMount() {
@@ -26,7 +31,7 @@ class TimeAgo extends React.Component {
         this._syncState(nextProps);
     }
 
-    _syncState = (props) => {
+    _syncState = props => {
         // Store title in state to workaround difference between server and client
         this.setState({
             title: new Date(props.time).toLocaleString(),

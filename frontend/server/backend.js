@@ -9,7 +9,7 @@ export default class {
     }
 
     async call(req, path, params) {
-        const {response, body} = await this._call(req, path, params);
+        const { response, body } = await this._call(req, path, params);
         if (response.statusCode === 404) {
             throw HttpNotFound;
         }
@@ -17,7 +17,7 @@ export default class {
     }
 
     async getCurrentUser(req, params) {
-        const {response, body} = await this._call(req, '/me', params);
+        const { response, body } = await this._call(req, '/me', params);
         if (response.statusCode !== 200) {
             return null;
         }
@@ -26,21 +26,24 @@ export default class {
 
     _call(req, path, params) {
         return new Promise((resolve, reject) => {
-            request({
-                baseUrl: this.endpoint,
-                url: path,
-                qs: params,
-                forever: true,
-                headers: {
-                    'x-animeta-session-key': req.cookies.sessionid,
+            request(
+                {
+                    baseUrl: this.endpoint,
+                    url: path,
+                    qs: params,
+                    forever: true,
+                    headers: {
+                        'x-animeta-session-key': req.cookies.sessionid,
+                    },
                 },
-            }, (err, response, body) => {
-                if (!err) {
-                    resolve({response, body});
-                } else {
-                    reject(err);
+                (err, response, body) => {
+                    if (!err) {
+                        resolve({ response, body });
+                    } else {
+                        reject(err);
+                    }
                 }
-            });
+            );
         });
     }
 }

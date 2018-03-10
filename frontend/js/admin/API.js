@@ -11,8 +11,7 @@ function fetchWithSession(input, init = {}) {
   init.headers['X-CSRF-Token'] = CSRF.getToken();
   init.credentials = 'same-origin'; // allow cookie
   return fetch(input, init).then(r => {
-    if (!r.ok)
-      return r.json().then(data => Promise.reject(data));
+    if (!r.ok) return r.json().then(data => Promise.reject(data));
     return r.json();
   });
 }
@@ -38,7 +37,7 @@ export function hasSession() {
   return !!sessionKey;
 }
 
-export async function login(username, password){
+export async function login(username, password) {
   const data = new FormData();
   data.append('username', username);
   data.append('password', password);
@@ -65,8 +64,7 @@ export function getCurrentUser() {
 export function getWorks({ orphans = false, offset = 0 }) {
   const params = new URLSearchParams();
   params.append('offset', offset);
-  if (orphans)
-    params.append('orphans', '1');
+  if (orphans) params.append('orphans', '1');
   return fetchWithSession(`/api/admin/works?${params}`);
 }
 
@@ -74,7 +72,7 @@ export function createWork(title) {
   return fetchWithSession(`/api/admin/works`, {
     method: 'POST',
     body: JSON.stringify({ title }),
-    headers: {'Content-Type': 'application/json'},
+    headers: { 'Content-Type': 'application/json' },
   });
 }
 
@@ -86,27 +84,29 @@ export function editWork(id, request) {
   return fetchWithSession(`/api/admin/works/${id}`, {
     method: 'POST',
     body: JSON.stringify(request),
-    headers: {'Content-Type': 'application/json'},
+    headers: { 'Content-Type': 'application/json' },
   });
 }
 
 export function deleteWork(id) {
-  return fetchWithSession(`/api/admin/works/${id}`, {method: 'DELETE'});
+  return fetchWithSession(`/api/admin/works/${id}`, { method: 'DELETE' });
 }
 
 export function addTitleMapping(workId, titleMapping) {
   return fetchWithSession(`/api/admin/works/${workId}/title-mappings`, {
     method: 'POST',
     body: JSON.stringify(titleMapping),
-    headers: {'Content-Type': 'application/json'},
+    headers: { 'Content-Type': 'application/json' },
   });
 }
 
 export function deleteTitleMapping(id) {
-  return fetchWithSession(`/api/admin/title-mappings/${id}`, {method: 'DELETE'});
+  return fetchWithSession(`/api/admin/title-mappings/${id}`, {
+    method: 'DELETE',
+  });
 }
 
-export function searchWork(q, {minRecordCount = 2}) {
+export function searchWork(q, { minRecordCount = 2 }) {
   const params = new URLSearchParams();
   params.append('q', q);
   params.append('min_record_count', minRecordCount);
@@ -114,5 +114,5 @@ export function searchWork(q, {minRecordCount = 2}) {
 }
 
 export function clearCache() {
-  return fetchWithSession('/api/admin/caches', {method: 'DELETE'});
+  return fetchWithSession('/api/admin/caches', { method: 'DELETE' });
 }

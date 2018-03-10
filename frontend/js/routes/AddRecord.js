@@ -4,16 +4,20 @@ import AddRecordDialog from '../ui/AddRecordDialog';
 
 class AddRecord extends React.Component {
     render() {
-        return <AddRecordDialog
-            initialTitle={this.props.data.title}
-            onCancel={this._returnToUser}
-            onCreate={this._returnToUser}
-        />;
+        return (
+            <AddRecordDialog
+                initialTitle={this.props.data.title}
+                onCancel={this._returnToUser}
+                onCreate={this._returnToUser}
+            />
+        );
     }
 
     _returnToUser = () => {
-        const basePath = `/users/${encodeURIComponent(this.props.data.user.name)}/`;
-        this.props.controller.load({path: basePath, query: {}});
+        const basePath = `/users/${encodeURIComponent(
+            this.props.data.user.name
+        )}/`;
+        this.props.controller.load({ path: basePath, query: {} });
     };
 }
 
@@ -24,7 +28,7 @@ export default {
         const currentUser = await loader.getCurrentUser({
             options: {
                 stats: true,
-            }
+            },
         });
         return {
             currentUser,
@@ -35,5 +39,5 @@ export default {
 
     renderTitle({ currentUser }) {
         return `${currentUser.name} 사용자`;
-    }
+    },
 };

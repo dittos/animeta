@@ -1,5 +1,5 @@
 import React from 'react';
-import {createApp} from 'nuri';
+import { createApp } from 'nuri';
 import Periods from './Periods';
 import * as layouts from './layouts';
 import LoginDialog from './ui/LoginDialog';
@@ -18,7 +18,7 @@ import ManageCategoryRoute from './routes/ManageCategory';
 
 var app = createApp();
 
-app.title = (routeTitle) => {
+app.title = routeTitle => {
     return routeTitle + (routeTitle ? ' - ' : '') + '애니메타';
 };
 
@@ -33,7 +33,7 @@ app.route('/-:id', PostRoute);
 app.route('/works/:title+/ep/:episode/', WorkRoute);
 app.route('/works/:title+/', WorkRoute);
 app.route('/table/', {
-    load: ({ redirect }) => redirect(`/table/${Periods.current}/`)
+    load: ({ redirect }) => redirect(`/table/${Periods.current}/`),
 });
 app.route('/table/:period/', TableRoute);
 app.route('/settings/', SettingsRoute);

@@ -4,5 +4,5 @@ module.exports = {
     },
     getItem(key) {
         return window.localStorage.getItem(key);
-    }
+    },
 };

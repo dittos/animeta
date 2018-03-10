@@ -21,9 +21,12 @@ function cachingSource(source, maxSize) {
     };
 }
 
-export const searchSource = cachingSource(throttle(function (q, cb) {
-    $.getJSON('/api/v2/search', {q: q}, cb);
-}, 200), 20);
+export const searchSource = cachingSource(
+    throttle(function(q, cb) {
+        $.getJSON('/api/v2/search', { q: q }, cb);
+    }, 200),
+    20
+);
 
 export function init(node, viewOptions, sourceOptions) {
     return $(node).typeahead(viewOptions, sourceOptions);
@@ -31,11 +34,14 @@ export function init(node, viewOptions, sourceOptions) {
 
 export function initSuggest(node) {
     return init(node, null, {
-        source: cachingSource(throttle(function (q, cb) {
-            $.getJSON('/api/v2/search/suggest', {q: q}, cb);
-        }, 200), 20),
+        source: cachingSource(
+            throttle(function(q, cb) {
+                $.getJSON('/api/v2/search/suggest', { q: q }, cb);
+            }, 200),
+            20
+        ),
         displayKey: 'title',
-        templates: templates
+        templates: templates,
     });
 }
 
@@ -46,5 +52,5 @@ export const templates = {
             .append(' ')
             .append($('<span class="count" />').text(item.n + '명 기록'))
             .html();
-    }
+    },
 };

@@ -1,30 +1,22 @@
 import React from 'react';
 import * as WorkViews from '../ui/WorkViews';
-import {App} from '../layouts';
+import { App } from '../layouts';
 
 const POSTS_PER_PAGE = 10;
 
-function Work({data, writeData, loader}) {
-    const {
-        work,
-        chart,
-        episode,
-        posts,
-        hasMorePosts,
-        currentUser,
-    } = data;
+function Work({ data, writeData, loader }) {
+    const { work, chart, episode, posts, hasMorePosts, currentUser } = data;
 
     async function loadMorePosts() {
         var params = {
             count: POSTS_PER_PAGE + 1,
             options: {
                 user: {},
-            }
+            },
         };
         if (posts && posts.length > 0)
             params.before_id = posts[posts.length - 1].id;
-        if (episode)
-            params.episode = episode;
+        if (episode) params.episode = episode;
         const result = await loader.call(`/works/${work.id}/posts`, params);
         writeData(data => {
             data.posts = data.posts.concat(result.slice(0, POSTS_PER_PAGE));
@@ -38,47 +30,45 @@ function Work({data, writeData, loader}) {
         });
     }
 
-    return <WorkViews.Work
-        work={work}
-        chart={chart}
-        currentUser={currentUser}
-        episode={episode}
-        onRecordChange={applyRecord}
-    >
-        <WorkViews.Episodes
+    return (
+        <WorkViews.Work
             work={work}
-            activeEpisodeNumber={episode}
-        />
-        <WorkViews.WorkIndex
-            work={work}
+            chart={chart}
+            currentUser={currentUser}
             episode={episode}
-            posts={posts}
-            hasMorePosts={hasMorePosts}
-            loadMorePosts={loadMorePosts}
-        />
-    </WorkViews.Work>;
+            onRecordChange={applyRecord}
+        >
+            <WorkViews.Episodes work={work} activeEpisodeNumber={episode} />
+            <WorkViews.WorkIndex
+                work={work}
+                episode={episode}
+                posts={posts}
+                hasMorePosts={hasMorePosts}
+                loadMorePosts={loadMorePosts}
+            />
+        </WorkViews.Work>
+    );
 }
 
 export default {
     component: App(Work),
 
     async load({ params, loader }) {
-        const {title, episode} = params;
+        const { title, episode } = params;
         const [currentUser, work, chart] = await Promise.all([
             loader.getCurrentUser({
-                options: {}
+                options: {},
             }),
-            loader.call('/works/by-title', {title}),
-            loader.call('/charts/works/weekly', {limit: 5}),
+            loader.call('/works/by-title', { title }),
+            loader.call('/charts/works/weekly', { limit: 5 }),
         ]);
         const postsParams = {
             count: POSTS_PER_PAGE + 1,
             options: {
                 user: {},
-            }
+            },
         };
-        if (episode)
-            postsParams.episode = episode;
+        if (episode) postsParams.episode = episode;
         const posts = await loader.call(`/works/${work.id}/posts`, postsParams);
         return {
             currentUser,
@@ -106,5 +96,5 @@ export default {
             og_image: work.image_url,
             tw_image: work.image_url,
         };
-    }
+    },
 };

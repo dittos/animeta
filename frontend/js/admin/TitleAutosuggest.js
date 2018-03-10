@@ -35,29 +35,45 @@ function debouncingSource(source, rate) {
   };
 }
 
-const source = cachingSource(debouncingSource((q, cb) => {
-  API.searchWork(q, {minRecordCount: 0}).then(cb);
-}));
+const source = cachingSource(
+  debouncingSource((q, cb) => {
+    API.searchWork(q, { minRecordCount: 0 }).then(cb);
+  })
+);
 
 function escapeHTML(html) {
-    return html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return html
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 const typeaheadTemplates = {
-    suggestion: function(item) {
-        return '<span class="title">' + escapeHTML(item.title) + '</span> <span class="count">' + item.n + '명 기록</span>';
-    }
+  suggestion: function(item) {
+    return (
+      '<span class="title">' +
+      escapeHTML(item.title) +
+      '</span> <span class="count">' +
+      item.n +
+      '명 기록</span>'
+    );
+  },
 };
 
 class TitleAutosuggest extends React.Component {
   componentDidMount() {
-    this._typeahead = jQuery(findDOMNode(this.refs.input)).typeahead({hint: false}, {
-      source,
-      displayKey: 'title',
-      templates: typeaheadTemplates,
-    }).on('typeahead:selected', (event, item) => {
-      this.props.onSelected(item);
-    });
+    this._typeahead = jQuery(findDOMNode(this.refs.input))
+      .typeahead(
+        { hint: false },
+        {
+          source,
+          displayKey: 'title',
+          templates: typeaheadTemplates,
+        }
+      )
+      .on('typeahead:selected', (event, item) => {
+        this.props.onSelected(item);
+      });
   }
 
   render() {

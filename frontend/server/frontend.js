@@ -6,10 +6,10 @@ import httpProxy from 'http-proxy';
 import serializeJS from 'serialize-javascript';
 import isString from 'lodash/isString';
 import ReactDOMServer from 'react-dom/server';
-import Backend, {HttpNotFound} from './backend';
+import Backend, { HttpNotFound } from './backend';
 import renderFeed from './renderFeed';
 import config from '../config.json';
-import {render, injectLoaderFactory} from 'nuri/server';
+import { render, injectLoaderFactory } from 'nuri/server';
 
 const DEBUG = process.env.NODE_ENV !== 'production';
 const backend = new Backend(config.backend.baseUrl);
@@ -32,23 +32,22 @@ injectLoaderFactory(serverRequest => {
             return backend.call(serverRequest, path, serializeParams(params));
         },
         getCurrentUser(params) {
-            return backend.getCurrentUser(serverRequest, serializeParams(params));
+            return backend.getCurrentUser(
+                serverRequest,
+                serializeParams(params)
+            );
         },
     };
 });
 
-export function createServer({
-    server = express(),
-    app,
-    getAssets,
-}) {
+export function createServer({ server = express(), app, getAssets }) {
     server.set('view engine', 'ejs');
     server.set('views', __dirname);
     server.set('strict routing', true);
     server.set('etag', false);
 
     server.use(cookieParser());
-    server.use(csurf({cookie: true}));
+    server.use(csurf({ cookie: true }));
     server.use((req, res, next) => {
         res.cookie('crumb', req.csrfToken());
         next();
@@ -111,13 +110,16 @@ export function createServer({
     });
 
     server.get('/library/', (req, res, next) => {
-        backend.getCurrentUser(req).then(currentUser => {
-            if (!currentUser) {
-                res.redirect('/login/');
-            } else {
-                res.redirect(`/users/${currentUser.name}/`);
-            }
-        }).catch(next);
+        backend
+            .getCurrentUser(req)
+            .then(currentUser => {
+                if (!currentUser) {
+                    res.redirect('/login/');
+                } else {
+                    res.redirect(`/users/${currentUser.name}/`);
+                }
+            })
+            .catch(next);
     });
 
     server.get('/users/:username/history/:id/', (req, res) => {
@@ -126,22 +128,29 @@ export function createServer({
     });
 
     server.get('/users/:username/feed/', (req, res, next) => {
-        const {username} = req.params;
+        const { username } = req.params;
         Promise.all([
             backend.call(req, `/users/${username}`),
             backend.call(req, `/users/${username}/posts`),
-        ]).then(([owner, posts]) => {
-            res.type('application/atom+xml; charset=UTF-8')
-                .end(renderFeed(owner, posts));
-        }).catch(next);
+        ])
+            .then(([owner, posts]) => {
+                res
+                    .type('application/atom+xml; charset=UTF-8')
+                    .end(renderFeed(owner, posts));
+            })
+            .catch(next);
     });
 
     server.get('/admin/', (req, res) => {
-        renderDefault(res, {
-            title: `Admin`,
-            preloadData: {},
-            assetEntries: ['common', 'admin'],
-        }, '');
+        renderDefault(
+            res,
+            {
+                title: `Admin`,
+                preloadData: {},
+                assetEntries: ['common', 'admin'],
+            },
+            ''
+        );
     });
 
     server.use((req, res, next) => {
@@ -150,38 +159,50 @@ export function createServer({
             return;
         }
 
-        render(app, req).then(result => {
-            const {preloadData, title, meta, errorStatus, redirectURI, element} = result;
+        render(app, req)
+            .then(result => {
+                const {
+                    preloadData,
+                    title,
+                    meta,
+                    errorStatus,
+                    redirectURI,
+                    element,
+                } = result;
 
-            if (errorStatus === 404) {
-                throw HttpNotFound;
-            }
+                if (errorStatus === 404) {
+                    throw HttpNotFound;
+                }
 
-            if (redirectURI) {
-                res.redirect(redirectURI);
-                return;
-            }
+                if (redirectURI) {
+                    res.redirect(redirectURI);
+                    return;
+                }
 
-            if (errorStatus)
-                res.status(errorStatus);
+                if (errorStatus) res.status(errorStatus);
 
-            preloadData.daum_api_key = config.daumAPIKey; // XXX
-            renderDefault(res, {
-                preloadData,
-                title,
-                meta,
-                assetEntries: ['common', 'index'],
-            }, ReactDOMServer.renderToString(element));
-        }).catch(err => {
-            if (err === HttpNotFound) {
-                next();
-                return;
-            }
-            if (!(err instanceof Error)) {
-                err = new Error(err);
-            }
-            next(err)
-        });
+                preloadData.daum_api_key = config.daumAPIKey; // XXX
+                renderDefault(
+                    res,
+                    {
+                        preloadData,
+                        title,
+                        meta,
+                        assetEntries: ['common', 'index'],
+                    },
+                    ReactDOMServer.renderToString(element)
+                );
+            })
+            .catch(err => {
+                if (err === HttpNotFound) {
+                    next();
+                    return;
+                }
+                if (!(err instanceof Error)) {
+                    err = new Error(err);
+                }
+                next(err);
+            });
     });
 
     server.use((req, res, next) => {
@@ -194,8 +215,12 @@ export function createServer({
             path = path.substring(0, path.length - 1);
         }
         // Add slashes
-        if (path.match(/^\/(works|table|login|signup|settings|records|support|charts|users|library|compare)/) &&
-            !path.match(/\/$/)) {
+        if (
+            path.match(
+                /^\/(works|table|login|signup|settings|records|support|charts|users|library|compare)/
+            ) &&
+            !path.match(/\/$/)
+        ) {
             path = path + '/';
         }
         if (path !== req.path) {
@@ -209,15 +234,18 @@ export function createServer({
         }
         if (path.match(/^\/[\w.@+-]+$/) && !path.match(/^\/apple-touch-icon/)) {
             const username = path.substring(1);
-            backend.call(req, `/users/${username}`).then(user => {
-                res.redirect(`/users/${user.name}/`);
-            }).catch(err => {
-                if (err === HttpNotFound) {
-                    next();
-                } else {
-                    next(err);
-                }
-            });
+            backend
+                .call(req, `/users/${username}`)
+                .then(user => {
+                    res.redirect(`/users/${user.name}/`);
+                })
+                .catch(err => {
+                    if (err === HttpNotFound) {
+                        next();
+                    } else {
+                        next(err);
+                    }
+                });
             return;
         }
         next();

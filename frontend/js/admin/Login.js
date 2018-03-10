@@ -26,21 +26,21 @@ class Login extends Component {
           </Modal.Body>
 
           <Modal.Footer>
-            <Button bsStyle="primary" type="submit">Login</Button>
+            <Button bsStyle="primary" type="submit">
+              Login
+            </Button>
           </Modal.Footer>
         </form>
       </Modal.Dialog>
     );
   }
 
-  _submit = (event) => {
+  _submit = event => {
     event.preventDefault();
     API.login(
       findDOMNode(this.refs.username).value,
       findDOMNode(this.refs.password).value
-    ).then(
-      this.props.onLogin
-    );
+    ).then(this.props.onLogin);
   };
 }
 

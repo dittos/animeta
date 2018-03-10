@@ -23,23 +23,29 @@ function hot(env, entry) {
     return entry;
 }
 
-module.exports = (env) => {
+module.exports = env => {
     const config = {
         context: __dirname,
-        entry: env.server ? './js/routes.js' : {
-            index: hot(env, './js/index.react.js'),
-            admin: hot(env, './js/admin.react.js'),
-            common: hot(env, './js/common.js'),
-        },
-        output: env.server ? {
-            path: env.outputPath || path.join(__dirname, '../frontend-dist'),
-            filename: 'bundle.js',
-            libraryTarget: 'commonjs2',
-        } : {
-            path: path.join(__dirname, '../animeta/static/build'),
-            publicPath: '/static/build/',
-            filename: env.prod ? '[name]-[hash].js' : '[name].js',
-        },
+        entry: env.server
+            ? './js/routes.js'
+            : {
+                  index: hot(env, './js/index.react.js'),
+                  admin: hot(env, './js/admin.react.js'),
+                  common: hot(env, './js/common.js'),
+              },
+        output: env.server
+            ? {
+                  path:
+                      env.outputPath ||
+                      path.join(__dirname, '../frontend-dist'),
+                  filename: 'bundle.js',
+                  libraryTarget: 'commonjs2',
+              }
+            : {
+                  path: path.join(__dirname, '../animeta/static/build'),
+                  publicPath: '/static/build/',
+                  filename: env.prod ? '[name]-[hash].js' : '[name].js',
+              },
         module: {
             rules: [
                 {
@@ -48,17 +54,27 @@ module.exports = (env) => {
                     exclude: /node_modules/,
                     use: 'eslint-loader',
                 },
-                { test: /\.js[x]?$/, exclude: /node_modules/, use: 'babel-loader' },
+                {
+                    test: /\.js[x]?$/,
+                    exclude: /node_modules/,
+                    use: 'babel-loader',
+                },
                 { test: /\.json$/, use: 'json-loader' },
-                { test: /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/, use: 'url-loader' },
+                {
+                    test: /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/,
+                    use: 'url-loader',
+                },
                 {
                     test: /\.less$/,
                     use: styleLoader(env, [
                         {
-                            loader: env.server ? 'css-loader/locals' : 'css-loader',
+                            loader: env.server
+                                ? 'css-loader/locals'
+                                : 'css-loader',
                             options: {
-                                localIdentName: '[name]_[local]_[hash:base64:5]'
-                            }
+                                localIdentName:
+                                    '[name]_[local]_[hash:base64:5]',
+                            },
                         },
                         'autoprefixer-loader',
                         'less-loader',
@@ -66,9 +82,12 @@ module.exports = (env) => {
                 },
                 {
                     test: /\.css$/,
-                    use: styleLoader(env, ['css-loader', 'autoprefixer-loader']),
+                    use: styleLoader(env, [
+                        'css-loader',
+                        'autoprefixer-loader',
+                    ]),
                 },
-            ]
+            ],
         },
         plugins: [],
         devtool: env.prod ? 'source-map' : 'cheap-source-map',
@@ -77,9 +96,7 @@ module.exports = (env) => {
         Object.assign(config, {
             target: 'node',
             node: false,
-            externals: [
-                require('webpack-node-externals')()
-            ]
+            externals: [require('webpack-node-externals')()],
         });
     } else {
         config.plugins.push(
@@ -96,9 +113,7 @@ module.exports = (env) => {
                 new ExtractTextPlugin('[name]-[contenthash].css')
             );
         } else {
-            config.plugins.push(
-                new webpack.HotModuleReplacementPlugin()
-            );
+            config.plugins.push(new webpack.HotModuleReplacementPlugin());
         }
     }
     if (env.prod) {

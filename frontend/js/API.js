@@ -47,19 +47,17 @@ export function getCurrentUser(params) {
     return $.ajax({
         url: '/api/v2/me',
         data: serializeParams(params),
-        __silent__: true
+        __silent__: true,
     }).then(undefined, jqXHR => {
         var deferred = $.Deferred();
-        if (jqXHR.statusCode)
-            deferred.resolve(null);
-        else
-            deferred.reject(jqXHR);
+        if (jqXHR.statusCode) deferred.resolve(null);
+        else deferred.reject(jqXHR);
         return deferred;
     });
 }
 
 export function logout() {
-    return $.ajax({type: 'DELETE', url: '/api/v2/auth'});
+    return $.ajax({ type: 'DELETE', url: '/api/v2/auth' });
 }
 
 // Account
@@ -75,12 +73,18 @@ export function changePassword(oldPassword, newPassword1, newPassword2) {
 // External Services
 
 export function disconnectTwitter() {
-    return $.ajax({type: 'DELETE', url: '/api/v2/me/external-services/twitter'});
+    return $.ajax({
+        type: 'DELETE',
+        url: '/api/v2/me/external-services/twitter',
+    });
 }
 
 // User Records
 
-export function createRecord(userName, {title, statusType, status, categoryID, comment}) {
+export function createRecord(
+    userName,
+    { title, statusType, status, categoryID, comment }
+) {
     return $.post(`/api/v2/users/${userName}/records`, {
         work_title: title,
         status_type: statusType,
@@ -93,26 +97,29 @@ export function createRecord(userName, {title, statusType, status, categoryID, c
 // Record
 
 export function updateRecordTitle(recordID, title) {
-    return $.post(`/api/v2/records/${recordID}`, {title: title});
+    return $.post(`/api/v2/records/${recordID}`, { title: title });
 }
 
 export function updateRecordCategoryID(recordID, categoryID) {
-    return $.post(`/api/v2/records/${recordID}`, {category_id: categoryID});
+    return $.post(`/api/v2/records/${recordID}`, { category_id: categoryID });
 }
 
 export function deleteRecord(recordID) {
-    return $.ajax({type: 'DELETE', url: `/api/v2/records/${recordID}`});
+    return $.ajax({ type: 'DELETE', url: `/api/v2/records/${recordID}` });
 }
 
 // Record Posts
 
 export function getRecordPosts(recordID) {
     return $.get(`/api/v2/records/${recordID}/posts`, {
-        options: JSON.stringify({})
+        options: JSON.stringify({}),
     });
 }
 
-export function createPost(recordID, {status, statusType, comment, containsSpoiler, publishTwitter}) {
+export function createPost(
+    recordID,
+    { status, statusType, comment, containsSpoiler, publishTwitter }
+) {
     return $.post(`/api/v2/records/${recordID}/posts`, {
         status,
         status_type: statusType,
@@ -125,7 +132,7 @@ export function createPost(recordID, {status, statusType, comment, containsSpoil
 // Post
 
 export function deletePost(postID) {
-    return $.ajax({type: 'DELETE', url: `/api/v2/posts/${postID}`});
+    return $.ajax({ type: 'DELETE', url: `/api/v2/posts/${postID}` });
 }
 
 // User Posts
@@ -136,30 +143,32 @@ export function getUserPosts(userName, count, beforeID) {
         before_id: beforeID,
         options: JSON.stringify({
             record: {},
-        })
+        }),
     });
 }
 
 // Category
 
 export function renameCategory(categoryID, categoryName) {
-    return $.post(`/api/v2/categories/${categoryID}`, {name: categoryName});
+    return $.post(`/api/v2/categories/${categoryID}`, { name: categoryName });
 }
 
 export function removeCategory(categoryID) {
-    return $.ajax({type: 'DELETE', url: `/api/v2/categories/${categoryID}`});
+    return $.ajax({ type: 'DELETE', url: `/api/v2/categories/${categoryID}` });
 }
 
 // User Categories
 
 export function addCategory(userName, categoryName) {
-    return $.post(`/api/v2/users/${userName}/categories`, {name: categoryName});
+    return $.post(`/api/v2/users/${userName}/categories`, {
+        name: categoryName,
+    });
 }
 
 export function updateCategoryOrder(userName, categoryIDs) {
     return $.ajax({
         type: 'PUT',
         url: `/api/v2/users/${userName}/categories`,
-        data: {ids: categoryIDs}
+        data: { ids: categoryIDs },
     });
 }

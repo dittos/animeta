@@ -18,28 +18,32 @@ class ImageCropper extends React.Component {
 
   render() {
     const percent = Math.min(1, Math.max(0, this.state.position)) * 100;
-    return <div>
-      <div
-        ref={el => this._el = el}
-        style={{
-          backgroundImage: `url("${this.props.url}")`,
-          backgroundSize: 'cover',
-          backgroundPosition: `0 ${percent}%`,
-          width: '320px',
-          height: `${this.state.height}px`,
-          border: '1px solid #000',
-          cursor: 'ns-resize',
-        }}
-        onMouseDown={this._beginMove}
-      />
+    return (
       <div>
-        <button onClick={() => this.setState({ height: 160 })}>2:1</button>
-        <button onClick={() => this.setState({ height: 180 })}>16:9</button>
-        <button onClick={() => this.setState({ height: 240 })}>4:3</button>
-        y: {percent.toString().substring(0, 4)}%
-        <Button onClick={() => this.props.onSave(this.state.position)}>Save</Button>
+        <div
+          ref={el => (this._el = el)}
+          style={{
+            backgroundImage: `url("${this.props.url}")`,
+            backgroundSize: 'cover',
+            backgroundPosition: `0 ${percent}%`,
+            width: '320px',
+            height: `${this.state.height}px`,
+            border: '1px solid #000',
+            cursor: 'ns-resize',
+          }}
+          onMouseDown={this._beginMove}
+        />
+        <div>
+          <button onClick={() => this.setState({ height: 160 })}>2:1</button>
+          <button onClick={() => this.setState({ height: 180 })}>16:9</button>
+          <button onClick={() => this.setState({ height: 240 })}>4:3</button>
+          y: {percent.toString().substring(0, 4)}%
+          <Button onClick={() => this.props.onSave(this.state.position)}>
+            Save
+          </Button>
+        </div>
       </div>
-    </div>;
+    );
   }
 
   getLocalY(event) {

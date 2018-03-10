@@ -10,7 +10,11 @@ export class Switch extends React.Component {
 
     render() {
         return (
-            <div className={this.props.flex ? Styles.flexContainer : Styles.container}>
+            <div
+                className={
+                    this.props.flex ? Styles.flexContainer : Styles.container
+                }
+            >
                 {this.props.children}
             </div>
         );
@@ -31,12 +35,18 @@ export class SwitchItem extends React.Component {
     };
 
     render() {
-        let { Component = 'a', active = null, value, onClick, ...props } = this.props;
+        let {
+            Component = 'a',
+            active = null,
+            value,
+            onClick,
+            ...props
+        } = this.props;
         if (active === null) {
             active = value === this.context.switchValue;
         }
         if (!onClick && this.context.switchOnChange) {
-            onClick = (e) => {
+            onClick = e => {
                 e.preventDefault();
                 this.context.switchOnChange(value);
             };

@@ -1,6 +1,6 @@
 import React from 'react';
-import {getUserPosts} from '../API';
-import {User} from '../layouts';
+import { getUserPosts } from '../API';
+import { User } from '../layouts';
 import * as Layout from '../ui/Layout';
 import LoadMore from '../ui/LoadMore';
 import { Post } from '../ui/Post';
@@ -12,8 +12,8 @@ function getDateHeader(post) {
 }
 
 class UserHistory extends React.Component {
-    static defaultProps = {pageSize: 32};
-    state = {isLoading: true, hasMore: true, posts: []};
+    static defaultProps = { pageSize: 32 };
+    state = { isLoading: true, hasMore: true, posts: [] };
 
     componentDidMount() {
         this._loadMore();
@@ -29,8 +29,7 @@ class UserHistory extends React.Component {
             } else {
                 var key = getDateHeader(post);
                 if (key != lastKey) {
-                    if (group)
-                        groups.push({key: lastKey, items: group});
+                    if (group) groups.push({ key: lastKey, items: group });
                     lastKey = key;
                     group = [];
                 }
@@ -38,31 +37,47 @@ class UserHistory extends React.Component {
             }
         });
         if (group && group.length > 0)
-            groups.push({key: lastKey, items: group});
-        if (unknownGroup.length)
-            groups.push({key: '?', items: unknownGroup});
+            groups.push({ key: lastKey, items: group });
+        if (unknownGroup.length) groups.push({ key: '?', items: unknownGroup });
 
-        return <Layout.CenteredFullWidth>
-            {groups.map(group =>
-                <div className={Styles.group}>
-                    <div className={Styles.groupTitle}>{group.key}</div>
-                    {group.items.map(post => <Post post={post} showUser={false} showStatusType={true} />)}
-                </div>)}
-            {this.state.hasMore &&
-                <LoadMore isLoading={this.state.isLoading} onClick={this._loadMore} />}
-        </Layout.CenteredFullWidth>;
+        return (
+            <Layout.CenteredFullWidth>
+                {groups.map(group => (
+                    <div className={Styles.group}>
+                        <div className={Styles.groupTitle}>{group.key}</div>
+                        {group.items.map(post => (
+                            <Post
+                                post={post}
+                                showUser={false}
+                                showStatusType={true}
+                            />
+                        ))}
+                    </div>
+                ))}
+                {this.state.hasMore && (
+                    <LoadMore
+                        isLoading={this.state.isLoading}
+                        onClick={this._loadMore}
+                    />
+                )}
+            </Layout.CenteredFullWidth>
+        );
     }
 
     _loadMore = () => {
-        this.setState({isLoading: true});
+        this.setState({ isLoading: true });
         var beforeID;
         if (this.state.posts.length > 0)
             beforeID = this.state.posts[this.state.posts.length - 1].id;
-        getUserPosts(this.props.data.user.name, this.props.pageSize, beforeID).then(data => {
+        getUserPosts(
+            this.props.data.user.name,
+            this.props.pageSize,
+            beforeID
+        ).then(data => {
             this.setState({
                 hasMore: data.length >= this.props.pageSize,
                 isLoading: false,
-                posts: this.state.posts.concat(data)
+                posts: this.state.posts.concat(data),
             });
         });
     };
@@ -72,15 +87,15 @@ export default {
     component: User(UserHistory),
 
     async load({ loader, params }) {
-        const {username} = params;
+        const { username } = params;
         const [currentUser, user] = await Promise.all([
             loader.getCurrentUser({
-                options: {}
+                options: {},
             }),
             loader.call(`/users/${encodeURIComponent(username)}`, {
                 options: {
                     stats: true,
-                }
+                },
             }),
         ]);
         return {
@@ -91,5 +106,5 @@ export default {
 
     renderTitle({ user }) {
         return `${user.name} 사용자`;
-    }
+    },
 };

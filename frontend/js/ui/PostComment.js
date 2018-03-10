@@ -5,7 +5,7 @@ export default class PostComment extends React.Component {
     constructor(...args) {
         super(...args);
         this.state = {
-            showSpoiler: false
+            showSpoiler: false,
         };
     }
 
@@ -16,26 +16,30 @@ export default class PostComment extends React.Component {
     }
 
     render() {
-        const {comment, contains_spoiler} = this.props.post;
+        const { comment, contains_spoiler } = this.props.post;
 
-        if (!comment)
-            return null;
+        if (!comment) return null;
 
-        return <div className={this.props.className}>
-            {contains_spoiler && !this.state.showSpoiler && !this.props.showSpoiler ?
-                <span className={Styles.spoilerAlert}>
-                    <i className="fa fa-microphone-slash" />
-                    내용 누설 가림
-
-                    <span
-                        className={Styles.revealLink}
-                        onClick={this._showSpoiler.bind(this)}
-                    >
-                        보이기
+        return (
+            <div className={this.props.className}>
+                {contains_spoiler &&
+                !this.state.showSpoiler &&
+                !this.props.showSpoiler ? (
+                    <span className={Styles.spoilerAlert}>
+                        <i className="fa fa-microphone-slash" />
+                        내용 누설 가림
+                        <span
+                            className={Styles.revealLink}
+                            onClick={this._showSpoiler.bind(this)}
+                        >
+                            보이기
+                        </span>
                     </span>
-                </span>
-                : comment}
-        </div>;
+                ) : (
+                    comment
+                )}
+            </div>
+        );
     }
 
     _showSpoiler() {

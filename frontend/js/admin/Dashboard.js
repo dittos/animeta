@@ -4,7 +4,7 @@ import * as API from './API';
 
 class Dashboard extends React.Component {
   state = {
-    works: []
+    works: [],
   };
 
   _reload = () => this._load(this.props);
@@ -35,21 +35,25 @@ class Dashboard extends React.Component {
         <h2>Recently added</h2>
 
         <ul>
-          {works.map(work =>
+          {works.map(work => (
             <li key={work.id}>
-              <Link to={`/works/${work.id}`}>
-                {work.title}
-              </Link>
-              {' '}({work.record_count} records)
-              {work.record_count === 0
-                ? <button onClick={() => this._deleteWork(work.id)}>Delete</button>
-                : null}
+              <Link to={`/works/${work.id}`}>{work.title}</Link> ({
+                work.record_count
+              }{' '}
+              records)
+              {work.record_count === 0 ? (
+                <button onClick={() => this._deleteWork(work.id)}>
+                  Delete
+                </button>
+              ) : null}
             </li>
-          )}
+          ))}
         </ul>
 
         <p>
-          <Link to={{pathname: '/', query: {offset: nextOffset}}}>Next</Link>
+          <Link to={{ pathname: '/', query: { offset: nextOffset } }}>
+            Next
+          </Link>
         </p>
       </div>
     );
