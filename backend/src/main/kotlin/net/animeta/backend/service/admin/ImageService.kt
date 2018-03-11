@@ -2,31 +2,22 @@ package net.animeta.backend.service.admin
 
 import com.google.common.io.Files
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.io.Resource
+import org.springframework.core.io.WritableResource
 import org.springframework.http.HttpMethod
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.client.ResponseExtractor
 import org.springframework.web.client.RestTemplate
 import org.w3c.dom.NodeList
-import java.io.File
-import java.io.IOException
-import java.util.*
+import java.io.*
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.xpath.XPathConstants
 import javax.xml.xpath.XPathFactory
 
 @Service
-class ImageService constructor (@Value("\${animeta.media.root_dir}") mediaRootDir: String) {
-    private val mediaRoot = File(mediaRootDir)
-
-    fun downloadPoster(url: String): String {
-        val filename = UUID.randomUUID().toString()
-        download(url, File(mediaRoot, filename))
-        return filename
-    }
-
-    fun downloadAnnPoster(annId: String): String {
-        val filename = "ann$annId.jpg"
+class ImageService constructor (@Value("\${animeta.media.root_location}") private val mediaRoot: Resource) {
+    fun downloadAnnPoster(annId: String, outFile: File) {
         val url = "https://cdn.animenewsnetwork.com/encyclopedia/api.xml?anime=$annId"
         val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(url)
         val xpath = XPathFactory.newInstance().newXPath()
@@ -41,18 +32,13 @@ class ImageService constructor (@Value("\${animeta.media.root_dir}") mediaRootDi
                 fullsrc = src
             }
         }
-        if (fullsrc != null) {
-            download(fullsrc.replaceFirst("http://", "https://"), File(mediaRoot, filename))
-            return filename
+        if (fullsrc == null) {
+            throw IllegalStateException("full image url not found")
         }
-        throw IllegalStateException("full image url not found")
+        download(fullsrc.replaceFirst("http://", "https://"), outFile)
     }
 
-    fun generateThumbnail(filename: String, removeAnnWatermark: Boolean = false): String {
-        val file = File(mediaRoot, filename)
-        val thumbFilename = "thumb/" + filename
-        val thumbFile = File(mediaRoot, thumbFilename)
-
+    fun generateThumbnail(file: File, thumbFile: File, removeAnnWatermark: Boolean = false) {
         var w = 233
         var h = 318
         val annWatermarkHeight = 13
@@ -84,11 +70,9 @@ class ImageService constructor (@Value("\${animeta.media.root_dir}") mediaRootDi
         } catch (e: IOException) {
             // ignore
         }
-
-        return thumbFilename
     }
 
-    private fun download(url: String, dest: File) {
+    fun download(url: String, dest: File) {
         val restTemplate = RestTemplate(OkHttp3ClientHttpRequestFactory())
         restTemplate.execute(url, HttpMethod.GET, null,
                 ResponseExtractor {
@@ -96,5 +80,15 @@ class ImageService constructor (@Value("\${animeta.media.root_dir}") mediaRootDi
                         Files.asByteSink(dest).writeFrom(it.body)
                     }
                 })
+    }
+
+    fun upload(source: File, path: String) {
+        try {
+            FileOutputStream(File(mediaRoot.file, path))
+        } catch (e: FileNotFoundException) {
+            (mediaRoot.createRelative(path) as WritableResource).outputStream
+        }.use {
+            Files.asByteSource(source).copyTo(it)
+        }
     }
 }

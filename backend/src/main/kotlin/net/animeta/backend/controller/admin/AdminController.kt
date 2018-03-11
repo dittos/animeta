@@ -24,6 +24,8 @@ import net.animeta.backend.service.admin.ImageService
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
+import java.io.File
+import java.util.*
 
 @RestController
 @RequestMapping("/admin")
@@ -179,7 +181,7 @@ class AdminController(private val datastore: Datastore,
 
     private fun editMetadata(id: Int, rawMetadata: String) {
         val work = workRepository.findOne(id)
-        var metadata: JsonNode
+        val metadata: JsonNode
         try {
             metadata = ObjectMapper(YAMLFactory()).readTree(rawMetadata)
         } catch (e: Exception) {
@@ -192,17 +194,32 @@ class AdminController(private val datastore: Datastore,
 
     private fun crawlImage(id: Int, options: CrawlImageOptions) {
         val work = workRepository.findOne(id)
-        when (options.source) {
-            "ann" -> {
-                work.original_image_filename = imageService.downloadAnnPoster(options.annId!!)
-                work.image_filename = imageService.generateThumbnail(work.original_image_filename!!, removeAnnWatermark = true)
-                workRepository.save(work)
+        val tempFile = File.createTempFile("orig", ".tmp")
+        val tempThumbFile = File.createTempFile("thumb", ".jpg")
+        try {
+            when (options.source) {
+                "ann" -> {
+                    imageService.downloadAnnPoster(options.annId!!, tempFile)
+                    imageService.generateThumbnail(tempFile, tempThumbFile, removeAnnWatermark = true)
+                    work.original_image_filename = "ann${options.annId}.jpg"
+                    work.image_filename = "thumb/${work.original_image_filename}"
+                    imageService.upload(tempFile, work.original_image_filename!!)
+                    imageService.upload(tempThumbFile, work.image_filename!!)
+                    workRepository.save(work)
+                }
+                "url" -> {
+                    imageService.download(options.url!!, tempFile)
+                    imageService.generateThumbnail(tempFile, tempThumbFile)
+                    work.original_image_filename = UUID.randomUUID().toString()
+                    work.image_filename = "thumb/${work.original_image_filename}"
+                    imageService.upload(tempFile, work.original_image_filename!!)
+                    imageService.upload(tempThumbFile, work.image_filename!!)
+                    workRepository.save(work)
+                }
             }
-            "url" -> {
-                work.original_image_filename = imageService.downloadPoster(options.url!!)
-                work.image_filename = imageService.generateThumbnail(work.original_image_filename!!)
-                workRepository.save(work)
-            }
+        } finally {
+            tempFile.delete()
+            tempThumbFile.delete()
         }
     }
 
