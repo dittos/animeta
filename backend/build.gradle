@@ -37,6 +37,9 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://repo.spring.io/libs-milestone'
+    }
 }
 
 dependencies {
@@ -45,6 +48,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-web"
     providedRuntime "org.springframework.boot:spring-boot-starter-tomcat"
     compile "org.springframework.social:spring-social-twitter"
+    compile "org.springframework.cloud:spring-cloud-gcp-starter-storage:1.0.0.M2"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
     compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"

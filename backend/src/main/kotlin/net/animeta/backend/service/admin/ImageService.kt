@@ -85,7 +85,7 @@ class ImageService constructor (@Value("\${animeta.media.root_location}") privat
     fun upload(source: File, path: String) {
         try {
             FileOutputStream(File(mediaRoot.file, path))
-        } catch (e: FileNotFoundException) {
+        } catch (e: UnsupportedOperationException) {
             (mediaRoot.createRelative(path) as WritableResource).outputStream
         }.use {
             Files.asByteSource(source).copyTo(it)

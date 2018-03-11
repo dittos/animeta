@@ -4,6 +4,9 @@ spring.datasource.password=
 animeta.security.secret-key=
 #animeta.security.session-cookie-domain=
 animeta.media.root_location=file:/path/to/media/root
+#animeta.media.root_location=gs://animeta-static/media/
+#spring.cloud.gcp.project-id=
+#spring.cloud.gcp.credentials.location=file:/path/to/credentials.json
 spring.social.twitter.app-id=
 spring.social.twitter.app-secret=
 
