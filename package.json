@@ -41,7 +41,7 @@
     "less": "^2.7.3",
     "less-loader": "^4.0.5",
     "mocha": "^5.0.1",
-    "style-loader": "^0.19.1",
+    "style-loader": "^0.20.3",
     "ts-loader": "^3.5.0",
     "ts-node": "^5.0.1",
     "typescript": "^2.7.2",
