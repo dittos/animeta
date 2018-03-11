@@ -7,7 +7,7 @@ Spring Boot 앱이지만 임베디드 Tomcat을 쓰지 않고 스탠드얼론 To
 `context.xml`이 작성되어 있어야 합니다.
 
 ```
-docker build -t animeta-tomcat .
+[sudo] docker build -t animeta-tomcat .
 ```
 
 ## 컨테이너 실행
@@ -15,9 +15,10 @@ docker build -t animeta-tomcat .
 `application.properties`와 `backend-1.0.0.war`를 준비합니다.
 
 ```
-docker run -dit \
+[sudo] docker run -dit \
     -v $PWD/backend-1.0.0.war:/app/backend-1.0.0.war:ro \
     -v $PWD/application.properties:/app/application.properties:ro \
+    -v $PWD/google-credentials.json:/app/google-credentials.json:ro \
     -e CATALINA_OPTS="-Xms128m -Xmx128m -XX:+UseConcMarkSweepGC" \
     --restart unless-stopped \
     --name animeta-tomcat \
@@ -46,4 +47,7 @@ $ ip addr show docker0
        valid_lft forever preferred_lft forever
 ```
 
-Postgres는 `pg_hba.conf`에서 브릿지 네트워크의 IP 대역을 허용해줘야 합니다.
+Postgres는
+
+* `postgresql.conf`에서 `listen_addresses`에 브릿지 네트워크 IP 추가
+* `pg_hba.conf`에서 브릿지 네트워크의 IP 대역을 허용

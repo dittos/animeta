@@ -1,3 +1,4 @@
 context.xml
 application.properties
 backend-1.0.0.war
+google-credentials.json
