@@ -12,6 +12,7 @@ import net.animeta.backend.model.User
 import net.animeta.backend.model.Work
 import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.service.WorkService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.io.IOException
 import java.time.LocalDate
@@ -23,7 +24,8 @@ import java.time.temporal.Temporal
 class WorkSerializer(val workService: WorkService,
                      val recordRepository: RecordRepository,
                      val recordSerializer: RecordSerializer,
-                     val objectMapper: ObjectMapper) {
+                     val objectMapper: ObjectMapper,
+                     @Value("\${animeta.media.base_url}") private val mediaBaseUrl: String) {
     private val defaultTimeZone = ZoneId.of("Asia/Seoul")
 
     fun serialize(work: Work, viewer: User? = null, full: Boolean = false): WorkDTO {
@@ -59,14 +61,10 @@ class WorkSerializer(val workService: WorkService,
         )
     }
 
-    fun getImagePath(work: Work): String? {
-        if (work.image_filename != null)
-            return "/media/" + work.image_filename
-        return null
-    }
-
     fun getImageUrl(work: Work): String? {
-        return getImagePath(work)?.let { "https://animeta.net" + it }
+        if (work.image_filename != null)
+            return mediaBaseUrl + work.image_filename
+        return null
     }
 
     fun serializeMetadata(work: Work, item: JsonNode): WorkMetadata {
@@ -118,8 +116,8 @@ class WorkSerializer(val workService: WorkService,
     }
 
     fun getSchedule(node: JsonNode, period: Period): WorkSchedule? {
-        var date: Temporal?
-        var broadcasts: List<String>?
+        val date: Temporal?
+        val broadcasts: List<String>?
         if (node.isTextual) {
             date = parseDateTime(node.asText(), period)
             broadcasts = null
