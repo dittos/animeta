@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import React from 'react';
 import { App } from '../layouts';
+import * as API from '../API';
 // TODO: css module
 
 class Signup extends React.Component {
@@ -90,7 +91,7 @@ class Signup extends React.Component {
   _onSubmit = event => {
     event.preventDefault();
     this.setState({ submitted: true });
-    $.post('/api/v2/accounts', {
+    API.post('/api/v2/accounts', {
       username: this.state.username,
       password1: this.state.password,
       password2: this.state.passwordCheck,

@@ -2,6 +2,7 @@ import $ from 'jquery';
 import React from 'react';
 import Styles from './LoginForm.less';
 import ModalStyles from './Modal.less';
+import * as API from '../API';
 
 class LoginForm extends React.Component {
   state = {
@@ -57,7 +58,7 @@ class LoginForm extends React.Component {
     event.preventDefault();
     this.setState({ submitted: true });
     const username = this.refs.username.value;
-    $.post('/api/v2/auth', {
+    API.post('/api/v2/auth', {
       username: username,
       password: this.refs.password.value,
       transient: this.state.isTransient ? 'true' : 'false',
