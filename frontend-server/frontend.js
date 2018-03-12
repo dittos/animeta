@@ -6,6 +6,7 @@ import httpProxy from 'http-proxy';
 import serializeJS from 'serialize-javascript';
 import isString from 'lodash/isString';
 import ReactDOMServer from 'react-dom/server';
+import Raven from 'raven';
 import Backend, { HttpNotFound } from './backend';
 import renderFeed from './renderFeed';
 import config from './config.json';
@@ -13,6 +14,9 @@ import { render, injectLoaderFactory } from 'nuri/server';
 
 const DEBUG = process.env.NODE_ENV !== 'production';
 const backend = new Backend(config.backend.baseUrl);
+if (config.sentryDsn) {
+  Raven.config(config.sentryDsn).install();
+}
 
 function serializeParams(params) {
   if (!params) {
@@ -43,6 +47,9 @@ export function createServer({ server = express(), app, getAssets }) {
   server.set('strict routing', true);
   server.set('etag', false);
 
+  if (config.sentryDsn) {
+    server.use(Raven.requestHandler());
+  }
   server.use(cookieParser());
   server.use(csurf({ cookie: true }));
   server.use((req, res, next) => {
@@ -247,6 +254,10 @@ export function createServer({ server = express(), app, getAssets }) {
     }
     next();
   });
+
+  if (config.sentryDsn) {
+    server.use(Raven.errorHandler());
+  }
 
   return server;
 }

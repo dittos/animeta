@@ -3,6 +3,7 @@
         "baseUrl": "https://animeta.net/api-internal",
         "remote": true
     },
+    "sentryDsn": "",
     "daumAPIKey": "",
     "assetBase": ""
 }
