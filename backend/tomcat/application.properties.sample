@@ -1,5 +1,6 @@
 animeta.security.secret-key=
 #animeta.security.session-cookie-domain=
+#sentry.dsn=
 
 animeta.media.base_url=https://storage.googleapis.com/animeta-static/media/
 animeta.media.root_location=gs://animeta-static/media/

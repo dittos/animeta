@@ -2,11 +2,13 @@ package net.animeta.backend
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import io.sentry.Sentry
 import net.animeta.backend.dto.JsonToObjectConverter
 import net.animeta.backend.security.CurrentUserArgumentResolver
 import net.animeta.backend.serializer.PostSerializer
 import net.animeta.backend.serializer.RecordSerializer
 import net.animeta.backend.serializer.UserSerializer
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -18,9 +20,9 @@ import org.springframework.context.annotation.Primary
 import org.springframework.format.FormatterRegistry
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.social.twitter.connect.TwitterServiceProvider
+import org.springframework.stereotype.Component
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
-
 
 
 fun main(args: Array<String>) {
@@ -59,6 +61,19 @@ class Application : SpringBootServletInitializer() {
                     UserSerializer.Options::class.java,
                     RecordSerializer.Options::class.java,
                     PostSerializer.Options::class.java))
+        }
+    }
+
+    @Component
+    class SentryInitializer (@Value("\${sentry.dsn:}") sentryDsn: String) {
+        init {
+            val logger = LoggerFactory.getLogger(this::class.java)
+            if (sentryDsn.isNotEmpty()) {
+                logger.info("Initialized Sentry: {}", sentryDsn)
+                Sentry.init(sentryDsn)
+            } else {
+                logger.info("Not initializing Sentry: property sentry.dsn is not provided")
+            }
         }
     }
 }
