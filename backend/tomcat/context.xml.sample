@@ -16,4 +16,6 @@
     />
     <Parameter name="spring.datasource.jndi-name" value="java:comp/env/jdbc/animeta" />
     <Environment name="spring.config.location" type="java.lang.String" value="file:/app/application.properties" />
+    <!-- For wildcard subdomain cookies (.example.com) -->
+    <CookieProcessor className="org.apache.tomcat.util.http.LegacyCookieProcessor" />
 </Context>

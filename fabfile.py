@@ -26,7 +26,7 @@ def _deploy(api=False, newapi=False, frontend=False):
 
         local('rm -rf frontend-dist')
         local('npm run build-dist')  # -> frontend-dist/*
-        local('cp frontend-server/*.ejs frontend-server/bundle.js frontend-dist/')
+        local('cp frontend-server/*.ejs frontend-server/bundle.js frontend-server/bundle.js.map frontend-dist/')
 
     local('git push')
     with cd('/home/ditto/animeta'):
