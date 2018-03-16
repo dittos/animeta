@@ -140,7 +140,7 @@ class StatusButton extends React.Component {
             <AddRecordDialog
               initialStatusType="interested"
               initialTitle={this.props.item.title}
-              onCancel={() => this.setState({ showAddModal: false })}
+              onCancel={this._closeAddModal}
               onCreate={this._recordAdded}
             />
           )}
@@ -152,6 +152,12 @@ class StatusButton extends React.Component {
   _showAddModal = event => {
     event.preventDefault();
     this.setState({ showAddModal: true });
+  };
+
+  _closeAddModal = event => {
+    // prevent event bubbling up to link
+    event.stopPropagation();
+    this.setState({ showAddModal: false });
   };
 
   _recordAdded = result => {
