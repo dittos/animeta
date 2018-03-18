@@ -12,13 +12,11 @@ Spring Boot 앱이지만 임베디드 Tomcat을 쓰지 않고 스탠드얼론 To
 
 ## 컨테이너 실행
 
-`application.properties`와 `backend-1.0.0.war`를 준비합니다.
+`app/application.properties`와 `app/backend-1.0.0.war`를 준비합니다.
 
 ```
 [sudo] docker run -dit \
-    -v $PWD/backend-1.0.0.war:/app/backend-1.0.0.war:ro \
-    -v $PWD/application.properties:/app/application.properties:ro \
-    -v $PWD/google-credentials.json:/app/google-credentials.json:ro \
+    -v $PWD/app:/app:ro \
     -e CATALINA_OPTS="-Xms128m -Xmx128m -XX:+UseConcMarkSweepGC" \
     --restart unless-stopped \
     --name animeta-tomcat \
@@ -30,7 +28,7 @@ Spring Boot 앱이지만 임베디드 Tomcat을 쓰지 않고 스탠드얼론 To
 설정 파일을 수정한 다음에는 WAR 파일을 `touch`해야 다시 불러옵니다.
 
 ```
-touch backend-1.0.0.war
+touch app/backend-1.0.0.war
 ```
 
 ## 참고 - DB 설정 방법
