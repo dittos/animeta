@@ -187,7 +187,7 @@ function Item({ item, onAddRecord }) {
       <div className={Styles.itemContent}>
         <h3 className={Styles.title}>
           {item.metadata.title}
-          {durationMinutes && <span className={Styles.duration}>{durationMinutes}분 애니</span>}
+          {durationMinutes && <span className={Styles.duration}>{durationMinutes}분</span>}
         </h3>
         <div className={Styles.info}>
           <span className="studio">
