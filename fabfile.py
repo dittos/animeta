@@ -53,5 +53,9 @@ def _deploy(api=False, newapi=False, frontend=False):
         # reload
         if newapi:
             run('mv backend.war.tmp backend-1.0.0.war')
+            run('touch backend-1.0.0.war')
         if frontend:
             run('pm2 gracefulReload animeta')
+        if newapi:
+            # tail logs for 1 min.
+            sudo('timeout 1m docker logs -f --tail 100 animeta-tomcat')

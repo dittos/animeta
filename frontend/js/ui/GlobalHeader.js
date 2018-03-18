@@ -67,7 +67,7 @@ export class GlobalHeader extends React.Component {
   };
 
   render() {
-    const showNotice = false;
+    const showNotice = true;
     const activeMenu = this.props.activeMenu;
     const user = this.props.currentUser;
     return (
@@ -172,7 +172,7 @@ export class GlobalHeader extends React.Component {
         {showNotice && (
           <Layout.CenteredFullWidth className={Styles.notice}>
             <Link to="/table/" className={Styles.noticeLink}>
-              2018년 1월 신작 살펴보기!
+              4월 신작 살펴보기!
             </Link>
           </Layout.CenteredFullWidth>
         )}

@@ -15,6 +15,7 @@ import net.animeta.backend.service.WorkService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.io.IOException
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -92,7 +93,8 @@ class WorkSerializer(val workService: WorkService,
                 schedule = mapOf(
                         "jp" to item["schedule"]?.let { getSchedule(it, period) },
                         "kr" to item["schedule_kr"]?.let { getSchedule(it, period) }
-                )
+                ),
+                durationMinutes = item["duration"]?.asText()?.let { it.trimEnd('m').toIntOrNull() }
         )
     }
 

@@ -13,7 +13,8 @@ data class WorkMetadata(val title: String,
                         val links: WorkLinks,
                         val studios: List<String>?,
                         val source: String?,
-                        val schedule: Map<String, WorkSchedule?>?)
+                        val schedule: Map<String, WorkSchedule?>?,
+                        val durationMinutes: Int?)
 
 data class WorkDTO(
         val id: Int,

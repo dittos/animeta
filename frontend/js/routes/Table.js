@@ -178,22 +178,25 @@ function Poster({ item }) {
 }
 
 function Item({ item, onAddRecord }) {
-  var { links, studios, source, schedule } = item.metadata;
+  var { links, studios, source, schedule, durationMinutes } = item.metadata;
   return (
     <div className={Styles.item}>
       <Link to={util.getWorkURL(item.title)}>
         <Poster item={item} />
       </Link>
       <div className={Styles.itemContent}>
-        <h3 className={Styles.title}>{item.metadata.title}</h3>
+        <h3 className={Styles.title}>
+          {item.metadata.title}
+          {durationMinutes && <span className={Styles.duration}>{durationMinutes}분 애니</span>}
+        </h3>
         <div className={Styles.info}>
           <span className="studio">
             {studios ? studios.join(', ') : '제작사 미정'}
           </span>
-          {source && [
-            ' / ',
-            <span className="source">{util.SOURCE_TYPE_MAP[source]}</span>,
-          ]}
+          {source && <React.Fragment>
+            {' / '}
+            <span className="source">{util.SOURCE_TYPE_MAP[source]}</span>
+          </React.Fragment>}
         </div>
         <div className={Styles.actions}>
           <StatusButton item={item} onAddRecord={onAddRecord} />
