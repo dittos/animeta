@@ -1,10 +1,9 @@
 package net.animeta.backend.controller.v2
 
-import net.animeta.backend.dto.UserDTO
 import net.animeta.backend.model.User
 import net.animeta.backend.repository.UserRepository
-import net.animeta.backend.serializer.UserSerializer
 import net.animeta.backend.service.AuthService
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -28,7 +27,7 @@ class AccountsController(private val userRepository: UserRepository,
                servletResponse: HttpServletResponse): CreateResponse {
         val existingUser = userRepository.findByUsername(username)
         if (existingUser != null) {
-            return CreateResponse(ok = false, errors = mapOf("username" to "해당 사용자명은 이미 존재합니다."))
+            return usernameAlreadyExistError()
         }
         if (username.isEmpty() ||
                 username.length > 30 ||
@@ -40,9 +39,16 @@ class AccountsController(private val userRepository: UserRepository,
         }
         val user = User(username = username, date_joined = Timestamp.from(Instant.now()))
         authService.setPassword(user, password1)
-        userRepository.save(user)
+        try {
+            userRepository.save(user)
+        } catch (e: DataIntegrityViolationException) {
+            return usernameAlreadyExistError()
+        }
         val sessionKey = authService.login(user, servletResponse, persistent = false)
         return CreateResponse(ok = true,
                 session_key = sessionKey)
     }
+
+    private fun usernameAlreadyExistError() =
+            CreateResponse(ok = false, errors = mapOf("username" to "해당 사용자명은 이미 존재합니다."))
 }
