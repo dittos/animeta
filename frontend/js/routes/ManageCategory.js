@@ -111,7 +111,7 @@ class ManageCategory extends React.Component {
           <div>
             <div className={Styles.title}>분류 추가</div>
             <form onSubmit={this._addCategory}>
-              분류 이름: <input size={12} ref="nameInput" />
+              분류 이름: <input size={12} ref="nameInput" maxLength={30} />
               <button className={Styles.button}>추가</button>
             </form>
           </div>
