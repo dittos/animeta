@@ -331,7 +331,7 @@ class Record extends React.Component {
       'publishTwitter',
       post.publishTwitter ? 'true' : 'false'
     );
-    createPost(this.props.data.record.id, post).then(() => {
+    return createPost(this.props.data.record.id, post).then(() => {
       this._redirectToUser();
     });
   };

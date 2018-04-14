@@ -43,6 +43,7 @@ module.exports = env => {
           path: path.join(__dirname, '../animeta/static/build'),
           publicPath: '/static/build/',
           filename: env.prod ? '[name]-[hash].js' : '[name].js',
+          chunkFilename: env.prod ? '[name]-[hash].js' : '[name].js',
         },
     module: {
       rules: [

@@ -106,6 +106,8 @@ export class PostComposer extends React.Component {
 
   _onSubmit = event => {
     event.preventDefault();
+    if (this._submitting) return;
+    this._submitting = true;
     const {
       status,
       statusType,
@@ -119,6 +121,6 @@ export class PostComposer extends React.Component {
       comment,
       containsSpoiler,
       publishTwitter,
-    });
+    }).then(() => this._submitting = false, () => this._submitting = false);
   };
 }
