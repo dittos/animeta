@@ -47,7 +47,7 @@ class ExternalServicesController(private val twitterSettingRepository: TwitterSe
             val oauth = twitterServiceProvider.oAuthOperations
             if (oauthVerifier == null || tokenValue == null || tokenSecret == null) {
                 // TODO: callback url
-                val requestToken = oauth.fetchRequestToken("https://animeta.net/newapi/v2/me/external-services/twitter/connect", LinkedMultiValueMap())
+                val requestToken = oauth.fetchRequestToken("https://animeta.net/api/v2/me/external-services/twitter/connect", LinkedMultiValueMap())
                 val redirectUrl = oauth.buildAuthorizeUrl(requestToken.value, OAuth1Parameters.NONE)
                 response.addCookie(Cookie(twitterTokenValueCookie, requestToken.value))
                 response.addCookie(Cookie(twitterTokenSecretCookie, requestToken.secret))
