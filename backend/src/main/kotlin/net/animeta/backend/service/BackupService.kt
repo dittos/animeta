@@ -1,5 +1,8 @@
 package net.animeta.backend.service
 
+import com.google.cloud.storage.BlobId
+import com.google.cloud.storage.BlobInfo
+import com.google.cloud.storage.Storage
 import com.google.common.io.Files
 import net.animeta.backend.model.User
 import net.animeta.backend.repository.HistoryRepository
@@ -7,24 +10,27 @@ import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import org.apache.commons.csv.QuoteMode
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.cloud.gcp.storage.GoogleStorageResourceObject
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
 import java.io.File
-import java.net.URI
+import java.io.FileOutputStream
+import java.io.OutputStreamWriter
 import java.net.URL
+import java.nio.channels.Channels
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.ChronoField
 import java.util.*
 import java.util.concurrent.TimeUnit
+import java.util.zip.GZIPOutputStream
 import javax.persistence.EntityManager
 import javax.transaction.Transactional
 
 @Service
 class BackupService(private val historyRepository: HistoryRepository,
                     private val entityManager: EntityManager,
+                    private val storage: Storage,
                     @Value("\${animeta.backup.root_location}") private val backupRoot: Resource) {
     private val format = CSVFormat.EXCEL
             .withQuoteMode(QuoteMode.ALL)
@@ -40,7 +46,7 @@ class BackupService(private val historyRepository: HistoryRepository,
     fun create(user: User): URL {
         val tempFile = File.createTempFile("bak", "csv")
         try {
-            Files.asCharSink(tempFile, StandardCharsets.UTF_8).openBufferedStream().use { out ->
+            OutputStreamWriter(GZIPOutputStream(FileOutputStream(tempFile)), StandardCharsets.UTF_8).use { out ->
                 out.write(utf8BOM)
                 CSVPrinter(out, format).use { printer ->
                     historyRepository.streamAllByUserOrderByIdDesc(user).use { stream ->
@@ -59,11 +65,15 @@ class BackupService(private val historyRepository: HistoryRepository,
                 }
             }
             val path = "animeta_backup_${user.username}_${dateTimeFormat.format(LocalDateTime.now())}.csv"
-            val gsObject = backupRoot.createRelative(path) as GoogleStorageResourceObject
-            gsObject.outputStream.use {
+            val blobId = BlobId.of(backupRoot.uri.authority, path)
+            Channels.newOutputStream(storage.writer(BlobInfo.newBuilder(blobId)
+                    .setContentType("text/csv")
+                    .setContentDisposition("attachment; filename=${path}")
+                    .setContentEncoding("gzip")
+                    .build())).use {
                 Files.asByteSource(tempFile).copyTo(it)
             }
-            return gsObject.createSignedUrl(TimeUnit.DAYS, 1)
+            return storage.signUrl(BlobInfo.newBuilder(blobId).build(), 1, TimeUnit.DAYS)
         } finally {
             tempFile.delete()
         }
