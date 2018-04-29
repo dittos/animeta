@@ -19,3 +19,6 @@ spring.social.twitter.app-secret=
 #server.port=8081
 #spring.jpa.show-sql=true
 #spring.jpa.properties.hibernate.format_sql=true
+
+animeta.backup.root_location=gs://animeta-user-backup/
+

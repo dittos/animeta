@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.querydsl.QueryDslPredicateExecutor
 import org.springframework.data.repository.CrudRepository
 import java.sql.Timestamp
+import java.util.stream.Stream
 
 interface HistoryRepository : CrudRepository<History, Int>, QueryDslPredicateExecutor<History> {
     fun findFirstByRecordOrderByIdDesc(record: Record): History?
@@ -24,4 +25,6 @@ interface HistoryRepository : CrudRepository<History, Int>, QueryDslPredicateExe
     @Modifying
     @Query("update History h set h.work = ?2 where h.work = ?1")
     fun replaceWork(fromWork: Work, toWork: Work)
+
+    fun streamAllByUserOrderByIdDesc(user: User): Stream<History>
 }

@@ -17,8 +17,10 @@ import org.springframework.boot.web.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
+import org.springframework.core.task.TaskExecutor
 import org.springframework.format.FormatterRegistry
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.social.twitter.connect.TwitterServiceProvider
 import org.springframework.stereotype.Component
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
@@ -48,6 +50,10 @@ class Application : SpringBootServletInitializer() {
                                @Value("\${spring.social.twitter.app-secret}") appSecret: String): TwitterServiceProvider {
         return TwitterServiceProvider(appId, appSecret)
     }
+
+    @Bean
+    fun backupTaskExecutor(): TaskExecutor =
+            ThreadPoolTaskExecutor().apply { corePoolSize = 4 }
 
     @Configuration
     class WebMvcConfig(val currentUserArgumentResolver: CurrentUserArgumentResolver,

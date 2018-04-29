@@ -57,6 +57,7 @@ dependencies {
     compile "com.squareup.okhttp3:okhttp:3.9.1"
     compile "com.google.guava:guava:23.2-jre"
     compile "com.querydsl:querydsl-jpa:4.1.3"
+    compile "org.apache.commons:commons-csv:1.5"
     kapt "com.querydsl:querydsl-apt:4.1.3:jpa"
     providedCompile "org.postgresql:postgresql:42.1.4"
     testCompile "org.springframework.boot:spring-boot-starter-test"
