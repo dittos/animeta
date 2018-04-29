@@ -83,6 +83,10 @@ export function changePassword(oldPassword, newPassword1, newPassword2) {
   });
 }
 
+export function createBackup() {
+  return post('/api/v2/backups');
+}
+
 // External Services
 
 export function disconnectTwitter() {

@@ -12,6 +12,7 @@ import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
 import java.io.File
 import java.net.URI
+import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatterBuilder
@@ -36,7 +37,7 @@ class BackupService(private val historyRepository: HistoryRepository,
             .toFormatter(Locale.ENGLISH)
 
     @Transactional
-    fun create(user: User): URI {
+    fun create(user: User): URL {
         val tempFile = File.createTempFile("bak", "csv")
         try {
             Files.asCharSink(tempFile, StandardCharsets.UTF_8).openBufferedStream().use { out ->
@@ -62,7 +63,7 @@ class BackupService(private val historyRepository: HistoryRepository,
             gsObject.outputStream.use {
                 Files.asByteSource(tempFile).copyTo(it)
             }
-            return gsObject.createSignedUrl(TimeUnit.DAYS, 1).toURI()
+            return gsObject.createSignedUrl(TimeUnit.DAYS, 1)
         } finally {
             tempFile.delete()
         }

@@ -67,7 +67,7 @@ export class GlobalHeader extends React.Component {
   };
 
   render() {
-    const showNotice = true;
+    const showNotice = false;
     const activeMenu = this.props.activeMenu;
     const user = this.props.currentUser;
     return (

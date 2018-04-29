@@ -1,0 +1,59 @@
+@import "../../less/variables.less";
+
+:local(.section) {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 16px 0;
+    border-bottom: 1px solid @color-border;
+    line-height: 1.6;
+}
+
+:local(.sectionTitle) {
+    flex: 1;
+    margin: 0;
+    font-size: 15px;
+    color: @color-text-title;
+}
+
+:local(.action) {
+    font-size: 13px;
+    color: @color-text-dark;
+    text-align: right;
+    a {
+        color: @color-main;
+        font-weight: bold;
+        text-decoration: none;
+    }
+}
+
+:local(.sectionContent) {
+    width: 100%;
+    padding-top: 8px;
+}
+
+:local(.changePasswordForm) {
+    font-size: 13px;
+    border-collapse: collapse;
+
+    th {
+        font-weight: normal;
+        text-align: left;
+        padding: 8px 8px 8px 0;
+    }
+}
+
+:local(.logoutButton) {
+    margin-top: 32px;
+    display: block;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 8px;
+    text-align: center;
+    font-size: 13px;
+    border: 1px solid @color-border-control;
+    color: @color-text-dark;
+    border-radius: 2px;
+    &:hover {
+        opacity: 0.5;
+    }
+}
