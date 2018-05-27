@@ -1,10 +1,10 @@
-/* global ga */
 /* global Raven */
 import $ from 'jquery';
 import { injectLoader, render } from 'nuri/client';
 import nprogress from 'nprogress';
 import app from './routes';
 import { serializeParams, getCurrentUser } from './API';
+import { trackPageView } from './Tracking';
 import '../less/nprogress.less';
 import '../less/chart.less';
 import '../less/signup.less';
@@ -72,9 +72,7 @@ window.startApp = preloadData => {
       nprogress.done();
     },
     didCommitState() {
-      if (ga) {
-        ga('send', 'pageview');
-      }
+      trackPageView();
     },
   });
 };

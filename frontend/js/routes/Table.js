@@ -11,6 +11,7 @@ import Styles from '../../less/table-period.less';
 import { Switch, SwitchItem } from '../ui/Switch';
 import AddRecordDialog from '../ui/AddRecordDialog';
 import SearchInput from '../ui/SearchInput';
+import { trackEvent } from '../Tracking';
 // TODO: css module
 
 function formatPeriod(period) {
@@ -162,6 +163,11 @@ class StatusButton extends React.Component {
 
   _recordAdded = result => {
     this.setState({ showAddModal: false });
+    trackEvent({
+      eventCategory: 'Record',
+      eventAction: 'Create',
+      eventLabel: 'Table',
+    });
     this.props.onAddRecord(this.props.item, result.record);
   };
 }

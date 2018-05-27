@@ -10,6 +10,7 @@ import Styles from './Library.less';
 import * as Grid from './Grid';
 import { Switch, SwitchItem } from './Switch';
 import AddRecordDialog from './AddRecordDialog';
+import { trackEvent } from '../Tracking';
 
 function getDateHeader(record) {
   const now = new Date();
@@ -356,6 +357,11 @@ class Library extends React.Component {
 
   _recordCreated = result => {
     this.props.onAddRecord(result.record);
+    trackEvent({
+      eventCategory: 'Record',
+      eventAction: 'Create',
+      eventLabel: 'Library',
+    });
     this.setState({ showAddModal: false });
   };
 }

@@ -3,6 +3,7 @@ import { Link } from 'nuri';
 import * as util from '../util';
 import AddRecordDialog from './AddRecordDialog';
 import Styles from './SpecialWorkStatus.less';
+import { trackEvent } from '../Tracking';
 
 class SpecialWorkStatus extends React.Component {
   state = {
@@ -60,6 +61,11 @@ class SpecialWorkStatus extends React.Component {
 
   _recordAdded = result => {
     this.setState({ showAddModal: false });
+    trackEvent({
+      eventCategory: 'Record',
+      eventAction: 'Create',
+      eventLabel: 'Work',
+    });
     this.props.onAddRecord(result.record);
   };
 }

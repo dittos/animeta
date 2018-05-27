@@ -21,6 +21,7 @@ import connectTwitter from '../connectTwitter';
 import { User } from '../layouts';
 import { CenteredFullWidth } from '../ui/Layout';
 import ModalStyles from '../ui/Modal.less';
+import { trackEvent } from '../Tracking';
 
 class TitleEditView extends React.Component {
   componentDidMount() {
@@ -332,6 +333,17 @@ class Record extends React.Component {
       post.publishTwitter ? 'true' : 'false'
     );
     return createPost(this.props.data.record.id, post).then(() => {
+      trackEvent({
+        eventCategory: 'Post',
+        eventAction: 'Create',
+        eventLabel: post.comment ? (post.containsSpoiler ? 'Spoiler' : 'NoSpoiler') : 'NoComment',
+      });
+      if (post.publishTwitter) {
+        trackEvent({
+          eventCategory: 'Post',
+          eventAction: 'ShareOnTwitter',
+        });
+      }
       this._redirectToUser();
     });
   };

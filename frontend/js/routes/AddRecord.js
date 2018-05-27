@@ -1,6 +1,7 @@
 import React from 'react';
 import { User } from '../layouts';
 import AddRecordDialog from '../ui/AddRecordDialog';
+import { trackEvent } from '../Tracking';
 
 class AddRecord extends React.Component {
   render() {
@@ -15,6 +16,11 @@ class AddRecord extends React.Component {
 
   _returnToUser = () => {
     const basePath = `/users/${encodeURIComponent(this.props.data.user.name)}/`;
+    trackEvent({
+      eventCategory: 'Record',
+      eventAction: 'Create',
+      eventLabel: 'AddRecord',
+    });
     this.props.controller.load({ path: basePath, query: {} });
   };
 }

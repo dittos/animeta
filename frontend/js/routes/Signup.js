@@ -2,6 +2,7 @@ import $ from 'jquery';
 import React from 'react';
 import { App } from '../layouts';
 import * as API from '../API';
+import { trackEvent } from '../Tracking';
 // TODO: css module
 
 class Signup extends React.Component {
@@ -97,12 +98,22 @@ class Signup extends React.Component {
       password2: this.state.passwordCheck,
     }).then(
       result => {
-        if (result.ok) location.href = '/users/' + this.state.username + '/';
-        else
+        if (result.ok) {
+          const basePath = `/users/${encodeURIComponent(this.state.username)}/`;
+          trackEvent({
+            eventCategory: 'User',
+            eventAction: 'SignUp',
+          });
+          this.props.controller.load({
+            path: basePath,
+            query: {},
+          });
+        } else {
           this.setState({
             submitted: false,
             errors: result.errors,
           });
+        }
       },
       () => {
         this.setState({
