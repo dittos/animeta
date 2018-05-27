@@ -41,6 +41,7 @@
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
+      ga(function(){window.gaLoaded=true});
       ga('create', 'UA-7500828-2', 'auto');
       ga('send', 'pageview');
     </script>
@@ -53,7 +54,13 @@
 </head>
 <body>
 <div id="app"><%- content %></div>
-<script src="https://cdn.ravenjs.com/3.21.0/raven.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.ravenjs.com/3.25.2/raven.min.js" crossorigin="anonymous"></script>
+<script>
+window.addEventListener('load', function(){
+    if (!window.gaLoaded && window.Raven)
+        Raven.captureMessage('GoogleAnalyticsBlocked', {level: 'warning'});
+}, false);
+</script>
 <% if (!DEBUG) { %>
 <script>
 try {
