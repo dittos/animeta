@@ -157,7 +157,9 @@ class StatusButton extends React.Component {
 
   _closeAddModal = event => {
     // prevent event bubbling up to link
-    event.stopPropagation();
+    if (event) {
+      event.stopPropagation();
+    }
     this.setState({ showAddModal: false });
   };
 
