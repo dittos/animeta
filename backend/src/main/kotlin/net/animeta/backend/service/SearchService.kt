@@ -1,12 +1,9 @@
 package net.animeta.backend.service
 
-import com.querydsl.jpa.HQLTemplates
-import com.querydsl.jpa.impl.JPAQuery
-import net.animeta.backend.model.QWorkIndex.workIndex
-import net.animeta.backend.model.QWorkTitleIndex.workTitleIndex
 import net.animeta.backend.model.WorkIndex
+import net.animeta.backend.repository.WorkIndexRepository
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
-import javax.persistence.EntityManager
 
 val firsts = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ"
 val middles = listOf(
@@ -21,39 +18,21 @@ val lasts = listOf(
 )
 
 @Service
-class SearchService(private val entityManager: EntityManager) {
+class SearchService(private val workIndexRepository: WorkIndexRepository) {
     fun searchWorks(query: String, limit: Int, minRecordCount: Int = 2): List<WorkIndex> {
-        val regex = makeRegex(query)
-        return JPAQuery<WorkIndex>(entityManager, HQLTemplates.DEFAULT)
-                .select(workIndex).distinct()
-                .from(workIndex, workTitleIndex)
-                .where(workTitleIndex.work.id.eq(workIndex.work_id))
-                .where(workTitleIndex.key.matches(regex))
-                .where(workIndex.record_count.goe(minRecordCount)
-                        .and(workIndex.blacklisted.isFalse))
-                .orderBy(workIndex.rank.asc())
-                .limit(limit.toLong())
-                .fetch()
+        val pattern = makePattern(query)
+        return workIndexRepository.search(pattern, minRecordCount, PageRequest(0, limit)).content
     }
 
     fun suggestWorks(query: String, limit: Int): List<WorkIndex> {
         val key = makeKey(query)
-        return JPAQuery<WorkIndex>(entityManager, HQLTemplates.DEFAULT)
-                .select(workIndex).distinct()
-                .from(workIndex, workTitleIndex)
-                .where(workTitleIndex.work.id.eq(workIndex.work_id))
-                .where(workTitleIndex.key.startsWith(key))
-                .where(workIndex.record_count.gt(1)
-                        .and(workIndex.blacklisted.isFalse))
-                .orderBy(workIndex.rank.asc())
-                .limit(limit.toLong())
-                .fetch()
+        return workIndexRepository.search("$key%", 2, PageRequest(0, limit)).content
     }
 
-    private fun makeRegex(query: String): String {
+    private fun makePattern(query: String): String {
         return makeKeySequence(query)
                 // We don't need to escape the key. Special characters are removed already.
-                .joinToString(".*", prefix = ".*", postfix = ".*")
+                .joinToString("%", prefix = "%", postfix = "%")
     }
 
     private fun makeKey(query: String): String {

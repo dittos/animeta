@@ -1,9 +1,6 @@
 package net.animeta.backend.repository
 
-import net.animeta.backend.model.Category
-import net.animeta.backend.model.Record
-import net.animeta.backend.model.User
-import net.animeta.backend.model.Work
+import net.animeta.backend.model.*
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
@@ -28,4 +25,14 @@ interface RecordRepository : CrudRepository<Record, Int> {
     @Modifying
     @Query("update Record r set r.work = ?2 where r.work = ?1")
     fun replaceWork(fromWork: Work, toWork: Work)
+
+    @Query("""
+        SELECT NEW net.animeta.backend.repository.RecordRepository${'$'}CountGroupRow(r.status_type, r.category.id, COUNT(*))
+        FROM Record r
+        WHERE r.user = ?1
+        GROUP BY r.status_type, r.category.id
+    """)
+    fun countGroupsByUser(user: User): List<CountGroupRow>
+
+    data class CountGroupRow(val statusType: StatusType, val categoryId: Int?, val count: Long)
 }
