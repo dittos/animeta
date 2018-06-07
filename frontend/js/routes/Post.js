@@ -41,7 +41,8 @@ class Post extends React.Component {
     );
   }
 
-  _loadMorePosts = async ({ work, posts, post }) => {
+  _loadMorePosts = async (data) => {
+    const { work, posts, post } = data || this.props.data;
     var params = {
       count: POSTS_PER_PAGE + 1,
       episode: post.status,
