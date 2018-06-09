@@ -2,11 +2,11 @@ package net.animeta.backend.chart
 
 import kotlin.coroutines.experimental.buildSequence
 
-fun <T> ranked(seq: Sequence<Pair<T, Int>>): Sequence<ChartItem<T>> = buildSequence {
-    var rank = 0
-    var prev = -1
-    var ptr = 1
-    var max: Int? = null
+fun <T> ranked(seq: Sequence<Pair<T, Long>>): Sequence<ChartItem<T>> = buildSequence {
+    var rank = 0L
+    var prev = -1L
+    var ptr = 1L
+    var max: Long? = null
 
     for ((obj, factor) in seq) {
         if (prev != factor)
@@ -15,9 +15,9 @@ fun <T> ranked(seq: Sequence<Pair<T, Int>>): Sequence<ChartItem<T>> = buildSeque
         ptr++
         max = max ?: factor
         yield(ChartItem(
-                rank = rank,
+                rank = rank.toInt(),
                 `object` = obj,
-                factor = factor,
+                factor = factor.toInt(),
                 factor_percent = factor.toDouble() / max * 100.0
         ))
     }

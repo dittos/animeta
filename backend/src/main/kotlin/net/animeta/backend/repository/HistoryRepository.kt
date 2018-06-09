@@ -27,4 +27,22 @@ interface HistoryRepository : CrudRepository<History, Int>, QueryDslPredicateExe
     fun replaceWork(fromWork: Work, toWork: Work)
 
     fun streamAllByUserOrderByIdDesc(user: User): Stream<History>
+
+    @Query("""
+        SELECT NEW kotlin.Pair(h.status, COUNT(*))
+        FROM History h
+        WHERE h.work = ?1
+        AND h.comment <> ''
+        GROUP BY h.status
+    """)
+    fun findAllStatusWithCountAndCommentByWork(work: Work): List<Pair<String, Int>>
+
+    @Query("""
+        SELECT NEW kotlin.Pair(h.status, COUNT(*))
+        FROM History h
+        WHERE h.work = ?1
+        AND h.comment = ''
+        GROUP BY h.status
+    """)
+    fun findAllStatusWithCountAndNoCommentByWork(work: Work): List<Pair<String, Int>>
 }

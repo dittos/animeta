@@ -1,24 +1,17 @@
 package net.animeta.backend.service
 
-import com.querydsl.core.types.Expression
-import com.querydsl.core.types.Projections
-import com.querydsl.core.types.dsl.Wildcard
-import com.querydsl.jpa.HQLTemplates
-import com.querydsl.jpa.impl.JPAQuery
 import net.animeta.backend.dto.Episode
-import net.animeta.backend.model.History
-import net.animeta.backend.model.QHistory.history
 import net.animeta.backend.model.TitleMapping
 import net.animeta.backend.model.Work
+import net.animeta.backend.repository.HistoryRepository
 import net.animeta.backend.repository.TitleMappingRepository
 import net.animeta.backend.repository.WorkRepository
 import org.springframework.stereotype.Service
-import javax.persistence.EntityManager
 
 @Service
-class WorkService(val workRepository: WorkRepository,
-                  val titleMappingRepository: TitleMappingRepository,
-                  val entityManager: EntityManager) {
+class WorkService(private val workRepository: WorkRepository,
+                  private val titleMappingRepository: TitleMappingRepository,
+                  private val historyRepository: HistoryRepository) {
     fun getOrCreate(title: String): Work {
         val mapping = titleMappingRepository.findOneByTitle(title)
         if (mapping != null) {
@@ -51,13 +44,7 @@ class WorkService(val workRepository: WorkRepository,
     }
 
     fun getEpisodes(work: Work): List<Episode> {
-        val query = JPAQuery<History>(entityManager, HQLTemplates.DEFAULT)
-                .select(Projections.constructor(Pair::class.java, history.status, Wildcard.count) as Expression<Pair<String, Int>>)
-                .from(history)
-                .where(history.work.eq(work))
-                .where(history.comment.ne(""))
-                .groupBy(history.status)
-        val result = query.fetch()
+        val result = historyRepository.findAllStatusWithCountAndCommentByWork(work)
                 .mapNotNull { (status, count) ->
                     val statusNumber = status.toIntOrNull()
                     if (statusNumber != null)
@@ -67,13 +54,8 @@ class WorkService(val workRepository: WorkRepository,
                 }
                 .associateBy { it.number }
                 .toMutableMap()
-        val query2 = JPAQuery<History>(entityManager, HQLTemplates.DEFAULT)
-                .select(Projections.constructor(Pair::class.java, history.status, Wildcard.count) as Expression<Pair<String, Int>>)
-                .from(history)
-                .where(history.work.eq(work))
-                .where(history.comment.eq(""))
-                .groupBy(history.status)
-        for ((status, count) in query2.fetch()) {
+        val result2 = historyRepository.findAllStatusWithCountAndNoCommentByWork(work)
+        for ((status, count) in result2) {
             val statusNumber = status.toIntOrNull()
             if (statusNumber != null && !result.containsKey(statusNumber) && count > 1) {
                 result[statusNumber] = Episode(number = statusNumber, post_count = null)
@@ -83,7 +65,7 @@ class WorkService(val workRepository: WorkRepository,
     }
 
     companion object {
-        private val exceptionChars = "!+"
+        private const val exceptionChars = "!+"
 
         fun normalizeTitle(title: String): String {
             return title

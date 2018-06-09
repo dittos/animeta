@@ -2,30 +2,25 @@ package net.animeta.backend.service
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
-import com.mysema.commons.lang.CloseableIterator
-import com.querydsl.core.types.Expression
-import com.querydsl.core.types.Projections
-import com.querydsl.jpa.HQLTemplates
-import com.querydsl.jpa.impl.JPAQuery
 import net.animeta.backend.chart.ChartItem
 import net.animeta.backend.chart.ChartRange
 import net.animeta.backend.chart.diff
 import net.animeta.backend.chart.ranked
-import net.animeta.backend.model.History
-import net.animeta.backend.model.QHistory.history
-import net.animeta.backend.model.QRecord
 import net.animeta.backend.repository.UserRepository
 import net.animeta.backend.repository.WorkRepository
 import net.animeta.backend.serializer.WorkSerializer
 import org.springframework.stereotype.Service
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.support.TransactionTemplate
 import java.sql.Timestamp
 import java.time.ZoneId
 import java.util.*
 import java.util.concurrent.TimeUnit
-import javax.persistence.EntityManager
+import java.util.stream.Stream
+import kotlin.streams.asSequence
 
 @Service
-class ChartService(val entityManager: EntityManager,
+class ChartService(val transactionManager: PlatformTransactionManager,
                    val workRepository: WorkRepository,
                    val userRepository: UserRepository,
                    val workSerializer: WorkSerializer) {
@@ -51,7 +46,11 @@ class ChartService(val entityManager: EntityManager,
     }
 
     fun getPopularWorks(range: ChartRange?, limit: Int): List<ChartItem<ChartItemWork>> {
-        return popularWorksCache.get(Optional.ofNullable(range)) { getPopularWorksUncached(range) }.take(limit)
+        return popularWorksCache.get(Optional.ofNullable(range)) {
+            val template = TransactionTemplate(transactionManager)
+            template.isReadOnly = true
+            template.execute { getPopularWorksUncached(range) }
+        }.take(limit)
     }
 
     fun getPopularWorksUncached(range: ChartRange?): List<ChartItem<ChartItemWork>> {
@@ -73,32 +72,24 @@ class ChartService(val entityManager: EntityManager,
         } }
     }
 
-    private fun iteratePopularWorks(range: ChartRange?): CloseableIterator<Pair<Int, Int>> {
+    private fun iteratePopularWorks(range: ChartRange?): Stream<Pair<Int, Long>> {
         if (range != null) {
-            val factor = history.user.countDistinct()
             val instantRange = range.instantRange(defaultTimeZone())
-            return JPAQuery<History>(entityManager, HQLTemplates.DEFAULT)
-                    .select(Projections.constructor(Pair::class.java, history.work.id, factor) as Expression<Pair<Int, Int>>)
-                    .from(history)
-                    .where(history.updatedAt.between(Timestamp.from(instantRange.lowerEndpoint()), Timestamp.from(instantRange.upperEndpoint())))
-                    .groupBy(history.work.id)
-                    .orderBy(factor.desc())
-                    .having(factor.gt(1))
-                    .iterate()
+            return workRepository.iterateAllByPopularityWithinRange(
+                    minUpdatedAt = Timestamp.from(instantRange.lowerEndpoint()),
+                    maxUpdatedAt = Timestamp.from(instantRange.upperEndpoint())
+            )
         } else {
-            val factor = QRecord.record.count()
-            return JPAQuery<History>(entityManager, HQLTemplates.DEFAULT)
-                    .select(Projections.constructor(Pair::class.java, QRecord.record.work.id, factor) as Expression<Pair<Int, Int>>)
-                    .from(QRecord.record)
-                    .groupBy(QRecord.record.work.id)
-                    .orderBy(factor.desc())
-                    .having(factor.gt(1))
-                    .iterate()
+            return workRepository.iterateAllByAllTimePopularity()
         }
     }
 
     fun getActiveUsers(range: ChartRange?, limit: Int): List<ChartItem<ChartItemUser>> {
-        return activeUsersCache.get(Optional.ofNullable(range)) { getActiveUsersUncached(range) }.take(limit)
+        return activeUsersCache.get(Optional.ofNullable(range)) {
+            val template = TransactionTemplate(transactionManager)
+            template.isReadOnly = true
+            template.execute { getActiveUsersUncached(range) }
+        }.take(limit)
     }
 
     fun getActiveUsersUncached(range: ChartRange?): List<ChartItem<ChartItemUser>> {
@@ -120,17 +111,15 @@ class ChartService(val entityManager: EntityManager,
         } }
     }
 
-    private fun iterateActiveUsers(range: ChartRange?): CloseableIterator<Pair<Int, Int>> {
-        val factor = history.user.count()
-        val query = JPAQuery<History>(entityManager, HQLTemplates.DEFAULT)
-                .select(Projections.constructor(Pair::class.java, history.user.id, factor) as Expression<Pair<Int, Int>>)
-                .from(history)
+    private fun iterateActiveUsers(range: ChartRange?): Stream<Pair<Int, Long>> {
         if (range != null) {
             val instantRange = range.instantRange(defaultTimeZone())
-            query.where(history.updatedAt.between(Timestamp.from(instantRange.lowerEndpoint()), Timestamp.from(instantRange.upperEndpoint())))
+            return userRepository.iterateAllByActivenessWithinRange(
+                    minUpdatedAt = Timestamp.from(instantRange.lowerEndpoint()),
+                    maxUpdatedAt = Timestamp.from(instantRange.upperEndpoint())
+            )
+        } else {
+            return userRepository.iterateAllByAllTimeActiveness()
         }
-        return query.groupBy(history.user.id)
-                .orderBy(factor.desc())
-                .iterate()
     }
 }
