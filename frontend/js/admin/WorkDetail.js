@@ -108,7 +108,7 @@ class WorkDetail extends React.Component {
         {!this.state.editRawMetadata && (
           <WorkMetadataEditor
             onChange={this._onMetadataChange}
-            metadata={work.metadata}
+            metadata={work.metadata || {}}
           />
         )}
         <FormGroup>
