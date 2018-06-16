@@ -6,10 +6,12 @@ import * as API from './API';
 import WorkMergeForm from './WorkMergeForm';
 import ImageUploadForm from './ImageUploadForm';
 import ImageCropper from './ImageCropper';
+import WorkMetadataEditor from './WorkMetadataEditor';
 
 class WorkDetail extends React.Component {
   state = {
     work: null,
+    editRawMetadata: false,
   };
 
   componentDidMount() {
@@ -103,16 +105,27 @@ class WorkDetail extends React.Component {
         <hr />
 
         <h3>Metadata</h3>
+        {!this.state.editRawMetadata && (
+          <WorkMetadataEditor
+            onChange={this._onMetadataChange}
+            metadata={work.metadata}
+          />
+        )}
         <FormGroup>
           <textarea
             rows={10}
             cols={50}
             value={work.raw_metadata || ''}
+            readOnly={!this.state.editRawMetadata}
             onChange={e => {
               work.raw_metadata = e.target.value;
               this.setState({ work });
             }}
           />
+          <br />
+          <Button bsStyle="link" bsSize="sm" onClick={this._toggleEditRawMetadata}>
+            {this.state.editRawMetadata ? 'Apply raw metadata' : 'Edit raw metadata'}
+          </Button>
         </FormGroup>
         <Button onClick={this._saveMetadata}>Save</Button>
 
@@ -138,6 +151,36 @@ class WorkDetail extends React.Component {
       </div>
     );
   }
+
+  _onMetadataChange = newMetadata => {
+    const work = this.state.work;
+    this.setState({
+      work: {
+        ...work,
+        raw_metadata: JSON.stringify(newMetadata, null, 2),
+        metadata: newMetadata,
+      }
+    });
+  };
+
+  _toggleEditRawMetadata = () => {
+    if (this.state.editRawMetadata) {
+      let metadata;
+      try {
+        metadata = JSON.parse(this.state.work.raw_metadata);
+      } catch (e) {
+        alert('Raw metadata is not valid JSON: ' + e);
+        return;
+      }
+      this.setState({
+        work: {
+          ...this.state.work,
+          metadata
+        }
+      });
+    }
+    this.setState({ editRawMetadata: !this.state.editRawMetadata });
+  };
 
   _setPrimaryTitleMapping = id => {
     API.editWork(this.state.work.id, {

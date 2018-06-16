@@ -5,6 +5,7 @@ import App from './admin/App';
 import Dashboard from './admin/Dashboard';
 import WorkDetail from './admin/WorkDetail';
 import 'bootstrap/dist/css/bootstrap.css';
+import 'react-select/dist/react-select.css';
 
 ReactDOM.render(
   <Router history={hashHistory}>
