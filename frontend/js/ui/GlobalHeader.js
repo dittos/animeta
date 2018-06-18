@@ -62,14 +62,28 @@ class DropdownUserMenu extends React.Component {
 }
 
 export class GlobalHeader extends React.Component {
+  static LAST_NOTICE_CLICKED = 'lastNoticeClicked';
+  static noticeId = '2018Q3';
+
   state = {
     showUserMenu: false,
+    showNotice: false,
   };
 
+  componentDidMount() {
+    try {
+      if (window.localStorage.getItem(GlobalHeader.LAST_NOTICE_CLICKED) !== GlobalHeader.noticeId) {
+        this.setState({ showNotice: true });
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+
   render() {
-    const showNotice = false;
     const activeMenu = this.props.activeMenu;
     const user = this.props.currentUser;
+    const showNotice = this.state.showNotice && activeMenu !== 'search';
     return (
       <div className={Styles.container}>
         <Layout.CenteredFullWidth className={Styles.header}>
@@ -98,6 +112,7 @@ export class GlobalHeader extends React.Component {
                     ? Styles.activeGlobalMenuItem
                     : Styles.globalMenuItem
                 }
+                onClick={this._saveNoticeClicked}
               >
                 <span>
                   <i
@@ -109,6 +124,11 @@ export class GlobalHeader extends React.Component {
                   />
                 </span>
                 <span className={Styles.globalMenuItemText}>작품 찾기</span>
+                {showNotice && (
+                  <span className={Styles.globalMenuItemPopover}>
+                    7월 신작 업데이트!
+                  </span>
+                )}
               </Link>
               <Link
                 to={
@@ -169,14 +189,6 @@ export class GlobalHeader extends React.Component {
           </div>
         </Layout.CenteredFullWidth>
 
-        {showNotice && (
-          <Layout.CenteredFullWidth className={Styles.notice}>
-            <Link to="/table/" className={Styles.noticeLink}>
-              4월 신작 살펴보기!
-            </Link>
-          </Layout.CenteredFullWidth>
-        )}
-
         {!this.props.currentUser &&
           !this.props.noHero && (
             <div className={Styles.hero}>
@@ -228,5 +240,14 @@ export class GlobalHeader extends React.Component {
 
   _closeLogin = () => {
     LoginDialog.close();
+  };
+
+  _saveNoticeClicked = () => {
+    try {
+      window.localStorage.setItem(GlobalHeader.LAST_NOTICE_CLICKED, GlobalHeader.noticeId);
+      this.setState({ showNotice: false });
+    } catch (e) {
+      // ignore
+    }
   };
 }

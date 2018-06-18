@@ -340,3 +340,37 @@
     border-bottom: 3px solid #fff;
     font-weight: bold;
 }
+
+:local(.globalMenuItemPopover) {
+    position: fixed;
+    top: @nav-height + 8px;
+    z-index: @z-header;
+    color: rgba(255, 255, 255, 0.95);
+    background: #555;
+    box-shadow: rgba(0, 0, 0, 0.24) 0 0 8px 0;
+    border-radius: 4px;
+    font-size: 12px;
+    padding: 8px;
+    pointer-events: none;
+
+    &:after {
+        bottom: 100%;
+        left: 10px;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        border-bottom-color: #555;
+        border-width: 5px;
+
+        @media (max-width: 480px) {
+            left: 50%;
+            margin-left: -5px;
+        }
+    }
+
+    @media (min-width: 481px) {
+        margin-left: -8px;
+    }
+}
