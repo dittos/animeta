@@ -7,7 +7,6 @@ import net.animeta.backend.repository.CategoryRepository
 import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.RecordSerializer
-import net.animeta.backend.serializer.UserSerializer
 import net.animeta.backend.service.WorkService
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
@@ -22,7 +21,7 @@ class RecordController(val recordRepository: RecordRepository,
     @GetMapping
     fun get(@PathVariable id: Int,
             @RequestParam(defaultValue = "{}") options: RecordSerializer.Options): RecordDTO {
-        val record = recordRepository.findOne(id) ?: throw ApiException.notFound()
+        val record = recordRepository.findById(id).orElseThrow { ApiException.notFound() }
         return recordSerializer.serialize(record, options)
     }
 
@@ -31,7 +30,7 @@ class RecordController(val recordRepository: RecordRepository,
     fun update(@PathVariable id: Int, @CurrentUser currentUser: User,
                @RequestParam(required = false) title: String?,
                @RequestParam("category_id", required = false) categoryIdParam: String?): RecordDTO {
-        val record = recordRepository.findOne(id) ?: throw ApiException.notFound()
+        val record = recordRepository.findById(id).orElseThrow { ApiException.notFound() }
         if (currentUser.id != record.user.id) {
             throw ApiException("Permission denied.", HttpStatus.FORBIDDEN)
         }
@@ -44,7 +43,7 @@ class RecordController(val recordRepository: RecordRepository,
         if (categoryIdParam != null) {
             val categoryId = categoryIdParam.toIntOrNull()
             if (categoryId != null) {
-                val category = categoryRepository.findOne(categoryId)
+                val category = categoryRepository.findById(categoryId).orElse(null)
                 if (category.user.id != record.user.id) {
                     throw ApiException("Permission denied.", HttpStatus.FORBIDDEN)
                 }
@@ -62,7 +61,7 @@ class RecordController(val recordRepository: RecordRepository,
     @DeleteMapping
     @Transactional
     fun delete(@PathVariable id: Int, @CurrentUser currentUser: User): DeleteResponse {
-        val record = recordRepository.findOne(id) ?: throw ApiException.notFound()
+        val record = recordRepository.findById(id).orElseThrow { ApiException.notFound() }
         if (currentUser.id != record.user.id) {
             throw ApiException("Permission denied.", HttpStatus.FORBIDDEN)
         }

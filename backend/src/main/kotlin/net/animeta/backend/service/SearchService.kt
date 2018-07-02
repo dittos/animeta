@@ -21,12 +21,12 @@ val lasts = listOf(
 class SearchService(private val workIndexRepository: WorkIndexRepository) {
     fun searchWorks(query: String, limit: Int, minRecordCount: Int = 2): List<WorkIndex> {
         val pattern = makePattern(query)
-        return workIndexRepository.search(pattern, minRecordCount, PageRequest(0, limit)).content
+        return workIndexRepository.search(pattern, minRecordCount, PageRequest.of(0, limit))
     }
 
     fun suggestWorks(query: String, limit: Int): List<WorkIndex> {
         val key = makeKey(query)
-        return workIndexRepository.search("$key%", 2, PageRequest(0, limit)).content
+        return workIndexRepository.search("$key%", 2, PageRequest.of(0, limit))
     }
 
     private fun makePattern(query: String): String {

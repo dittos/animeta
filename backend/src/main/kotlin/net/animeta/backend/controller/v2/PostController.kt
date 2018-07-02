@@ -23,7 +23,7 @@ class PostController(val historyRepository: HistoryRepository,
     @GetMapping
     fun get(@PathVariable id: Int,
             @RequestParam(required = false) options: PostSerializer.Options?): PostDTO {
-        val history = historyRepository.findOne(id) ?: throw ApiException.notFound()
+        val history = historyRepository.findById(id).orElseThrow { ApiException.notFound() }
         return postSerializer.serialize(history, options ?: PostSerializer.legacyOptions(includeRecord = true, includeUser = true))
     }
 
@@ -32,7 +32,7 @@ class PostController(val historyRepository: HistoryRepository,
     @DeleteMapping
     @Transactional
     fun delete(@PathVariable id: Int, @CurrentUser currentUser: User): DeleteResponse {
-        val history = historyRepository.findOne(id) ?: throw ApiException.notFound()
+        val history = historyRepository.findById(id).orElseThrow { ApiException.notFound() }
         if (currentUser.id != history.user.id) {
             throw ApiException("Permission denied.", HttpStatus.FORBIDDEN)
         }

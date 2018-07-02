@@ -28,7 +28,7 @@ class CurrentUserArgumentResolver(val userRepository: UserRepository,
                                  mavContainer: ModelAndViewContainer,
                                  webRequest: NativeWebRequest,
                                  binderFactory: WebDataBinderFactory): User? {
-        val annotation = parameter.getParameterAnnotation(CurrentUser::class.java)
+        val annotation = parameter.getParameterAnnotation(CurrentUser::class.java)!!
         val user = extractUser(webRequest)
         if (annotation.required && user == null) {
             throw ApiException("Login required.", HttpStatus.UNAUTHORIZED)
@@ -46,7 +46,7 @@ class CurrentUserArgumentResolver(val userRepository: UserRepository,
             val session: DjangoAuthSession = Signing.loadString(header, secretKey, "django.contrib.sessions.backends.signed_cookies", DjangoAuthSession, sessionCookieAge)
             // TODO: handle _session_expiry
             // TODO: handle _auth_user_hash
-            return userRepository.findOne(session.userId.toIntOrNull())
+            return session.userId.toIntOrNull()?.let(userRepository::findById)?.orElse(null)
         } catch (e: Exception) {
             return null
         }

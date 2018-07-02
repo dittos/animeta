@@ -1,6 +1,6 @@
 package net.animeta.backend.db
 
-import org.hibernate.engine.spi.SessionImplementor
+import org.hibernate.engine.spi.SharedSessionContractImplementor
 import org.hibernate.usertype.UserType
 import org.postgresql.util.PGobject
 import org.springframework.util.ObjectUtils
@@ -33,7 +33,7 @@ class JSONBUserType : UserType {
         return value as? Serializable
     }
 
-    override fun nullSafeSet(st: PreparedStatement, value: Any?, index: Int, session: SessionImplementor?) {
+    override fun nullSafeSet(st: PreparedStatement, value: Any?, index: Int, session: SharedSessionContractImplementor?) {
         if (value == null) {
             st.setNull(index, Types.OTHER)
         } else {
@@ -41,7 +41,7 @@ class JSONBUserType : UserType {
         }
     }
 
-    override fun nullSafeGet(rs: ResultSet, names: Array<out String>, session: SessionImplementor?, owner: Any?): Any? {
+    override fun nullSafeGet(rs: ResultSet, names: Array<out String>, session: SharedSessionContractImplementor?, owner: Any?): Any? {
         val pgo = rs.getObject(names[0]) as? PGobject
         return pgo?.value
     }

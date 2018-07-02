@@ -82,7 +82,7 @@ class AdminController(private val datastore: Datastore,
     fun getWork(@CurrentUser currentUser: User,
                 @PathVariable id: Int): AdminWorkDTO {
         checkPermission(currentUser)
-        val work = workRepository.findOne(id)
+        val work = workRepository.findById(id).orElse(null)
         val titleMappings = work.titleMappings.map {
             TitleMappingDTO(
                     id = it.id!!,
@@ -132,12 +132,12 @@ class AdminController(private val datastore: Datastore,
             crawlImage(id, request.crawlImage)
         }
         if (request.blacklisted != null) {
-            val work = workRepository.findOne(id)
+            val work = workRepository.findById(id).orElse(null)
             work.blacklisted = request.blacklisted
             workRepository.save(work)
         }
         if (request.imageCenterY != null) {
-            val work = workRepository.findOne(id)
+            val work = workRepository.findById(id).orElse(null)
             work.image_center_y = request.imageCenterY
             workRepository.save(work)
         }
@@ -145,7 +145,7 @@ class AdminController(private val datastore: Datastore,
     }
 
     private fun setPrimaryTitleMapping(primaryTitleMappingId: Int) {
-        val mapping = titleMappingRepository.findOne(primaryTitleMappingId)
+        val mapping = titleMappingRepository.findById(primaryTitleMappingId).orElse(null)
         mapping.work.title = mapping.title
         workRepository.save(mapping.work)
     }
@@ -154,8 +154,8 @@ class AdminController(private val datastore: Datastore,
     data class MergeConflictDTO(val user_id: Int, val username: String, val ids: List<Int>)
 
     private fun merge(workId: Int, otherWorkId: Int, force: Boolean) {
-        val work = workRepository.findOne(workId)
-        val other = workRepository.findOne(otherWorkId)
+        val work = workRepository.findById(workId).orElse(null)
+        val other = workRepository.findById(otherWorkId).orElse(null)
         if (work.id == other.id) {
             throw ApiException("Cannot merge itself", HttpStatus.BAD_REQUEST)
         }
@@ -180,7 +180,7 @@ class AdminController(private val datastore: Datastore,
     }
 
     private fun editMetadata(id: Int, rawMetadata: String) {
-        val work = workRepository.findOne(id)
+        val work = workRepository.findById(id).orElse(null)
         val metadata: JsonNode
         try {
             metadata = ObjectMapper(YAMLFactory()).readTree(rawMetadata)
@@ -193,7 +193,7 @@ class AdminController(private val datastore: Datastore,
     }
 
     private fun crawlImage(id: Int, options: CrawlImageOptions) {
-        val work = workRepository.findOne(id)
+        val work = workRepository.findById(id).orElse(null)
         val tempFile = File.createTempFile("orig", ".tmp")
         val tempThumbFile = File.createTempFile("thumb", ".jpg")
         try {
@@ -230,7 +230,7 @@ class AdminController(private val datastore: Datastore,
     fun deleteWork(@CurrentUser currentUser: User,
                    @PathVariable id: Int): DeleteResponse {
         checkPermission(currentUser)
-        val work = workRepository.findOne(id)
+        val work = workRepository.findById(id).orElse(null)
         if (recordRepository.countByWork(work) != 0) {
             throw ApiException("Record exists", HttpStatus.FORBIDDEN)
         }
@@ -246,7 +246,7 @@ class AdminController(private val datastore: Datastore,
                         @PathVariable id: Int,
                         @RequestBody request: AddTitleMappingRequest): TitleMappingDTO {
         checkPermission(currentUser)
-        val work = workRepository.findOne(id)
+        val work = workRepository.findById(id).orElse(null)
         val title = request.title.trim()
         val key = WorkService.normalizeTitle(title)
         if (titleMappingRepository.countByKeyAndWorkIsNot(key, work) > 0) {
@@ -260,7 +260,7 @@ class AdminController(private val datastore: Datastore,
     @DeleteMapping("/title-mappings/{id}")
     fun deleteTitleMapping(@CurrentUser currentUser: User, @PathVariable id: Int): DeleteResponse {
         checkPermission(currentUser)
-        val mapping = titleMappingRepository.findOne(id)
+        val mapping = titleMappingRepository.findById(id).orElse(null)
         if (recordRepository.countByTitle(mapping.title) > 0) {
             throw ApiException("Record exists", HttpStatus.FORBIDDEN)
         }

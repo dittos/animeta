@@ -98,7 +98,7 @@ class UserRecordsController(val userRepository: UserRepository,
             throw ApiException("작품 제목을 입력하세요.", HttpStatus.BAD_REQUEST)
         }
         val work = workService.getOrCreate(title)
-        val category = categoryId?.let { categoryRepository.findOne(it) }
+        val category = categoryId?.let { categoryRepository.findById(it).orElse(null) }
         if (category != null && currentUser.id != category.user.id) {
             throw ApiException("Permission denied.", HttpStatus.FORBIDDEN)
         }

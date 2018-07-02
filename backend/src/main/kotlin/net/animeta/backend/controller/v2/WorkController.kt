@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 class WorkController(val workRepository: WorkRepository, val workSerializer: WorkSerializer) {
     @GetMapping
     fun get(@PathVariable id: Int, @CurrentUser(required = false) currentUser: User?): WorkDTO {
-        val work = workRepository.findOne(id) ?: throw ApiException.notFound()
+        val work = workRepository.findById(id).orElseThrow { ApiException.notFound() }
         return workSerializer.serialize(work, currentUser, full = true)
     }
 }

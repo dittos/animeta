@@ -65,7 +65,7 @@ class ChartService(val transactionManager: PlatformTransactionManager,
                 ranked(it.asSequence()).take(maxLimit).toList()
             }
         }
-        val works = workRepository.findAll(chart.map { it.`object` }).associateBy { it.id }
+        val works = workRepository.findAllById(chart.map { it.`object` }).associateBy { it.id }
         return chart.map { it.map { id ->
             val work = works[id]!!
             ChartItemWork(work.id!!, work.title, workSerializer.getImageUrl(work), work.image_center_y)
@@ -104,7 +104,7 @@ class ChartService(val transactionManager: PlatformTransactionManager,
                 ranked(it.asSequence()).take(maxLimit).toList()
             }
         }
-        val users = userRepository.findAll(chart.map { it.`object` }).associateBy { it.id }
+        val users = userRepository.findAllById(chart.map { it.`object` }).associateBy { it.id }
         return chart.map { it.map { id ->
             val user = users[id]!!
             ChartItemUser(user.username)

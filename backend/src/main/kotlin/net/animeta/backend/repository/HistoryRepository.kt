@@ -6,12 +6,12 @@ import net.animeta.backend.model.User
 import net.animeta.backend.model.Work
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
-import org.springframework.data.querydsl.QueryDslPredicateExecutor
+import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import org.springframework.data.repository.CrudRepository
 import java.sql.Timestamp
 import java.util.stream.Stream
 
-interface HistoryRepository : CrudRepository<History, Int>, QueryDslPredicateExecutor<History> {
+interface HistoryRepository : CrudRepository<History, Int>, QuerydslPredicateExecutor<History> {
     fun findFirstByRecordOrderByIdDesc(record: Record): History?
 
     fun countByRecord(record: Record): Int

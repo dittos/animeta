@@ -31,7 +31,7 @@ class RecordPostsController(val recordRepository: RecordRepository,
     @GetMapping
     fun get(@PathVariable id: Int,
             @RequestParam(required = false) options: PostSerializer.Options?): GetResponse {
-        val record = recordRepository.findOne(id) ?: throw ApiException.notFound()
+        val record = recordRepository.findById(id).orElseThrow { ApiException.notFound() }
         val posts = record.histories
         return GetResponse(posts.map { postSerializer.serialize(it, options ?: PostSerializer.legacyOptions()) })
     }
@@ -45,7 +45,7 @@ class RecordPostsController(val recordRepository: RecordRepository,
                @RequestParam comment: String,
                @RequestParam("contains_spoiler", defaultValue = "false") containsSpoiler: Boolean,
                @RequestParam("publish_twitter", defaultValue = "false") publishTwitter: Boolean): CreateResponse {
-        val record = recordRepository.findOne(id) ?: throw ApiException.notFound()
+        val record = recordRepository.findById(id).orElseThrow { ApiException.notFound() }
         if (currentUser.id != record.user.id) {
             throw ApiException("Permission denied.", HttpStatus.FORBIDDEN)
         }

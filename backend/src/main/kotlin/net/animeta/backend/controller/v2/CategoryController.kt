@@ -21,7 +21,7 @@ class CategoryController(val categoryRepository: CategoryRepository,
     @DeleteMapping
     @Transactional
     fun delete(@PathVariable id: Int, @CurrentUser currentUser: User): DeleteResponse {
-        val category = categoryRepository.findOne(id) ?: throw ApiException.notFound()
+        val category = categoryRepository.findById(id).orElseThrow { ApiException.notFound() }
         if (currentUser.id != category.user.id) {
             throw ApiException("Permission denied.", HttpStatus.FORBIDDEN)
         }
@@ -33,7 +33,7 @@ class CategoryController(val categoryRepository: CategoryRepository,
     @PostMapping
     @Transactional
     fun update(@PathVariable id: Int, @CurrentUser currentUser: User, @RequestParam name: String): CategoryDTO {
-        val category = categoryRepository.findOne(id) ?: throw ApiException.notFound()
+        val category = categoryRepository.findById(id).orElseThrow { ApiException.notFound() }
         if (currentUser.id != category.user.id) {
             throw ApiException("Permission denied.", HttpStatus.FORBIDDEN)
         }

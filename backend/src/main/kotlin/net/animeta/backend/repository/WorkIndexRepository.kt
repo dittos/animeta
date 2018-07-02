@@ -1,7 +1,6 @@
 package net.animeta.backend.repository
 
 import net.animeta.backend.model.WorkIndex
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -16,5 +15,5 @@ interface WorkIndexRepository : JpaRepository<WorkIndex, Int> {
         AND wi.blacklisted = false
         ORDER BY wi.rank
     """)
-    fun search(pattern: String, minRecordCount: Int, pageable: Pageable): Page<WorkIndex>
+    fun search(pattern: String, minRecordCount: Int, pageable: Pageable): List<WorkIndex>
 }

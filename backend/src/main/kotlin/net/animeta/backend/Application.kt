@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
-import org.springframework.boot.web.support.SpringBootServletInitializer
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
@@ -24,7 +24,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.social.twitter.connect.TwitterServiceProvider
 import org.springframework.stereotype.Component
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 
 fun main(args: Array<String>) {
@@ -57,7 +57,7 @@ class Application : SpringBootServletInitializer() {
 
     @Configuration
     class WebMvcConfig(val currentUserArgumentResolver: CurrentUserArgumentResolver,
-                       val objectMapper: ObjectMapper) : WebMvcConfigurerAdapter() {
+                       val objectMapper: ObjectMapper) : WebMvcConfigurer {
         override fun addArgumentResolvers(argumentResolvers: MutableList<HandlerMethodArgumentResolver>) {
             argumentResolvers.add(currentUserArgumentResolver)
         }
