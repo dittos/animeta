@@ -8,6 +8,7 @@ import net.animeta.backend.security.CurrentUserArgumentResolver
 import net.animeta.backend.serializer.PostSerializer
 import net.animeta.backend.serializer.RecordSerializer
 import net.animeta.backend.serializer.UserSerializer
+import net.animeta.backend.social.TwitterServiceProvider2
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.SpringApplication
@@ -48,7 +49,7 @@ class Application : SpringBootServletInitializer() {
     @Bean
     fun twitterServiceProvider(@Value("\${spring.social.twitter.app-id}") appId: String,
                                @Value("\${spring.social.twitter.app-secret}") appSecret: String): TwitterServiceProvider {
-        return TwitterServiceProvider(appId, appSecret)
+        return TwitterServiceProvider2(appId, appSecret)
     }
 
     @Bean
