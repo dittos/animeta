@@ -7,6 +7,7 @@ import net.animeta.backend.dto.WorkDTO
 import net.animeta.backend.dto.WorkLinks
 import net.animeta.backend.dto.WorkMetadata
 import net.animeta.backend.dto.WorkSchedule
+import net.animeta.backend.metadata.readStringList
 import net.animeta.backend.model.Period
 import net.animeta.backend.model.User
 import net.animeta.backend.model.Work
@@ -15,7 +16,6 @@ import net.animeta.backend.service.WorkService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.io.IOException
-import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -106,14 +106,6 @@ class WorkSerializer(val workService: WorkService,
             return "${url}#${UrlEscapers.urlFragmentEscaper().escape(anchor)}"
         } else {
             return url
-        }
-    }
-
-    fun readStringList(node: JsonNode): List<String> {
-        if (node.isTextual) {
-            return listOf(node.asText())
-        } else {
-            return node.map { it.asText() }
         }
     }
 

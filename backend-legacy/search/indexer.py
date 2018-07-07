@@ -2,7 +2,7 @@ import collections
 from django.db import transaction, models
 from work.models import Work, TitleMapping
 from search.models import WorkIndex, WorkTitleIndex, \
-    WorkPeriodIndex, WorkAttributeIndex, make_key
+    WorkAttributeIndex, make_key
 
 
 def add_ranks(objects):
@@ -19,11 +19,9 @@ def add_ranks(objects):
 @transaction.atomic
 def run():
     WorkIndex.objects.all().delete()
-    WorkPeriodIndex.objects.all().delete()
     WorkAttributeIndex.objects.all().delete()
 
     objects = []
-    period_objects = []
     attr_objects = []
     attr_map = collections.defaultdict(set)
     for work in Work.objects.annotate(record_count=models.Count('record')):
@@ -35,14 +33,6 @@ def run():
         ))
         metadata = work.metadata
         if metadata:
-            is_first = True
-            for period in metadata.get('periods', []):
-                period_objects.append(WorkPeriodIndex(
-                    period=period,
-                    work_id=work.id,
-                    is_first_period=is_first,
-                ))
-                is_first = False
             studios = metadata.get('studio')
             if isinstance(studios, basestring):
                 studios = [studios]
@@ -69,7 +59,6 @@ def run():
 
     add_ranks(objects)
     WorkIndex.objects.bulk_create(objects)
-    WorkPeriodIndex.objects.bulk_create(period_objects)
     WorkAttributeIndex.objects.bulk_create(attr_objects)
 
     objects = []

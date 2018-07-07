@@ -8,10 +8,13 @@ import net.animeta.backend.db.Datastore
 import net.animeta.backend.db.query
 import net.animeta.backend.dto.WorkDTO
 import net.animeta.backend.exception.ApiException
+import net.animeta.backend.metadata.readStringList
+import net.animeta.backend.model.Period
 import net.animeta.backend.model.QUser.user
 import net.animeta.backend.model.QWork.work
 import net.animeta.backend.model.TitleMapping
 import net.animeta.backend.model.User
+import net.animeta.backend.model.WorkPeriodIndex
 import net.animeta.backend.repository.HistoryRepository
 import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.repository.TitleMappingRepository
@@ -189,6 +192,11 @@ class AdminController(private val datastore: Datastore,
         }
         work.raw_metadata = rawMetadata
         work.metadata = objectMapper.writeValueAsString(metadata)
+        val periods = metadata["periods"]?.let { readStringList(it) }?.map { Period.parse(it) }?.filterNotNull() ?: listOf()
+        work.periodIndexes.clear()
+        work.periodIndexes.addAll(periods.sorted().mapIndexed { index, period ->
+            WorkPeriodIndex(work = work, period = period.toString(), firstPeriod = index == 0)
+        })
         workRepository.save(work)
     }
 

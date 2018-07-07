@@ -6,6 +6,7 @@ import javax.persistence.*
 @Table(name = "search_workperiodindex")
 data class WorkPeriodIndex(
         @get:Id
+        @get:GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Int? = null,
         @get:ManyToOne(fetch = FetchType.LAZY)
         @get:JoinColumn(name = "work_id")

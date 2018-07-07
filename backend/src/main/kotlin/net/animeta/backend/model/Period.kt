@@ -3,10 +3,18 @@ package net.animeta.backend.model
 import java.time.YearMonth
 import java.time.ZoneId
 
-data class Period(val year: Int, val period: Int) {
+data class Period(val year: Int, val period: Int): Comparable<Period> {
     init {
         if (!(period in 1..4)) {
             throw IllegalArgumentException("Period should be 1..4")
+        }
+    }
+
+    override fun compareTo(other: Period): Int {
+        return if (this.year == other.year) {
+            this.period.compareTo(other.period)
+        } else {
+            this.year.compareTo(other.year)
         }
     }
 

@@ -21,15 +21,18 @@ data class Work(
         var metadata: String?,
         var blacklisted: Boolean
 ) {
-    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = arrayOf(CascadeType.REMOVE), orphanRemoval = true)
+    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = [CascadeType.REMOVE], orphanRemoval = true)
     var indexes: List<WorkIndex> = listOf()
 
-    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = arrayOf(CascadeType.REMOVE), orphanRemoval = true)
+    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = [CascadeType.REMOVE], orphanRemoval = true)
     var titleIndexes: List<WorkTitleIndex> = listOf()
+
+    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var periodIndexes: MutableList<WorkPeriodIndex> = mutableListOf()
 
     @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work")
     var histories: List<History> = listOf()
 
-    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = arrayOf(CascadeType.REMOVE), orphanRemoval = true)
+    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = [CascadeType.REMOVE], orphanRemoval = true)
     var titleMappings: MutableList<TitleMapping> = mutableListOf()
 }
