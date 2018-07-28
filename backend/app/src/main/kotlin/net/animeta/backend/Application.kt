@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
-
 fun main(args: Array<String>) {
     SpringApplication.run(Application::class.java, *args)
 }

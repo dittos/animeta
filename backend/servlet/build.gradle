@@ -1,0 +1,41 @@
+group 'net.animeta'
+version '1.0.0'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:2.0.3.RELEASE"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'war'
+
+springBoot {
+    mainClassName = 'net.animeta.backend.ApplicationKt'
+}
+
+war {
+    baseName = 'backend'
+    version = '1.0.0'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://repo.spring.io/libs-milestone'
+    }
+}
+
+dependencies {
+    compile(project(':app')) {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+        exclude group: 'org.postgresql', module: 'postgresql'
+    }
+    providedRuntime "org.springframework.boot:spring-boot-starter-tomcat"
+    providedCompile "org.postgresql:postgresql:42.1.4"
+}
