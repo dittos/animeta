@@ -69,11 +69,13 @@ const serverWebpackConfig = webpackConfigFactory({
 const webpackConfig = webpackConfigFactory({ server: false, prod: false });
 const compiler = webpack(webpackConfig);
 
-const serverCompiler = webpack(serverWebpackConfig);
-const serverVfs = new MemoryFileSystem();
+let serverCompiler = webpack(serverWebpackConfig);
+let serverVfs = new MemoryFileSystem();
 serverCompiler.outputFileSystem = serverVfs;
 serverCompiler.run(() => {
   const code = serverVfs.readFileSync('/bundle.js').toString('utf8');
+  serverCompiler = null;
+  serverVfs = null;
   const appModule = requireFromString(code);
   const app = appModule.default || appModule;
   const server = express();

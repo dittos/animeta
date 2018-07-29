@@ -1,7 +1,8 @@
 import React from 'react';
-import { User } from '../layouts';
+import { User, Stackable } from '../layouts';
 import AddRecordDialog from '../ui/AddRecordDialog';
 import { trackEvent } from '../Tracking';
+import * as Mutations from '../Mutations';
 
 class AddRecord extends React.Component {
   render() {
@@ -9,35 +10,43 @@ class AddRecord extends React.Component {
       <AddRecordDialog
         initialTitle={this.props.data.title}
         onCancel={this._returnToUser}
-        onCreate={this._returnToUser}
+        onCreate={this._onCreate}
       />
     );
   }
 
-  _returnToUser = () => {
-    const basePath = `/users/${encodeURIComponent(this.props.data.user.name)}/`;
+  _onCreate = (result) => {
     trackEvent({
       eventCategory: 'Record',
       eventAction: 'Create',
-      eventLabel: 'AddRecord',
+      eventLabel: this.props.data.referrer,
     });
-    this.props.controller.load({ path: basePath, query: {} });
+    Mutations.records.next(result.record);
+    this._returnToUser();
+  };
+
+  _returnToUser = () => {
+    const basePath = `/users/${encodeURIComponent(this.props.data.user.name)}/`;
+    this.props.controller.load({ path: basePath, query: {} }, { returnToParent: true });
   };
 }
 
 export default {
-  component: User(AddRecord),
+  component: Stackable(User, AddRecord),
 
-  async load({ loader, params }) {
+  async load({ loader, params, query, stacked }) {
     const currentUser = await loader.getCurrentUser({
       options: {
         stats: true,
       },
     });
+    // TODO: login check
     return {
       currentUser,
       user: currentUser, // for layout
+      stacked, // for layout
       title: params.title,
+      referrer: query.ref || 'AddRecord',
     };
   },
 

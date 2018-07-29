@@ -2,14 +2,16 @@ import React from 'react';
 import cx from 'classnames';
 import { Link } from 'nuri';
 import { default as dateFnsFormat } from 'date-fns/format';
+import 'rxjs/add/operator/filter';
 import * as Grid from './Grid';
 import * as util from '../util';
 import { LoadMore } from './LoadMore';
-import SpecialWorkStatus from './SpecialWorkStatus';
+import WorkStatusButton from './WorkStatusButton';
 import VideoSearch from './VideoSearch';
 import WeeklyChart from './WeeklyChart';
 import { Post } from './Post';
 import Styles from './WorkViews.less';
+import * as Mutations from '../Mutations';
 
 function Sidebar({ work, chart, episode }) {
   const metadata = work.metadata;
@@ -76,6 +78,23 @@ function Sidebar({ work, chart, episode }) {
 }
 
 export class Work extends React.Component {
+  componentDidMount() {
+    // TODO: move subscription up to route
+    if (this.props.currentUser) {
+      this._subscription = Mutations.records
+        .filter(it => it.work_id === this.props.work.id && it.user_id === this.props.currentUser.id)
+        .subscribe(it => {
+          this.props.onRecordChange(it);
+        });
+    }
+  }
+
+  componentWillUnmount() {
+    if (this._subscription) {
+      this._subscription.unsubscribe();
+    }
+  }
+
   render() {
     const work = this.props.work;
     return (
@@ -128,10 +147,9 @@ export class Work extends React.Component {
               {work.record_count}명이 기록 남김
             </span>
           </div>
-          <SpecialWorkStatus
+          <WorkStatusButton
             work={work}
             record={work.record}
-            onAddRecord={this.props.onRecordChange}
           />
         </div>
       </div>

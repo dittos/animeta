@@ -60,3 +60,11 @@ export function User(Component) {
     </ErrorHandler>
   );
 }
+
+export function Stackable(layout, Content) {
+  const Wrapped = layout(Content);
+  return props => {
+    const Component = props.data.stacked ? Content : Wrapped;
+    return <Component {...props} />;
+  };
+}
