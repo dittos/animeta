@@ -150,7 +150,7 @@ export class Work extends React.Component {
           <WorkStatusButton
             work={work}
             record={work.record}
-            currentUser={currentUser}
+            currentUser={this.props.currentUser}
           />
         </div>
       </div>
