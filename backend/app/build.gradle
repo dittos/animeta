@@ -42,7 +42,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-data-jpa"
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.springframework.social:spring-social-twitter:2.0.0.M4"
-    compile "org.springframework.cloud:spring-cloud-gcp-starter-storage:1.0.0.M2"
+    compile "org.springframework.cloud:spring-cloud-gcp-starter-storage:1.1.0.M1"
     compile "io.sentry:sentry-logback:1.7.1"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
