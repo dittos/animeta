@@ -2,16 +2,12 @@ group 'net.animeta'
 version '1.0.0'
 
 buildscript {
-    ext.kotlin_version = '1.2.50'
-
     repositories {
         mavenCentral()
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
-        classpath "org.jetbrains.kotlin:kotlin-noarg:$kotlin_version"
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:2.0.3.RELEASE"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
+        classpath "org.jetbrains.kotlin:kotlin-noarg:$kotlinVersion"
     }
 }
 
@@ -30,15 +26,8 @@ allOpen {
 
 sourceCompatibility = 1.8
 
-repositories {
-    mavenCentral()
-    maven {
-        url 'https://repo.spring.io/libs-milestone'
-    }
-}
-
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "org.springframework.boot:spring-boot-starter-data-jpa"
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.springframework.social:spring-social-twitter:2.0.0.M4"

@@ -1,2 +1,24 @@
 group 'net.animeta'
 version '1.0.0'
+
+buildscript {
+    ext.kotlinVersion = '1.2.50'
+    ext.springBootVersion = '2.0.4.RELEASE'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+    }
+}
+
+subprojects {
+    repositories {
+        mavenCentral()
+        maven {
+            url 'https://repo.spring.io/libs-milestone'
+        }
+    }
+}

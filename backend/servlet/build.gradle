@@ -1,15 +1,6 @@
 group 'net.animeta'
 version '1.0.0'
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:2.0.3.RELEASE"
-    }
-}
-
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
@@ -22,13 +13,6 @@ springBoot {
 war {
     baseName = 'backend'
     version = '1.0.0'
-}
-
-repositories {
-    mavenCentral()
-    maven {
-        url 'https://repo.spring.io/libs-milestone'
-    }
 }
 
 dependencies {
