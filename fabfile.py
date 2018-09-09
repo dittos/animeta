@@ -40,7 +40,7 @@ def _deploy(api=False, newapi=False, frontend=False):
                 run('../venv/bin/pip install -r ./requirements.txt')
                 run('../venv/bin/python manage.py migrate')
         if newapi:
-            put('backend/build/libs/backend-1.0.0.war', 'backend.war.tmp')
+            put('backend/servlet/build/libs/servlet-1.0.0.war', 'backend.war.tmp')
         if frontend:
             run('mkdir -p animeta/static/build')
             put('animeta/static/build/*', 'animeta/static/build/')
