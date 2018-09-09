@@ -5,6 +5,7 @@ import com.google.common.io.BaseEncoding
 import net.animeta.backend.exception.ApiException
 import net.animeta.backend.repository.WorkRepository
 import net.animeta.backend.service.admin.AnnService
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.support.TransactionTemplate
@@ -28,6 +29,7 @@ class TasksController(
     private val transactionTemplate: TransactionTemplate
 ) {
     private val mapper = jacksonObjectMapper()
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     @PostMapping("/importAnnMetadata")
     fun importAnnMetadata(): Flux<String> {
@@ -39,7 +41,7 @@ class TasksController(
             val works = workRepository.findAllWithAnnId()
             processor.onNext("Importing ${works.size} works")
 
-            for ((chunkIndex, chunk) in works.asSequence().chunked(50).withIndex()) {
+            for ((chunkIndex, chunk) in works.asSequence().chunked(5).withIndex()) {
                 processor.onNext("Chunk #$chunkIndex...")
                 val annIds = chunk.associateBy { mapper.readTree(it.metadata)["ann_id"].asText() }
                 val metadataMap = annService.getMetadata(annIds.keys)
@@ -56,10 +58,10 @@ class TasksController(
         }
             .doOnSuccessOrError { _, throwable ->
                 if (throwable != null) {
-                    processor.onError(throwable)
-                } else {
-                    processor.onComplete()
+                    logger.error(throwable.message, throwable)
+                    processor.onNext("Error: ${throwable.message}")
                 }
+                processor.onComplete()
             }
             .subscribeOn(Schedulers.elastic())
             .subscribe()

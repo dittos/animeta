@@ -18,6 +18,12 @@ class ImageService(
     @Value("\${animeta.media.root_location}") private val mediaRoot: Resource,
     private val annService: AnnService
 ) {
+    private val restTemplate = RestTemplate(OkHttp3ClientHttpRequestFactory().apply {
+        setConnectTimeout(0)
+        setReadTimeout(0)
+        setWriteTimeout(0)
+    })
+
     fun downloadAnnPoster(annId: String, outFile: File) {
         val anime = annService.getMetadata(annId)!!
         val images = anime.select("info[@type=\"Picture\"] img")
@@ -71,7 +77,6 @@ class ImageService(
     }
 
     fun download(url: String, dest: File) {
-        val restTemplate = RestTemplate(OkHttp3ClientHttpRequestFactory())
         restTemplate.execute(url, HttpMethod.GET, null,
                 ResponseExtractor {
                     it.use {

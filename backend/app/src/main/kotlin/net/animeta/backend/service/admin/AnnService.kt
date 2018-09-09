@@ -27,6 +27,11 @@ class AnnService(
     private val workCastRepository: WorkCastRepository
 ) {
     private val mapper = jacksonObjectMapper()
+    private val restTemplate = RestTemplate(OkHttp3ClientHttpRequestFactory().apply {
+        setConnectTimeout(0)
+        setReadTimeout(0)
+        setWriteTimeout(0)
+    })
 
     fun getMetadata(annId: String): Element? {
         return getMetadata(listOf(annId))[annId]
@@ -34,11 +39,6 @@ class AnnService(
 
     fun getMetadata(annIds: Iterable<String>): Map<String, Element> {
         val url = "https://cdn.animenewsnetwork.com/encyclopedia/api.xml?anime=${annIds.joinToString("/")}"
-        val restTemplate = RestTemplate(OkHttp3ClientHttpRequestFactory().apply {
-            setConnectTimeout(0)
-            setReadTimeout(0)
-            setWriteTimeout(0)
-        })
         val doc = restTemplate.execute(url, HttpMethod.GET, null,
             ResponseExtractor {
                 it.use {
