@@ -9,23 +9,21 @@ import org.springframework.http.client.OkHttp3ClientHttpRequestFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.client.ResponseExtractor
 import org.springframework.web.client.RestTemplate
-import org.w3c.dom.NodeList
-import java.io.*
-import javax.xml.parsers.DocumentBuilderFactory
-import javax.xml.xpath.XPathConstants
-import javax.xml.xpath.XPathFactory
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 @Service
-class ImageService constructor (@Value("\${animeta.media.root_location}") private val mediaRoot: Resource) {
+class ImageService(
+    @Value("\${animeta.media.root_location}") private val mediaRoot: Resource,
+    private val annService: AnnService
+) {
     fun downloadAnnPoster(annId: String, outFile: File) {
-        val url = "https://cdn.animenewsnetwork.com/encyclopedia/api.xml?anime=$annId"
-        val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(url)
-        val xpath = XPathFactory.newInstance().newXPath()
-        val images = xpath.evaluate(".//info[@type=\"Picture\"]/img", doc, XPathConstants.NODESET) as NodeList
+        val anime = annService.getMetadata(annId)!!
+        val images = anime.select("info[@type=\"Picture\"] img")
         var fullsrc: String? = null
-        for (i in 0 until images.length) {
-            val image = images.item(i)
-            val src = image.attributes.getNamedItem("src").nodeValue
+        for (image in images) {
+            val src = image.attr("src")
             if (src.contains("full")) {
                 fullsrc = src
             } else if (src.contains("max") && fullsrc == null) {

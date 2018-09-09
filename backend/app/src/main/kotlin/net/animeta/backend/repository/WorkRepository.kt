@@ -27,4 +27,7 @@ interface WorkRepository : CrudRepository<Work, Int> {
         ORDER BY factor DESC
     """)
     fun iterateAllByAllTimePopularity(): Stream<Pair<Int, Long>>
+
+    @Query(value = "SELECT * FROM work_work WHERE jsonb_exists(metadata, 'ann_id')  ", nativeQuery = true)
+    fun findAllWithAnnId(): List<Work>
 }

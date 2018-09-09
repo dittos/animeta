@@ -3,7 +3,14 @@ package net.animeta.backend.model
 import net.animeta.backend.db.JSONBUserType
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
-import javax.persistence.*
+import javax.persistence.CascadeType
+import javax.persistence.Entity
+import javax.persistence.FetchType
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
+import javax.persistence.OneToMany
+import javax.persistence.Table
 
 @Entity
 @Table(name = "work_work")
@@ -35,4 +42,10 @@ data class Work(
 
     @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = [CascadeType.REMOVE], orphanRemoval = true)
     var titleMappings: MutableList<TitleMapping> = mutableListOf()
+
+    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = [CascadeType.REMOVE], orphanRemoval = true)
+    var casts: MutableList<WorkCast> = mutableListOf()
+
+    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = [CascadeType.REMOVE], orphanRemoval = true)
+    var staffs: MutableList<WorkStaff> = mutableListOf()
 }

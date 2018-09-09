@@ -3,6 +3,7 @@ spring.datasource.username=
 spring.datasource.password=
 animeta.security.secret-key=
 #animeta.security.session-cookie-domain=
+animeta.security.internal-password=
 #sentry.dsn=
 
 animeta.media.base_url=https://animeta.net/media/
