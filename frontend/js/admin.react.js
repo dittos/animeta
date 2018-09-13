@@ -4,6 +4,7 @@ import { Router, Route, hashHistory } from 'react-router';
 import App from './admin/App';
 import Dashboard from './admin/Dashboard';
 import WorkDetail from './admin/WorkDetail';
+import PersonDetail from './admin/PersonDetail';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-select/dist/react-select.css';
 
@@ -12,6 +13,7 @@ ReactDOM.render(
     <Route component={App}>
       <Route path="/" component={Dashboard} />
       <Route path="/works/:id" component={WorkDetail} />
+      <Route path="/people/:id" component={PersonDetail} />
     </Route>
   </Router>,
   document.getElementById('app')

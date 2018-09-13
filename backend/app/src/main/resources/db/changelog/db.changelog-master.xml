@@ -75,4 +75,14 @@
             <column name="metadata" type="jsonb" />
         </createTable>
     </changeSet>
+    <changeSet id="3" author="ditto">
+        <createIndex tableName="work_cast" indexName="idx_work_cast_work_id_actor_id">
+            <column name="work_id" />
+            <column name="actor_id" />
+        </createIndex>
+        <createIndex tableName="work_staff" indexName="idx_work_staff_work_id_person_id">
+            <column name="work_id" />
+            <column name="person_id" />
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>

@@ -16,9 +16,12 @@ import net.animeta.backend.model.TitleMapping
 import net.animeta.backend.model.User
 import net.animeta.backend.model.WorkPeriodIndex
 import net.animeta.backend.repository.HistoryRepository
+import net.animeta.backend.repository.PersonRepository
 import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.repository.TitleMappingRepository
+import net.animeta.backend.repository.WorkCastRepository
 import net.animeta.backend.repository.WorkRepository
+import net.animeta.backend.repository.WorkStaffRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.WorkSerializer
 import net.animeta.backend.service.ChartService
@@ -26,9 +29,16 @@ import net.animeta.backend.service.WorkService
 import net.animeta.backend.service.admin.ImageService
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import java.io.File
-import java.util.*
+import java.util.UUID
 
 @RestController
 @RequestMapping("/admin")
@@ -40,6 +50,9 @@ class AdminController(private val datastore: Datastore,
                       private val titleMappingRepository: TitleMappingRepository,
                       private val historyRepository: HistoryRepository,
                       private val chartService: ChartService,
+                      private val workStaffRepository: WorkStaffRepository,
+                      private val workCastRepository: WorkCastRepository,
+                      private val personRepository: PersonRepository,
                       private val workSerializer: WorkSerializer,
                       private val tablePeriodController: TablePeriodController,
                       private val objectMapper: ObjectMapper) {
@@ -78,7 +91,21 @@ class AdminController(private val datastore: Datastore,
             val raw_metadata: String,
             val metadata: JsonNode?,
             val title_mappings: List<TitleMappingDTO>,
-            val index: AdminWorkIndexDTO?
+            val index: AdminWorkIndexDTO?,
+            val staffs: List<WorkStaffDTO>,
+            val casts: List<WorkCastDTO>
+    )
+    data class WorkStaffDTO(
+        val task: String,
+        val name: String,
+        val personId: Int,
+        var metadata: JsonNode?
+    )
+    data class WorkCastDTO(
+        val role: String,
+        val name: String,
+        val personId: Int,
+        var metadata: JsonNode?
     )
 
     @GetMapping("/works/{id}")
@@ -103,7 +130,13 @@ class AdminController(private val datastore: Datastore,
                 raw_metadata = work.raw_metadata ?: "",
                 metadata = work.metadata?.let { objectMapper.readTree(it) },
                 title_mappings = titleMappings,
-                index = index?.let { AdminWorkIndexDTO(record_count = it.record_count, rank = it.rank) }
+                index = index?.let { AdminWorkIndexDTO(record_count = it.record_count, rank = it.rank) },
+                staffs = work.staffs.map {
+                    WorkStaffDTO(it.task, it.person.name, it.person.id!!, it.metadata?.let(objectMapper::readTree))
+                },
+                casts = work.casts.map {
+                    WorkCastDTO(it.role, it.actor.name, it.actor.id!!, it.metadata?.let(objectMapper::readTree))
+                }
         )
     }
 
@@ -282,6 +315,30 @@ class AdminController(private val datastore: Datastore,
         chartService.invalidateWorkCache()
         tablePeriodController.invalidateCache()
         return DeleteResponse(true)
+    }
+
+    data class PersonWorkDTO(val workId: Int, val workTitle: String, val roleOrTask: String)
+    data class PersonDTO(val id: Int,
+                         val name: String,
+                         val staffs: List<PersonWorkDTO>,
+                         val casts: List<PersonWorkDTO>,
+                         val metadata: JsonNode?)
+
+    @GetMapping("/people/{id}")
+    fun getPerson(@CurrentUser currentUser: User, @PathVariable id: Int): PersonDTO {
+        checkPermission(currentUser)
+        val person = personRepository.findById(id).get()
+        return PersonDTO(
+            id = person.id!!,
+            name = person.name,
+            staffs = workStaffRepository.findByPerson(person).map {
+                PersonWorkDTO(it.work.id!!, it.work.title, it.task)
+            },
+            casts = workCastRepository.findByActor(person).map {
+                PersonWorkDTO(it.work.id!!, it.work.title, it.role)
+            },
+            metadata = person.metadata?.let(objectMapper::readTree)
+        )
     }
 
     private fun checkPermission(user: User) {

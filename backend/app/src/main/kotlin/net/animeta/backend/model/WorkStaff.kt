@@ -26,7 +26,7 @@ data class WorkStaff(
     @get:Column(nullable = false)
     var position: Int,
 
-    @get:ManyToOne(fetch = FetchType.LAZY)
+    @get:ManyToOne
     @get:JoinColumn(name = "person_id", nullable = false)
     var person: Person,
 

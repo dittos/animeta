@@ -26,7 +26,7 @@ data class WorkCast(
     @get:Column(nullable = false)
     var position: Int,
 
-    @get:ManyToOne(fetch = FetchType.LAZY)
+    @get:ManyToOne
     @get:JoinColumn(name = "actor_id", nullable = false)
     var actor: Person,
 

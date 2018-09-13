@@ -1,6 +1,6 @@
 import React from 'react';
 import { findDOMNode } from 'react-dom';
-import { withRouter } from 'react-router';
+import { withRouter, Link } from 'react-router';
 import { Table, Form, FormGroup, FormControl, Button } from 'react-bootstrap';
 import * as API from './API';
 import WorkMergeForm from './WorkMergeForm';
@@ -18,14 +18,14 @@ class WorkDetail extends React.Component {
     this._reload();
   }
 
-  componentWillReceiveProps(nextProps) {
-    this._load(nextProps);
+  componentDidUpdate(prevProps) {
+    if (prevProps.params.id !== this.props.params.id) {
+      this._reload();
+    }
   }
 
-  _reload = () => this._load(this.props);
-
-  _load = props => {
-    return API.getWork(props.params.id).then(work => this.setState({ work }));
+  _reload = () => {
+    return API.getWork(this.props.params.id).then(work => this.setState({ work }));
   };
 
   render() {
@@ -148,6 +148,30 @@ class WorkDetail extends React.Component {
         {work.image_path && (
           <img src={work.image_path} alt={`Poster for ${work.title}`} />
         )}
+
+        <h3>Staffs</h3>
+        <Table>
+          <tbody>
+          {work.staffs.map(it => (
+            <tr>
+              <th className="col-xs-2">{it.task}</th>
+              <td><Link to={`/people/${it.personId}`}>{it.name}</Link></td>
+            </tr>
+          ))}
+          </tbody>
+        </Table>
+
+        <h3>Casts</h3>
+        <Table>
+          <tbody>
+          {work.casts.map(it => (
+            <tr>
+              <th className="col-xs-2">{it.role}</th>
+              <td><Link to={`/people/${it.personId}`}>{it.name}</Link></td>
+            </tr>
+          ))}
+          </tbody>
+        </Table>
       </div>
     );
   }

@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.OneToMany
+import javax.persistence.OrderBy
 import javax.persistence.Table
 
 @Entity
@@ -44,8 +45,10 @@ data class Work(
     var titleMappings: MutableList<TitleMapping> = mutableListOf()
 
     @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = [CascadeType.REMOVE], orphanRemoval = true)
+    @get:OrderBy("position")
     var casts: MutableList<WorkCast> = mutableListOf()
 
     @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = [CascadeType.REMOVE], orphanRemoval = true)
+    @get:OrderBy("position")
     var staffs: MutableList<WorkStaff> = mutableListOf()
 }
