@@ -107,6 +107,7 @@ interface WorkMetadata {
 interface Props {
     metadata: WorkMetadata;
     onChange(newMetadata: WorkMetadata): any;
+    onAnnImport(annId: string): any;
 }
 
 export default class WorkMetadataEditor extends React.Component<Props> {
@@ -186,6 +187,9 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                         value={metadata.ann_id || ''}
                         onChange={this.handleInputChange}
                     />
+                    <button onClick={this.handleAnnImport} disabled={!metadata.ann_id}>
+                        Import Metadata
+                    </button>
                 </FormGroup>
                 <FormGroup>
                     <ControlLabel>Comment</ControlLabel>
@@ -280,5 +284,9 @@ export default class WorkMetadataEditor extends React.Component<Props> {
             const {[name]: _, ...rest} = this.props.metadata;
             this.props.onChange(rest);
         }
+    };
+
+    private handleAnnImport = () => {
+        this.props.onAnnImport(this.props.metadata.ann_id);
     };
 }

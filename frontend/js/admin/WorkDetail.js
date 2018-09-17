@@ -108,6 +108,7 @@ class WorkDetail extends React.Component {
         {!this.state.editRawMetadata && (
           <WorkMetadataEditor
             onChange={this._onMetadataChange}
+            onAnnImport={this._onAnnImport}
             metadata={work.metadata || {}}
           />
         )}
@@ -226,6 +227,15 @@ class WorkDetail extends React.Component {
   _saveMetadata = () => {
     API.editWork(this.state.work.id, {
       rawMetadata: this.state.work.raw_metadata,
+    }).then(this._reload, e => {
+      alert(e.message);
+    });
+  };
+
+  _onAnnImport = (annId) => {
+    API.editWork(this.state.work.id, {
+      rawMetadata: this.state.work.raw_metadata,
+      importAnnMetadata: annId,
     }).then(this._reload, e => {
       alert(e.message);
     });

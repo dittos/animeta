@@ -25,8 +25,8 @@ class ImageService(
     })
 
     fun downloadAnnPoster(annId: String, outFile: File) {
-        val anime = annService.getMetadata(annId)!!
-        val images = anime.select("info[@type=\"Picture\"] img")
+        val anime = annService.getMetadata(annId)
+        val images = anime.select("info[type=\"Picture\"] img")
         var fullsrc: String? = null
         for (image in images) {
             val src = image.attr("src")

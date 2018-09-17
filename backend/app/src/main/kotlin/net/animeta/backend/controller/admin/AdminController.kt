@@ -2,19 +2,15 @@ package net.animeta.backend.controller.admin
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import net.animeta.backend.controller.v2.TablePeriodController
 import net.animeta.backend.db.Datastore
 import net.animeta.backend.db.query
 import net.animeta.backend.dto.WorkDTO
 import net.animeta.backend.exception.ApiException
-import net.animeta.backend.metadata.readStringList
-import net.animeta.backend.model.Period
 import net.animeta.backend.model.QUser.user
 import net.animeta.backend.model.QWork.work
 import net.animeta.backend.model.TitleMapping
 import net.animeta.backend.model.User
-import net.animeta.backend.model.WorkPeriodIndex
 import net.animeta.backend.repository.HistoryRepository
 import net.animeta.backend.repository.PersonRepository
 import net.animeta.backend.repository.RecordRepository
@@ -26,6 +22,7 @@ import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.WorkSerializer
 import net.animeta.backend.service.ChartService
 import net.animeta.backend.service.WorkService
+import net.animeta.backend.service.admin.AnnService
 import net.animeta.backend.service.admin.ImageService
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
@@ -55,6 +52,7 @@ class AdminController(private val datastore: Datastore,
                       private val personRepository: PersonRepository,
                       private val workSerializer: WorkSerializer,
                       private val tablePeriodController: TablePeriodController,
+                      private val annService: AnnService,
                       private val objectMapper: ObjectMapper) {
     @GetMapping("/works")
     fun getWorks(@CurrentUser currentUser: User,
@@ -147,7 +145,8 @@ class AdminController(private val datastore: Datastore,
                                val rawMetadata: String?,
                                val crawlImage: CrawlImageOptions?,
                                val blacklisted: Boolean?,
-                               val imageCenterY: Double?)
+                               val imageCenterY: Double?,
+                               val importAnnMetadata: String?)
 
     @PostMapping("/works/{id}")
     @Transactional
@@ -175,6 +174,11 @@ class AdminController(private val datastore: Datastore,
         if (request.imageCenterY != null) {
             val work = workRepository.findById(id).orElse(null)
             work.image_center_y = request.imageCenterY
+            workRepository.save(work)
+        }
+        if (request.importAnnMetadata != null) {
+            val work = workRepository.findById(id).orElse(null)
+            annService.importMetadata(work, annService.getMetadata(request.importAnnMetadata))
             workRepository.save(work)
         }
         return getWork(currentUser, id)
@@ -217,20 +221,7 @@ class AdminController(private val datastore: Datastore,
 
     private fun editMetadata(id: Int, rawMetadata: String) {
         val work = workRepository.findById(id).orElse(null)
-        val metadata: JsonNode
-        try {
-            metadata = ObjectMapper(YAMLFactory()).readTree(rawMetadata)
-        } catch (e: Exception) {
-            throw ApiException("YAML parse failed: ${e.message}", HttpStatus.BAD_REQUEST)
-        }
-        work.raw_metadata = rawMetadata
-        work.metadata = objectMapper.writeValueAsString(metadata)
-        val periods = metadata["periods"]?.let { readStringList(it) }?.map { Period.parse(it) }?.filterNotNull() ?: listOf()
-        work.periodIndexes.clear()
-        work.periodIndexes.addAll(periods.sorted().mapIndexed { index, period ->
-            WorkPeriodIndex(work = work, period = period.toString(), firstPeriod = index == 0)
-        })
-        workRepository.save(work)
+        workService.editMetadata(work, rawMetadata)
     }
 
     private fun crawlImage(id: Int, options: CrawlImageOptions) {

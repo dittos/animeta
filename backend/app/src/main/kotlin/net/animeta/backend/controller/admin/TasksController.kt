@@ -4,11 +4,13 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.common.io.BaseEncoding
 import net.animeta.backend.exception.ApiException
 import net.animeta.backend.repository.WorkRepository
+import net.animeta.backend.repository.WorkStaffRepository
 import net.animeta.backend.service.admin.AnnService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.support.TransactionTemplate
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -26,6 +28,7 @@ class TasksController(
     @Value("\${animeta.security.internal-password}") private val password: String,
     private val annService: AnnService,
     private val workRepository: WorkRepository,
+    private val workStaffRepository: WorkStaffRepository,
     private val transactionTemplate: TransactionTemplate
 ) {
     private val mapper = jacksonObjectMapper()
@@ -54,6 +57,30 @@ class TasksController(
                     }
                 }
                 Thread.sleep(1000)
+            }
+        }
+            .doOnSuccessOrError { _, throwable ->
+                if (throwable != null) {
+                    logger.error(throwable.message, throwable)
+                    processor.onNext("Error: ${throwable.message}")
+                }
+                processor.onComplete()
+            }
+            .subscribeOn(Schedulers.elastic())
+            .subscribe()
+
+        return processor.map { it + "\n" }
+    }
+
+    @GetMapping("/dumpWork2Staff")
+    fun dumpWork2Staff(): Flux<String> {
+        checkAuth()
+        
+        val processor = UnicastProcessor.create<String>()
+
+        Mono.fromCallable {
+            for ((workId, staffs) in workStaffRepository.findAll().groupBy { it.work.id!! }) {
+                processor.onNext("$workId\t${staffs.map { it.person.id!! }.distinct().joinToString(" ")}")
             }
         }
             .doOnSuccessOrError { _, throwable ->

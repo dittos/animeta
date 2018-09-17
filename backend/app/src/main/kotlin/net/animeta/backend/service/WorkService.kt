@@ -1,17 +1,26 @@
 package net.animeta.backend.service
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import net.animeta.backend.dto.Episode
+import net.animeta.backend.exception.ApiException
+import net.animeta.backend.metadata.readStringList
+import net.animeta.backend.model.Period
 import net.animeta.backend.model.TitleMapping
 import net.animeta.backend.model.Work
+import net.animeta.backend.model.WorkPeriodIndex
 import net.animeta.backend.repository.HistoryRepository
 import net.animeta.backend.repository.TitleMappingRepository
 import net.animeta.backend.repository.WorkRepository
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 @Service
 class WorkService(private val workRepository: WorkRepository,
                   private val titleMappingRepository: TitleMappingRepository,
-                  private val historyRepository: HistoryRepository) {
+                  private val historyRepository: HistoryRepository,
+                  private val objectMapper: ObjectMapper) {
     fun getOrCreate(title: String): Work {
         val mapping = titleMappingRepository.findOneByTitle(title)
         if (mapping != null) {
@@ -62,6 +71,23 @@ class WorkService(private val workRepository: WorkRepository,
             }
         }
         return result.values.sortedBy { it.number }
+    }
+
+    fun editMetadata(work: Work, rawMetadata: String) {
+        val metadata: JsonNode
+        try {
+            metadata = ObjectMapper(YAMLFactory()).readTree(rawMetadata)
+        } catch (e: Exception) {
+            throw ApiException("YAML parse failed: ${e.message}", HttpStatus.BAD_REQUEST)
+        }
+        work.raw_metadata = rawMetadata
+        work.metadata = objectMapper.writeValueAsString(metadata)
+        val periods = metadata["periods"]?.let { readStringList(it) }?.map { Period.parse(it) }?.filterNotNull() ?: listOf()
+        work.periodIndexes.clear()
+        work.periodIndexes.addAll(periods.sorted().mapIndexed { index, period ->
+            WorkPeriodIndex(work = work, period = period.toString(), firstPeriod = index == 0)
+        })
+        workRepository.save(work)
     }
 
     companion object {
