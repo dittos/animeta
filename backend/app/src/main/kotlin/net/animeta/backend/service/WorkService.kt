@@ -6,10 +6,13 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import net.animeta.backend.dto.Episode
 import net.animeta.backend.exception.ApiException
 import net.animeta.backend.metadata.readStringList
+import net.animeta.backend.model.Company
 import net.animeta.backend.model.Period
 import net.animeta.backend.model.TitleMapping
 import net.animeta.backend.model.Work
+import net.animeta.backend.model.WorkCompany
 import net.animeta.backend.model.WorkPeriodIndex
+import net.animeta.backend.repository.CompanyRepository
 import net.animeta.backend.repository.HistoryRepository
 import net.animeta.backend.repository.TitleMappingRepository
 import net.animeta.backend.repository.WorkRepository
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service
 class WorkService(private val workRepository: WorkRepository,
                   private val titleMappingRepository: TitleMappingRepository,
                   private val historyRepository: HistoryRepository,
+                  private val companyRepository: CompanyRepository,
                   private val objectMapper: ObjectMapper) {
     fun getOrCreate(title: String): Work {
         val mapping = titleMappingRepository.findOneByTitle(title)
@@ -87,6 +91,19 @@ class WorkService(private val workRepository: WorkRepository,
         work.periodIndexes.addAll(periods.sorted().mapIndexed { index, period ->
             WorkPeriodIndex(work = work, period = period.toString(), firstPeriod = index == 0)
         })
+        val studios = metadata["studio"]?.let { readStringList(it) }?.map {
+            companyRepository.findOneByName(it) ?: companyRepository.save(Company(
+                name = it,
+                metadata = null,
+                annId = null
+            ))
+        }
+        if (studios != null) {
+            work.companies.clear()
+            work.companies.addAll(studios.withIndex().map { (index, company) ->
+                WorkCompany(work = work, position = index, company = company)
+            })
+        }
         workRepository.save(work)
     }
 

@@ -1,7 +1,9 @@
 import * as React from 'react';
-import { FormGroup, Button, ControlLabel, Checkbox, FormControl, Radio, HelpBlock } from 'react-bootstrap/lib';
-import * as Select from 'react-select';
+import { FormGroup, ControlLabel, Checkbox, FormControl, Radio, HelpBlock } from 'react-bootstrap/lib';
 import { SOURCE_TYPE_MAP } from '../util';
+import { getCompanies } from './API';
+const CreatableSelect = require('react-select/lib/Creatable').default;
+const AsyncCreatableSelect = require('react-select/lib/AsyncCreatable').default;
 
 type MultiString = string | string[];
 
@@ -44,10 +46,10 @@ class ScheduleEditor extends React.Component<ScheduleEditorProps> {
                 <HelpBlock>Date is (YYYY-)MM-DD (HH:MM)</HelpBlock>
 
                 {/* TODO: autocomplete */}
-                <Select.Creatable
-                    multi={true}
+                <CreatableSelect
+                    isMulti
                     options={broadcasts.map(it => ({ label: it, value: it }))}
-                    value={broadcasts}
+                    value={broadcasts.map(it => ({ label: it, value: it }))}
                     onChange={this.handleBroadcastsChange}
                     placeholder="Select broadcasts..."
                 />
@@ -63,10 +65,10 @@ class ScheduleEditor extends React.Component<ScheduleEditorProps> {
         });
     };
 
-    private handleBroadcastsChange = (newOptions: Select.Option<string>[]) => {
+    private handleBroadcastsChange = (newOptions: any) => {
         this.props.onChange(this.props.name, {
             ...this.props.value,
-            broadcasts: newOptions.map(it => it.value),
+            broadcasts: newOptions.map((it: any) => it.value),
         });
     };
 }
@@ -148,11 +150,15 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                 </FormGroup>
                 <FormGroup>
                     <ControlLabel>Studios</ControlLabel>
-                    {/* TODO: autocomplete */}
-                    <Select.Creatable
-                        multi={true}
-                        options={readStringList(metadata.studio).map(it => ({ label: it, value: it }))}
-                        value={readStringList(metadata.studio)}
+                    <AsyncCreatableSelect
+                        isMulti
+                        loadOptions={(q: string) => getCompanies()
+                            .then((data: any) => data.filter((it: any) => it.name.toLowerCase().indexOf(q.toLowerCase()) == 0)
+                                .map((it: any) => ({ label: it.name, value: it.name })))}
+                        defaultOptions
+                        cacheOptions
+                        filterOption={null}
+                        value={readStringList(metadata.studio).map(it => ({ label: it, value: it }))}
                         onChange={this.handleStudiosChange}
                     />
                 </FormGroup>
@@ -254,15 +260,15 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                 [el.name]: el.value,
             });
         } else {
-            const {[el.name]: _, ...rest} = this.props.metadata;
+            const {[el.name]: _, ...rest} = this.props.metadata as any;
             this.props.onChange(rest);
         }
     };
 
-    private handleStudiosChange = (newOptions: Select.Option<string>[]) => {
+    private handleStudiosChange = (newOptions: any) => {
         this.props.onChange({
             ...this.props.metadata,
-            studio: writeStringList(newOptions.map(it => it.value)),
+            studio: writeStringList(newOptions.map((it: any) => it.value)),
         });
     };
 
@@ -281,7 +287,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                 [name]: serialized,
             });
         } else {
-            const {[name]: _, ...rest} = this.props.metadata;
+            const {[name]: _, ...rest} = this.props.metadata as any;
             this.props.onChange(rest);
         }
     };

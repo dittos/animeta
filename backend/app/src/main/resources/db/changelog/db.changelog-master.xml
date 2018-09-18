@@ -85,4 +85,41 @@
             <column name="person_id" />
         </createIndex>
     </changeSet>
+    <changeSet id="4" author="ditto">
+        <createTable tableName="company">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+            <column name="metadata" type="jsonb" />
+            <column name="ann_id" type="int"/>
+        </createTable>
+        <createTable tableName="work_company">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="work_id" type="int">
+                <constraints foreignKeyName="fk_work_company_work"
+                             nullable="false"
+                             referencedTableName="work_work"
+                             referencedColumnNames="id"
+                             deleteCascade="false"
+                />
+            </column>
+            <column name="position" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="company_id" type="int">
+                <constraints foreignKeyName="fk_work_company_company"
+                             nullable="false"
+                             referencedTableName="company"
+                             referencedColumnNames="id"
+                             deleteCascade="false"
+                />
+            </column>
+            <column name="metadata" type="jsonb" />
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

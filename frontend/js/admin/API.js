@@ -120,3 +120,12 @@ export function clearCache() {
 export function getPerson(id) {
   return fetchWithSession(`/api/admin/people/${id}`);
 }
+
+let _companies;
+
+export function getCompanies() {
+  if (!_companies) {
+    _companies = fetchWithSession('/api/admin/companies');
+  }
+  return _companies;
+}

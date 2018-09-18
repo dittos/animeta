@@ -51,4 +51,8 @@ data class Work(
     @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = [CascadeType.REMOVE], orphanRemoval = true)
     @get:OrderBy("position")
     var staffs: MutableList<WorkStaff> = mutableListOf()
+
+    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @get:OrderBy("position")
+    var companies: MutableList<WorkCompany> = mutableListOf()
 }

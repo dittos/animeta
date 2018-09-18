@@ -7,10 +7,12 @@ import net.animeta.backend.db.Datastore
 import net.animeta.backend.db.query
 import net.animeta.backend.dto.WorkDTO
 import net.animeta.backend.exception.ApiException
+import net.animeta.backend.model.Company
 import net.animeta.backend.model.QUser.user
 import net.animeta.backend.model.QWork.work
 import net.animeta.backend.model.TitleMapping
 import net.animeta.backend.model.User
+import net.animeta.backend.repository.CompanyRepository
 import net.animeta.backend.repository.HistoryRepository
 import net.animeta.backend.repository.PersonRepository
 import net.animeta.backend.repository.RecordRepository
@@ -50,6 +52,7 @@ class AdminController(private val datastore: Datastore,
                       private val workStaffRepository: WorkStaffRepository,
                       private val workCastRepository: WorkCastRepository,
                       private val personRepository: PersonRepository,
+                      private val companyRepository: CompanyRepository,
                       private val workSerializer: WorkSerializer,
                       private val tablePeriodController: TablePeriodController,
                       private val annService: AnnService,
@@ -330,6 +333,12 @@ class AdminController(private val datastore: Datastore,
             },
             metadata = person.metadata?.let(objectMapper::readTree)
         )
+    }
+
+    @GetMapping("/companies")
+    fun getCompanies(): Iterable<Company> {
+        // TODO: define DTO
+        return companyRepository.findAll()
     }
 
     private fun checkPermission(user: User) {

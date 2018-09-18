@@ -28,6 +28,6 @@ interface WorkRepository : CrudRepository<Work, Int> {
     """)
     fun iterateAllByAllTimePopularity(): Stream<Pair<Int, Long>>
 
-    @Query(value = "SELECT * FROM work_work WHERE jsonb_exists(metadata, 'ann_id')  ", nativeQuery = true)
-    fun findAllWithAnnId(): List<Work>
+    @Query(value = "SELECT * FROM work_work WHERE jsonb_exists(metadata, ?1)  ", nativeQuery = true)
+    fun findAllMetadataHasProperty(propertyName: String): List<Work>
 }

@@ -3,6 +3,10 @@ package net.animeta.backend.controller.admin
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.common.io.BaseEncoding
 import net.animeta.backend.exception.ApiException
+import net.animeta.backend.metadata.readStringList
+import net.animeta.backend.model.Company
+import net.animeta.backend.model.WorkCompany
+import net.animeta.backend.repository.CompanyRepository
 import net.animeta.backend.repository.WorkRepository
 import net.animeta.backend.repository.WorkStaffRepository
 import net.animeta.backend.service.admin.AnnService
@@ -29,6 +33,7 @@ class TasksController(
     private val annService: AnnService,
     private val workRepository: WorkRepository,
     private val workStaffRepository: WorkStaffRepository,
+    private val companyRepository: CompanyRepository,
     private val transactionTemplate: TransactionTemplate
 ) {
     private val mapper = jacksonObjectMapper()
@@ -41,7 +46,7 @@ class TasksController(
         val processor = UnicastProcessor.create<String>()
 
         Mono.fromCallable {
-            val works = workRepository.findAllWithAnnId()
+            val works = workRepository.findAllMetadataHasProperty("ann_id")
             processor.onNext("Importing ${works.size} works")
 
             for ((chunkIndex, chunk) in works.asSequence().chunked(5).withIndex()) {
@@ -75,12 +80,55 @@ class TasksController(
     @GetMapping("/dumpWork2Staff")
     fun dumpWork2Staff(): Flux<String> {
         checkAuth()
-        
+
         val processor = UnicastProcessor.create<String>()
 
         Mono.fromCallable {
             for ((workId, staffs) in workStaffRepository.findAll().groupBy { it.work.id!! }) {
                 processor.onNext("$workId\t${staffs.map { it.person.id!! }.distinct().joinToString(" ")}")
+            }
+        }
+            .doOnSuccessOrError { _, throwable ->
+                if (throwable != null) {
+                    logger.error(throwable.message, throwable)
+                    processor.onNext("Error: ${throwable.message}")
+                }
+                processor.onComplete()
+            }
+            .subscribeOn(Schedulers.elastic())
+            .subscribe()
+
+        return processor.map { it + "\n" }
+    }
+
+    @PostMapping("/migrateCompany")
+    fun migrateCompany(): Flux<String> {
+        checkAuth()
+
+        val processor = UnicastProcessor.create<String>()
+
+        Mono.fromCallable {
+            val works = workRepository.findAllMetadataHasProperty("studio")
+            processor.onNext("Migrating ${works.size} works")
+
+            for (work in works) {
+                transactionTemplate.execute {
+                    val work = workRepository.findById(work.id!!).get()
+                    val metadata = work.metadata!!.let { mapper.readTree(it) }
+                    val studios = readStringList(metadata["studio"])
+                    processor.onNext("${work.title}: $studios")
+                    work.companies.clear()
+                    work.companies.addAll(studios.withIndex().map { (index, name) ->
+                        val company = companyRepository.findOneByName(name) ?:
+                            companyRepository.save(Company(
+                                name = name,
+                                metadata = null,
+                                annId = null
+                            ))
+                        WorkCompany(work = work, position = index, company = company)
+                    })
+                    workRepository.save(work)
+                }
             }
         }
             .doOnSuccessOrError { _, throwable ->
