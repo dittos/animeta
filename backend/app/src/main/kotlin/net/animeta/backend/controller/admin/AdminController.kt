@@ -27,6 +27,8 @@ import net.animeta.backend.service.WorkService
 import net.animeta.backend.service.admin.AnnService
 import net.animeta.backend.service.admin.ImageService
 import org.springframework.http.HttpStatus
+import org.springframework.transaction.annotation.Isolation
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -222,7 +224,8 @@ class AdminController(private val datastore: Datastore,
         workRepository.delete(other)
     }
 
-    private fun editMetadata(id: Int, rawMetadata: String) {
+    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.NESTED)
+    fun editMetadata(id: Int, rawMetadata: String) {
         val work = workRepository.findById(id).orElse(null)
         workService.editMetadata(work, rawMetadata)
     }

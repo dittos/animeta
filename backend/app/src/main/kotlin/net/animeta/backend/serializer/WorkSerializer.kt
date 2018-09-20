@@ -3,6 +3,8 @@ package net.animeta.backend.serializer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.net.UrlEscapers
+import net.animeta.backend.dto.Credit
+import net.animeta.backend.dto.CreditType
 import net.animeta.backend.dto.WorkDTO
 import net.animeta.backend.dto.WorkLinks
 import net.animeta.backend.dto.WorkMetadata
@@ -11,6 +13,7 @@ import net.animeta.backend.metadata.readStringList
 import net.animeta.backend.model.Period
 import net.animeta.backend.model.User
 import net.animeta.backend.model.Work
+import net.animeta.backend.model.WorkStaff
 import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.service.WorkService
 import org.springframework.beans.factory.annotation.Value
@@ -28,6 +31,23 @@ class WorkSerializer(val workService: WorkService,
                      val objectMapper: ObjectMapper,
                      @Value("\${animeta.media.base_url}") private val mediaBaseUrl: String) {
     private val defaultTimeZone = ZoneId.of("Asia/Seoul")
+    val taskToCreditType = mapOf(
+        "chief director" to CreditType.CHIEF_DIRECTOR,
+        "series director" to CreditType.SERIES_DIRECTOR,
+        "director" to CreditType.DIRECTOR,
+        "character design" to CreditType.CHARACTER_DESIGN,
+        "animation character design" to CreditType.CHARACTER_DESIGN,
+        "music" to CreditType.MUSIC,
+        "series composition" to CreditType.SERIES_COMPOSITION,
+        "original creator" to CreditType.ORIGINAL_WORK,
+        "original work" to CreditType.ORIGINAL_WORK,
+        "original story" to CreditType.ORIGINAL_WORK,
+        "original manga" to CreditType.ORIGINAL_WORK
+    )
+    val compatibleCreditTypes = listOf(
+        listOf(CreditType.CHIEF_DIRECTOR, CreditType.SERIES_DIRECTOR, CreditType.DIRECTOR),
+        listOf(CreditType.SERIES_COMPOSITION, CreditType.ORIGINAL_WORK)
+    )
 
     fun serialize(work: Work, viewer: User? = null, full: Boolean = false): WorkDTO {
         val index = work.indexes.firstOrNull()
@@ -94,8 +114,21 @@ class WorkSerializer(val workService: WorkService,
                         "jp" to item["schedule"]?.let { getSchedule(it, period) },
                         "kr" to item["schedule_kr"]?.let { getSchedule(it, period) }
                 ),
-                durationMinutes = item["duration"]?.asText()?.let { it.trimEnd('m').toIntOrNull() }
+                durationMinutes = item["duration"]?.asText()?.let { it.trimEnd('m').toIntOrNull() },
+                credits = getCredits(work.staffs)
         )
+    }
+
+    fun getCredits(staffs: List<WorkStaff>): List<Credit> {
+        return staffs.mapNotNull { staff ->
+            taskToCreditType[staff.task.toLowerCase()]?.let { type ->
+                Credit(
+                    type = type,
+                    name = staff.person.name,
+                    personId = staff.person.id!!
+                )
+            }
+        }.sortedBy { it.type.ordinal }
     }
 
     fun namuLink(ref: String): String {

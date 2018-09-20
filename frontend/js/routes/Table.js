@@ -12,6 +12,7 @@ import { Switch, SwitchItem } from '../ui/Switch';
 import AddRecordDialog from '../ui/AddRecordDialog';
 import SearchInput from '../ui/SearchInput';
 import { trackEvent } from '../Tracking';
+import LoginDialog from '../ui/LoginDialog';
 // TODO: css module
 
 function formatPeriod(period) {
@@ -58,10 +59,10 @@ function PageTitle(props) {
   );
 }
 
-function Header({ excludeKR, ordering, onSort, period }) {
+function Header({ excludeKR, ordering, onSort, period, currentUser }) {
   var options;
   if (!excludeKR) {
-    options = [
+    options = [,
       { value: 'schedule', label: '날짜 (日)' },
       { value: 'schedule.kr', label: '날짜 (韓)' },
       { value: 'recordCount', label: '인기' },
@@ -71,6 +72,13 @@ function Header({ excludeKR, ordering, onSort, period }) {
       { value: 'schedule', label: '날짜' },
       { value: 'recordCount', label: '인기' },
     ];
+  }
+  if (period === Periods.current) {
+    options.unshift({
+      value: 'recommended',
+      label: '추천',
+      onClick: currentUser ? undefined : () => { LoginDialog.open(); return false },
+    });
   }
   return (
     <Layout.LeftRight
@@ -82,7 +90,7 @@ function Header({ excludeKR, ordering, onSort, period }) {
             <label className="hide-mobile">정렬: </label>
             <Switch value={ordering} onChange={onSort}>
               {options.map(option => (
-                <SwitchItem key={option.value} value={option.value}>
+                <SwitchItem key={option.value} value={option.value} onClick={option.onClick}>
                   {option.label}
                 </SwitchItem>
               ))}
@@ -185,6 +193,16 @@ function Poster({ item }) {
   );
 }
 
+const creditTypeText = {
+  'ORIGINAL_WORK': '원작',
+  'CHIEF_DIRECTOR': '총감독',
+  'SERIES_DIRECTOR': '시리즈 감독',
+  'DIRECTOR': '감독',
+  'SERIES_COMPOSITION': '시리즈 구성',
+  'CHARACTER_DESIGN': '캐릭터 디자인',
+  'MUSIC': '음악',
+};
+
 function Item({ item, onAddRecord }) {
   var { links, studios, source, schedule, durationMinutes } = item.metadata;
   return (
@@ -212,6 +230,17 @@ function Item({ item, onAddRecord }) {
         <div className={Styles.schedules}>
           {renderSchedule('jp', schedule.jp)}
           {schedule.kr && renderSchedule('kr', schedule.kr)}
+        </div>
+        <div className={Styles.credits}>
+          {item.recommendations && item.recommendations.length > 0 && (
+            item.recommendations.map(({ credit, related }) => (
+              <div className={Styles.credit}>
+                <span className={Styles.creditType}>{creditTypeText[credit.type]}</span>
+                {credit.name}{' '}
+                <span className={Styles.creditRelated}>({related.map(it => it.workTitle).join(', ')})</span>
+              </div>
+            ))
+          )}
         </div>
         <div className={Styles.links}>
           {links.website && (
@@ -273,7 +302,27 @@ const preferKRScheduleComparator = item =>
 
 const recordCountComparator = item => -item.record_count;
 
+const scoreByCreditType = {
+  'ORIGINAL_WORK': 10,
+  'CHIEF_DIRECTOR': 20,
+  'SERIES_DIRECTOR': 20,
+  'DIRECTOR': 20,
+  'SERIES_COMPOSITION': 10,
+  'CHARACTER_DESIGN': 6,
+  'MUSIC': 5,
+};
+
+const recommendedComparator = item => {
+  let score = 0;
+  if (item.recommendations && item.recommendations.length > 0) {
+    score = item.recommendations.map(it => scoreByCreditType[it.credit.type] * it.related.length)
+      .reduce((sum, x) => sum + x, 0);
+  }
+  return -score;
+};
+
 const comparatorMap = {
+  recommended: recommendedComparator,
   schedule: scheduleComparator,
   'schedule.kr': preferKRScheduleComparator,
   recordCount: recordCountComparator,
@@ -285,7 +334,7 @@ function nullslast(val) {
 
 class Table extends React.Component {
   render() {
-    const { period, ordering, containsKRSchedule, items } = this.props.data;
+    const { period, ordering, containsKRSchedule, items, currentUser } = this.props.data;
     return (
       <div className={Styles.container}>
         <Layout.CenteredFullWidth>
@@ -297,14 +346,18 @@ class Table extends React.Component {
             ordering={ordering}
             excludeKR={!containsKRSchedule}
             onSort={this._onSort}
+            currentUser={currentUser}
           />
         </Layout.CenteredFullWidth>
 
         <Grid.Row className={Styles.items}>
-          {items.map(item => (
-            <Grid.Column size={6} midSize={12} pull="left">
-              <Item key={item.id} item={item} onAddRecord={this._recordAdded} />
-            </Grid.Column>
+          {items.map((item, i) => (
+            <>
+              <Grid.Column size={6} midSize={12} pull="left">
+                <Item key={item.id} item={item} onAddRecord={this._recordAdded} />
+              </Grid.Column>
+              {i % 2 === 1 && <div style={{ clear: 'both' }} />}
+            </>
           ))}
         </Grid.Row>
       </div>
@@ -337,17 +390,19 @@ export default {
       }),
       loader.call(`/table/periods/${period}`, {
         only_first_period: JSON.stringify(true),
+        with_recommendations: JSON.stringify(period === Periods.current),
       }),
     ]);
+    const ordering = currentUser && period === Periods.current ? 'recommended' : 'schedule';
     return {
       currentUser,
       period,
-      items: sortBy(items, scheduleComparator),
+      items: sortBy(items, comparatorMap[ordering]),
       containsKRSchedule: some(
         items,
         i => i.metadata.schedule.kr && i.metadata.schedule.kr.date
       ),
-      ordering: 'schedule',
+      ordering,
     };
   },
 

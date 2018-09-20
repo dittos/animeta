@@ -7,6 +7,7 @@ import net.animeta.backend.metadata.readStringList
 import net.animeta.backend.model.Company
 import net.animeta.backend.model.WorkCompany
 import net.animeta.backend.repository.CompanyRepository
+import net.animeta.backend.repository.PersonRepository
 import net.animeta.backend.repository.WorkRepository
 import net.animeta.backend.repository.WorkStaffRepository
 import net.animeta.backend.service.admin.AnnService
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.context.request.RequestContextHolder
@@ -34,6 +36,7 @@ class TasksController(
     private val workRepository: WorkRepository,
     private val workStaffRepository: WorkStaffRepository,
     private val companyRepository: CompanyRepository,
+    private val personRepository: PersonRepository,
     private val transactionTemplate: TransactionTemplate
 ) {
     private val mapper = jacksonObjectMapper()
@@ -129,6 +132,41 @@ class TasksController(
                     })
                     workRepository.save(work)
                 }
+            }
+        }
+            .doOnSuccessOrError { _, throwable ->
+                if (throwable != null) {
+                    logger.error(throwable.message, throwable)
+                    processor.onNext("Error: ${throwable.message}")
+                }
+                processor.onComplete()
+            }
+            .subscribeOn(Schedulers.elastic())
+            .subscribe()
+
+        return processor.map { it + "\n" }
+    }
+
+    @PostMapping("/importPersonNames")
+    fun importPersonNames(@RequestBody body: List<List<String>>): Flux<String> {
+        checkAuth()
+
+        val processor = UnicastProcessor.create<String>()
+
+        Mono.fromCallable {
+            for ((idStr, name, nameKo) in body) {
+                val person = personRepository.findById(idStr.toInt()).orElse(null)
+                if (person == null) {
+                    processor.onNext("? $idStr")
+                    continue
+                }
+                if (person.name != name) {
+                    processor.onNext("! $idStr $name, ${person.name}")
+                    continue
+                }
+                person.name = nameKo
+                personRepository.save(person)
+                processor.onNext("+ $idStr")
             }
         }
             .doOnSuccessOrError { _, throwable ->

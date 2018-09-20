@@ -103,6 +103,7 @@
 :local(.itemContent) {
     margin-left: @poster-width;
     padding-left: 16px;
+    padding-bottom: 16px;
 }
 
 :local(.title) {
@@ -189,6 +190,28 @@
 .item-schedule-kr {
     .item-schedule-icon ("kr");
     padding-top: 7px;
+}
+
+:local(.credits) {
+    padding-bottom: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: @color-text-light;
+    letter-spacing: -0.05em;
+}
+
+:local(.credit) {
+    color: @color-text-dark;
+    word-break: keep-all;
+}
+
+:local(.creditType) {
+    font-weight: bold;
+    padding-right: 5px;
+}
+
+:local(.creditRelated) {
+    color: @color-text-light;
 }
 
 :local(.links) {

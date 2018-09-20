@@ -43,18 +43,24 @@ export class SwitchItem extends React.Component {
     if (active === null) {
       active = value === this.context.switchValue;
     }
-    if (!onClick && this.context.switchOnChange) {
-      onClick = e => {
-        e.preventDefault();
-        this.context.switchOnChange(value);
-      };
-    }
     return (
       <Component
         {...props}
         className={active ? Styles.activeItem : Styles.item}
-        onClick={onClick}
+        onClick={this._onClick}
       />
     );
   }
+
+  _onClick = (e) => {
+    e.preventDefault();
+    if (this.props.onClick) {
+      if (this.props.onClick(this.props.value) === false){
+        return;
+      }
+    }
+    if (this.context.switchOnChange) {
+      this.context.switchOnChange(this.props.value);
+    }
+  };
 }
