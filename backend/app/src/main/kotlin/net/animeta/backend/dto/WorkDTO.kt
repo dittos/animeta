@@ -32,7 +32,7 @@ data class WorkMetadata(val title: String,
 data class WorkCredit(val workId: Int, val workTitle: String, val type: CreditType)
 
 sealed class Recommendation {
-    data class ByCredit(val credit: Credit, val related: List<WorkCredit>) : Recommendation()
+    data class ByCredit(val credit: Credit, val related: List<WorkCredit>, val score: Int) : Recommendation()
 }
 
 data class WorkDTO(
@@ -46,5 +46,6 @@ data class WorkDTO(
         val rank: Int?,
         val record: RecordDTO?,
         val metadata: WorkMetadata?,
-        val recommendations: List<Recommendation>? = null
+        val recommendations: List<Recommendation>? = null,
+        val recommendationScore: Int = 0
 )

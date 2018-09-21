@@ -65,32 +65,55 @@ class TablePeriodController(val datastore: Datastore,
             } else {
                 emptyMap()
             }
-            return result.map { it.copy(
-                record = records[it.id],
-                recommendations = if (withRecommendations) generateRecommendations(it, relatedStaffs) else null
-            ) }
+            return result.map {
+                val record = records[it.id]
+                if (withRecommendations) {
+                    val recommendations = generateRecommendations(it, relatedStaffs)
+                    it.copy(
+                        record = record,
+                        recommendations = recommendations,
+                        recommendationScore = recommendations.sumBy {
+                            if (it is Recommendation.ByCredit) it.score else 0
+                        } * recommendations.size
+                    )
+                } else {
+                    it.copy(record = record)
+                }
+            }
         }
         return result
     }
 
-    fun generateRecommendations(work: WorkDTO, relatedStaffs: Map<Int, List<WorkStaffRepository.RelatedRow>>): List<Recommendation>? {
+    private val scoreByCreditType = mapOf(
+        CreditType.ORIGINAL_WORK to 10,
+        CreditType.CHIEF_DIRECTOR to 20,
+        CreditType.SERIES_DIRECTOR to 20,
+        CreditType.DIRECTOR to 20,
+        CreditType.SERIES_COMPOSITION to 10,
+        CreditType.CHARACTER_DESIGN to 6,
+        CreditType.MUSIC to 5
+    )
+
+    fun generateRecommendations(work: WorkDTO, relatedStaffs: Map<Int, List<WorkStaffRepository.RelatedRow>>): List<Recommendation> {
         if (work.metadata == null) {
-            return null
+            return emptyList()
         }
         return work.metadata.credits.mapNotNull { credit ->
-            relatedStaffs[credit.personId]?.let { related ->
+            relatedStaffs[credit.personId]?.let { staffs ->
+                val related = staffs.withIndex().mapNotNull { (index, it) ->
+                    // TODO: group same credit type (in FE?)
+                    val creditType = workSerializer.taskToCreditType[it.staffTask.toLowerCase()]
+                    if (creditType != null && isCompatible(creditType, credit.type)) {
+                        Pair(Pair(creditType.ordinal, index),
+                            WorkCredit(it.workId, it.workTitle, creditType))
+                    } else {
+                        null
+                    }
+                }.sortedWith(compareBy({ it.first.first }, { it.first.second })).map { it.second }
                 Recommendation.ByCredit(
                     credit = credit,
-                    related = related.withIndex().mapNotNull { (index, it) ->
-                        // TODO: group same credit type (in FE?)
-                        val creditType = workSerializer.taskToCreditType[it.staffTask.toLowerCase()]
-                        if (creditType != null && isCompatible(creditType, credit.type)) {
-                            Pair(Pair(creditType.ordinal, index),
-                                WorkCredit(it.workId, it.workTitle, creditType))
-                        } else {
-                            null
-                        }
-                    }.sortedWith(compareBy({ it.first.first }, { it.first.second })).map { it.second }.take(2)
+                    related = related.take(2),
+                    score = (scoreByCreditType[credit.type] ?: 1) * related.size
                 )
             }
         }.filter { it.related.isNotEmpty() }

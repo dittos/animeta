@@ -304,24 +304,7 @@ const preferKRScheduleComparator = item =>
 
 const recordCountComparator = item => -item.record_count;
 
-const scoreByCreditType = {
-  'ORIGINAL_WORK': 10,
-  'CHIEF_DIRECTOR': 20,
-  'SERIES_DIRECTOR': 20,
-  'DIRECTOR': 20,
-  'SERIES_COMPOSITION': 10,
-  'CHARACTER_DESIGN': 6,
-  'MUSIC': 5,
-};
-
-const recommendedComparator = item => {
-  let score = 0;
-  if (item.recommendations && item.recommendations.length > 0) {
-    score = item.recommendations.map(it => scoreByCreditType[it.credit.type] * it.related.length)
-      .reduce((sum, x) => sum + x, 0);
-  }
-  return -score;
-};
+const recommendedComparator = item => -item.recommendationScore;
 
 const comparatorMap = {
   recommended: recommendedComparator,
