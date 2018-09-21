@@ -56,6 +56,25 @@
     margin-left: 10px;
 }
 
+:local(.recommendationBetaNotice) {
+    color: @color-text-dark;
+    background-color: @color-bg-lightest;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.5;
+
+    strong {
+        padding-right: 15px;
+
+        @media (max-width: 480px) {
+            display: block;
+            padding-bottom: 5px;
+        }
+    }
+}
+
 // Content
 
 :local(.item) {
@@ -242,5 +261,6 @@
     }
     :local(.itemContent) {
         margin-left: @poster-width-sm;
+        padding-bottom: 0;
     }
 }
