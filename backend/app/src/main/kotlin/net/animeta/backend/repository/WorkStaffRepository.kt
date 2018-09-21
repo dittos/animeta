@@ -1,6 +1,7 @@
 package net.animeta.backend.repository
 
 import net.animeta.backend.model.Person
+import net.animeta.backend.model.User
 import net.animeta.backend.model.Work
 import net.animeta.backend.model.WorkStaff
 import org.springframework.data.jpa.repository.Query
@@ -11,14 +12,29 @@ interface WorkStaffRepository : CrudRepository<WorkStaff, Int> {
     fun findByPersonInAndWorkIn(person: List<Person>, works: List<Work>): List<WorkStaff>
     fun findByPerson(person: Person): List<WorkStaff>
 
+    data class RelatedRow(
+        val personId: Int,
+        val staffTask: String,
+        val workId: Int,
+        val workTitle: String
+    )
+
     @Query("""
-        SELECT s.*
-        FROM work_staff s
-        JOIN record_record r ON (s.work_id = r.work_id)
-        WHERE s.person_id = :personId
-        AND r.user_id = :userId
-        AND r.status_type IN (0, 1)
+        SELECT NEW net.animeta.backend.repository.WorkStaffRepository${'$'}RelatedRow(
+            s2.person.id AS personId,
+            s2.task AS staffTask,
+            s2.work.id AS workId,
+            r.title AS workTitle
+        )
+        FROM
+            WorkStaff s
+            JOIN WorkStaff s2 ON (s2.person = s.person AND s2.work != s.work)
+            JOIN Record r ON (r.work = s2.work)
+        WHERE
+            s.work.id IN :workIds
+            AND r.user = :user
+            AND r.status_type IN (0, 1)
         ORDER BY r.updated_at DESC
-    """, nativeQuery = true)
-    fun findByPersonIdAndWorkInUserRecords(personId: Int, userId: Int): List<WorkStaff>
+    """)
+    fun batchFindRelatedByUser(workIds: Iterable<Int>, user: User): List<RelatedRow>
 }
