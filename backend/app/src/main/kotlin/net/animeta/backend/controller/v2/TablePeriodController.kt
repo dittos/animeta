@@ -13,7 +13,6 @@ import net.animeta.backend.model.Period
 import net.animeta.backend.model.QWorkPeriodIndex.workPeriodIndex
 import net.animeta.backend.model.User
 import net.animeta.backend.repository.RecordRepository
-import net.animeta.backend.repository.WorkRepository
 import net.animeta.backend.repository.WorkStaffRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.RecordSerializer

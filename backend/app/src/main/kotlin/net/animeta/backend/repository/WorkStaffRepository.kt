@@ -34,6 +34,7 @@ interface WorkStaffRepository : CrudRepository<WorkStaff, Int> {
             s.work.id IN :workIds
             AND r.user = :user
             AND r.status_type IN (0, 1)
+        GROUP BY s2.person.id, s2.task, s2.work.id, r.title, r.updated_at
         ORDER BY r.updated_at DESC
     """)
     fun batchFindRelatedByUser(workIds: Iterable<Int>, user: User): List<RelatedRow>
