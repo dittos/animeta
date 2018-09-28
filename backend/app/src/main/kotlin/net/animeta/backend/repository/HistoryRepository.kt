@@ -3,7 +3,6 @@ package net.animeta.backend.repository
 import net.animeta.backend.model.History
 import net.animeta.backend.model.Record
 import net.animeta.backend.model.User
-import net.animeta.backend.model.Work
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
@@ -18,31 +17,31 @@ interface HistoryRepository : CrudRepository<History, Int>, QuerydslPredicateExe
 
     fun countByUser(user: User): Int
 
-    fun existsByWorkAndStatusAndUpdatedAtGreaterThan(work: Work, status: String, updatedAt: Timestamp): Boolean
+    fun existsByWorkIdAndStatusAndUpdatedAtGreaterThan(workId: Int, status: String, updatedAt: Timestamp): Boolean
 
-    fun deleteByUserAndWork(user: User, work: Work)
+    fun deleteByUserAndWorkId(user: User, workId: Int)
 
     @Modifying
-    @Query("update History h set h.work = ?2 where h.work = ?1")
-    fun replaceWork(fromWork: Work, toWork: Work)
+    @Query("update History h set h.workId = ?2 where h.workId = ?1")
+    fun replaceWorkId(fromWorkId: Int, toWorkId: Int)
 
     fun streamAllByUserOrderByIdDesc(user: User): Stream<History>
 
     @Query("""
         SELECT NEW kotlin.Pair(h.status, COUNT(*))
         FROM History h
-        WHERE h.work = ?1
+        WHERE h.workId = ?1
         AND h.comment <> ''
         GROUP BY h.status
     """)
-    fun findAllStatusWithCountAndCommentByWork(work: Work): List<Pair<String, Int>>
+    fun findAllStatusWithCountAndCommentByWorkId(workId: Int): List<Pair<String, Int>>
 
     @Query("""
         SELECT NEW kotlin.Pair(h.status, COUNT(*))
         FROM History h
-        WHERE h.work = ?1
+        WHERE h.workId = ?1
         AND h.comment = ''
         GROUP BY h.status
     """)
-    fun findAllStatusWithCountAndNoCommentByWork(work: Work): List<Pair<String, Int>>
+    fun findAllStatusWithCountAndNoCommentByWorkId(workId: Int): List<Pair<String, Int>>
 }

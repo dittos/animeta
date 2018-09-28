@@ -20,10 +20,15 @@ import net.animeta.backend.serializer.RecordSerializer
 import net.animeta.backend.service.UserRecordsService
 import net.animeta.backend.service.WorkService
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import java.sql.Timestamp
 import java.time.Instant
-import java.util.*
+import java.util.Optional
 import javax.transaction.Transactional
 
 @RestController
@@ -102,14 +107,14 @@ class UserRecordsController(val userRepository: UserRepository,
         if (category != null && currentUser.id != category.user.id) {
             throw ApiException("Permission denied.", HttpStatus.FORBIDDEN)
         }
-        val existingRecord = recordRepository.findOneByWorkAndUser(work, user)
+        val existingRecord = recordRepository.findOneByWorkIdAndUser(work.id!!, user)
         if (existingRecord != null) {
             throw ApiException("이미 같은 작품이 \"${existingRecord.title}\"로 등록되어 있습니다.", HttpStatus.UNPROCESSABLE_ENTITY)
         }
         val statusType = StatusType.valueOf(statusTypeParam.toUpperCase())
         val record = Record(
                 user = user,
-                work = work,
+                workId = work.id!!,
                 title = title,
                 category = category,
                 status = status,
@@ -119,7 +124,7 @@ class UserRecordsController(val userRepository: UserRepository,
         recordRepository.save(record)
         val history = History(
                 user = record.user,
-                work = record.work,
+                workId = record.workId,
                 record = record,
                 status = record.status,
                 status_type = record.status_type,

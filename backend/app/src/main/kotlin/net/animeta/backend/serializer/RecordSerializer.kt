@@ -28,7 +28,7 @@ class RecordSerializer(val userSerializer: UserSerializer,
         return RecordDTO(
                 id = record.id!!,
                 user_id = record.user.id!!,
-                work_id = record.work.id!!,
+                work_id = record.workId,
                 category_id = record.category?.id,
                 title = record.title,
                 status = record.status,
@@ -45,6 +45,6 @@ class RecordSerializer(val userSerializer: UserSerializer,
 
         val episode = record.status.toIntOrNull() ?: return false
         val updatedAt = record.updated_at ?: return false
-        return historyRepository.existsByWorkAndStatusAndUpdatedAtGreaterThan(record.work, (episode + 1).toString(), updatedAt)
+        return historyRepository.existsByWorkIdAndStatusAndUpdatedAtGreaterThan(record.workId, (episode + 1).toString(), updatedAt)
     }
 }

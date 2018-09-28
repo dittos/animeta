@@ -62,10 +62,10 @@ class WorkSerializer(val workService: WorkService,
                     null
                 },
                 episodes = if (full) workService.getEpisodes(work) else null,
-                record_count = index?.record_count ?: recordRepository.countByWork(work),
+                record_count = index?.record_count ?: recordRepository.countByWorkId(work.id!!),
                 rank = index?.rank,
                 record = if (viewer != null) {
-                    recordRepository.findOneByWorkAndUser(work, viewer)
+                    recordRepository.findOneByWorkIdAndUser(work.id!!, viewer)
                             ?.let { recordSerializer.serialize(it, RecordSerializer.legacyOptions()) }
                 } else {
                     null

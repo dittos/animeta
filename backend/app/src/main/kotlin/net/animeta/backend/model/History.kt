@@ -1,7 +1,17 @@
 package net.animeta.backend.model
 
 import java.sql.Timestamp
-import javax.persistence.*
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
+import javax.persistence.FetchType
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
+import javax.persistence.Table
 
 @Entity
 @Table(name = "record_history")
@@ -12,9 +22,8 @@ data class History(
         @get:ManyToOne(fetch = FetchType.LAZY)
         @get:JoinColumn(name = "user_id")
         var user: User,
-        @get:ManyToOne(fetch = FetchType.LAZY)
-        @get:JoinColumn(name = "work_id")
-        var work: Work,
+        @get:Column(name = "work_id")
+        var workId: Int,
         @get:ManyToOne(fetch = FetchType.LAZY)
         @get:JoinColumn(name = "record_id")
         var record: Record,

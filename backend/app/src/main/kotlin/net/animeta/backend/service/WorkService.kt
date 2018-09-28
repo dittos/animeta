@@ -57,7 +57,7 @@ class WorkService(private val workRepository: WorkRepository,
     }
 
     fun getEpisodes(work: Work): List<Episode> {
-        val result = historyRepository.findAllStatusWithCountAndCommentByWork(work)
+        val result = historyRepository.findAllStatusWithCountAndCommentByWorkId(work.id!!)
                 .mapNotNull { (status, count) ->
                     val statusNumber = status.toIntOrNull()
                     if (statusNumber != null)
@@ -67,7 +67,7 @@ class WorkService(private val workRepository: WorkRepository,
                 }
                 .associateBy { it.number }
                 .toMutableMap()
-        val result2 = historyRepository.findAllStatusWithCountAndNoCommentByWork(work)
+        val result2 = historyRepository.findAllStatusWithCountAndNoCommentByWorkId(work.id!!)
         for ((status, count) in result2) {
             val statusNumber = status.toIntOrNull()
             if (statusNumber != null && !result.containsKey(statusNumber) && count > 1) {

@@ -10,7 +10,13 @@ import net.animeta.backend.serializer.RecordSerializer
 import net.animeta.backend.service.WorkService
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/v2/records/{id}")
@@ -36,8 +42,8 @@ class RecordController(val recordRepository: RecordRepository,
         }
         if (title != null) {
             val work = workService.getOrCreate(title)
-            record.work = work
-            record.histories.forEach { it.work = work }
+            record.workId = work.id!!
+            record.histories.forEach { it.workId = work.id!! }
             record.title = title
         }
         if (categoryIdParam != null) {

@@ -10,19 +10,19 @@ interface WorkRepository : CrudRepository<Work, Int> {
     // Returns Work ID instead of Work (HHH-1615)
 
     @Query("""
-        SELECT NEW kotlin.Pair(h.work.id, COUNT(DISTINCT h.user) AS factor)
+        SELECT NEW kotlin.Pair(h.workId, COUNT(DISTINCT h.user) AS factor)
         FROM History h
         WHERE h.updatedAt BETWEEN ?1 AND ?2
-        GROUP BY h.work.id
+        GROUP BY h.workId
         HAVING COUNT(DISTINCT h.user) > 1
         ORDER BY factor DESC
     """)
     fun iterateAllByPopularityWithinRange(minUpdatedAt: Timestamp, maxUpdatedAt: Timestamp): Stream<Pair<Int, Long>>
 
     @Query("""
-        SELECT NEW kotlin.Pair(r.work.id, COUNT(*) AS factor)
+        SELECT NEW kotlin.Pair(r.workId, COUNT(*) AS factor)
         FROM Record r
-        GROUP BY r.work.id
+        GROUP BY r.workId
         HAVING COUNT(*) > 1
         ORDER BY factor DESC
     """)

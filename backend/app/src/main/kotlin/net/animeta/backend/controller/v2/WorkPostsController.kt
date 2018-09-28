@@ -7,7 +7,11 @@ import net.animeta.backend.exception.ApiException
 import net.animeta.backend.model.QHistory.history
 import net.animeta.backend.repository.WorkRepository
 import net.animeta.backend.serializer.PostSerializer
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/v2/works/{id:[0-9]+}/posts")
@@ -22,7 +26,7 @@ class WorkPostsController(val workRepository: WorkRepository,
             @RequestParam(required = false) options: PostSerializer.Options?): List<PostDTO> {
         val work = workRepository.findById(id).orElseThrow { ApiException.notFound() }
         var query = history.query.selectRelated(history.user)
-                .filter(history.work.eq(work), history.comment.ne(""))
+                .filter(history.workId.eq(work.id!!), history.comment.ne(""))
                 .orderBy(history.id.desc())
         if (beforeId != null) {
             query = query.filter(history.id.lt(beforeId))

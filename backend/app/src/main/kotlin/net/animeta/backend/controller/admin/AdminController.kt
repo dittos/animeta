@@ -204,23 +204,23 @@ class AdminController(private val datastore: Datastore,
         if (work.id == other.id) {
             throw ApiException("Cannot merge itself", HttpStatus.BAD_REQUEST)
         }
-        val conflicts = datastore.query(user.query.filter(user.records.any().work.eq(work)
-                .and(user.records.any().work.eq(other))))
+        val conflicts = datastore.query(user.query.filter(user.records.any().workId.eq(work.id!!)
+                .and(user.records.any().workId.eq(other.id!!))))
         if (conflicts.isNotEmpty() && !force) {
             throw ApiException("Users with conflict exist", HttpStatus.UNPROCESSABLE_ENTITY,
                     MergeError(conflicts = conflicts.map { MergeConflictDTO(
                             user_id = it.id!!,
                             username = it.username,
-                            ids = it.records.filter { it.work.id == work.id || it.work.id == other.id }.map { it.id!! }
+                            ids = it.records.filter { it.workId == work.id || it.workId == other.id }.map { it.id!! }
                     ) }))
         }
         for (u in conflicts) {
-            historyRepository.deleteByUserAndWork(u, other)
-            recordRepository.deleteByUserAndWork(u, other)
+            historyRepository.deleteByUserAndWorkId(u, other.id!!)
+            recordRepository.deleteByUserAndWorkId(u, other.id!!)
         }
         titleMappingRepository.replaceWork(other, work)
-        historyRepository.replaceWork(other, work)
-        recordRepository.replaceWork(other, work)
+        historyRepository.replaceWorkId(other.id!!, work.id!!)
+        recordRepository.replaceWorkId(other.id!!, work.id!!)
         workRepository.delete(other)
     }
 
@@ -269,7 +269,7 @@ class AdminController(private val datastore: Datastore,
                    @PathVariable id: Int): DeleteResponse {
         checkPermission(currentUser)
         val work = workRepository.findById(id).orElse(null)
-        if (recordRepository.countByWork(work) != 0) {
+        if (recordRepository.countByWorkId(work.id!!) != 0) {
             throw ApiException("Record exists", HttpStatus.FORBIDDEN)
         }
         workRepository.delete(work)

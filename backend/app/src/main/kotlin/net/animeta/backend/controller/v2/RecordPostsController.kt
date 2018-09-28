@@ -13,7 +13,12 @@ import net.animeta.backend.serializer.PostSerializer
 import net.animeta.backend.serializer.RecordSerializer
 import net.animeta.backend.service.TwitterService
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import java.sql.Timestamp
 import java.time.Instant
 import javax.transaction.Transactional
@@ -52,7 +57,7 @@ class RecordPostsController(val recordRepository: RecordRepository,
         val statusType = StatusType.valueOf(statusTypeParam.toUpperCase())
         val history = History(
                 user = currentUser,
-                work = record.work,
+                workId = record.workId,
                 record = record,
                 status = status,
                 status_type = statusType,

@@ -38,9 +38,6 @@ data class Work(
     @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = [CascadeType.ALL], orphanRemoval = true)
     var periodIndexes: MutableList<WorkPeriodIndex> = mutableListOf()
 
-    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work")
-    var histories: List<History> = listOf()
-
     @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = [CascadeType.REMOVE], orphanRemoval = true)
     var titleMappings: MutableList<TitleMapping> = mutableListOf()
 

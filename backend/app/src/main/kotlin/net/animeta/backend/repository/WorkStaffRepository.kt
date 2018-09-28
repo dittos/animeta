@@ -2,14 +2,11 @@ package net.animeta.backend.repository
 
 import net.animeta.backend.model.Person
 import net.animeta.backend.model.User
-import net.animeta.backend.model.Work
 import net.animeta.backend.model.WorkStaff
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 
 interface WorkStaffRepository : CrudRepository<WorkStaff, Int> {
-    fun findByWork(work: Work): List<WorkStaff>
-    fun findByPersonInAndWorkIn(person: List<Person>, works: List<Work>): List<WorkStaff>
     fun findByPerson(person: Person): List<WorkStaff>
 
     data class RelatedRow(
@@ -29,7 +26,7 @@ interface WorkStaffRepository : CrudRepository<WorkStaff, Int> {
         FROM
             WorkStaff s
             JOIN WorkStaff s2 ON (s2.person = s.person AND s2.work != s.work)
-            JOIN Record r ON (r.work = s2.work)
+            JOIN Record r ON (r.workId = s2.work.id)
         WHERE
             s.work.id IN :workIds
             AND r.user = :user
