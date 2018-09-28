@@ -53,7 +53,9 @@ export class SwitchItem extends React.Component {
   }
 
   _onClick = (e) => {
-    e.preventDefault();
+    if (this.props.Component === 'a') {
+      e.preventDefault();
+    }
     if (this.props.onClick) {
       if (this.props.onClick(this.props.value) === false){
         return;
