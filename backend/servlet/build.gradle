@@ -20,5 +20,5 @@ dependencies {
         exclude group: 'org.postgresql', module: 'postgresql'
     }
     providedRuntime "org.springframework.boot:spring-boot-starter-tomcat"
-    providedCompile "org.postgresql:postgresql:42.1.4"
+    providedCompile "org.postgresql:postgresql"
 }

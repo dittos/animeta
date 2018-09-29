@@ -1,0 +1,13 @@
+group 'net.animeta'
+version '1.0.0'
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+
+springBoot {
+    mainClassName = 'net.animeta.backend.ApplicationKt'
+}
+
+dependencies {
+    compile(project(':app'))
+}

@@ -2,3 +2,4 @@ rootProject.name = 'backend'
 
 include 'app'
 include 'servlet'
+include 'standalone'
