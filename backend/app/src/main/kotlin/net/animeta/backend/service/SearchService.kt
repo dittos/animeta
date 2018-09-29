@@ -35,12 +35,13 @@ class SearchService(private val workIndexRepository: WorkIndexRepository) {
                 .joinToString("%", prefix = "%", postfix = "%")
     }
 
-    private fun makeKey(query: String): String {
-        return makeKeySequence(query).joinToString("")
-    }
+    companion object {
+        fun makeKey(query: String): String {
+            return makeKeySequence(query).joinToString("")
+        }
 
-    private fun makeKeySequence(query: String): Sequence<String> {
-        return query.asSequence()
+        private fun makeKeySequence(query: String): Sequence<String> {
+            return query.asSequence()
                 .mapNotNull {
                     when {
                         it in '가'..'힣' -> {
@@ -54,5 +55,6 @@ class SearchService(private val workIndexRepository: WorkIndexRepository) {
                         else -> null
                     }
                 }
+        }
     }
 }

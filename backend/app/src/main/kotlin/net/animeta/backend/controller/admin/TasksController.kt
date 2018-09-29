@@ -3,6 +3,7 @@ package net.animeta.backend.controller.admin
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.common.io.BaseEncoding
 import net.animeta.backend.exception.ApiException
+import net.animeta.backend.indexer.Indexer
 import net.animeta.backend.metadata.readStringList
 import net.animeta.backend.model.Company
 import net.animeta.backend.model.WorkCompany
@@ -37,6 +38,7 @@ class TasksController(
     private val workStaffRepository: WorkStaffRepository,
     private val companyRepository: CompanyRepository,
     private val personRepository: PersonRepository,
+    private val indexer: Indexer,
     private val transactionTemplate: TransactionTemplate
 ) {
     private val mapper = jacksonObjectMapper()
@@ -168,6 +170,28 @@ class TasksController(
                 personRepository.save(person)
                 processor.onNext("+ $idStr")
             }
+        }
+            .doOnSuccessOrError { _, throwable ->
+                if (throwable != null) {
+                    logger.error(throwable.message, throwable)
+                    processor.onNext("Error: ${throwable.message}")
+                }
+                processor.onComplete()
+            }
+            .subscribeOn(Schedulers.elastic())
+            .subscribe()
+
+        return processor.map { it + "\n" }
+    }
+
+    @PostMapping("/buildIndex")
+    fun buildIndex(): Flux<String> {
+        checkAuth()
+
+        val processor = UnicastProcessor.create<String>()
+
+        Mono.fromCallable {
+            indexer.run()
         }
             .doOnSuccessOrError { _, throwable ->
                 if (throwable != null) {

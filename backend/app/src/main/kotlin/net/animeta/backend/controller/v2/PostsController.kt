@@ -34,7 +34,7 @@ class PostsController(
         var posts = datastore.query(query.limit(limit))
         if (minRecordCount != null) {
             val workIndexes = workIndexRepository.findAllById(posts.map { it.workId })
-                .associateBy { it.work_id }
+                .associateBy { it.workId }
 
             // TODO: fill posts if filtered out
             posts = posts.filter {

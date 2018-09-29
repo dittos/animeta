@@ -15,6 +15,7 @@ import net.animeta.backend.model.User
 import net.animeta.backend.model.Work
 import net.animeta.backend.model.WorkStaff
 import net.animeta.backend.repository.RecordRepository
+import net.animeta.backend.repository.WorkIndexRepository
 import net.animeta.backend.service.WorkService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -27,6 +28,7 @@ import java.time.temporal.Temporal
 @Service
 class WorkSerializer(val workService: WorkService,
                      val recordRepository: RecordRepository,
+                     val workIndexRepository: WorkIndexRepository,
                      val recordSerializer: RecordSerializer,
                      val objectMapper: ObjectMapper,
                      @Value("\${animeta.media.base_url}") private val mediaBaseUrl: String) {
@@ -50,7 +52,7 @@ class WorkSerializer(val workService: WorkService,
     )
 
     fun serialize(work: Work, viewer: User? = null, full: Boolean = false): WorkDTO {
-        val index = work.indexes.firstOrNull()
+        val index = workIndexRepository.findOneByWorkId(work.id!!)
         return WorkDTO(
                 id = work.id!!,
                 title = work.title,

@@ -14,7 +14,7 @@ import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
 import java.sql.Timestamp
 import java.time.ZoneId
-import java.util.*
+import java.util.Optional
 import java.util.concurrent.TimeUnit
 import java.util.stream.Stream
 import kotlin.streams.asSequence
@@ -80,7 +80,7 @@ class ChartService(val transactionManager: PlatformTransactionManager,
                     maxUpdatedAt = Timestamp.from(instantRange.upperEndpoint())
             )
         } else {
-            return workRepository.iterateAllByAllTimePopularity()
+            return workRepository.iterateAllByAllTimePopularity(minCount = 2)
         }
     }
 

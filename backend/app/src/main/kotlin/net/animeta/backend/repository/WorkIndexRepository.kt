@@ -9,11 +9,13 @@ interface WorkIndexRepository : JpaRepository<WorkIndex, Int> {
     @Query("""
         SELECT DISTINCT wi
         FROM WorkIndex wi, WorkTitleIndex wti
-        WHERE wi.work_id = wti.work.id
+        WHERE wi.workId = wti.work.id
         AND wti.key LIKE ?1
         AND wi.record_count >= ?2
         AND wi.blacklisted = false
         ORDER BY wi.rank
     """)
     fun search(pattern: String, minRecordCount: Int, pageable: Pageable): List<WorkIndex>
+
+    fun findOneByWorkId(workId: Int): WorkIndex?
 }

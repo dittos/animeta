@@ -29,12 +29,6 @@ data class Work(
         var metadata: String?,
         var blacklisted: Boolean
 ) {
-    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = [CascadeType.REMOVE], orphanRemoval = true)
-    var indexes: List<WorkIndex> = listOf()
-
-    @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = [CascadeType.REMOVE], orphanRemoval = true)
-    var titleIndexes: List<WorkTitleIndex> = listOf()
-
     @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = [CascadeType.ALL], orphanRemoval = true)
     var periodIndexes: MutableList<WorkPeriodIndex> = mutableListOf()
 

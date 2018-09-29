@@ -23,10 +23,10 @@ interface WorkRepository : CrudRepository<Work, Int> {
         SELECT NEW kotlin.Pair(r.workId, COUNT(*) AS factor)
         FROM Record r
         GROUP BY r.workId
-        HAVING COUNT(*) > 1
+        HAVING COUNT(*) >= :minCount
         ORDER BY factor DESC
     """)
-    fun iterateAllByAllTimePopularity(): Stream<Pair<Int, Long>>
+    fun iterateAllByAllTimePopularity(minCount: Long): Stream<Pair<Int, Long>>
 
     @Query(value = "SELECT * FROM work_work WHERE jsonb_exists(metadata, ?1)  ", nativeQuery = true)
     fun findAllMetadataHasProperty(propertyName: String): List<Work>

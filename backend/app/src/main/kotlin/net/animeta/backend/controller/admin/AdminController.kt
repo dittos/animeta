@@ -18,6 +18,7 @@ import net.animeta.backend.repository.PersonRepository
 import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.repository.TitleMappingRepository
 import net.animeta.backend.repository.WorkCastRepository
+import net.animeta.backend.repository.WorkIndexRepository
 import net.animeta.backend.repository.WorkRepository
 import net.animeta.backend.repository.WorkStaffRepository
 import net.animeta.backend.security.CurrentUser
@@ -47,6 +48,7 @@ class AdminController(private val datastore: Datastore,
                       private val workService: WorkService,
                       private val imageService: ImageService,
                       private val workRepository: WorkRepository,
+                      private val workIndexRepository: WorkIndexRepository,
                       private val recordRepository: RecordRepository,
                       private val titleMappingRepository: TitleMappingRepository,
                       private val historyRepository: HistoryRepository,
@@ -123,7 +125,7 @@ class AdminController(private val datastore: Datastore,
                     record_count = recordRepository.countByTitle(it.title)
             )
         }.sortedByDescending { it.record_count }
-        val index = work.indexes.firstOrNull()
+        val index = workIndexRepository.findOneByWorkId(work.id!!)
         return AdminWorkDTO(
                 id = work.id!!,
                 title = work.title,
