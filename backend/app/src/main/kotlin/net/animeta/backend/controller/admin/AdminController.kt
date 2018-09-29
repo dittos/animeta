@@ -68,9 +68,9 @@ class AdminController(private val datastore: Datastore,
         checkPermission(currentUser)
 
         var query = work.query.filter(work.blacklisted.isFalse)
-        if (onlyOrphans) {
-            query = query.filter(work.indexes.any().record_count.eq(0))
-        }
+//        if (onlyOrphans) {
+//            query = query.filter(work.indexes.any().record_count.eq(0))
+//        }
         query = query.orderBy(work.id.desc()).offset(offset).limit(50)
         return datastore.query(query).map { workSerializer.serialize(it) }
     }

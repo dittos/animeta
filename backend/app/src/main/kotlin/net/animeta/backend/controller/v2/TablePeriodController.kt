@@ -49,7 +49,6 @@ class TablePeriodController(val datastore: Datastore,
         val result = cache.get(CacheKey(period, onlyFirstPeriod)) {
             var query = workPeriodIndex.query
                     .filter(workPeriodIndex.period.eq(period.toString()))
-                    .selectRelated(workPeriodIndex.work.indexes)
             if (onlyFirstPeriod) {
                 query = query.filter(workPeriodIndex.firstPeriod.isTrue)
             }
