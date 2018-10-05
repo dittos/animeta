@@ -3,20 +3,17 @@ from fabric.api import *
 env.hosts = ['animeta.net']
 
 def deploy():
-    _deploy(newapi=True, frontend=True)
+    _deploy(backend=True, frontend=True)
 
-def deploy_api():
-    _deploy(api=True)
-
-def deploy_newapi():
-    _deploy(newapi=True)
+def deploy_backend():
+    _deploy(backend=True)
 
 def deploy_frontend():
     _deploy(frontend=True)
 
-def _deploy(api=False, newapi=False, frontend=False):
+def _deploy(backend=False, frontend=False):
     # local builds
-    if newapi:
+    if backend:
         with lcd('backend'):
             local('./gradlew build')
     if frontend:
@@ -35,11 +32,7 @@ def _deploy(api=False, newapi=False, frontend=False):
         run('git pull')
         if frontend:
             run('npm install')
-        if api:
-            with cd('backend-legacy'):
-                run('../venv/bin/pip install -r ./requirements.txt')
-                run('../venv/bin/python manage.py migrate')
-        if newapi:
+        if backend:
             put('backend/servlet/build/libs/servlet-1.0.0.war', 'backend.war.tmp')
         if frontend:
             run('mkdir -p animeta/static/build')
@@ -51,10 +44,10 @@ def _deploy(api=False, newapi=False, frontend=False):
             run('cp frontend-server/config.json frontend-dist/')
 
         # reload
-        if newapi:
+        if backend:
             run('mv backend.war.tmp backend/tomcat/app/backend-1.0.0.war')
         if frontend:
             run('pm2 gracefulReload animeta')
-        if newapi:
+        if backend:
             # tail logs for 1 min.
             sudo('timeout 1m docker logs -f --tail 100 animeta-tomcat')
