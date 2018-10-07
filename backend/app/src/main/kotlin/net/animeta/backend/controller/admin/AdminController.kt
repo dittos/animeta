@@ -8,6 +8,7 @@ import net.animeta.backend.db.query
 import net.animeta.backend.dto.WorkDTO
 import net.animeta.backend.exception.ApiException
 import net.animeta.backend.model.Company
+import net.animeta.backend.model.Person
 import net.animeta.backend.model.QUser.user
 import net.animeta.backend.model.QWork.work
 import net.animeta.backend.model.TitleMapping
@@ -327,6 +328,23 @@ class AdminController(private val datastore: Datastore,
     fun getPerson(@CurrentUser currentUser: User, @PathVariable id: Int): PersonDTO {
         checkPermission(currentUser)
         val person = personRepository.findById(id).get()
+        return serialize(person)
+    }
+
+    data class EditPersonRequest(val name: String?)
+
+    @PostMapping("/people/{id}")
+    fun editPerson(@CurrentUser currentUser: User, @PathVariable id: Int, @RequestBody request: EditPersonRequest): PersonDTO {
+        checkPermission(currentUser)
+        val person = personRepository.findById(id).get()
+        if (request.name != null) {
+            person.name = request.name
+        }
+        personRepository.save(person)
+        return serialize(person)
+    }
+
+    private fun serialize(person: Person): PersonDTO {
         return PersonDTO(
             id = person.id!!,
             name = person.name,

@@ -121,6 +121,14 @@ export function getPerson(id) {
   return fetchWithSession(`/api/admin/people/${id}`);
 }
 
+export function editPerson(id, request) {
+  return fetchWithSession(`/api/admin/people/${id}`, {
+    method: 'POST',
+    body: JSON.stringify(request),
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
 let _companies;
 
 export function getCompanies() {

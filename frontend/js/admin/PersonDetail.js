@@ -1,11 +1,12 @@
 import React from 'react';
 import { withRouter, Link } from 'react-router';
-import { Table, FormGroup } from 'react-bootstrap';
+import { Table, Form, FormGroup, FormControl, Button } from 'react-bootstrap';
 import * as API from './API';
 
 class PersonDetail extends React.Component {
   state = {
     person: null,
+    editName: '',
   };
 
   componentDidMount() {
@@ -19,7 +20,7 @@ class PersonDetail extends React.Component {
   }
 
   _reload = () => {
-    return API.getPerson(this.props.params.id).then(person => this.setState({ person }));
+    return API.getPerson(this.props.params.id).then(person => this.setState({ person, editName: person.name }));
   };
 
   render() {
@@ -43,6 +44,16 @@ class PersonDetail extends React.Component {
             </tr>
           </tbody>
         </Table>
+        
+        <Form inline onSubmit={this._submitName}>
+          <FormGroup>
+            <FormControl
+              value={this.state.editName}
+              onChange={(e) => this.setState({ editName: e.target.value })}
+            />
+          </FormGroup>
+          <Button type="submit">Rename</Button>
+        </Form>
 
         <h3>Metadata</h3>
         <FormGroup>
@@ -76,6 +87,13 @@ class PersonDetail extends React.Component {
       </div>
     );
   }
+
+  _submitName = event => {
+    event.preventDefault();
+    API.editPerson(this.state.person.id, {
+      name: this.state.editName,
+    }).then(this._reload);
+  };
 }
 
 export default withRouter(PersonDetail);
