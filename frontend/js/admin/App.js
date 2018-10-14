@@ -9,10 +9,12 @@ import {
   MenuItem,
   Grid,
 } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import Loading from './Loading';
 import Login from './Login';
 import TitleAutosuggest from './TitleAutosuggest';
 import * as API from './API';
+import { NavItem } from 'react-bootstrap/lib';
 
 class App extends React.Component {
   state = {
@@ -53,6 +55,10 @@ class App extends React.Component {
                 <Link to="/">animeta</Link>
               </Navbar.Brand>
             </Navbar.Header>
+            <Nav>
+              <LinkContainer to="/works"><NavItem>Works</NavItem></LinkContainer>
+              <LinkContainer to="/people"><NavItem>People</NavItem></LinkContainer>
+            </Nav>
             <Nav pullRight>
               <NavDropdown
                 id="navbar-user-dropdown"
@@ -69,6 +75,9 @@ class App extends React.Component {
                 />
               </FormGroup>{' '}
               <Button onClick={this._addWork}>Add work</Button>
+            </Navbar.Form>
+            <Navbar.Form pullRight>
+              <Button onClick={this._clearCache}>Clear cache</Button>
             </Navbar.Form>
           </Navbar>
 
@@ -99,6 +108,10 @@ class App extends React.Component {
     API.createWork(title).then(work => {
       this.props.router.push(`/works/${work.id}`);
     });
+  };
+
+  _clearCache = () => {
+    API.clearCache().then(() => alert('Clear cache ok'));
   };
 }
 

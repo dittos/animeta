@@ -117,6 +117,10 @@ export function clearCache() {
   return fetchWithSession('/api/admin/caches', { method: 'DELETE' });
 }
 
+export function listPerson(page = 1) {
+  return fetchWithSession(`/api/admin/people?page=${page}`);
+}
+
 export function getPerson(id) {
   return fetchWithSession(`/api/admin/people/${id}`);
 }

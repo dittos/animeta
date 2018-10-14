@@ -1,8 +1,8 @@
 package net.animeta.backend.repository
 
 import net.animeta.backend.model.Person
-import org.springframework.data.repository.CrudRepository
+import org.springframework.data.repository.PagingAndSortingRepository
 
-interface PersonRepository : CrudRepository<Person, Int> {
+interface PersonRepository : PagingAndSortingRepository<Person, Int> {
     fun findOneByAnnId(annId: Int): Person?
 }

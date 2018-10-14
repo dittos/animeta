@@ -28,6 +28,8 @@ import net.animeta.backend.service.ChartService
 import net.animeta.backend.service.WorkService
 import net.animeta.backend.service.admin.AnnService
 import net.animeta.backend.service.admin.ImageService
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Propagation
@@ -323,6 +325,15 @@ class AdminController(private val datastore: Datastore,
                          val staffs: List<PersonWorkDTO>,
                          val casts: List<PersonWorkDTO>,
                          val metadata: JsonNode?)
+
+    @GetMapping("/people")
+    fun listPerson(@CurrentUser currentUser: User,
+                   @RequestParam(defaultValue = "1") page: Int): List<PersonDTO> {
+        checkPermission(currentUser)
+        val pageable = PageRequest.of(page, 128, Sort.by(Sort.Direction.DESC, "id"))
+        val people = personRepository.findAll(pageable)
+        return people.content.map { serialize(it) }
+    }
 
     @GetMapping("/people/{id}")
     fun getPerson(@CurrentUser currentUser: User, @PathVariable id: Int): PersonDTO {
