@@ -9,11 +9,15 @@ import net.animeta.backend.serializer.PostSerializer
 import net.animeta.backend.serializer.RecordSerializer
 import net.animeta.backend.serializer.UserSerializer
 import net.animeta.backend.social.TwitterServiceProvider2
+import org.apache.tomcat.util.http.LegacyCookieProcessor
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.runApplication
+import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory
+import org.springframework.boot.web.server.WebServerFactoryCustomizer
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -56,6 +60,14 @@ class Application : SpringBootServletInitializer() {
     @Bean
     fun backupTaskExecutor(): TaskExecutor =
             ThreadPoolTaskExecutor().apply { corePoolSize = 4 }
+
+    @Bean
+    fun cookieProcessorCustomizer(): WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
+        return WebServerFactoryCustomizer { factory ->
+            factory.addContextCustomizers(TomcatContextCustomizer { context ->
+                context.cookieProcessor = LegacyCookieProcessor() })
+        }
+    }
 
     @Configuration
     class WebMvcConfig(val currentUserArgumentResolver: CurrentUserArgumentResolver,

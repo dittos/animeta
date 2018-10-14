@@ -1,0 +1,35 @@
+version: "3.4"
+services:
+  web:
+    image: sapzilorg/animeta-backend
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 256M
+      restart_policy:
+        condition: on-failure
+      update_config:
+        order: start-first
+    configs:
+      - source: spring
+        target: /app/application.properties
+      - source: google_credentials
+        target: /app/google-credentials.json
+    environment:
+      - SPRING_CONFIG_LOCATION=file:/app/application.properties
+    ports:
+      - target: 8080
+        published: 8080
+        mode: ingress
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+configs:
+  spring:
+    file: ./application.properties
+  google_credentials:
+    file: ./google-credentials.json
