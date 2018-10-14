@@ -28,8 +28,42 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+  frontend:
+    image: sapzilorg/animeta-frontend
+    depends_on:
+      - web
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 128M
+      restart_policy:
+        condition: on-failure
+      update_config:
+        order: start-first
+    volumes:
+      - "static:/app/static"
+    configs:
+      - source: frontend
+        target: /app/frontend-dist/config.json
+    environment:
+      - PORT=3000
+    ports:
+      - target: 3000
+        published: 3000
+        mode: ingress
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/actuator/health"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 configs:
   spring:
     file: ./application.properties
   google_credentials:
     file: ./google-credentials.json
+  frontend:
+    file: ./frontend.json
+volumes:
+  static:
