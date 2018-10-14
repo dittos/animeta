@@ -11,9 +11,9 @@ interface WorkIndexRepository : JpaRepository<WorkIndex, Int> {
         FROM WorkIndex wi, WorkTitleIndex wti
         WHERE wi.workId = wti.work.id
         AND wti.key LIKE ?1
-        AND wi.record_count >= ?2
+        AND (wi.verified = true OR wi.record_count >= ?2)
         AND wi.blacklisted = false
-        ORDER BY wi.rank
+        ORDER BY wi.verified DESC, wi.rank
     """)
     fun search(pattern: String, minRecordCount: Int, pageable: Pageable): List<WorkIndex>
 

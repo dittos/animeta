@@ -33,7 +33,8 @@ class Indexer(
                     title = work.title,
                     record_count = recordCounts[work.id!!]?.toInt() ?: 0,
                     rank = 0,
-                    blacklisted = work.blacklisted
+                    blacklisted = work.blacklisted,
+                    verified = work.metadata != null
                 ))
             }
             objects.sortByDescending { it.record_count }

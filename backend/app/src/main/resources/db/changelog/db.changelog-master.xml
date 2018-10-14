@@ -122,4 +122,11 @@
             <column name="metadata" type="jsonb" />
         </createTable>
     </changeSet>
+    <changeSet id="5" author="ditto">
+        <addColumn tableName="search_workindex">
+            <column name="verified" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

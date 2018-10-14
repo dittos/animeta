@@ -14,5 +14,6 @@ data class WorkIndex(
     var title: String,
     var record_count: Int,
     var rank: Int,
-    var blacklisted: Boolean
+    var blacklisted: Boolean,
+    var verified: Boolean
 )
