@@ -50,6 +50,11 @@ export function createServer({ server = express(), app, getAssets }) {
   if (config.sentryDsn) {
     server.use(Raven.requestHandler());
   }
+  server.use('/static/build', express.static('static/build', {
+    immutable: true,
+    maxAge: '1y',
+  }));
+  server.use('/static', express.static('static'));
   server.use(cookieParser());
   server.use(csurf({ cookie: true }));
   server.use((req, res, next) => {
