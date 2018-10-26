@@ -156,7 +156,7 @@ export function createServer({ server = express(), app, getAssets }) {
       {
         title: `Admin`,
         preloadData: {},
-        assetEntries: ['common', 'admin'],
+        assetEntries: ['runtime', 'common', 'admin'],
       },
       ''
     );
@@ -197,7 +197,7 @@ export function createServer({ server = express(), app, getAssets }) {
             preloadData,
             title,
             meta,
-            assetEntries: ['common', 'index'],
+            assetEntries: ['runtime', 'common', 'index'],
           },
           ReactDOMServer.renderToString(element)
         );

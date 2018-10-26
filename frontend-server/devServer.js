@@ -1,63 +1,11 @@
+const fs = require('fs');
 const express = require('express');
 const webpack = require('webpack');
 const MemoryFileSystem = require('memory-fs');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const requireFromString = require('require-from-string');
-const getAssetKind = require('assets-webpack-plugin/lib/getAssetKind');
-const isHMRUpdate = require('assets-webpack-plugin/lib/isHMRUpdate');
-const isSourceMap = require('assets-webpack-plugin/lib/isSourceMap');
 import { createServer } from './frontend';
-
-function getAssets(compiler, statsObj) {
-  // Copied from https://github.com/kossnocorp/assets-webpack-plugin/blob/master/index.js
-  const stats = statsObj.toJson({
-    hash: true,
-    publicPath: true,
-    assets: true,
-    chunks: false,
-    modules: false,
-    source: false,
-    errorDetails: false,
-    timings: false,
-  });
-  const options = compiler.options;
-  var assetPath = stats.publicPath;
-  // assetsByChunkName contains a hash with the bundle names and the produced files
-  // e.g. { one: 'one-bundle.js', two: 'two-bundle.js' }
-  // in some cases (when using a plugin or source maps) it might contain an array of produced files
-  // e.g. {
-  // main:
-  //   [ 'index-bundle-42b6e1ec4fa8c5f0303e.js',
-  //     'index-bundle-42b6e1ec4fa8c5f0303e.js.map' ]
-  // }
-  var assetsByChunkName = stats.assetsByChunkName;
-
-  var output = Object.keys(assetsByChunkName).reduce(function(
-    chunkMap,
-    chunkName
-  ) {
-    var assets = assetsByChunkName[chunkName];
-    if (!Array.isArray(assets)) {
-      assets = [assets];
-    }
-    chunkMap[chunkName] = assets.reduce(function(typeMap, asset) {
-      if (isHMRUpdate(options, asset) || isSourceMap(options, asset)) {
-        return typeMap;
-      }
-
-      var typeName = getAssetKind(options, asset);
-      typeMap[typeName] = assetPath + asset;
-
-      return typeMap;
-    }, {});
-
-    return chunkMap;
-  },
-  {});
-
-  return output;
-}
 
 // Don't require directly to fool tsc
 const webpackConfigFactory = module.require('../frontend/webpack.config.js');
@@ -68,7 +16,6 @@ const serverWebpackConfig = webpackConfigFactory({
 });
 const webpackConfig = webpackConfigFactory({ server: false, prod: false });
 const compiler = webpack(webpackConfig);
-
 let serverCompiler = webpack(serverWebpackConfig);
 let serverVfs = new MemoryFileSystem();
 serverCompiler.outputFileSystem = serverVfs;
@@ -90,6 +37,6 @@ serverCompiler.run(() => {
   createServer({
     server,
     app,
-    getAssets: res => getAssets(compiler, res.locals.webpackStats),
+    getAssets: () => JSON.parse(fs.readFileSync(__dirname + '/../frontend/assets.json').toString('utf8')),
   }).listen(3000);
 });
