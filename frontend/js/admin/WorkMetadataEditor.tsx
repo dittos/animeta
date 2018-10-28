@@ -2,8 +2,8 @@ import * as React from 'react';
 import { FormGroup, ControlLabel, Checkbox, FormControl, Radio, HelpBlock } from 'react-bootstrap/lib';
 import { SOURCE_TYPE_MAP } from '../util';
 import { getCompanies } from './API';
-const CreatableSelect = require('react-select/lib/Creatable').default;
-const AsyncCreatableSelect = require('react-select/lib/AsyncCreatable').default;
+import CreatableSelect from 'react-select/lib/Creatable';
+import AsyncCreatableSelect from 'react-select/lib/AsyncCreatable';
 
 type MultiString = string | string[];
 
