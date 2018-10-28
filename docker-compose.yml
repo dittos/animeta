@@ -29,7 +29,7 @@ services:
       retries: 3
       start_period: 40s
   frontend:
-    image: quay.io/dittos/animeta
+    image: quay.io/dittos/animeta:master
     depends_on:
       - backend
     deploy:
