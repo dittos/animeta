@@ -29,7 +29,7 @@ services:
       retries: 3
       start_period: 40s
   frontend:
-    image: sapzilorg/animeta-frontend
+    image: quay.io/dittos/animeta
     depends_on:
       - backend
     deploy:
