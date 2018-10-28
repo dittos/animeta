@@ -2,7 +2,7 @@ import React from 'react';
 import cx from 'classnames';
 import { Link } from 'nuri';
 import { default as dateFnsFormat } from 'date-fns/format';
-import 'rxjs/add/operator/filter';
+import { filter } from 'rxjs/operators';
 import * as Grid from './Grid';
 import * as util from '../util';
 import { LoadMore } from './LoadMore';
@@ -82,7 +82,7 @@ export class Work extends React.Component {
     // TODO: move subscription up to route
     if (this.props.currentUser) {
       this._subscription = Mutations.records
-        .filter(it => it.work_id === this.props.work.id && it.user_id === this.props.currentUser.id)
+        .pipe(filter(it => it.work_id === this.props.work.id && it.user_id === this.props.currentUser.id))
         .subscribe(it => {
           this.props.onRecordChange(it);
         });
