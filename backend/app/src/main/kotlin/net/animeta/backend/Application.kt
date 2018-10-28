@@ -13,12 +13,10 @@ import org.apache.tomcat.util.http.LegacyCookieProcessor
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.runApplication
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory
 import org.springframework.boot.web.server.WebServerFactoryCustomizer
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
@@ -38,11 +36,7 @@ fun main(args: Array<String>) {
 
 @SpringBootApplication
 @PropertySource("classpath:/common.properties")
-class Application : SpringBootServletInitializer() {
-    override fun configure(builder: SpringApplicationBuilder): SpringApplicationBuilder {
-        return builder.sources(Application::class.java)
-    }
-
+class Application {
     @Bean
     @Primary
     fun objectMapper(builder: Jackson2ObjectMapperBuilder): ObjectMapper {

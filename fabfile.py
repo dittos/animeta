@@ -2,52 +2,14 @@ from fabric.api import *
 
 env.hosts = ['animeta.net']
 
-def deploy():
-    _deploy(backend=True, frontend=True)
-
 def deploy_backend():
-    _deploy(backend=True)
+    with lcd('backend'):
+        local('./gradlew dockerPush')
+    docker()
 
-def deploy_frontend():
-    _deploy(frontend=True)
-
-def _deploy(backend=False, frontend=False):
-    # local builds
-    if backend:
-        with lcd('backend'):
-            local('./gradlew build')
-    if frontend:
-        local('rm -f animeta/static/build/*')
-        local('npm run build-assets')  # -> animeta/static/build/*, frontend/assets.json
-        local('npm run build-server')  # -> frontend-server/bundle.js
-
-        local('rm -rf frontend-dist')
-        local('npm run build-dist')  # -> frontend-dist/*
-        local('cp frontend-server/*.ejs frontend-server/bundle.js frontend-server/bundle.js.map frontend-dist/')
-
-    local('git push')
+def docker():
     with cd('/home/ditto/animeta'):
-        # update
-        run('rm -f package-lock.json')  # Avoid conflict
         run('git pull')
-        if frontend:
-            run('npm install')
-        if backend:
-            put('backend/servlet/build/libs/servlet-1.0.0.war', 'backend.war.tmp')
-        if frontend:
-            run('mkdir -p animeta/static/build')
-            put('animeta/static/build/*', 'animeta/static/build/')
-            run('rm -rf frontend-dist')
-            run('mkdir frontend-dist')
-            put('frontend-dist/*', 'frontend-dist/')
-            put('frontend/assets.json', 'frontend-dist/')
-            run('cp frontend-server/config.json frontend-dist/')
 
-        # reload
-        if backend:
-            run('mv backend.war.tmp backend/tomcat/app/backend-1.0.0.war')
-        if frontend:
-            run('pm2 gracefulReload animeta')
-        if backend:
-            # tail logs for 1 min.
-            sudo('timeout 1m docker logs -f --tail 100 animeta-tomcat')
+    with cd('/home/ditto/docker/animeta'):
+        sudo('docker stack deploy -c docker-compose.yml animeta')
