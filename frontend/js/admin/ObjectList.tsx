@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 interface Entity {
   id: number;
@@ -7,9 +7,7 @@ interface Entity {
 
 export interface ObjectListProps<T extends Entity> {
   location: {
-    query: {
-      page: string;
-    };
+    search: string;
   };
   basePath: string;
   loader: (page: number) => Promise<any[]>;
@@ -30,7 +28,8 @@ class ObjectList<T extends Entity> extends React.Component<ObjectListProps<T>, O
   };
 
   async _reload() {
-    const page = parseInt(this.props.location.query.page || '1', 10);
+    const query = new URLSearchParams(this.props.location.search);
+    const page = parseInt(query.get('page') || '1', 10);
     this.setState({ data: await this.props.loader(page) }, () => {
       window.scrollTo(0, 0);
     });
@@ -41,14 +40,15 @@ class ObjectList<T extends Entity> extends React.Component<ObjectListProps<T>, O
   }
 
   componentDidUpdate(prevProps: any) {
-    if (prevProps.location.query.page !== this.props.location.query.page) {
+    if (prevProps.location.search !== this.props.location.search) {
       this._reload();
     }
   }
 
   render() {
     const data = this.state.data;
-    const page = parseInt(this.props.location.query.page || '1', 10);
+    const query = new URLSearchParams(this.props.location.search);
+    const page = parseInt(query.get('page') || '1', 10);
     const listContext = {
       reload: this._reload,
     };
@@ -63,7 +63,7 @@ class ObjectList<T extends Entity> extends React.Component<ObjectListProps<T>, O
         </ul>
 
         <p>
-          <Link to={{ pathname: this.props.basePath, query: { page: page + 1 } }}>
+          <Link to={{ pathname: this.props.basePath, search: `?page=${page + 1}` }}>
             Next
           </Link>
         </p>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link, withRouter } from 'react-router';
+import { Link, withRouter } from 'react-router-dom';
 import {
   Button,
   FormGroup,
@@ -99,14 +99,14 @@ class App extends React.Component {
   };
 
   _onTitleSelected = item => {
-    this.props.router.push(`/works/${item.id}`);
+    this.props.history.push(`/works/${item.id}`);
     this.refs.titleSearch.clear();
   };
 
   _addWork = () => {
     const title = this.refs.titleSearch.getValue();
     API.createWork(title).then(work => {
-      this.props.router.push(`/works/${work.id}`);
+      this.props.history.push(`/works/${work.id}`);
     });
   };
 

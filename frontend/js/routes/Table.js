@@ -221,10 +221,10 @@ function Item({ item, onAddRecord }) {
           <span className="studio">
             {studios ? studios.join(', ') : '제작사 미정'}
           </span>
-          {source && <React.Fragment>
+          {source && <>
             {' / '}
             <span className="source">{util.SOURCE_TYPE_MAP[source]}</span>
-          </React.Fragment>}
+          </>}
         </div>
         <div className={Styles.actions}>
           <StatusButton item={item} onAddRecord={onAddRecord} />

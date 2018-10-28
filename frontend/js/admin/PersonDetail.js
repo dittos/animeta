@@ -1,5 +1,5 @@
 import React from 'react';
-import { withRouter, Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { Table, Form, FormGroup, FormControl, Button } from 'react-bootstrap';
 import * as API from './API';
 
@@ -14,13 +14,14 @@ class PersonDetail extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.params.id !== this.props.params.id) {
+    if (prevProps.match.params.id !== this.props.match.params.id) {
       this._reload();
     }
   }
 
   _reload = () => {
-    return API.getPerson(this.props.params.id).then(person => this.setState({ person, editName: person.name }));
+    return API.getPerson(this.props.match.params.id)
+      .then(person => this.setState({ person, editName: person.name }));
   };
 
   render() {
@@ -96,4 +97,4 @@ class PersonDetail extends React.Component {
   };
 }
 
-export default withRouter(PersonDetail);
+export default PersonDetail;

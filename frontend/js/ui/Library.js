@@ -298,7 +298,7 @@ class Library extends React.Component {
         </Grid.Column>
         <Grid.Column size={9} pull="left">
           {this.props.count === 0 ? (
-            <React.Fragment>
+            <>
               <h2>아직 기록이 하나도 없네요.</h2>
               {this.props.canEdit && (
                 <p>
@@ -307,7 +307,7 @@ class Library extends React.Component {
                   </Link>를 눌러 감상 기록을 등록할 수 있습니다.
                 </p>
               )}
-            </React.Fragment>
+            </>
           ) : (
             groups.map(group => (
               <div

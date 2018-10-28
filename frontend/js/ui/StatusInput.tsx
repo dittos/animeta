@@ -17,7 +17,7 @@ export class StatusInput extends React.Component<{
       'em';
     style = { ...style, width, textAlign: 'right' };
     return (
-      <React.Fragment>
+      <>
         <input
           {...props}
           style={style}
@@ -31,7 +31,7 @@ export class StatusInput extends React.Component<{
           style={{ cursor: 'pointer' }}
           onClick={this._onClickPlus}
         />
-      </React.Fragment>
+      </>
     );
   }
 

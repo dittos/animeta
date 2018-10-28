@@ -1,6 +1,6 @@
 import React from 'react';
 import { findDOMNode } from 'react-dom';
-import { withRouter, Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { Table, Form, FormGroup, FormControl, Button } from 'react-bootstrap';
 import * as API from './API';
 import WorkMergeForm from './WorkMergeForm';
@@ -19,13 +19,14 @@ class WorkDetail extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.params.id !== this.props.params.id) {
+    if (prevProps.match.params.id !== this.props.match.params.id) {
       this._reload();
     }
   }
 
   _reload = () => {
-    return API.getWork(this.props.params.id).then(work => this.setState({ work }));
+    return API.getWork(this.props.match.params.id)
+      .then(work => this.setState({ work }));
   };
 
   render() {
@@ -264,9 +265,9 @@ class WorkDetail extends React.Component {
     API.editWork(this.state.work.id, {
       blacklisted: true,
     }).then(() => {
-      this.props.router.push('/');
+      this.props.history.push('/works');
     });
   };
 }
 
-export default withRouter(WorkDetail);
+export default WorkDetail;

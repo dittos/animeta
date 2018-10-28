@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router, Route, Redirect, hashHistory } from 'react-router';
+import { HashRouter, Redirect, Route } from 'react-router-dom';
 import App from './admin/App';
 import WorkList from './admin/WorkList';
 import WorkDetail from './admin/WorkDetail';
@@ -9,14 +9,14 @@ import PersonDetail from './admin/PersonDetail';
 import 'bootstrap/dist/css/bootstrap.css';
 
 ReactDOM.render(
-  <Router history={hashHistory}>
-    <Route component={App}>
-      <Redirect from="/" to="/works" />
-      <Route path="/works" component={WorkList} />
-      <Route path="/works/:id" component={WorkDetail} />
-      <Route path="/people" component={PersonList} />
-      <Route path="/people/:id" component={PersonDetail} />
-    </Route>
-  </Router>,
+  <HashRouter>
+    <App>
+      <Redirect exact from="/" to="/works" />
+      <Route exact path="/works" component={WorkList} />
+      <Route exact path="/works/:id" component={WorkDetail} />
+      <Route exact path="/people" component={PersonList} />
+      <Route exact path="/people/:id" component={PersonDetail} />
+    </App>
+  </HashRouter>,
   document.getElementById('app')
 );
