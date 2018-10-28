@@ -114,6 +114,10 @@ export function createServer({ server = express(), app, getAssets }) {
     `);
   });
 
+  server.get('/healthz', (req, res) => {
+    res.send('ok');
+  });
+
   server.get('/support/', (req, res) => {
     res.render('support');
   });

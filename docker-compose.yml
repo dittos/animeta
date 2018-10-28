@@ -1,12 +1,12 @@
 version: "3.4"
 services:
-  web:
+  backend:
     image: sapzilorg/animeta-backend
     deploy:
       replicas: 1
       resources:
         limits:
-          memory: 256M
+          memory: 512M
       restart_policy:
         condition: on-failure
       update_config:
@@ -21,7 +21,7 @@ services:
     ports:
       - target: 8080
         published: 8080
-        mode: ingress
+        mode: host
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 1m30s
@@ -31,7 +31,7 @@ services:
   frontend:
     image: sapzilorg/animeta-frontend
     depends_on:
-      - web
+      - backend
     deploy:
       replicas: 1
       resources:
@@ -53,7 +53,7 @@ services:
         published: 3000
         mode: ingress
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
       interval: 1m30s
       timeout: 10s
       retries: 3
