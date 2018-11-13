@@ -11,6 +11,7 @@ import net.animeta.backend.repository.CompanyRepository
 import net.animeta.backend.repository.PersonRepository
 import net.animeta.backend.repository.WorkRepository
 import net.animeta.backend.repository.WorkStaffRepository
+import net.animeta.backend.service.admin.AnnMetadataCache
 import net.animeta.backend.service.admin.AnnService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -34,6 +35,7 @@ import java.security.MessageDigest
 class TasksController(
     @Value("\${animeta.security.internal-password}") private val password: String,
     private val annService: AnnService,
+    private val annMetadataCache: AnnMetadataCache,
     private val workRepository: WorkRepository,
     private val workStaffRepository: WorkStaffRepository,
     private val companyRepository: CompanyRepository,
@@ -57,7 +59,7 @@ class TasksController(
             for ((chunkIndex, chunk) in works.asSequence().chunked(5).withIndex()) {
                 processor.onNext("Chunk #$chunkIndex...")
                 val annIds = chunk.associateBy { mapper.readTree(it.metadata)["ann_id"].asText() }
-                val metadataMap = annService.getMetadata(annIds.keys)
+                val metadataMap = annMetadataCache.getMetadata(annIds.keys)
                 for ((annId, work) in annIds) {
                     val metadata = metadataMap[annId] ?: continue
                     transactionTemplate.execute {

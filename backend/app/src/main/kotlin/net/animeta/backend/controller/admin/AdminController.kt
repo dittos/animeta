@@ -26,13 +26,12 @@ import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.WorkSerializer
 import net.animeta.backend.service.ChartService
 import net.animeta.backend.service.WorkService
+import net.animeta.backend.service.admin.AnnMetadataCache
 import net.animeta.backend.service.admin.AnnService
 import net.animeta.backend.service.admin.ImageService
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
-import org.springframework.transaction.annotation.Isolation
-import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -63,6 +62,7 @@ class AdminController(private val datastore: Datastore,
                       private val workSerializer: WorkSerializer,
                       private val tablePeriodController: TablePeriodController,
                       private val annService: AnnService,
+                      private val annMetadataCache: AnnMetadataCache,
                       private val objectMapper: ObjectMapper) {
     @GetMapping("/works")
     fun getWorks(@CurrentUser currentUser: User,
@@ -149,14 +149,14 @@ class AdminController(private val datastore: Datastore,
     }
 
     data class CrawlImageOptions(val source: String, val annId: String?, val url: String?)
-    data class EditWorkRequest(val primaryTitleMappingId: Int?,
-                               val mergeWorkId: Int?,
-                               val forceMerge: Boolean?,
-                               val rawMetadata: String?,
-                               val crawlImage: CrawlImageOptions?,
-                               val blacklisted: Boolean?,
-                               val imageCenterY: Double?,
-                               val importAnnMetadata: String?)
+    data class EditWorkRequest(val primaryTitleMappingId: Int? = null,
+                               val mergeWorkId: Int? = null,
+                               val forceMerge: Boolean? = null,
+                               val rawMetadata: String? = null,
+                               val crawlImage: CrawlImageOptions? = null,
+                               val blacklisted: Boolean? = null,
+                               val imageCenterY: Double? = null,
+                               val importAnnMetadata: String? = null)
 
     @PostMapping("/works/{id}")
     @Transactional
@@ -188,7 +188,7 @@ class AdminController(private val datastore: Datastore,
         }
         if (request.importAnnMetadata != null) {
             val work = workRepository.findById(id).orElse(null)
-            annService.importMetadata(work, annService.getMetadata(request.importAnnMetadata))
+            annService.importMetadata(work, annMetadataCache.getMetadata(request.importAnnMetadata))
             workRepository.save(work)
         }
         return getWork(currentUser, id)
@@ -229,7 +229,7 @@ class AdminController(private val datastore: Datastore,
         workRepository.delete(other)
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.NESTED)
+    @Transactional
     fun editMetadata(id: Int, rawMetadata: String) {
         val work = workRepository.findById(id).orElse(null)
         workService.editMetadata(work, rawMetadata)

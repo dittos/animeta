@@ -16,7 +16,7 @@ import java.io.IOException
 @Service
 class ImageService(
     @Value("\${animeta.media.root_location}") private val mediaRoot: Resource,
-    private val annService: AnnService
+    private val annMetadataCache: AnnMetadataCache
 ) {
     private val restTemplate = RestTemplate(OkHttp3ClientHttpRequestFactory().apply {
         setConnectTimeout(0)
@@ -25,7 +25,7 @@ class ImageService(
     })
 
     fun downloadAnnPoster(annId: String, outFile: File) {
-        val anime = annService.getMetadata(annId)
+        val anime = annMetadataCache.getMetadata(annId)
         val images = anime.select("info[type=\"Picture\"] img")
         var fullsrc: String? = null
         for (image in images) {

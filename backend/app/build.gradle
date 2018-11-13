@@ -50,6 +50,7 @@ dependencies {
     compile "org.liquibase:liquibase-core"
     compile "org.jsoup:jsoup:1.11.3"
     testCompile "org.springframework.boot:spring-boot-starter-test"
+    testCompile "ru.yandex.qatools.embed:postgresql-embedded:2.9"
     runtime "org.springframework.boot:spring-boot-properties-migrator"
 }
 

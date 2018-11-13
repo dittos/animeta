@@ -104,7 +104,7 @@ class WorkService(private val workRepository: WorkRepository,
                 WorkCompany(work = work, position = index, company = company)
             })
         }
-        workRepository.save(work)
+        workRepository.saveAndFlush(work)
     }
 
     companion object {

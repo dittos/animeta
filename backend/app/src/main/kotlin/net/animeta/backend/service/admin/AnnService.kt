@@ -2,8 +2,6 @@ package net.animeta.backend.service.admin
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.google.common.cache.CacheBuilder
-import com.google.common.cache.CacheLoader
 import net.animeta.backend.metadata.PersonMetadata
 import net.animeta.backend.metadata.WorkCastMetadata
 import net.animeta.backend.metadata.WorkStaffMetadata
@@ -15,15 +13,8 @@ import net.animeta.backend.repository.PersonRepository
 import net.animeta.backend.repository.WorkCastRepository
 import net.animeta.backend.repository.WorkStaffRepository
 import net.animeta.backend.service.WorkService
-import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
-import org.jsoup.parser.Parser
-import org.springframework.http.HttpMethod
-import org.springframework.http.client.OkHttp3ClientHttpRequestFactory
 import org.springframework.stereotype.Service
-import org.springframework.web.client.ResponseExtractor
-import org.springframework.web.client.RestTemplate
-import java.util.concurrent.TimeUnit
 
 @Service
 class AnnService(
@@ -33,37 +24,6 @@ class AnnService(
     private val workService: WorkService
 ) {
     private val mapper = jacksonObjectMapper()
-    private val restTemplate = RestTemplate(OkHttp3ClientHttpRequestFactory().apply {
-        setConnectTimeout(0)
-        setReadTimeout(0)
-        setWriteTimeout(0)
-    })
-    private val cache = CacheBuilder.newBuilder()
-        .expireAfterWrite(1, TimeUnit.DAYS)
-        .build(object : CacheLoader<String, Element>() {
-            override fun load(key: String): Element {
-                return loadAll(listOf(key))[key]!!
-            }
-
-            override fun loadAll(keys: Iterable<String>): Map<String, Element> {
-                val url = "https://cdn.animenewsnetwork.com/encyclopedia/api.xml?anime=${keys.joinToString("/")}"
-                val doc = restTemplate.execute(url, HttpMethod.GET, null,
-                    ResponseExtractor {
-                        it.use {
-                            Jsoup.parse(it.body, "UTF-8", "", Parser.xmlParser())
-                        }
-                    })
-                return doc.select("anime").associateBy { it.attr("id") }
-            }
-        })
-
-    fun getMetadata(annId: String): Element {
-        return cache.get(annId)
-    }
-
-    fun getMetadata(annIds: Iterable<String>): Map<String, Element> {
-        return cache.getAll(annIds)
-    }
 
     fun importMetadata(work: Work, anime: Element) {
         val metadata = work.metadata?.let { mapper.readTree(it) as ObjectNode } ?: mapper.createObjectNode()
