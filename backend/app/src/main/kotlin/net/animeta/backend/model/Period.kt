@@ -1,5 +1,6 @@
 package net.animeta.backend.model
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import java.time.YearMonth
 import java.time.ZoneId
 
@@ -25,6 +26,8 @@ data class Period(val year: Int, val period: Int): Comparable<Period> {
     companion object {
         private val pattern = "([0-9]{4})Q([1-4])".toRegex()
 
+        @JvmStatic
+        @JsonCreator
         fun parse(s: String): Period? {
             return pattern.matchEntire(s)?.destructured?.let { (year, quarter) ->
                 Period(year.toInt(), quarter.toInt())
