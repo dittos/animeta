@@ -7,6 +7,7 @@ import net.animeta.backend.repository.UserRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.MethodParameter
 import org.springframework.http.HttpStatus
+import org.springframework.lang.Nullable
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.support.WebDataBinderFactory
 import org.springframework.web.context.request.NativeWebRequest
@@ -24,10 +25,7 @@ class CurrentUserArgumentResolver(val userRepository: UserRepository,
                 User::class.java.isAssignableFrom(parameter.parameterType)
     }
 
-    override fun resolveArgument(parameter: MethodParameter,
-                                 mavContainer: ModelAndViewContainer,
-                                 webRequest: NativeWebRequest,
-                                 binderFactory: WebDataBinderFactory): User? {
+    override fun resolveArgument(parameter: MethodParameter, @Nullable mavContainer: ModelAndViewContainer?, webRequest: NativeWebRequest, @Nullable binderFactory: WebDataBinderFactory?): Any? {
         val annotation = parameter.getParameterAnnotation(CurrentUser::class.java)!!
         val user = extractUser(webRequest)
         if (annotation.required && user == null) {

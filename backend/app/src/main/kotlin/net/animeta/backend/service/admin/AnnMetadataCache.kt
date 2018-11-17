@@ -33,7 +33,7 @@ class AnnMetadataCache {
                         it.use {
                             Jsoup.parse(it.body, "UTF-8", "", Parser.xmlParser())
                         }
-                    })
+                    })!!
                 return doc.select("anime").associateBy { it.attr("id") }
             }
         })

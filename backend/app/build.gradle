@@ -1,35 +1,10 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
-        classpath "org.jetbrains.kotlin:kotlin-noarg:$kotlinVersion"
-    }
-}
-
 plugins {
     id 'com.palantir.docker' version '0.20.1'
 }
 
-group 'net.animeta'
-version '1.0.0'
-
-apply plugin: 'java'
-apply plugin: 'kotlin'
-apply plugin: 'kotlin-spring'
-apply plugin: 'kotlin-jpa'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'idea'
-
-allOpen {
-    annotation 'javax.persistence.Entity'
-}
-
-sourceCompatibility = 1.8
+apply plugin: 'org.springframework.boot'
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "org.springframework.boot:spring-boot-starter-data-jpa"
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.springframework.boot:spring-boot-starter-webflux"
@@ -54,12 +29,9 @@ dependencies {
     runtime "org.springframework.boot:spring-boot-properties-migrator"
 }
 
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
+jar.enabled = true
+bootJar.enabled = false
+
 idea {
     module {
         def kaptMain = file('build/generated/source/kapt/main')
@@ -70,11 +42,10 @@ idea {
 
 docker {
     name 'sapzilorg/animeta-backend:latest'
-    files 'build/libs/app-0.0.1.jar', 'run-java.sh'
+    files 'build/libs/app-1.0.0.jar', 'run-java.sh'
     copySpec.with {
         from(configurations.runtime) {
             into 'lib'
         }
-        from('build/libs').into('.')
     }
 }

@@ -18,10 +18,6 @@ services:
         target: /app/google-credentials.json
     environment:
       - SPRING_CONFIG_LOCATION=file:/app/application.properties
-    ports:
-      - target: 8080
-        published: 8080
-        mode: host
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 1m30s
