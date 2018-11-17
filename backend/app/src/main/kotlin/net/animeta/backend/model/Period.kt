@@ -1,6 +1,7 @@
 package net.animeta.backend.model
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonValue
 import java.time.YearMonth
 import java.time.ZoneId
 
@@ -19,6 +20,7 @@ data class Period(val year: Int, val period: Int): Comparable<Period> {
         }
     }
 
+    @JsonValue
     override fun toString(): String {
         return "${year}Q${period}"
     }

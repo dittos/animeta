@@ -180,6 +180,7 @@ class WorkDetail extends React.Component {
 
   _onMetadataChange = newMetadata => {
     const work = this.state.work;
+    newMetadata.version = 2;
     this.setState({
       work: {
         ...work,

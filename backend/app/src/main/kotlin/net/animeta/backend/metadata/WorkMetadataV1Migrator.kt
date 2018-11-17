@@ -39,6 +39,7 @@ object WorkMetadataV1Migrator {
         }
 
         return WorkMetadata(
+            version = 2,
             title = title,
             periods = periods,
             studios = item["studio"]?.let { readStringList(it) },

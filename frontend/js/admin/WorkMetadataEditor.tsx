@@ -1,49 +1,99 @@
 import * as React from 'react';
 import { FormGroup, ControlLabel, Checkbox, FormControl, Radio, HelpBlock } from 'react-bootstrap/lib';
-import { SOURCE_TYPE_MAP } from '../util';
 import { getCompanies } from './API';
 import CreatableSelect from 'react-select/lib/Creatable';
 import AsyncCreatableSelect from 'react-select/lib/AsyncCreatable';
 
-type MultiString = string | string[];
-
-function readStringList(itemOrArray?: MultiString): string[] {
-    if (!itemOrArray) {
-        return [];
-    }
-    if (itemOrArray instanceof Array) {
-        return itemOrArray;
-    } else {
-        return [itemOrArray];
-    }
-}
-
-function writeStringList(items: string[]): MultiString {
-    if (items.length === 1) {
-        return items[0];
-    } else {
-        return items;
-    }
-}
+const sourceTypesV2 = [
+    'MANGA',
+    'ORIGINAL',
+    'LIGHT_NOVEL',
+    'GAME',
+    'FOUR_KOMA',
+    'VISUAL_NOVEL',
+    'NOVEL',
+];
 
 interface ScheduleEditorProps {
-    name: string;
+    country: string;
     value: Schedule;
-    onChange(name: string, newSchedule: Schedule): any;
+    onChange(country: string, newSchedule: Schedule): any;
 }
 
+type DatePrecision = 'YEAR_MONTH' | 'DATE' | 'DATE_TIME';
+
 interface Schedule {
-    date?: string;
-    broadcasts: string[];
+    date: string | null;
+    datePrecision: DatePrecision | null;
+    broadcasts: string[] | null;
+}
+
+function toDateString(schedule: Schedule): string {
+    switch (schedule.datePrecision) {
+        case 'YEAR_MONTH':
+            return /^\d{4}-\d{2}/.exec(schedule.date)[0];
+        case 'DATE':
+            return /^\d{4}-\d{2}-\d{2}/.exec(schedule.date)[0];
+        case 'DATE_TIME':
+            return schedule.date;
+    }
+}
+
+interface ParsedDateTime {
+    date: string | null;
+    datePrecision: DatePrecision | null;
+}
+
+function parseDateString(dateString: string): ParsedDateTime {
+    if (/^\d{4}-\d{2}$/.test(dateString)) {
+        return {
+            date: dateString + "-01T00:00:00",
+            datePrecision: 'YEAR_MONTH',
+        };
+    } else if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+        return {
+            date: dateString + "T00:00:00",
+            datePrecision: 'DATE',
+        };
+    } else if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(dateString)) {
+        return {
+            date: dateString + ":00",
+            datePrecision: 'DATE_TIME',
+        };
+    } else if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(dateString)) {
+        return {
+            date: dateString,
+            datePrecision: 'DATE_TIME',
+        };
+    } else if (dateString === '') {
+        return {
+            date: null,
+            datePrecision: null,
+        };
+    } else {
+        return {
+            date: dateString,
+            datePrecision: null,
+        };
+    }
 }
 
 class ScheduleEditor extends React.Component<ScheduleEditorProps> {
     render() {
-        const { date, broadcasts } = this.props.value;
+        let { broadcasts = [] } = this.props.value || {};
+        if (!broadcasts) broadcasts = [];
+        const invalidDate = this.props.value &&
+            this.props.value.date != null &&
+            this.props.value.datePrecision == null;
         return (
             <FormGroup>
-                <FormControl value={date} onChange={this.handleDateChange} />
-                <HelpBlock>Date is (YYYY-)MM-DD (HH:MM)</HelpBlock>
+                <div className={invalidDate ? 'has-error' : ''}>
+                    <FormControl
+                        value={this.props.value && toDateString(this.props.value)}
+                        onChange={this.handleDateChange}
+                    />
+                    <HelpBlock>Date is YYYY-MM(-DD(THH:MM:SS))</HelpBlock>
+                </div>
 
                 {/* TODO: autocomplete */}
                 <CreatableSelect
@@ -59,50 +109,31 @@ class ScheduleEditor extends React.Component<ScheduleEditorProps> {
 
     private handleDateChange = (e: React.FormEvent<FormControl>) => {
         const el = e.target as HTMLInputElement;
-        this.props.onChange(this.props.name, {
+        const parsed = parseDateString(el.value);
+        this.props.onChange(this.props.country, {
             ...this.props.value,
-            date: el.value,
+            date: parsed.date,
+            datePrecision: parsed.datePrecision,
         });
     };
 
     private handleBroadcastsChange = (newOptions: any) => {
-        this.props.onChange(this.props.name, {
+        this.props.onChange(this.props.country, {
             ...this.props.value,
             broadcasts: newOptions.map((it: any) => it.value),
         });
     };
 }
 
-type RawSchedule = string | [MultiString] | [string, MultiString];
-
-function parseSchedule(value: RawSchedule): Schedule {
-    let date = '', broadcasts: string[] = [];
-    if (value) {
-        if (value instanceof Array) {
-            if (value.length === 1) {
-                broadcasts = readStringList(value[0]);
-            } else {
-                const v = value as [string, MultiString];
-                date = v[0];
-                broadcasts = readStringList(v[1]);
-            }
-        } else {
-            date = value;
-        }
-    }
-    return { date, broadcasts };
-}
-
 interface WorkMetadata {
-    periods?: MultiString;
+    periods?: string[];
     website?: string;
-    namu_ref?: string;
-    ann_id?: string;
+    namuRef?: string;
+    annId?: string;
     source?: string;
-    studio?: MultiString;
-    duration?: string;
-    schedule?: RawSchedule;
-    schedule_kr?: RawSchedule;
+    studios?: string[];
+    durationMinutes?: number;
+    schedules?: {[country: string]: Schedule};
     _comment?: string;
 }
 
@@ -124,23 +155,23 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                 <FormGroup>
                     <ControlLabel>Schedule (JP)</ControlLabel>
                     <ScheduleEditor
-                        name="schedule"
-                        value={parseSchedule(metadata.schedule)}
+                        country="jp"
+                        value={metadata.schedules && metadata.schedules['jp']}
                         onChange={this.handleScheduleChange}
                     />
                 </FormGroup>
                 <FormGroup>
                     <ControlLabel>Schedule (KR)</ControlLabel>
                     <ScheduleEditor
-                        name="schedule_kr"
-                        value={parseSchedule(metadata.schedule_kr)}
+                        country="kr"
+                        value={metadata.schedules && metadata.schedules['kr']}
                         onChange={this.handleScheduleChange}
                     />
                 </FormGroup>
                 <FormGroup>
                     <ControlLabel>Source</ControlLabel>
                     <div>
-                        {Object.keys(SOURCE_TYPE_MAP).map(source => (
+                        {sourceTypesV2.map(source => (
                             <Radio inline name="source" value={source} checked={metadata.source === source}
                                 onChange={this.handleInputChange}>
                                 {source}
@@ -158,15 +189,15 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                         defaultOptions
                         cacheOptions
                         filterOption={null}
-                        value={readStringList(metadata.studio).map(it => ({ label: it, value: it }))}
+                        value={(metadata.studios || []).map(it => ({ label: it, value: it }))}
                         onChange={this.handleStudiosChange}
                     />
                 </FormGroup>
                 <FormGroup>
                     <ControlLabel>Duration (minutes)</ControlLabel>
                     <FormControl
-                        name="duration"
-                        value={metadata.duration || ''}
+                        name="durationMinutes"
+                        value={metadata.durationMinutes || ''}
                         onChange={this.handleInputChange}
                     />
                 </FormGroup>
@@ -181,30 +212,21 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                 <FormGroup>
                     <ControlLabel>Namuwiki Reference</ControlLabel>
                     <FormControl
-                        name="namu_ref"
-                        value={metadata.namu_ref || ''}
+                        name="namuRef"
+                        value={metadata.namuRef || ''}
                         onChange={this.handleInputChange}
                     />
                 </FormGroup>
                 <FormGroup>
                     <ControlLabel>AnimeNewsNetwork ID</ControlLabel>
                     <FormControl
-                        name="ann_id"
-                        value={metadata.ann_id || ''}
+                        name="annId"
+                        value={metadata.annId || ''}
                         onChange={this.handleInputChange}
                     />
-                    <button onClick={this.handleAnnImport} disabled={!metadata.ann_id}>
+                    <button onClick={this.handleAnnImport} disabled={!metadata.annId}>
                         Import Metadata
                     </button>
-                </FormGroup>
-                <FormGroup>
-                    <ControlLabel>Comment</ControlLabel>
-                    <FormControl
-                        componentClass="textarea"
-                        name="_comment"
-                        value={metadata._comment || ''}
-                        onChange={this.handleInputChange}
-                    />
                 </FormGroup>
             </>
         );
@@ -243,7 +265,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
     private handlePeriodCheckboxChange = (e: React.FormEvent<Checkbox>) => {
         const el = e.target as HTMLInputElement;
         const period = el.value;
-        let periods = readStringList(this.props.metadata.periods);
+        let periods = this.props.metadata.periods || [];
         periods = periods.filter(p => p !== period);
         if (el.checked) {
             periods.push(period);
@@ -268,31 +290,21 @@ export default class WorkMetadataEditor extends React.Component<Props> {
     private handleStudiosChange = (newOptions: any) => {
         this.props.onChange({
             ...this.props.metadata,
-            studio: writeStringList(newOptions.map((it: any) => it.value)),
+            studios: newOptions.map((it: any) => it.value),
         });
     };
 
-    private handleScheduleChange = (name: string, newSchedule: Schedule) => {
-        let serialized: RawSchedule;
-        if (newSchedule.date && newSchedule.broadcasts.length > 0) {
-            serialized = [newSchedule.date, writeStringList(newSchedule.broadcasts)];
-        } else if (newSchedule.broadcasts.length > 0) {
-            serialized = [writeStringList(newSchedule.broadcasts)];
-        } else if (newSchedule.date) {
-            serialized = newSchedule.date;
-        }
-        if (serialized) {
-            this.props.onChange({
-                ...this.props.metadata,
-                [name]: serialized,
-            });
-        } else {
-            const {[name]: _, ...rest} = this.props.metadata as any;
-            this.props.onChange(rest);
-        }
+    private handleScheduleChange = (country: string, newSchedule: Schedule) => {
+        this.props.onChange({
+            ...this.props.metadata,
+            schedules: {
+                ...this.props.metadata.schedules,
+                [country]: newSchedule
+            }
+        });
     };
 
     private handleAnnImport = () => {
-        this.props.onAnnImport(this.props.metadata.ann_id);
+        this.props.onAnnImport(this.props.metadata.annId);
     };
 }

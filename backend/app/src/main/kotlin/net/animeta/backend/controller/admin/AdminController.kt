@@ -2,11 +2,13 @@ package net.animeta.backend.controller.admin
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import net.animeta.backend.controller.v2.TablePeriodController
 import net.animeta.backend.db.Datastore
 import net.animeta.backend.db.query
 import net.animeta.backend.dto.WorkDTO
 import net.animeta.backend.exception.ApiException
+import net.animeta.backend.metadata.WorkMetadata
 import net.animeta.backend.model.Company
 import net.animeta.backend.model.Person
 import net.animeta.backend.model.QUser.user
@@ -97,7 +99,7 @@ class AdminController(private val datastore: Datastore,
             val image_path: String?,
             val image_center_y: Double,
             val raw_metadata: String,
-            val metadata: JsonNode?,
+            val metadata: WorkMetadata?,
             val title_mappings: List<TitleMappingDTO>,
             val index: AdminWorkIndexDTO?,
             val staffs: List<WorkStaffDTO>,
@@ -136,7 +138,7 @@ class AdminController(private val datastore: Datastore,
                 image_path = workSerializer.getImageUrl(work),
                 image_center_y = work.image_center_y,
                 raw_metadata = work.raw_metadata ?: "",
-                metadata = work.metadata?.let { objectMapper.readTree(it) },
+                metadata = work.metadata?.let { objectMapper.readValue<WorkMetadata>(it) },
                 title_mappings = titleMappings,
                 index = index?.let { AdminWorkIndexDTO(record_count = it.record_count, rank = it.rank) },
                 staffs = work.staffs.map {

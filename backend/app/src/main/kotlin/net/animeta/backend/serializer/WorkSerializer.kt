@@ -1,6 +1,7 @@
 package net.animeta.backend.serializer
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.google.common.net.UrlEscapers
 import net.animeta.backend.dto.Credit
 import net.animeta.backend.dto.CreditType
@@ -70,7 +71,13 @@ class WorkSerializer(val workService: WorkService,
                 },
                 metadata = if (work.metadata != null) {
                     try {
-                        serializeMetadata(work, WorkMetadataV1Migrator.migrate(objectMapper.readTree(work.metadata)))
+                        val json = objectMapper.readTree(work.metadata)
+                        val metadata: WorkMetadata = if (json["version"]?.asInt() == 2) {
+                            objectMapper.treeToValue(json)
+                        } else {
+                            WorkMetadataV1Migrator.migrate(json)
+                        }
+                        serializeMetadata(work, metadata)
                     } catch (e: IOException) {
                         null
                     }

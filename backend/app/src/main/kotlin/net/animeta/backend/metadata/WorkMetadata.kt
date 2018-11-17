@@ -1,9 +1,11 @@
 package net.animeta.backend.metadata
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import net.animeta.backend.model.Period
 import java.time.LocalDateTime
 
 data class WorkMetadata(
+    val version: Int,
     val title: String?,
     val periods: List<Period>?,
     val studios: List<String>?,
@@ -25,6 +27,7 @@ data class WorkMetadata(
     }
 
     data class Schedule(
+        @JsonFormat(shape = JsonFormat.Shape.STRING)
         val date: LocalDateTime?,
         val datePrecision: DatePrecision?,
         val broadcasts: List<String>?

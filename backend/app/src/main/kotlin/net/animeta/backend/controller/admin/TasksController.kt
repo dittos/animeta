@@ -1,9 +1,11 @@
 package net.animeta.backend.controller.admin
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.common.io.BaseEncoding
 import net.animeta.backend.exception.ApiException
 import net.animeta.backend.indexer.Indexer
+import net.animeta.backend.metadata.WorkMetadataV1Migrator
 import net.animeta.backend.metadata.readStringList
 import net.animeta.backend.model.Company
 import net.animeta.backend.model.WorkCompany
@@ -44,6 +46,7 @@ class TasksController(
     private val transactionTemplate: TransactionTemplate
 ) {
     private val mapper = jacksonObjectMapper()
+        .registerModule(JavaTimeModule())
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     @PostMapping("/importAnnMetadata")
@@ -194,6 +197,43 @@ class TasksController(
 
         Mono.fromCallable {
             indexer.run()
+        }
+            .doOnSuccessOrError { _, throwable ->
+                if (throwable != null) {
+                    logger.error(throwable.message, throwable)
+                    processor.onNext("Error: ${throwable.message}")
+                }
+                processor.onComplete()
+            }
+            .subscribeOn(Schedulers.elastic())
+            .subscribe()
+
+        return processor.map { it + "\n" }
+    }
+
+    @PostMapping("/migrateMetadata")
+    fun migrateMetadata(): Flux<String> {
+        checkAuth()
+
+        val processor = UnicastProcessor.create<String>()
+
+        Mono.fromCallable {
+            val works = workRepository.findAllByMetadataIsNotNull()
+            processor.onNext("Migrating ${works.size} works")
+
+            for (work in works) {
+                transactionTemplate.execute {
+                    val work = workRepository.findById(work.id!!).get()
+                    val json = mapper.readTree(work.metadata)
+                    if (json["version"]?.asInt() == 2) {
+                        throw Exception("Already V2")
+                    }
+                    val metadata = WorkMetadataV1Migrator.migrate(json)
+                    val newJson = mapper.writeValueAsString(metadata)
+                    work.metadata = newJson
+                    workRepository.save(work)
+                }
+            }
         }
             .doOnSuccessOrError { _, throwable ->
                 if (throwable != null) {

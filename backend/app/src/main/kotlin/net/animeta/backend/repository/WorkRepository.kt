@@ -30,4 +30,6 @@ interface WorkRepository : JpaRepository<Work, Int> {
 
     @Query(value = "SELECT * FROM work_work WHERE jsonb_exists(metadata, ?1)  ", nativeQuery = true)
     fun findAllMetadataHasProperty(propertyName: String): List<Work>
+
+    fun findAllByMetadataIsNotNull(): List<Work>
 }

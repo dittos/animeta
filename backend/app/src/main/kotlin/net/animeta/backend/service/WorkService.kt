@@ -1,13 +1,11 @@
 package net.animeta.backend.service
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.module.kotlin.readValue
 import net.animeta.backend.dto.Episode
 import net.animeta.backend.exception.ApiException
-import net.animeta.backend.metadata.readStringList
+import net.animeta.backend.metadata.WorkMetadata
 import net.animeta.backend.model.Company
-import net.animeta.backend.model.Period
 import net.animeta.backend.model.TitleMapping
 import net.animeta.backend.model.Work
 import net.animeta.backend.model.WorkCompany
@@ -78,20 +76,23 @@ class WorkService(private val workRepository: WorkRepository,
     }
 
     fun editMetadata(work: Work, rawMetadata: String) {
-        val metadata: JsonNode
+        val metadata: WorkMetadata
         try {
-            metadata = ObjectMapper(YAMLFactory()).readTree(rawMetadata)
+            metadata = objectMapper.readValue(if (rawMetadata.isEmpty()) "{}" else rawMetadata)
+            if (metadata.version < 2) {
+                throw Exception("${metadata.version} is outdated metadata version")
+            }
         } catch (e: Exception) {
-            throw ApiException("YAML parse failed: ${e.message}", HttpStatus.BAD_REQUEST)
+            throw ApiException("Metadata parse failed: ${e.message}", HttpStatus.BAD_REQUEST)
         }
         work.raw_metadata = rawMetadata
         work.metadata = objectMapper.writeValueAsString(metadata)
-        val periods = metadata["periods"]?.let { readStringList(it) }?.map { Period.parse(it) }?.filterNotNull() ?: listOf()
+        val periods = metadata.periods ?: emptyList()
         work.periodIndexes.clear()
         work.periodIndexes.addAll(periods.sorted().mapIndexed { index, period ->
             WorkPeriodIndex(work = work, period = period.toString(), firstPeriod = index == 0)
         })
-        val studios = metadata["studio"]?.let { readStringList(it) }?.map {
+        val studios = metadata.studios?.map {
             companyRepository.findOneByName(it) ?: companyRepository.save(Company(
                 name = it,
                 metadata = null,
