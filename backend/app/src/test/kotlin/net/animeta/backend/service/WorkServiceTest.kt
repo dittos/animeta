@@ -62,7 +62,7 @@ class WorkServiceTest {
         Mockito.`when`(annMetadataCache.getMetadata(Mockito.anyString()))
             .thenReturn(Parser.xmlParser().parseInput(Resources.toString(Resources.getResource("ann-metadata-sample.xml"), Charsets.UTF_8), "").selectFirst("anime"))
         adminController.editWork(user, workId, AdminController.EditWorkRequest(
-            rawMetadata = "{\"periods\": [\"2018Q1\"]}",
+            rawMetadata = "{\"version\": 2, \"periods\": [\"2018Q1\"]}",
             importAnnMetadata = "12345"
         ))
         transactionTemplate.execute {

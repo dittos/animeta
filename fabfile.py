@@ -4,7 +4,7 @@ env.hosts = ['animeta.net']
 
 def deploy_backend():
     with lcd('backend'):
-        local('./gradlew dockerPush')
+        local('./gradlew build dockerPush')
     docker()
 
 def docker():
