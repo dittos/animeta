@@ -1,6 +1,7 @@
 package net.animeta.backend.dto
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import net.animeta.backend.metadata.WorkMetadata
 
 data class Episode(val number: Int, val post_count: Int?)
 
@@ -16,19 +17,37 @@ enum class CreditType {
     DIRECTOR,
     SERIES_COMPOSITION,
     CHARACTER_DESIGN,
-    MUSIC,
-}
+    MUSIC;
 
-data class Credit(val type: CreditType, val name: String, val personId: Int)
+    companion object {
+        private val taskToCreditType = mapOf(
+            "chief director" to CreditType.CHIEF_DIRECTOR,
+            "series director" to CreditType.SERIES_DIRECTOR,
+            "director" to CreditType.DIRECTOR,
+            "character design" to CreditType.CHARACTER_DESIGN,
+            "animation character design" to CreditType.CHARACTER_DESIGN,
+            "music" to CreditType.MUSIC,
+            "series composition" to CreditType.SERIES_COMPOSITION,
+            "original creator" to CreditType.ORIGINAL_WORK,
+            "original work" to CreditType.ORIGINAL_WORK,
+            "original story" to CreditType.ORIGINAL_WORK,
+            "original manga" to CreditType.ORIGINAL_WORK
+        )
+
+        fun fromTask(task: String): CreditType? {
+            return taskToCreditType[task.toLowerCase()]
+        }
+    }
+}
 
 data class WorkMetadataDTO(val title: String,
                            val links: WorkLinks,
                            val studios: List<String>?,
-                           // TODO: Expose WorkMetadata.SourceType
-                           val source: String?,
+                           val source: WorkMetadata.SourceType?,
                            val schedule: Map<String, WorkSchedule?>?,
-                           val durationMinutes: Int?,
-                           val credits: List<Credit>)
+                           val durationMinutes: Int?)
+
+data class Credit(val type: CreditType, val name: String, val personId: Int)
 
 data class WorkCredit(val workId: Int, val workTitle: String, val type: CreditType)
 
@@ -41,7 +60,6 @@ data class WorkDTO(
     val title: String,
     val image_url: String?,
     val image_center_y: Double,
-    val alt_titles: List<String>?,
     val episodes: List<Episode>?,
     val record_count: Int,
     val rank: Int?,

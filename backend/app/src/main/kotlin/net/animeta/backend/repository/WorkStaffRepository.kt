@@ -8,6 +8,7 @@ import org.springframework.data.repository.CrudRepository
 
 interface WorkStaffRepository : CrudRepository<WorkStaff, Int> {
     fun findByPerson(person: Person): List<WorkStaff>
+    fun findByWorkId(workId: Int): List<WorkStaff>
 
     data class RelatedRow(
         val personId: Int,
