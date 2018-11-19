@@ -1,7 +1,7 @@
 package net.animeta.backend.serializer
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.treeToValue
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.common.net.UrlEscapers
 import net.animeta.backend.dto.Credit
 import net.animeta.backend.dto.CreditType
@@ -10,7 +10,6 @@ import net.animeta.backend.dto.WorkLinks
 import net.animeta.backend.dto.WorkMetadataDTO
 import net.animeta.backend.dto.WorkSchedule
 import net.animeta.backend.metadata.WorkMetadata
-import net.animeta.backend.metadata.WorkMetadataV1Migrator
 import net.animeta.backend.model.User
 import net.animeta.backend.model.Work
 import net.animeta.backend.model.WorkStaff
@@ -71,13 +70,8 @@ class WorkSerializer(val workService: WorkService,
                 },
                 metadata = if (work.metadata != null) {
                     try {
-                        val json = objectMapper.readTree(work.metadata)
-                        val metadata: WorkMetadata = if (json["version"]?.asInt() == 2) {
-                            objectMapper.treeToValue(json)
-                        } else {
-                            WorkMetadataV1Migrator.migrate(json)
-                        }
-                        serializeMetadata(work, metadata)
+                        work.metadata?.let { objectMapper.readValue<WorkMetadata>(it) }
+                            ?.let { serializeMetadata(work, it) }
                     } catch (e: IOException) {
                         null
                     }

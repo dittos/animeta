@@ -80,4 +80,13 @@ export var SOURCE_TYPE_MAP = {
   '4koma': '4컷 만화 원작',
   visualnovel: '비주얼 노벨 원작',
   novel: '소설 원작',
+
+  // V2
+  MANGA: '만화 원작',
+  ORIGINAL: '오리지널 작품',
+  LIGHT_NOVEL: '라노베 원작',
+  GAME: '게임 원작',
+  FOUR_KOMA: '4컷 만화 원작',
+  VISUAL_NOVEL: '비주얼 노벨 원작',
+  NOVEL: '소설 원작',
 };

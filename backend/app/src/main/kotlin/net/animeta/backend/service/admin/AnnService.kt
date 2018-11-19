@@ -1,9 +1,10 @@
 package net.animeta.backend.service.admin
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import net.animeta.backend.metadata.PersonMetadata
 import net.animeta.backend.metadata.WorkCastMetadata
+import net.animeta.backend.metadata.WorkMetadata
 import net.animeta.backend.metadata.WorkStaffMetadata
 import net.animeta.backend.model.Person
 import net.animeta.backend.model.Work
@@ -15,49 +16,52 @@ import net.animeta.backend.repository.WorkStaffRepository
 import net.animeta.backend.service.WorkService
 import org.jsoup.nodes.Element
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.time.YearMonth
 
 @Service
 class AnnService(
     private val personRepository: PersonRepository,
     private val workStaffRepository: WorkStaffRepository,
     private val workCastRepository: WorkCastRepository,
-    private val workService: WorkService
+    private val workService: WorkService,
+    private val mapper: ObjectMapper
 ) {
-    private val mapper = jacksonObjectMapper()
-
     fun importMetadata(work: Work, anime: Element) {
-        val metadata = work.metadata?.let { mapper.readTree(it) as ObjectNode } ?: mapper.createObjectNode()
-        metadata.put("ann_id", anime.attr("id"))
-        if (!metadata.has("duration")) {
-            anime.selectFirst("info[type=\"Running time\"]")?.text()?.toIntOrNull()?.let {
-                if (it < 20) {
-                    metadata.put("duration", it)
-                }
+        val metadata = work.metadata?.let { mapper.readValue<WorkMetadata>(it) } ?: WorkMetadata()
+        val durationMinutes = metadata.durationMinutes ?:
+            anime.selectFirst("info[type=\"Running time\"]")?.text()?.toIntOrNull()?.takeIf { it < 20 }
+        val schedules = anime.selectFirst("info[type=\"Vintage\"]")?.text()?.let { s ->
+            val schedule = "^\\d{4}-\\d{2}-\\d{2}".toRegex().find(s)?.let {
+                WorkMetadata.Schedule(
+                    date = LocalDate.parse(it.value).atStartOfDay(),
+                    datePrecision = WorkMetadata.Schedule.DatePrecision.DATE,
+                    broadcasts = null
+                )
+            } ?: "^\\d{4}-\\d{2}".toRegex().find(s)?.let {
+                WorkMetadata.Schedule(
+                    date = YearMonth.parse(it.value).atDay(1).atStartOfDay(),
+                    datePrecision = WorkMetadata.Schedule.DatePrecision.YEAR_MONTH,
+                    broadcasts = null
+                )
             }
-        }
-        if (!metadata.has("schedule")) {
-            anime.selectFirst("info[type=\"Vintage\"]")?.text()?.let {
-                metadata.put("schedule", it)
-            }
-        }
-        if (!metadata.has("website")) {
+            schedule?.let { mapOf("jp" to it) }
+        }.orEmpty() + metadata.schedules.orEmpty()
+        val website = metadata.website ?:
             anime.select("info[type=\"Official website\"][lang=\"JA\"]")
                 .map { it.attr("href") }
                 .firstOrNull { "twitter.com" !in it }
-                ?.let {
-                    metadata.put("website", it)
-                }
-        }
-        if (!metadata.has("studio")) {
-            val studios = anime.select("credit")
+        val studios = metadata.studios ?:
+            anime.select("credit")
                 .filter { it.selectFirst("task")?.text() == "Animation Production" }
                 .mapNotNull { it.selectFirst("company")?.text() }
-            if (studios.isNotEmpty()) {
-                val array = metadata.putArray("studio")
-                studios.forEach { array.add(it) }
-            }
-        }
-        workService.editMetadata(work, mapper.writeValueAsString(metadata))
+                .takeIf { it.isNotEmpty() }
+        workService.editMetadata(work, metadata.copy(
+            durationMinutes = durationMinutes,
+            schedules = schedules,
+            website = website,
+            studios = studios
+        ))
 
         val staffsByGid = work.staffs.associateBy { mapper.readValue(it.metadata, WorkStaffMetadata::class.java).annGid }
         val castsByGid = work.casts.associateBy { mapper.readValue(it.metadata, WorkCastMetadata::class.java).annGid }

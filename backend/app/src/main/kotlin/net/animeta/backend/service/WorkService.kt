@@ -85,8 +85,12 @@ class WorkService(private val workRepository: WorkRepository,
         } catch (e: Exception) {
             throw ApiException("Metadata parse failed: ${e.message}", HttpStatus.BAD_REQUEST)
         }
-        work.raw_metadata = rawMetadata
+        editMetadata(work, metadata)
+    }
+
+    fun editMetadata(work: Work, metadata: WorkMetadata) {
         work.metadata = objectMapper.writeValueAsString(metadata)
+        work.raw_metadata = work.metadata
         val periods = metadata.periods ?: emptyList()
         work.periodIndexes.clear()
         work.periodIndexes.addAll(periods.sorted().mapIndexed { index, period ->

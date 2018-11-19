@@ -24,6 +24,7 @@ data class Credit(val type: CreditType, val name: String, val personId: Int)
 data class WorkMetadataDTO(val title: String,
                            val links: WorkLinks,
                            val studios: List<String>?,
+                           // TODO: Expose WorkMetadata.SourceType
                            val source: String?,
                            val schedule: Map<String, WorkSchedule?>?,
                            val durationMinutes: Int?,

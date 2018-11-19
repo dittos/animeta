@@ -5,16 +5,16 @@ import net.animeta.backend.model.Period
 import java.time.LocalDateTime
 
 data class WorkMetadata(
-    val version: Int,
-    val title: String?,
-    val periods: List<Period>?,
-    val studios: List<String>?,
-    val source: SourceType?,
-    val website: String?,
-    val namuRef: String?,
-    val annId: String?,
-    val durationMinutes: Int?,
-    val schedules: Map<String, Schedule>?
+    val version: Int = 2,
+    val title: String? = null,
+    val periods: List<Period>? = null,
+    val studios: List<String>? = null,
+    val source: SourceType? = null,
+    val website: String? = null,
+    val namuRef: String? = null,
+    val annId: String? = null,
+    val durationMinutes: Int? = null,
+    val schedules: Map<String, Schedule>? = null
 ) {
     enum class SourceType {
         MANGA,
