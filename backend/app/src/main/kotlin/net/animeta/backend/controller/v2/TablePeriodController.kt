@@ -58,7 +58,7 @@ class TablePeriodController(val datastore: Datastore,
             val records = recordRepository.findAllByUserAndWorkIdIn(currentUser, result.map { it.id })
                     .map { recordSerializer.serialize(it, RecordSerializer.legacyOptions()) }
                     .associateBy { it.work_id }
-            val relatedStaffs = if (withRecommendations) {
+            val relatedStaffs = if (withRecommendations && result.isNotEmpty()) {
                 workStaffRepository.batchFindRelatedByUser(result.map { it.id }, currentUser)
                     .groupBy { it.personId }
             } else {

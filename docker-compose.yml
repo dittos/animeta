@@ -19,8 +19,8 @@ services:
     environment:
       - SPRING_CONFIG_LOCATION=file:/app/application.properties
     ports:
-      - target: 3000
-        published: 3000
+      - target: 8080
+        published: 8080
         mode: ingress
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
