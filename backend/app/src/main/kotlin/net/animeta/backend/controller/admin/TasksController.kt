@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono
 import reactor.core.publisher.UnicastProcessor
 import reactor.core.scheduler.Schedulers
 import java.security.MessageDigest
+import java.util.concurrent.atomic.AtomicBoolean
 
 @RestController
 @RequestMapping("/admin/tasks")
@@ -24,6 +25,7 @@ class TasksController(
     private val indexer: Indexer
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
+    private val buildingIndex = AtomicBoolean(false)
 
     @PostMapping("/buildIndex")
     fun buildIndex(): Flux<String> {
@@ -32,7 +34,19 @@ class TasksController(
         val processor = UnicastProcessor.create<String>()
 
         Mono.fromCallable {
-            indexer.run()
+            if (buildingIndex.compareAndSet(false, true)) {
+                logger.info("buildIndex: start")
+                val start = System.currentTimeMillis()
+                try {
+                    indexer.run()
+                } finally {
+                    buildingIndex.set(false)
+                }
+                val end = System.currentTimeMillis()
+                logger.info("buildIndex: end ({} ms)", end - start)
+            } else {
+                logger.info("buildIndex: already running")
+            }
         }
             .doOnSuccessOrError { _, throwable ->
                 if (throwable != null) {
