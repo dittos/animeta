@@ -20,16 +20,7 @@ public class Crypto {
     private static final SecureRandom SECURE_RANDOM;
 
     static {
-        if (System.getProperty("django.crypto.insecure_rng") != null) {
-            // /dev/random is slow in some environment
-            SECURE_RANDOM = new SecureRandom();
-        } else {
-            try {
-                SECURE_RANDOM = SecureRandom.getInstanceStrong();
-            } catch (NoSuchAlgorithmException e) {
-                throw new IllegalStateException(e);
-            }
-        }
+        SECURE_RANDOM = new SecureRandom();
     }
 
     public static byte[] saltedHmac(String keySalt, byte[] value, String secret) {
