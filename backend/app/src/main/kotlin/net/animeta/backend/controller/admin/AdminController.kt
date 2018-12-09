@@ -24,6 +24,7 @@ import net.animeta.backend.repository.WorkCastRepository
 import net.animeta.backend.repository.WorkIndexRepository
 import net.animeta.backend.repository.WorkRepository
 import net.animeta.backend.repository.WorkStaffRepository
+import net.animeta.backend.repository.WorkTitleIndexRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.WorkSerializer
 import net.animeta.backend.service.ChartService
@@ -53,6 +54,7 @@ class AdminController(private val datastore: Datastore,
                       private val imageService: ImageService,
                       private val workRepository: WorkRepository,
                       private val workIndexRepository: WorkIndexRepository,
+                      private val workTitleIndexRepository: WorkTitleIndexRepository,
                       private val recordRepository: RecordRepository,
                       private val titleMappingRepository: TitleMappingRepository,
                       private val historyRepository: HistoryRepository,
@@ -228,6 +230,8 @@ class AdminController(private val datastore: Datastore,
         titleMappingRepository.replaceWork(other, work)
         historyRepository.replaceWorkId(other.id!!, work.id!!)
         recordRepository.replaceWorkId(other.id!!, work.id!!)
+        workTitleIndexRepository.deleteAllByWork(other)
+        workIndexRepository.deleteById(other.id!!)
         workRepository.delete(other)
     }
 
