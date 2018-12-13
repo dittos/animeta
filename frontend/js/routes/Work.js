@@ -5,7 +5,7 @@ import { App } from '../layouts';
 const POSTS_PER_PAGE = 10;
 
 function Work({ data, writeData, loader }) {
-  const { work, chart, episode, posts, hasMorePosts, currentUser } = data;
+  const { work, chart, episode, posts, hasMorePosts, currentUser, userCount, suspendedUserCount } = data;
 
   async function loadMorePosts() {
     var params = {
@@ -38,7 +38,12 @@ function Work({ data, writeData, loader }) {
       episode={episode}
       onRecordChange={applyRecord}
     >
-      <WorkViews.Episodes work={work} activeEpisodeNumber={episode} />
+      <WorkViews.Episodes
+        work={work}
+        activeEpisodeNumber={episode}
+        userCount={userCount}
+        suspendedUserCount={suspendedUserCount}
+      />
       <WorkViews.WorkIndex
         work={work}
         episode={episode}
@@ -64,19 +69,22 @@ export default {
     ]);
     const postsParams = {
       count: POSTS_PER_PAGE + 1,
+      withCounts: true,
       options: {
         user: {},
       },
     };
     if (episode) postsParams.episode = episode;
-    const posts = await loader.call(`/works/${work.id}/posts`, postsParams);
+    const { data, userCount, suspendedUserCount } = await loader.call(`/works/${work.id}/posts`, postsParams);
     return {
       currentUser,
       work,
       chart,
-      posts: posts.slice(0, POSTS_PER_PAGE),
+      posts: data.slice(0, POSTS_PER_PAGE),
       episode,
-      hasMorePosts: posts.length > POSTS_PER_PAGE,
+      hasMorePosts: data.length > POSTS_PER_PAGE,
+      userCount,
+      suspendedUserCount,
     };
   },
 

@@ -169,24 +169,19 @@ export class WorkIndex extends React.Component {
     if (posts && excludePostID) {
       posts = posts.filter(post => post.id !== excludePostID);
     }
-    return (
-      <div>
-        {posts &&
-          posts.length > 0 && (
-            <div className={Styles.postsSection}>
-              {posts.map(post => (
-                <Post key={post.id} post={post} showTitle={false} />
-              ))}
-              {hasMorePosts && (
-                <LoadMore
-                  isLoading={this.state.isLoading}
-                  onClick={this._loadMore}
-                />
-              )}
-            </div>
-          )}
+    return posts && posts.length > 0 ? (
+      <div className={Styles.postsSection}>
+        {posts.map(post => (
+          <Post key={post.id} post={post} showTitle={false} />
+        ))}
+        {hasMorePosts && (
+          <LoadMore
+            isLoading={this.state.isLoading}
+            onClick={this._loadMore}
+          />
+        )}
       </div>
-    );
+    ) : null;
   }
 
   _loadMore = () => {
@@ -197,9 +192,9 @@ export class WorkIndex extends React.Component {
   };
 }
 
-export function Episodes({ work, activeEpisodeNumber }) {
+export function Episodes({ work, activeEpisodeNumber, userCount, suspendedUserCount }) {
   const title = encodeURIComponent(work.title);
-  return (
+  return <>
     <div className={Styles.episodes}>
       <Link
         to={`/works/${title}/`}
@@ -223,5 +218,20 @@ export function Episodes({ work, activeEpisodeNumber }) {
         </Link>
       ))}
     </div>
-  );
+    {activeEpisodeNumber && (
+      <div className={Styles.episodeHeader}>
+        <h2 className={Styles.sectionTitle}>{activeEpisodeNumber}화</h2>
+        <div className={Styles.episodeStats}>
+          <span>
+            <i className="fa fa-comment" />
+            감상평 {work.episodes.filter(it => it.number == activeEpisodeNumber)[0].post_count}개
+          </span>
+          <span>
+            <i className="fa fa-user" />
+            {userCount}명 기록 {suspendedUserCount > 0 && ` (${suspendedUserCount}명 중단)`}
+          </span>
+        </div>
+      </div>
+    )}
+  </>;
 }

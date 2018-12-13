@@ -9,29 +9,35 @@ const POSTS_PER_PAGE = 10;
 class Post extends React.Component {
   componentDidMount() {
     // lazy load
-    this._loadMorePosts(this.props.data);
+    this._loadMorePosts();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (!nextProps.data.posts) {
-      this._loadMorePosts(nextProps.data);
+  componentDidUpdate() {
+    if (!this.props.data.posts) {
+      this._loadMorePosts();
     }
   }
 
   render() {
-    const { work, chart, posts, hasMorePosts, post } = this.props.data;
+    const { work, chart, posts, hasMorePosts, post, userCount, suspendedUserCount } = this.props.data;
+    const episode = post.status;
     return (
       <WorkViews.Work
         work={work}
         chart={chart}
-        episode={post.status}
+        episode={episode}
         onRecordChange={this._applyRecord}
       >
-        <WorkViews.Episodes work={work} activeEpisodeNumber={post.status} />
+        <WorkViews.Episodes
+          work={work}
+          activeEpisodeNumber={episode}
+          userCount={userCount}
+          suspendedUserCount={suspendedUserCount}
+        />
         <PostComponent post={post} showTitle={false} highlighted={true} />
         <WorkViews.WorkIndex
           work={work}
-          episode={post.status}
+          episode={episode}
           posts={posts}
           hasMorePosts={hasMorePosts}
           loadMorePosts={this._loadMorePosts}
@@ -41,8 +47,8 @@ class Post extends React.Component {
     );
   }
 
-  _loadMorePosts = async (data) => {
-    const { work, posts, post } = data || this.props.data;
+  _loadMorePosts = async () => {
+    const { work, posts, post } = this.props.data;
     var params = {
       count: POSTS_PER_PAGE + 1,
       episode: post.status,
@@ -52,14 +58,21 @@ class Post extends React.Component {
     };
     if (posts && posts.length > 0)
       params.before_id = posts[posts.length - 1].id;
+    else
+      params.withCounts = true;
     const result = await this.props.loader.call(
       `/works/${work.id}/posts`,
       params
     );
+    const posts = params.withCounts ? result.data : result;
     this.props.writeData(data => {
       if (!data.posts) data.posts = [];
-      data.posts = data.posts.concat(result.slice(0, POSTS_PER_PAGE));
-      data.hasMorePosts = result.length > POSTS_PER_PAGE;
+      data.posts = data.posts.concat(posts.slice(0, POSTS_PER_PAGE));
+      data.hasMorePosts = posts.length > POSTS_PER_PAGE;
+      if (params.withCounts) {
+        data.userCount = result.userCount;
+        data.suspendedUserCount = result.suspendedUserCount;
+      }
     });
   };
 
