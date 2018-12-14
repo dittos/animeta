@@ -194,6 +194,7 @@ export class WorkIndex extends React.Component {
 
 export function Episodes({ work, activeEpisodeNumber, userCount, suspendedUserCount }) {
   const title = encodeURIComponent(work.title);
+  const activeEpisode = activeEpisodeNumber && work.episodes.filter(it => it.number == activeEpisodeNumber)[0];
   return <>
     <div className={Styles.episodes}>
       <Link
@@ -224,7 +225,7 @@ export function Episodes({ work, activeEpisodeNumber, userCount, suspendedUserCo
         <div className={Styles.episodeStats}>
           <span>
             <i className="fa fa-comment" />
-            감상평 {work.episodes.filter(it => it.number == activeEpisodeNumber)[0].post_count}개
+            감상평 {activeEpisode ? activeEpisode.post_count : 0}개
           </span>
           <span>
             <i className="fa fa-user" />

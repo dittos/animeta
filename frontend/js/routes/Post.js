@@ -19,12 +19,13 @@ class Post extends React.Component {
   }
 
   render() {
-    const { work, chart, posts, hasMorePosts, post, userCount, suspendedUserCount } = this.props.data;
+    const { work, chart, posts, hasMorePosts, currentUser, post, userCount, suspendedUserCount } = this.props.data;
     const episode = post.status;
     return (
       <WorkViews.Work
         work={work}
         chart={chart}
+        currentUser={currentUser}
         episode={episode}
         onRecordChange={this._applyRecord}
       >
