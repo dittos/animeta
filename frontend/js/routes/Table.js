@@ -15,7 +15,9 @@ import { trackEvent } from '../Tracking';
 import LoginDialog from '../ui/LoginDialog';
 // TODO: css module
 
-const recommendationEnabledPeriod = Periods.current;
+function isRecommendationEnabled(period) {
+  return period === Periods.current || period === Periods.upcoming;
+}
 
 function formatPeriod(period) {
   var parts = period.split('Q');
@@ -75,7 +77,7 @@ function Header({ excludeKR, ordering, onSort, period, currentUser }) {
       { value: 'recordCount', label: '인기' },
     ];
   }
-  if (period === recommendationEnabledPeriod) {
+  if (isRecommendationEnabled(period)) {
     options.unshift({
       value: 'recommended',
       label: '추천',
@@ -333,7 +335,7 @@ class Table extends React.Component {
             onSort={this._onSort}
             currentUser={currentUser}
           />
-          {period === recommendationEnabledPeriod && (
+          {isRecommendationEnabled(period) && (
             <div className={Styles.recommendationBetaNotice}>
               <strong>✨ 신작 추천 (베타)</strong>
               기록했던 작품과 겹치는 제작진을 표시합니다.
@@ -381,10 +383,10 @@ export default {
       }),
       loader.call(`/table/periods/${period}`, {
         only_first_period: JSON.stringify(true),
-        with_recommendations: JSON.stringify(period === recommendationEnabledPeriod),
+        with_recommendations: JSON.stringify(isRecommendationEnabled(period)),
       }),
     ]);
-    const ordering = currentUser && period === recommendationEnabledPeriod ? 'recommended' : 'schedule';
+    const ordering = currentUser && isRecommendationEnabled(period) ? 'recommended' : 'schedule';
     return {
       currentUser,
       period,
