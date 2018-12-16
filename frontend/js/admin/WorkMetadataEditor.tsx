@@ -89,7 +89,7 @@ class ScheduleEditor extends React.Component<ScheduleEditorProps> {
             <FormGroup>
                 <div className={invalidDate ? 'has-error' : ''}>
                     <FormControl
-                        value={this.props.value && toDateString(this.props.value)}
+                        value={this.props.value ? toDateString(this.props.value) : ''}
                         onChange={this.handleDateChange}
                     />
                     <HelpBlock>Date is YYYY-MM(-DD(THH:MM:SS))</HelpBlock>
