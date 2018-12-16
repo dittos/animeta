@@ -109,9 +109,10 @@ export function createServer({ server = express(), app, getAssets }) {
   server.get('/robots.txt', (req, res) => {
     res.set('content-type', 'text/plain');
     res.send(`User-Agent: *
-    Allow: /$
-    Disallow: /
-    `);
+Allow: /$
+Allow: /table/
+Disallow: /
+`);
   });
 
   server.get('/healthz', (req, res) => {
