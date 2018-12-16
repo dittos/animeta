@@ -21,7 +21,7 @@ class ImageUploadForm extends React.Component {
     return {
       source: ImageSources.ANN,
       options: {
-        annId: (metadata && metadata.ann_id) || '',
+        annId: (metadata && metadata.annId) || '',
       },
     };
   }
