@@ -34,7 +34,8 @@ data class Record(
         @get:ManyToOne(fetch = FetchType.LAZY)
         @get:JoinColumn(name = "category_id")
         var category: Category?,
-        var updated_at: Timestamp?
+        var updated_at: Timestamp?,
+        var rating: Int?
 ) {
     @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "record", cascade = arrayOf(CascadeType.ALL))
     @get:OrderBy("id DESC")

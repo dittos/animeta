@@ -13,5 +13,6 @@ data class RecordDTO(
         val status_type: String,
         val updated_at: Long?,
         val has_newer_episode: Boolean?,
-        val user: UserDTO?
+        val user: UserDTO?,
+        val rating: Int?
 )

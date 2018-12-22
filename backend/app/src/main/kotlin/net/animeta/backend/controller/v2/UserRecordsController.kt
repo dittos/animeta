@@ -88,19 +88,25 @@ class UserRecordsController(val userRepository: UserRepository,
 
     @PostMapping
     @Transactional
-    fun create(@PathVariable name: String,
-             @CurrentUser currentUser: User,
-             @RequestParam("work_title") title: String,
-             @RequestParam("category_id", required = false) categoryId: Int?,
-             @RequestParam("status_type") statusTypeParam: String,
-             @RequestParam(defaultValue = "") status: String,
-             @RequestParam(defaultValue = "") comment: String): CreateResponse {
+    fun create(
+        @PathVariable name: String,
+        @CurrentUser currentUser: User,
+        @RequestParam("work_title") title: String,
+        @RequestParam("category_id", required = false) categoryId: Int?,
+        @RequestParam("status_type") statusTypeParam: String,
+        @RequestParam(defaultValue = "") status: String,
+        @RequestParam(defaultValue = "") comment: String,
+        @RequestParam(required = false) rating: Int?
+    ): CreateResponse {
         val user = userRepository.findByUsername(name) ?: throw ApiException.notFound()
         if (currentUser.id != user.id) {
             throw ApiException("Permission denied.", HttpStatus.FORBIDDEN)
         }
         if (title.isBlank()) {
             throw ApiException("작품 제목을 입력하세요.", HttpStatus.BAD_REQUEST)
+        }
+        if (rating != null && rating !in 1..5) {
+            throw ApiException("별점은 1부터 5까지 입력할 수 있습니다.", HttpStatus.BAD_REQUEST)
         }
         val work = workService.getOrCreate(title)
         val category = categoryId?.let { categoryRepository.findById(it).orElse(null) }
@@ -113,24 +119,26 @@ class UserRecordsController(val userRepository: UserRepository,
         }
         val statusType = StatusType.valueOf(statusTypeParam.toUpperCase())
         val record = Record(
-                user = user,
-                workId = work.id!!,
-                title = title,
-                category = category,
-                status = status,
-                status_type = statusType,
-                updated_at = Timestamp.from(Instant.now())
+            user = user,
+            workId = work.id!!,
+            title = title,
+            category = category,
+            status = status,
+            status_type = statusType,
+            updated_at = Timestamp.from(Instant.now()),
+            rating = rating
         )
         recordRepository.save(record)
         val history = History(
-                user = record.user,
-                workId = record.workId,
-                record = record,
-                status = record.status,
-                status_type = record.status_type,
-                updatedAt = record.updated_at,
-                comment = comment,
-                contains_spoiler = false
+            user = record.user,
+            workId = record.workId,
+            record = record,
+            status = record.status,
+            status_type = record.status_type,
+            updatedAt = record.updated_at,
+            comment = comment,
+            contains_spoiler = false,
+            rating = rating
         )
         historyRepository.save(history)
         return CreateResponse(

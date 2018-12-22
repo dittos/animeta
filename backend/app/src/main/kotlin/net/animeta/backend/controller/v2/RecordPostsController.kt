@@ -43,27 +43,34 @@ class RecordPostsController(val recordRepository: RecordRepository,
 
     @PostMapping
     @Transactional
-    fun create(@PathVariable id: Int,
-               @CurrentUser currentUser: User,
-               @RequestParam status: String,
-               @RequestParam("status_type") statusTypeParam: String,
-               @RequestParam comment: String,
-               @RequestParam("contains_spoiler", defaultValue = "false") containsSpoiler: Boolean,
-               @RequestParam("publish_twitter", defaultValue = "false") publishTwitter: Boolean): CreateResponse {
+    fun create(
+        @PathVariable id: Int,
+        @CurrentUser currentUser: User,
+        @RequestParam status: String,
+        @RequestParam("status_type") statusTypeParam: String,
+        @RequestParam comment: String,
+        @RequestParam("contains_spoiler", defaultValue = "false") containsSpoiler: Boolean,
+        @RequestParam("publish_twitter", defaultValue = "false") publishTwitter: Boolean,
+        @RequestParam(required = false) rating: Int?
+    ): CreateResponse {
         val record = recordRepository.findById(id).orElseThrow { ApiException.notFound() }
         if (currentUser.id != record.user.id) {
             throw ApiException("Permission denied.", HttpStatus.FORBIDDEN)
         }
+        if (rating != null && rating !in 1..5) {
+            throw ApiException("별점은 1부터 5까지 입력할 수 있습니다.", HttpStatus.BAD_REQUEST)
+        }
         val statusType = StatusType.valueOf(statusTypeParam.toUpperCase())
         val history = History(
-                user = currentUser,
-                workId = record.workId,
-                record = record,
-                status = status,
-                status_type = statusType,
-                comment = comment,
-                contains_spoiler = containsSpoiler,
-                updatedAt = Timestamp.from(Instant.now())
+            user = currentUser,
+            workId = record.workId,
+            record = record,
+            status = status,
+            status_type = statusType,
+            comment = comment,
+            contains_spoiler = containsSpoiler,
+            updatedAt = Timestamp.from(Instant.now()),
+            rating = rating
         )
         historyRepository.save(history)
         record.status_type = history.status_type

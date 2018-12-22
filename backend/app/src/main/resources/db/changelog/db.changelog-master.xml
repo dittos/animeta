@@ -129,4 +129,16 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet id="6" author="ditto">
+        <addColumn tableName="record_record">
+            <column name="rating" type="int">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="record_history">
+            <column name="rating" type="int">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

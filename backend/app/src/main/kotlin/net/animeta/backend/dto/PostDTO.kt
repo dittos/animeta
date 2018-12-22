@@ -12,5 +12,6 @@ data class PostDTO(
         val updated_at: Long?,
         val contains_spoiler: Boolean,
         val record: RecordDTO?,
-        val user: UserDTO?
+        val user: UserDTO?,
+        val rating: Int?
 )

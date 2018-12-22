@@ -33,9 +33,14 @@ class RecordController(val recordRepository: RecordRepository,
 
     @PostMapping
     @Transactional
-    fun update(@PathVariable id: Int, @CurrentUser currentUser: User,
-               @RequestParam(required = false) title: String?,
-               @RequestParam("category_id", required = false) categoryIdParam: String?): RecordDTO {
+    fun update(
+        @PathVariable id: Int,
+        @CurrentUser currentUser: User,
+        @RequestParam(required = false) title: String?,
+        @RequestParam("category_id", required = false) categoryIdParam: String?,
+        @RequestParam(required = false) rating: Int?,
+        @RequestParam(defaultValue = "false") ratingIsSet: Boolean
+    ): RecordDTO {
         val record = recordRepository.findById(id).orElseThrow { ApiException.notFound() }
         if (currentUser.id != record.user.id) {
             throw ApiException("Permission denied.", HttpStatus.FORBIDDEN)
@@ -57,6 +62,12 @@ class RecordController(val recordRepository: RecordRepository,
             } else {
                 record.category = null
             }
+        }
+        if (ratingIsSet) {
+            if (rating != null && rating !in 1..5) {
+                throw ApiException("별점은 1부터 5까지 입력할 수 있습니다.", HttpStatus.BAD_REQUEST)
+            }
+            record.rating = rating
         }
         recordRepository.save(record)
         return recordSerializer.serialize(record, RecordSerializer.legacyOptions(includeUser = true))

@@ -33,5 +33,6 @@ data class History(
         var comment: String,
         @get:Column(name = "updated_at")
         var updatedAt: Timestamp?,
-        var contains_spoiler: Boolean
+        var contains_spoiler: Boolean,
+        var rating: Int?
 )

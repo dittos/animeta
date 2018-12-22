@@ -26,16 +26,17 @@ class RecordSerializer(val userSerializer: UserSerializer,
 
     fun serialize(record: Record, options: Options): RecordDTO {
         return RecordDTO(
-                id = record.id!!,
-                user_id = record.user.id!!,
-                work_id = record.workId,
-                category_id = record.category?.id,
-                title = record.title,
-                status = record.status,
-                status_type = record.status_type.name.toLowerCase(),
-                updated_at = record.updated_at?.toInstant()?.toEpochMilli(),
-                has_newer_episode = if (options.hasNewerEpisode) hasNewerEpisode(record) else null,
-                user = if (options.user != null) userSerializer.serialize(record.user, options = options.user) else null
+            id = record.id!!,
+            user_id = record.user.id!!,
+            work_id = record.workId,
+            category_id = record.category?.id,
+            title = record.title,
+            status = record.status,
+            status_type = record.status_type.name.toLowerCase(),
+            updated_at = record.updated_at?.toInstant()?.toEpochMilli(),
+            has_newer_episode = if (options.hasNewerEpisode) hasNewerEpisode(record) else null,
+            user = if (options.user != null) userSerializer.serialize(record.user, options = options.user) else null,
+            rating = record.rating
         )
     }
 
