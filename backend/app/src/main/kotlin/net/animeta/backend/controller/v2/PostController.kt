@@ -9,10 +9,14 @@ import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.PostSerializer
 import net.animeta.backend.serializer.RecordSerializer
-import net.animeta.backend.serializer.UserSerializer
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/v2/posts/{id}")
@@ -31,6 +35,7 @@ class PostController(val historyRepository: HistoryRepository,
 
     @DeleteMapping
     @Transactional
+    @Deprecated("v3")
     fun delete(@PathVariable id: Int, @CurrentUser currentUser: User): DeleteResponse {
         val history = historyRepository.findById(id).orElseThrow { ApiException.notFound() }
         if (currentUser.id != history.user.id) {

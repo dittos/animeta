@@ -77,6 +77,7 @@ class RecordController(val recordRepository: RecordRepository,
 
     @DeleteMapping
     @Transactional
+    @Deprecated("v3")
     fun delete(@PathVariable id: Int, @CurrentUser currentUser: User): DeleteResponse {
         val record = recordRepository.findById(id).orElseThrow { ApiException.notFound() }
         if (currentUser.id != record.user.id) {

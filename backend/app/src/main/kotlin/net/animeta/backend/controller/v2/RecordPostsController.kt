@@ -44,6 +44,7 @@ class RecordPostsController(val recordRepository: RecordRepository,
 
     @PostMapping
     @Transactional
+    @Deprecated("v3")
     fun create(
         @PathVariable id: Int,
         @CurrentUser currentUser: User,

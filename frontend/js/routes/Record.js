@@ -23,6 +23,12 @@ import { CenteredFullWidth } from '../ui/Layout';
 import ModalStyles from '../ui/Modal.less';
 import { trackEvent } from '../Tracking';
 
+const recordFetchOptions = {
+  user: {
+    stats: true,
+  },
+};
+
 class TitleEditView extends React.Component {
   componentDidMount() {
     var typeahead = Typeahead.initSuggest(this.refs.titleInput);
@@ -318,10 +324,11 @@ class Record extends React.Component {
         '삭제 후에는 복구할 수 없습니다.\n기록을 정말로 삭제하시겠습니까?'
       )
     ) {
-      deletePost(post.id).then(result => {
+      deletePost(post.id, recordFetchOptions).then(result => {
         this.loadPosts(this.props);
         this.props.writeData(data => {
           data.record = result.record;
+          data.user = result.record.user;
         });
       });
     }
@@ -378,11 +385,7 @@ export default {
         },
       }),
       loader.call(`/records/${recordId}`, {
-        options: {
-          user: {
-            stats: true,
-          },
-        },
+        options: recordFetchOptions,
       }),
     ]);
     return {

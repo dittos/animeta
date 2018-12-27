@@ -88,6 +88,7 @@ class UserRecordsController(val userRepository: UserRepository,
 
     @PostMapping
     @Transactional
+    @Deprecated("v3")
     fun create(
         @PathVariable name: String,
         @CurrentUser currentUser: User,

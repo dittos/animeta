@@ -146,8 +146,7 @@ class AddRecord extends React.Component {
     event.preventDefault();
     if (this.state.isRequesting) return;
     this.setState({ isRequesting: true });
-    const currentUser = this.state.currentUser;
-    createRecord(currentUser.name, {
+    createRecord({
       title: this.refs.title.value,
       statusType: this.state.statusType,
       status: this.state.status,

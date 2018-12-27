@@ -139,11 +139,11 @@ class ManageCategory extends React.Component {
 
   _endSorting = () => {
     const categoryIDs = this.state.sortingCategories.map(c => c.id);
-    updateCategoryOrder(this.props.data.user.name, categoryIDs).then(
-      categories => {
+    updateCategoryOrder(categoryIDs).then(
+      result => {
         this.setState({ sortingCategories: null });
         this.props.writeData(data => {
-          data.categories = categories;
+          data.categories = result.categories;
         });
       }
     );
@@ -160,10 +160,10 @@ class ManageCategory extends React.Component {
   _addCategory = event => {
     event.preventDefault();
     var input = this.refs.nameInput;
-    addCategory(this.props.data.user.name, input.value).then(category => {
+    addCategory(input.value).then(result => {
       input.value = '';
       this.props.writeData(data => {
-        data.categories.push(category);
+        data.categories.push(result.category);
       });
     });
   };

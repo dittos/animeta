@@ -54,6 +54,14 @@ export function post(url, data) {
   return CSRF.refresh().then(() => $.post(url, data));
 }
 
+export function postJSON(url, data) {
+  return CSRF.refresh().then(() => $.post({
+    url,
+    data: JSON.stringify(data),
+    contentType: 'application/json',
+  }));
+}
+
 // Login Session
 
 export function getCurrentUser(params) {
@@ -96,15 +104,18 @@ export function disconnectTwitter() {
 // User Records
 
 export function createRecord(
-  userName,
-  { title, statusType, status, categoryID, comment }
+  { title, statusType, status, categoryID, comment },
+  options = {},
+  postOptions = null
 ) {
-  return post(`/api/v2/users/${userName}/records`, {
-    work_title: title,
-    status_type: statusType,
-    category_id: categoryID,
+  return postJSON('/api/v3/CreateRecord', {
+    title,
+    categoryId: categoryID,
     status,
+    statusType: statusType.toUpperCase(),
     comment,
+    options,
+    postOptions,
   });
 }
 
@@ -118,8 +129,8 @@ export function updateRecordCategoryID(recordID, categoryID) {
   return post(`/api/v2/records/${recordID}`, { category_id: categoryID });
 }
 
-export function deleteRecord(recordID) {
-  return doDelete(`/api/v2/records/${recordID}`);
+export function deleteRecord(id) {
+  return postJSON('/api/v3/DeleteRecord', { id });
 }
 
 // Record Posts
@@ -131,22 +142,25 @@ export function getRecordPosts(recordID) {
 }
 
 export function createPost(
-  recordID,
-  { status, statusType, comment, containsSpoiler, publishTwitter }
+  recordId,
+  { status, statusType, comment, containsSpoiler, publishTwitter },
+  options,
 ) {
-  return post(`/api/v2/records/${recordID}/posts`, {
+  return postJSON('/api/v3/CreatePost', {
+    recordId,
     status,
-    status_type: statusType,
+    statusType: statusType.toUpperCase(),
     comment,
-    contains_spoiler: containsSpoiler,
-    publish_twitter: publishTwitter ? 'on' : 'off',
+    containsSpoiler: containsSpoiler || false,
+    publishTwitter: publishTwitter || false,
+    options,
   });
 }
 
 // Post
 
-export function deletePost(postID) {
-  return doDelete(`/api/v2/posts/${postID}`);
+export function deletePost(id, recordOptions) {
+  return postJSON('/api/v3/DeletePost', { id, recordOptions });
 }
 
 // User Posts
@@ -163,22 +177,22 @@ export function getUserPosts(userName, count, beforeID) {
 
 // Category
 
-export function renameCategory(categoryID, categoryName) {
-  return post(`/api/v2/categories/${categoryID}`, { name: categoryName });
+export function renameCategory(id, name) {
+  return postJSON('/api/v3/UpdateCategory', { id, name });
 }
 
-export function removeCategory(categoryID) {
-  return doDelete(`/api/v2/categories/${categoryID}`);
+export function removeCategory(id) {
+  return postJSON('/api/v3/DeleteCategory', { id });
 }
 
 // User Categories
 
-export function addCategory(userName, categoryName) {
-  return post(`/api/v2/users/${userName}/categories`, {
-    name: categoryName,
+export function addCategory(name) {
+  return postJSON('/api/v3/CreateCategory', {
+    name,
   });
 }
 
-export function updateCategoryOrder(userName, categoryIDs) {
-  return put(`/api/v2/users/${userName}/categories`, { ids: categoryIDs });
+export function updateCategoryOrder(categoryIds) {
+  return postJSON('/api/v3/UpdateCategoryOrder', { categoryIds });
 }
