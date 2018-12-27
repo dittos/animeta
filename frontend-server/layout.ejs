@@ -35,6 +35,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi">
     <meta name="apple-mobile-web-app-capable" content="no">
     <meta name="google-site-verification" content="dhlhxHlQ_wDcoxu7hcyfWoXOyD79pPryal6fVLUxLeg">
+<% if (!DEBUG) { %>
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -45,6 +46,7 @@
       ga('create', 'UA-7500828-2', 'auto');
       ga('send', 'pageview');
     </script>
+<% } %>
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <% assetEntries.forEach(entry => { %>
     <% if (assets[entry].css) { %>
@@ -55,13 +57,13 @@
 <body>
 <div id="app"><%- content %></div>
 <script src="https://cdn.ravenjs.com/3.25.2/raven.min.js" crossorigin="anonymous"></script>
+<% if (!DEBUG) { %>
 <script>
 window.addEventListener('load', function(){
     if (!window.gaLoaded && window.Raven)
         Raven.captureMessage('GoogleAnalyticsBlocked', {level: 'warning'});
 }, false);
 </script>
-<% if (!DEBUG) { %>
 <script>
 try {
     Raven.config('https://0d5693f7775146c0881c305a452bb70b@sentry.io/265318', {
