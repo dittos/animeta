@@ -1,17 +1,15 @@
 package net.animeta.backend.controller.v2
 
-import net.animeta.backend.exception.ApiException
-import net.animeta.backend.model.TwitterSetting
 import net.animeta.backend.model.User
-import net.animeta.backend.repository.TwitterSettingRepository
 import net.animeta.backend.security.CurrentUser
+import net.animeta.backend.service.TwitterService
 import org.slf4j.LoggerFactory
-import org.springframework.social.oauth1.AuthorizedRequestToken
-import org.springframework.social.oauth1.OAuth1Parameters
-import org.springframework.social.oauth1.OAuthToken
-import org.springframework.social.twitter.connect.TwitterServiceProvider
-import org.springframework.util.LinkedMultiValueMap
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.CookieValue
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletResponse
 
@@ -20,20 +18,20 @@ private const val twitterTokenSecretCookie = "twittertoken.secret"
 
 @RestController
 @RequestMapping("/v2/me/external-services")
-class ExternalServicesController(private val twitterSettingRepository: TwitterSettingRepository,
-                                 private val twitterServiceProvider: TwitterServiceProvider) {
+class ExternalServicesController(
+    private val twitterService: TwitterService
+) {
     data class DeleteTwitterResponse(val ok: Boolean)
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     @DeleteMapping("/twitter")
     fun deleteTwitter(@CurrentUser currentUser: User): DeleteTwitterResponse {
-        val twitterSetting = currentUser.twitterSettings.firstOrNull() ?: throw ApiException.notFound()
-        twitterSettingRepository.delete(twitterSetting)
+        twitterService.removeOAuthAuthorization(currentUser)
         return DeleteTwitterResponse(ok = true)
     }
 
-    @GetMapping("/twitter/connect", produces = arrayOf("text/html"))
+    @GetMapping("/twitter/connect", produces = ["text/html"])
     fun connectTwitter(@CookieValue(twitterTokenValueCookie, required = false) tokenValue: String?,
                        @CookieValue(twitterTokenSecretCookie, required = false) tokenSecret: String?,
                        @RequestParam("oauth_verifier", required = false) oauthVerifier: String?,
@@ -44,23 +42,16 @@ class ExternalServicesController(private val twitterSettingRepository: TwitterSe
         }
 
         try {
-            val oauth = twitterServiceProvider.oAuthOperations
             if (oauthVerifier == null || tokenValue == null || tokenSecret == null) {
                 // TODO: callback url
-                val requestToken = oauth.fetchRequestToken("https://animeta.net/api/v2/me/external-services/twitter/connect", LinkedMultiValueMap())
-                val redirectUrl = oauth.buildAuthorizeUrl(requestToken.value, OAuth1Parameters.NONE)
-                response.addCookie(Cookie(twitterTokenValueCookie, requestToken.value))
-                response.addCookie(Cookie(twitterTokenSecretCookie, requestToken.secret))
+                val requestToken = twitterService.getOAuthRequestToken("https://animeta.net/api/v2/me/external-services/twitter/connect")
+                val redirectUrl = requestToken.authorizationUrl
+                response.addCookie(Cookie(twitterTokenValueCookie, requestToken.token))
+                response.addCookie(Cookie(twitterTokenSecretCookie, requestToken.tokenSecret))
                 response.sendRedirect(redirectUrl)
                 return "Redirecting..."
             } else {
-                val authorizedRequestToken = AuthorizedRequestToken(OAuthToken(tokenValue, tokenSecret), oauthVerifier)
-                val accessToken = oauth.exchangeForAccessToken(authorizedRequestToken, OAuth1Parameters.NONE)
-                val setting = currentUser.twitterSettings.firstOrNull() ?:
-                        TwitterSetting(user = currentUser, key = "", secret = "")
-                setting.key = accessToken.value
-                setting.secret = accessToken.secret
-                twitterSettingRepository.save(setting)
+                twitterService.finishOAuthAuthorization(currentUser, tokenValue, tokenSecret, oauthVerifier)
                 // Remove cookies
                 response.addCookie(Cookie(twitterTokenValueCookie, ""))
                 response.addCookie(Cookie(twitterTokenSecretCookie, ""))

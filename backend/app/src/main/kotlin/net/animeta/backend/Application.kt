@@ -8,7 +8,6 @@ import net.animeta.backend.security.CurrentUserArgumentResolver
 import net.animeta.backend.serializer.PostSerializer
 import net.animeta.backend.serializer.RecordSerializer
 import net.animeta.backend.serializer.UserSerializer
-import net.animeta.backend.social.TwitterServiceProvider2
 import org.apache.tomcat.util.http.LegacyCookieProcessor
 import org.jetbrains.exposed.sql.Database
 import org.slf4j.LoggerFactory
@@ -26,7 +25,6 @@ import org.springframework.core.task.TaskExecutor
 import org.springframework.format.FormatterRegistry
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
-import org.springframework.social.twitter.connect.TwitterServiceProvider
 import org.springframework.stereotype.Component
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
@@ -50,12 +48,6 @@ class Application {
         val objectMapper = builder.createXmlMapper(false).build<ObjectMapper>()
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
         return objectMapper
-    }
-
-    @Bean
-    fun twitterServiceProvider(@Value("\${spring.social.twitter.app-id}") appId: String,
-                               @Value("\${spring.social.twitter.app-secret}") appSecret: String): TwitterServiceProvider {
-        return TwitterServiceProvider2(appId, appSecret)
     }
 
     @Bean

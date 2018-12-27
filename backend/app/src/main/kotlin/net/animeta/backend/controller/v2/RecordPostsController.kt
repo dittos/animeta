@@ -11,6 +11,7 @@ import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.PostSerializer
 import net.animeta.backend.serializer.RecordSerializer
+import net.animeta.backend.service.TweetFormatter
 import net.animeta.backend.service.TwitterService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
@@ -79,7 +80,8 @@ class RecordPostsController(val recordRepository: RecordRepository,
         recordRepository.save(record)
 
         if (publishTwitter) {
-            twitterService.postToTwitter(currentUser, history)
+            // TODO: after commit
+            twitterService.updateStatus(currentUser, TweetFormatter.format(history))
         }
 
         return CreateResponse(

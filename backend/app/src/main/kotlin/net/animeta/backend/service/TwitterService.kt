@@ -1,69 +1,60 @@
 package net.animeta.backend.service
 
-import net.animeta.backend.model.History
-import net.animeta.backend.model.StatusType
+import net.animeta.backend.model.TwitterSetting
 import net.animeta.backend.model.User
+import net.animeta.backend.repository.TwitterSettingRepository
 import org.slf4j.LoggerFactory
-import org.springframework.social.twitter.connect.TwitterServiceProvider
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import twitter4j.TwitterFactory
+import twitter4j.auth.AccessToken
+import twitter4j.auth.RequestToken
+import twitter4j.conf.ConfigurationBuilder
 
 @Service
-class TwitterService(private val twitterServiceProvider: TwitterServiceProvider) {
+class TwitterService(
+    @Value("\${spring.social.twitter.app-id}") private val appId: String,
+    @Value("\${spring.social.twitter.app-secret}") private val appSecret: String,
+    private val twitterSettingRepository: TwitterSettingRepository
+) {
     private val logger = LoggerFactory.getLogger(this::class.java)
+    private val clientFactory = TwitterFactory(ConfigurationBuilder()
+        .setOAuthConsumerKey(appId)
+        .setOAuthConsumerSecret(appSecret)
+        .build())
+    private val unauthenticatedClient = clientFactory.instance
 
-    fun postToTwitter(user: User, history: History): Boolean {
+    data class OAuthRequestToken(val token: String, val tokenSecret: String, val authorizationUrl: String)
+
+    fun getOAuthRequestToken(callbackUrl: String): OAuthRequestToken {
+        val result = unauthenticatedClient.getOAuthRequestToken(callbackUrl)
+        return OAuthRequestToken(result.token, result.tokenSecret, result.authorizationURL)
+    }
+
+    fun finishOAuthAuthorization(user: User, token: String, tokenSecret: String, oauthVerifier: String) {
+        val requestToken = RequestToken(token, tokenSecret)
+        val accessToken = unauthenticatedClient.getOAuthAccessToken(requestToken, oauthVerifier)
+        val setting = user.twitterSettings.firstOrNull() ?:
+            TwitterSetting(user = user, key = "", secret = "")
+        setting.key = accessToken.token
+        setting.secret = accessToken.tokenSecret
+        twitterSettingRepository.save(setting)
+    }
+
+    fun removeOAuthAuthorization(user: User) {
+        val twitterSetting = user.twitterSettings.firstOrNull() ?: return
+        twitterSettingRepository.delete(twitterSetting)
+    }
+
+    fun updateStatus(user: User, body: String): Boolean {
         val setting = user.twitterSettings.firstOrNull() ?: return false
-        val api = twitterServiceProvider.getApi(setting.key, setting.secret)
+        val client = clientFactory.getInstance(AccessToken(setting.key, setting.secret))
         try {
-            api.timelineOperations().updateStatus(formatTweet(history))
+            client.updateStatus(body)
             return true
         } catch (e: Exception) {
             logger.error(e.message, e)
             return false
         }
-    }
-
-    private fun formatTweet(history: History): String {
-        val title = history.record.title
-        val status = formatStatusText(history)
-        val url = "https://animeta.net/-${history.id}"
-        val comment = if (history.contains_spoiler) {
-            "[${String(intArrayOf(0x1F507), 0, 1)} 내용 누설 가림]"
-        } else {
-            history.comment
-        }
-        return buildString {
-            append("$title $status")
-            if (comment.isNotEmpty()) {
-                append(": $comment")
-            }
-            val limit = 140 - (url.length + 1)
-            if (length > limit) {
-                setLength(limit - 1)
-                append("\u2026")
-            }
-            append(" $url")
-        }
-    }
-
-    private fun formatStatusText(history: History): String {
-        var status = history.status.trim()
-        if (status.isNotEmpty() && status.last().isDigit()) {
-            status += "화"
-        }
-        if (history.status_type != StatusType.WATCHING || status == "") {
-            val statusTypeText = when (history.status_type) {
-                StatusType.FINISHED -> "완료"
-                StatusType.WATCHING -> "보는 중"
-                StatusType.SUSPENDED -> "중단"
-                StatusType.INTERESTED -> "볼 예정"
-            }
-            if (status != "") {
-                status += " ($statusTypeText)"
-            } else {
-                status = statusTypeText
-            }
-        }
-        return status
     }
 }
