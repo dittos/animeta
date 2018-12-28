@@ -54,7 +54,7 @@ export function post(url, data) {
   return CSRF.refresh().then(() => $.post(url, data));
 }
 
-export function postJSON(url, data) {
+export function postJSON(url, data = {}) {
   return CSRF.refresh().then(() => $.post({
     url,
     data: JSON.stringify(data),
@@ -83,22 +83,21 @@ export function logout() {
 
 // Account
 
-export function changePassword(oldPassword, newPassword1, newPassword2) {
-  return post('/api/v2/me/password', {
-    old_password: oldPassword,
-    new_password1: newPassword1,
-    new_password2: newPassword2,
+export function changePassword(oldPassword, newPassword) {
+  return postJSON('/api/v3/ChangePassword', {
+    oldPassword,
+    newPassword,
   });
 }
 
 export function createBackup() {
-  return post('/api/v2/backups');
+  return postJSON('/api/v3/CreateBackup');
 }
 
 // External Services
 
 export function disconnectTwitter() {
-  return doDelete('/api/v2/me/external-services/twitter');
+  return postJSON('/api/v3/DisconnectTwitter');
 }
 
 // User Records
@@ -121,12 +120,21 @@ export function createRecord(
 
 // Record
 
-export function updateRecordTitle(recordID, title) {
-  return post(`/api/v2/records/${recordID}`, { title: title });
+export function updateRecordTitle(id, title, options) {
+  return postJSON('/api/v3/UpdateRecord', {
+    id,
+    title,
+    options,
+  });
 }
 
-export function updateRecordCategoryID(recordID, categoryID) {
-  return post(`/api/v2/records/${recordID}`, { category_id: categoryID });
+export function updateRecordCategoryID(id, categoryId, options) {
+  return postJSON('/api/v3/UpdateRecord', {
+    id,
+    categoryId,
+    categoryIdIsSet: true,
+    options,
+  });
 }
 
 export function deleteRecord(id) {

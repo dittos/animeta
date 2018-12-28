@@ -295,18 +295,18 @@ class Record extends React.Component {
   }
 
   _updateTitle = title => {
-    return updateRecordTitle(this.props.data.record.id, title).then(record => {
+    return updateRecordTitle(this.props.data.record.id, title, recordFetchOptions).then(result => {
       this.props.writeData(data => {
-        data.record = record;
+        data.record = result.record;
       });
     });
   };
 
   _updateCategory = categoryID => {
-    return updateRecordCategoryID(this.props.data.record.id, categoryID).then(
-      record => {
+    return updateRecordCategoryID(this.props.data.record.id, categoryID, recordFetchOptions).then(
+      result => {
         this.props.writeData(data => {
-          data.record = record;
+          data.record = result.record;
         });
       }
     );

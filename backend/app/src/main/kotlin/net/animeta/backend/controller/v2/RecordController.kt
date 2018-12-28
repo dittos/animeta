@@ -10,7 +10,6 @@ import net.animeta.backend.serializer.RecordSerializer
 import net.animeta.backend.service.WorkService
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -33,6 +32,7 @@ class RecordController(val recordRepository: RecordRepository,
 
     @PostMapping
     @Transactional
+    @Deprecated("v3")
     fun update(
         @PathVariable id: Int,
         @CurrentUser currentUser: User,
@@ -71,19 +71,5 @@ class RecordController(val recordRepository: RecordRepository,
         }
         recordRepository.save(record)
         return recordSerializer.serialize(record, RecordSerializer.legacyOptions(includeUser = true))
-    }
-
-    data class DeleteResponse(val ok: Boolean)
-
-    @DeleteMapping
-    @Transactional
-    @Deprecated("v3")
-    fun delete(@PathVariable id: Int, @CurrentUser currentUser: User): DeleteResponse {
-        val record = recordRepository.findById(id).orElseThrow { ApiException.notFound() }
-        if (currentUser.id != record.user.id) {
-            throw ApiException("Permission denied.", HttpStatus.FORBIDDEN)
-        }
-        recordRepository.delete(record)
-        return DeleteResponse(true)
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.context.request.async.WebAsyncTask
 
 @RestController
 @RequestMapping("/v2/backups")
+@Deprecated("v3")
 class BackupController(private val backupService: BackupService) {
     data class CreateResponse(val downloadUrl: String)
 

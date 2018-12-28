@@ -26,6 +26,7 @@ class ExternalServicesController(
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     @DeleteMapping("/twitter")
+    @Deprecated("v3")
     fun deleteTwitter(@CurrentUser currentUser: User): DeleteTwitterResponse {
         twitterService.removeOAuthAuthorization(currentUser)
         return DeleteTwitterResponse(ok = true)

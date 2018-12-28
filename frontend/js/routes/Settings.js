@@ -74,8 +74,7 @@ class ChangePassword extends React.Component {
     this.setState({ isChangingPassword: true });
     changePassword(
       this.refs.oldPassword.value,
-      this.refs.newPassword1.value,
-      this.refs.newPassword2.value
+      this.refs.newPassword1.value
     )
       .then(() => {
         alert('암호를 변경했습니다.');
