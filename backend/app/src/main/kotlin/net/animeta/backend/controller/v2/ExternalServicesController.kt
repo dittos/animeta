@@ -5,7 +5,6 @@ import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.service.TwitterService
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.CookieValue
-import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -21,16 +20,7 @@ private const val twitterTokenSecretCookie = "twittertoken.secret"
 class ExternalServicesController(
     private val twitterService: TwitterService
 ) {
-    data class DeleteTwitterResponse(val ok: Boolean)
-
     private val logger = LoggerFactory.getLogger(this::class.java)
-
-    @DeleteMapping("/twitter")
-    @Deprecated("v3")
-    fun deleteTwitter(@CurrentUser currentUser: User): DeleteTwitterResponse {
-        twitterService.removeOAuthAuthorization(currentUser)
-        return DeleteTwitterResponse(ok = true)
-    }
 
     @GetMapping("/twitter/connect", produces = ["text/html"])
     fun connectTwitter(@CookieValue(twitterTokenValueCookie, required = false) tokenValue: String?,
