@@ -3,9 +3,10 @@ import * as React from 'react';
 import { Link } from 'nuri';
 import * as Layout from './Layout';
 import LoginDialog from './LoginDialog';
+import SearchInput from './SearchInput';
+import { Dropdown } from './Dropdown';
 import Styles from './GlobalHeader.less';
 import { getStatusDisplay } from '../util';
-import SearchInput from '../ui/SearchInput';
 
 class DropdownUserMenu extends React.Component {
   state = {
@@ -13,8 +14,6 @@ class DropdownUserMenu extends React.Component {
   };
 
   componentDidMount() {
-    $(document).on('click', this._onClose);
-
     $.get(`/api/v2/users/${this.props.user.name}/records`, {
       sort: 'date',
       status_type: 'watching',
@@ -24,13 +23,9 @@ class DropdownUserMenu extends React.Component {
     });
   }
 
-  componentWillUnmount() {
-    $(document).off('click', this._onClose);
-  }
-
   render() {
     return (
-      <div className={Styles.userMenu} onClick={e => e.stopPropagation()}>
+      <>
         <Link to={`/users/${this.props.user.name}/`}>내 기록</Link>
         <Link to="/settings/">설정</Link>
         {this.state.records && (
@@ -52,13 +47,9 @@ class DropdownUserMenu extends React.Component {
             </Link>
           </div>
         )}
-      </div>
+      </>
     );
   }
-
-  _onClose = () => {
-    this.props.onClose();
-  };
 }
 
 export class GlobalHeader extends React.Component {
@@ -66,7 +57,6 @@ export class GlobalHeader extends React.Component {
   static noticeId = '2019Q1';
 
   state = {
-    showUserMenu: false,
     showNotice: false,
   };
 
@@ -163,28 +153,23 @@ export class GlobalHeader extends React.Component {
               <SearchInput />
             </div>
             {user && (
-              <div className={`${Styles.accountMenu} hide-mobile`}>
-                <Link
-                  to={`/users/${user.name}/`}
-                  className={Styles.userButton}
-                  onClick={this._toggleUserMenu}
-                >
-                  <i className="fa fa-user" />
-                  {user.name}
-                  <i className="fa fa-caret-down" />
-                </Link>
-                {this.state.showUserMenu && (
-                  <DropdownUserMenu
-                    user={user}
-                    onClose={() =>
-                      this.setState({
-                        showUserMenu: false,
-                      })
-                    }
-                    Link={Link}
-                  />
+              <Dropdown
+                containerClassName={`${Styles.accountMenu} hide-mobile`}
+                menuClassName={Styles.userMenu}
+                renderTrigger={({ toggle }) => (
+                  <Link
+                    to={`/users/${user.name}/`}
+                    className={Styles.userButton}
+                    onClick={toggle}
+                  >
+                    <i className="fa fa-user" />
+                    {user.name}
+                    <i className="fa fa-caret-down" />
+                  </Link>
                 )}
-              </div>
+              >
+                <DropdownUserMenu user={user} />
+              </Dropdown>
             )}
           </div>
         </Layout.CenteredFullWidth>
@@ -220,11 +205,6 @@ export class GlobalHeader extends React.Component {
       </div>
     );
   }
-
-  _toggleUserMenu = event => {
-    event.preventDefault();
-    this.setState({ showUserMenu: !this.state.showUserMenu });
-  };
 
   _openLoginIfNeeded = e => {
     if (!this.props.currentUser) {

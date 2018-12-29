@@ -159,34 +159,6 @@
     color: @color-primary;
 }
 
-.mixin-dropdown {
-    position: absolute;
-    z-index: @z-overlay;
-    background-color: #fff;
-    box-shadow: rgba(0, 0, 0, 0.24) 0 0 8px 0;
-    border-radius: 2px;
-    overflow: hidden;
-
-    a {
-        line-height: 1;
-        padding: 10px;
-        display: block;
-        color: @color-text-dark;
-        text-decoration: none;
-        font-size: 14px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        &:hover {
-            background-color: @color-bg-lightest;
-        }
-    }
-}
-
-:local(.dropdown) {
-    .mixin-dropdown;
-}
-
 :local(.search) {
     align-self: center;
     line-height: 1;
@@ -246,7 +218,6 @@
 }
 
 :local(.userMenu) {
-    composes: dropdown;
     right: 0;
     top: @nav-height;
     width: 200px;
