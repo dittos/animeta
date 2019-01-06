@@ -44,7 +44,7 @@ services:
     volumes:
       - "static:/app/static"
     configs:
-      - source: frontend
+      - source: frontend_v2
         target: /app/frontend-dist/config.json
     environment:
       - PORT=3000
@@ -63,7 +63,7 @@ configs:
     file: ./application.properties
   google_credentials:
     file: ./google-credentials.json
-  frontend:
+  frontend_v2:
     file: ./frontend.json
 volumes:
   static:
