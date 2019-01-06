@@ -4,6 +4,6 @@
         "remote": true
     },
     "sentryDsn": "",
-    "daumAPIKey": "",
+    "kakaoApiKey": "",
     "assetBase": ""
 }

@@ -195,7 +195,7 @@ Disallow: /
 
         if (errorStatus) res.status(errorStatus);
 
-        preloadData.daum_api_key = config.daumAPIKey; // XXX
+        preloadData.kakaoApiKey = config.kakaoApiKey; // XXX
         renderDefault(
           res,
           {

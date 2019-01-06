@@ -4,19 +4,12 @@ import React from 'react';
 import { LoadMore } from './LoadMore';
 import Styles from './VideoSearch.less';
 
-function fixTitle(title) {
-  // &lt;b&gt;...&lt;b&gt; -> <b>...</b>
-  return $('<span />')
-    .html(title.replace(/&lt;(\/?b)&gt;/g, '<$1>'))
-    .text();
-}
-
 function formatDate(t) {
-  // YYYYMMDDHHMMSS
+  // YYYY-MM-DDTHH:MM:SS+09:00
   var d = new Date(
     parseInt(t.substr(0, 4), 10),
-    parseInt(t.substr(4, 2), 10) - 1,
-    parseInt(t.substr(6, 2), 10)
+    parseInt(t.substr(5, 2), 10) - 1,
+    parseInt(t.substr(8, 2), 10)
   );
   return d.toLocaleDateString();
 }
@@ -56,21 +49,20 @@ class VideoSearch extends React.Component {
     var page = this.state.page + 1;
     this.setState({ isLoading: true });
     $.ajax({
-      url: 'https://apis.daum.net/search/vclip?callback=?',
-      data: {
-        apikey: PreloadData.daum_api_key,
-        output: 'json',
-        result: 10,
-        q: this.props.query,
-        pageno: page,
+      url: 'https://dapi.kakao.com/v2/search/vclip',
+      headers: {
+        'Authorization': `KakaoAK ${PreloadData.kakaoApiKey}`,
       },
-      dataType: 'jsonp',
+      data: {
+        query: this.props.query,
+        size: 10,
+        page: page,
+      },
       __silent__: true,
     }).then(data => {
-      var result = this.state.result.concat(data.channel.item);
-      var totalCount = parseInt(data.channel.totalCount, 10);
+      var result = this.state.result.concat(data.documents);
       this.setState({
-        hasMore: result.length < totalCount,
+        hasMore: result.length < data.meta.pageable_count,
         page: page,
         isLoading: false,
         result: result,
@@ -90,18 +82,13 @@ class VideoSearch extends React.Component {
     return (
       <div>
         {result.slice(0, limit).map(item => (
-          <a href={item.link} target="_blank" className={Styles.item}>
+          <a href={item.url} target="_blank" className={Styles.item}>
             <div className={Styles.thumbnail}>
               <img src={item.thumbnail} />
             </div>
             <div className={Styles.itemContent}>
-              <div
-                className={Styles.title}
-                dangerouslySetInnerHTML={{
-                  __html: shorten(fixTitle(item.title), 35),
-                }}
-              />
-              <div className={Styles.date}>{formatDate(item.pubDate)}</div>
+              <div className={Styles.title}>{shorten(item.title, 35)}</div>
+              <div className={Styles.date}>{formatDate(item.datetime)}</div>
             </div>
           </a>
         ))}
