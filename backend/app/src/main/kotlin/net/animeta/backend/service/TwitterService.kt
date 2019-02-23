@@ -22,17 +22,18 @@ class TwitterService(
         .setOAuthConsumerKey(appId)
         .setOAuthConsumerSecret(appSecret)
         .build())
-    private val unauthenticatedClient = clientFactory.instance
 
     data class OAuthRequestToken(val token: String, val tokenSecret: String, val authorizationUrl: String)
 
     fun getOAuthRequestToken(callbackUrl: String): OAuthRequestToken {
+        val unauthenticatedClient = clientFactory.instance
         val result = unauthenticatedClient.getOAuthRequestToken(callbackUrl)
         return OAuthRequestToken(result.token, result.tokenSecret, result.authorizationURL)
     }
 
     fun finishOAuthAuthorization(user: User, token: String, tokenSecret: String, oauthVerifier: String) {
         val requestToken = RequestToken(token, tokenSecret)
+        val unauthenticatedClient = clientFactory.instance
         val accessToken = unauthenticatedClient.getOAuthAccessToken(requestToken, oauthVerifier)
         val setting = user.twitterSettings.firstOrNull() ?:
             TwitterSetting(user = user, key = "", secret = "")
