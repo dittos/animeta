@@ -12,7 +12,7 @@ var assets = require('./assets.json');
 var server = createServer({
   app,
   getAssets: () => assets,
-}).listen(port, () => {
+}).server.listen(port, () => {
   console.log('Server running at port', port);
 });
 

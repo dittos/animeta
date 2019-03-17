@@ -269,5 +269,10 @@ Disallow: /
     server.use(Raven.errorHandler());
   }
 
-  return server;
+  return {
+    server,
+    setApp(newApp) {
+      app = newApp;
+    }
+  };
 }
