@@ -5,7 +5,6 @@ import csurf from 'csurf';
 import httpProxy from 'http-proxy';
 import serializeJS from 'serialize-javascript';
 import isString from 'lodash/isString';
-import ReactDOMServer from 'react-dom/server';
 import Raven from 'raven';
 import Backend, { HttpNotFound } from './backend';
 import renderFeed from './renderFeed';
@@ -181,7 +180,7 @@ Disallow: /
           meta,
           errorStatus,
           redirectURI,
-          element,
+          getHTML,
         } = result;
 
         if (errorStatus === 404) {
@@ -204,7 +203,7 @@ Disallow: /
             meta,
             assetEntries: ['runtime', 'common', 'index'],
           },
-          ReactDOMServer.renderToString(element)
+          getHTML()
         );
       })
       .catch(err => {

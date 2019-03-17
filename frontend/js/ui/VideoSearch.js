@@ -1,4 +1,3 @@
-/* global PreloadData */
 import $ from 'jquery';
 import React from 'react';
 import { LoadMore } from './LoadMore';
@@ -51,7 +50,7 @@ class VideoSearch extends React.Component {
     $.ajax({
       url: 'https://dapi.kakao.com/v2/search/vclip',
       headers: {
-        'Authorization': `KakaoAK ${PreloadData.kakaoApiKey}`,
+        'Authorization': `KakaoAK ${window.__nuri.preloadData.kakaoApiKey}`,
       },
       data: {
         query: this.props.query,

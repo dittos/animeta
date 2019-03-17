@@ -79,11 +79,6 @@ try {
     <script type="text/javascript" src="<%= ASSET_BASE %><%= assets[entry].js %>"></script>
     <% } %>
 <% }) %>
-<script>
-var PreloadData = <%- serializeJS(preloadData || {}, {isJSON: true}) %>;
-if (window.startApp) {
-    window.startApp(PreloadData);
-}
-</script>
+<script>window.__nuri && window.__nuri(<%- serializeJS(preloadData || {}, {isJSON: true}) %>);</script>
 </body>
 </html>

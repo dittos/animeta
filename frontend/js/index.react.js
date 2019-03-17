@@ -1,6 +1,6 @@
 /* global Raven */
 import $ from 'jquery';
-import { injectLoader, render } from 'nuri/client';
+import { injectLoader, bootstrap } from 'nuri/client';
 import nprogress from 'nprogress';
 import app from './routes';
 import { serializeParams, getCurrentUser } from './API';
@@ -52,14 +52,12 @@ $(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) => {
   alert('서버 오류로 요청에 실패했습니다.');
 });
 
-window.startApp = preloadData => {
+bootstrap(app, controller => {
   nprogress.configure({
     trickleRate: 0.4,
     trickleSpeed: 600,
     easing: 'ease',
   });
-
-  const controller = render(app, document.getElementById('app'), preloadData);
 
   controller.subscribe({
     willLoad() {
@@ -75,4 +73,4 @@ window.startApp = preloadData => {
       trackPageView();
     },
   });
-};
+});
