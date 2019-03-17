@@ -40,7 +40,7 @@ injectLoaderFactory(serverRequest => {
   };
 });
 
-export function createServer({ server = express(), app, getAssets }) {
+export function createServer({ server = express(), appProvider, getAssets }) {
   server.set('view engine', 'ejs');
   server.set('views', __dirname);
   server.set('strict routing', true);
@@ -172,7 +172,7 @@ Disallow: /
       return;
     }
 
-    render(app, req)
+    render(appProvider.get(), req)
       .then(result => {
         const {
           preloadData,
@@ -268,10 +268,5 @@ Disallow: /
     server.use(Raven.errorHandler());
   }
 
-  return {
-    server,
-    setApp(newApp) {
-      app = newApp;
-    }
-  };
+  return server;
 }

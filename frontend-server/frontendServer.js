@@ -4,15 +4,14 @@ if (!global._babelPolyfill) {
 var { createServer } = require('./frontend');
 var port = process.env.PORT || 3000;
 
-// Don't require directly to fool tsc
-var appModule = module.require('./bundle');
-var app = appModule.default || appModule;
+var {DefaultAppProvider} = require('./lib/core/AppProvider');
+var appProvider = new DefaultAppProvider('./bundle.js');
 var assets = require('./assets.json');
 
 var server = createServer({
-  app,
+  appProvider,
   getAssets: () => assets,
-}).server.listen(port, () => {
+}).listen(port, () => {
   console.log('Server running at port', port);
 });
 
