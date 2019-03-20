@@ -5,7 +5,7 @@ var { createServer } = require('./frontend');
 var port = process.env.PORT || 3000;
 
 var {DefaultAppProvider} = require('./lib/core/AppProvider');
-var appProvider = new DefaultAppProvider('./bundle.js');
+var appProvider = new DefaultAppProvider(__dirname + '/bundle.js');
 var assets = require('./assets.json');
 
 var server = createServer({
