@@ -64,10 +64,12 @@ module.exports = env => {
           test: /\.less$/,
           use: styleLoader(env, [
             {
-              loader: env.server ? 'css-loader/locals' : 'css-loader',
+              loader: 'css-loader',
               options: {
                 localIdentName: '[name]_[local]_[hash:base64:5]',
                 importLoaders: 1,
+                modules: 'global',
+                exportOnlyLocals: env.server,
               },
             },
             {
