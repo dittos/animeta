@@ -149,6 +149,17 @@ export default class WorkMetadataEditor extends React.Component<Props> {
         return (
             <>
                 <FormGroup>
+                    <ControlLabel>AnimeNewsNetwork ID</ControlLabel>
+                    <FormControl
+                        name="annId"
+                        value={metadata.annId || ''}
+                        onChange={this.handleInputChange}
+                    />
+                    <button onClick={this.handleAnnImport} disabled={!metadata.annId}>
+                        Import Metadata
+                    </button>
+                </FormGroup>
+                <FormGroup>
                     <ControlLabel>Periods</ControlLabel>
                     {this.renderPeriodCheckboxes()}
                 </FormGroup>
@@ -216,17 +227,6 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                         value={metadata.namuRef || ''}
                         onChange={this.handleInputChange}
                     />
-                </FormGroup>
-                <FormGroup>
-                    <ControlLabel>AnimeNewsNetwork ID</ControlLabel>
-                    <FormControl
-                        name="annId"
-                        value={metadata.annId || ''}
-                        onChange={this.handleInputChange}
-                    />
-                    <button onClick={this.handleAnnImport} disabled={!metadata.annId}>
-                        Import Metadata
-                    </button>
                 </FormGroup>
             </>
         );
