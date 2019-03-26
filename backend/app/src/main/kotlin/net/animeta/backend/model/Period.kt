@@ -12,6 +12,14 @@ data class Period(val year: Int, val period: Int): Comparable<Period> {
         }
     }
 
+    fun next(): Period {
+        return if (period == 4) {
+            Period(year + 1, 1)
+        } else {
+            Period(year, period + 1)
+        }
+    }
+
     override fun compareTo(other: Period): Int {
         return if (this.year == other.year) {
             this.period.compareTo(other.period)

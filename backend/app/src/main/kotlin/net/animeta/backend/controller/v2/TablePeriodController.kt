@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
 @RestController
@@ -32,6 +33,8 @@ class TablePeriodController(val datastore: Datastore,
     private val cache: Cache<CacheKey, List<WorkDTO>> = CacheBuilder.newBuilder()
             .expireAfterWrite(1, TimeUnit.HOURS)
             .build()
+    private val defaultTimeZone = ZoneId.of("Asia/Seoul")
+    private val minPeriod = Period(2014, 2)
 
     fun invalidateCache() {
         cache.invalidateAll()
@@ -44,6 +47,10 @@ class TablePeriodController(val datastore: Datastore,
             @RequestParam("with_recommendations", defaultValue = "false") withRecommendations: Boolean,
             @CurrentUser(required = false) currentUser: User?): List<WorkDTO> {
         val period = Period.parse(periodParam) ?: throw ApiException.notFound()
+        val maxPeriod = Period.now(defaultTimeZone).next()
+        if (period < minPeriod || period > maxPeriod) {
+            throw ApiException.notFound()
+        }
         val result = cache.get(CacheKey(period, onlyFirstPeriod)) {
             var query = workPeriodIndex.query
                     .filter(workPeriodIndex.period.eq(period.toString()))
