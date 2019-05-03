@@ -103,7 +103,7 @@ export function disconnectTwitter() {
 // User Records
 
 export function createRecord(
-  { title, statusType, status, categoryID, comment },
+  { title, statusType, status, categoryID, comment, publishTwitter },
   options = {},
   postOptions = null
 ) {
@@ -113,6 +113,7 @@ export function createRecord(
     status,
     statusType: statusType.toUpperCase(),
     comment,
+    publishTwitter,
     options,
     postOptions,
   });

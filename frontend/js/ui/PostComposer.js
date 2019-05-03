@@ -13,9 +13,7 @@ export class PostComposer extends React.Component {
   };
 
   componentDidMount() {
-    this.setState({
-      publishTwitter: window.localStorage.getItem('publishTwitter') === 'true',
-    });
+    this.setState({ publishTwitter: getLastPublishTwitter() });
   }
 
   render() {

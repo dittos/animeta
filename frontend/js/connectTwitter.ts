@@ -1,4 +1,10 @@
-var _twitterConnectPromise = null;
+declare global {
+  interface Window {
+    onTwitterConnect(ok: boolean): void;
+  }
+}
+
+var _twitterConnectPromise: Promise<void> = null;
 
 export default function connectTwitter() {
   if (!_twitterConnectPromise) {

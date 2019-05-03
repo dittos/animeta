@@ -335,10 +335,7 @@ class Record extends React.Component {
   };
 
   _createPost = post => {
-    window.localStorage.setItem(
-      'publishTwitter',
-      post.publishTwitter ? 'true' : 'false'
-    );
+    setLastPublishTwitter(post.publishTwitter);
     return createPost(this.props.data.record.id, post).then(() => {
       trackEvent({
         eventCategory: 'Post',

@@ -1,12 +1,14 @@
 import React from 'react';
 import { Modal } from 'react-overlays';
 import { getCurrentUser, createRecord } from '../API';
+import connectTwitter from '../connectTwitter';
 import * as Typeahead from './Typeahead';
 import { Switch, SwitchItem } from './Switch';
 import LoginDialog from './LoginDialog';
 import { StatusInput } from './StatusInput';
 import ModalStyles from './Modal.less';
 import Styles from './AddRecordDialog.less';
+import { getLastPublishTwitter, setLastPublishTwitter } from '../Prefs';
 
 class CategorySelect extends React.Component {
   render() {
@@ -34,6 +36,7 @@ class AddRecord extends React.Component {
       statusType: props.initialStatusType || 'watching',
       status: '',
       comment: '',
+      publishTwitter: false,
       isRequesting: false,
       currentUser: null,
     };
@@ -101,6 +104,18 @@ class AddRecord extends React.Component {
               />
             </div>
           </form>
+          <div className={Styles.shareOptions}>
+            <label>
+              <input
+                type="checkbox"
+                checked={
+                  currentUser.is_twitter_connected && this.state.publishTwitter
+                }
+                onChange={this._onPublishTwitterChange}
+              />
+              {' 트위터에 공유'}
+            </label>
+          </div>
           <button
             className={ModalStyles.confirmButton}
             disabled={this.state.isRequesting}
@@ -116,6 +131,7 @@ class AddRecord extends React.Component {
 
   componentDidMount() {
     this._load();
+    this.setState({ publishTwitter: getLastPublishTwitter() });
   }
 
   _onTitleChange = event => {
@@ -142,16 +158,31 @@ class AddRecord extends React.Component {
     this.setState({ comment: event.target.value });
   };
 
+  _onPublishTwitterChange = event => {
+    if (!this.state.currentUser.is_twitter_connected) {
+      connectTwitter().then(() => {
+        this.setState(state => ({
+          publishTwitter: true,
+          currentUser: { ...state.currentUser, is_twitter_connected: true },
+        }));
+      });
+    } else {
+      this.setState({ publishTwitter: event.target.checked });
+    }
+  };
+
   _onSubmit = event => {
     event.preventDefault();
     if (this.state.isRequesting) return;
     this.setState({ isRequesting: true });
+    setLastPublishTwitter(this.state.publishTwitter);
     createRecord({
       title: this.refs.title.value,
       statusType: this.state.statusType,
       status: this.state.status,
       categoryID: this.state.selectedCategoryId,
       comment: this.state.comment,
+      publishTwitter: this.state.publishTwitter,
     })
       .then(result => {
         this.props.onCreate(result);
@@ -164,7 +195,10 @@ class AddRecord extends React.Component {
   async _load() {
     // TODO: cache
     const currentUser = await getCurrentUser({
-      options: { categories: true },
+      options: {
+        categories: true,
+        twitter: true,
+      },
     });
     if (!currentUser) {
       alert('로그인 후 추가할 수 있습니다.');

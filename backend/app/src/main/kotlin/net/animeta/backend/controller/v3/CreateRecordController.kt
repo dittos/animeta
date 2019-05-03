@@ -13,6 +13,8 @@ import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.PostSerializer
 import net.animeta.backend.serializer.RecordSerializer
+import net.animeta.backend.service.TweetFormatter
+import net.animeta.backend.service.TwitterService
 import net.animeta.backend.service.WorkService
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
@@ -28,6 +30,7 @@ class CreateRecordController(
     private val historyRepository: HistoryRepository,
     private val categoryRepository: CategoryRepository,
     private val workService: WorkService,
+    private val twitterService: TwitterService,
     private val recordSerializer: RecordSerializer,
     private val postSerializer: PostSerializer
 ) {
@@ -37,6 +40,7 @@ class CreateRecordController(
         val status: String,
         val statusType: StatusType,
         val comment: String,
+        val publishTwitter: Boolean?,
         val rating: Int?,
         val options: RecordSerializer.Options?,
         val postOptions: PostSerializer.Options?
@@ -87,6 +91,13 @@ class CreateRecordController(
             rating = params.rating
         )
         historyRepository.save(history)
+
+        val publishTwitter = params.publishTwitter ?: false
+        if (publishTwitter) {
+            // TODO: after commit
+            twitterService.updateStatus(currentUser, TweetFormatter.format(history))
+        }
+
         return Result(
             record = params.options?.let { recordSerializer.serialize(record, params.options) },
             post = params.postOptions?.let { postSerializer.serialize(history, params.postOptions) }
