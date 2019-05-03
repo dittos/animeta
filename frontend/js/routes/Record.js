@@ -22,6 +22,7 @@ import { User } from '../layouts';
 import { CenteredFullWidth } from '../ui/Layout';
 import ModalStyles from '../ui/Modal.less';
 import { trackEvent } from '../Tracking';
+import { setLastPublishTwitter } from '../Prefs';
 
 const recordFetchOptions = {
   user: {

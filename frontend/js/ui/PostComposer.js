@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as util from '../util';
 import { StatusInput } from './StatusInput';
 import Styles from './PostComposer.less';
+import { getLastPublishTwitter } from '../Prefs';
 
 export class PostComposer extends React.Component {
   state = {
