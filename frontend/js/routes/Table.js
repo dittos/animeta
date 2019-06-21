@@ -141,7 +141,7 @@ class StatusButton extends React.Component {
         </Link>
       );
     } else {
-      return (
+      return (<>
         <Link
           className={Styles.favoriteButtonNormal}
           to={'/records/add/' + encodeURIComponent(this.props.item.title) + '/'}
@@ -149,16 +149,16 @@ class StatusButton extends React.Component {
         >
           <i className="fa fa-plus" />
           작품 추가
-          {this.state.showAddModal && (
-            <AddRecordDialog
-              initialStatusType="interested"
-              initialTitle={this.props.item.title}
-              onCancel={this._closeAddModal}
-              onCreate={this._recordAdded}
-            />
-          )}
         </Link>
-      );
+        {this.state.showAddModal && (
+          <AddRecordDialog
+            initialStatusType="interested"
+            initialTitle={this.props.item.title}
+            onCancel={this._closeAddModal}
+            onCreate={this._recordAdded}
+          />
+        )}
+      </>);
     }
   }
 
@@ -167,11 +167,7 @@ class StatusButton extends React.Component {
     this.setState({ showAddModal: true });
   };
 
-  _closeAddModal = event => {
-    // prevent event bubbling up to link
-    if (event) {
-      event.stopPropagation();
-    }
+  _closeAddModal = () => {
     this.setState({ showAddModal: false });
   };
 
