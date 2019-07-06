@@ -135,8 +135,8 @@ export function editPerson(id, request) {
 
 let _companies;
 
-export function getCompanies() {
-  if (!_companies) {
+export function getCompanies(cached = true) {
+  if (!_companies || !cached) {
     _companies = fetchWithSession('/api/admin/companies');
   }
   return _companies;

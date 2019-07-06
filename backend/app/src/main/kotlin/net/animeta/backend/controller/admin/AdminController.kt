@@ -173,7 +173,7 @@ class AdminController(private val datastore: Datastore,
             setPrimaryTitleMapping(request.primaryTitleMappingId)
         }
         if (request.mergeWorkId != null) {
-            merge(id, request.mergeWorkId, request.forceMerge ?: false)
+            mergeWork(id, request.mergeWorkId, request.forceMerge ?: false)
         }
         if (request.rawMetadata != null) {
             editMetadata(id, request.rawMetadata)
@@ -208,7 +208,7 @@ class AdminController(private val datastore: Datastore,
     data class MergeError(val conflicts: List<MergeConflictDTO>)
     data class MergeConflictDTO(val user_id: Int, val username: String, val ids: List<Int>)
 
-    private fun merge(workId: Int, otherWorkId: Int, force: Boolean) {
+    private fun mergeWork(workId: Int, otherWorkId: Int, force: Boolean) {
         val work = workRepository.findById(workId).orElse(null)
         val other = workRepository.findById(otherWorkId).orElse(null)
         if (work.id == other.id) {
@@ -379,7 +379,7 @@ class AdminController(private val datastore: Datastore,
     @GetMapping("/companies")
     fun getCompanies(): Iterable<Company> {
         // TODO: define DTO
-        return companyRepository.findAll()
+        return companyRepository.findAll(Sort.by("name"))
     }
 
     data class CompanyDTO(
@@ -403,7 +403,10 @@ class AdminController(private val datastore: Datastore,
         } ?: throw ApiException.notFound()
     }
 
-    data class EditCompanyRequest(val name: String?)
+    data class EditCompanyRequest(
+        val name: String?,
+        val mergeCompanyId: Int?
+    )
 
     @PostMapping("/companies/{id}")
     @Transactional
@@ -428,7 +431,31 @@ class AdminController(private val datastore: Datastore,
                 ))
             }
         }
+        if (request.mergeCompanyId != null) {
+            mergeCompany(id, request.mergeCompanyId)
+        }
         return getCompany(id)
+    }
+
+    private fun mergeCompany(companyId: Int, otherCompanyId: Int) {
+        val company = companyRepository.findByIdOrNull(companyId)!!
+        val other = companyRepository.findByIdOrNull(otherCompanyId)!!
+        if (company.id == other.id) {
+            throw ApiException("Cannot merge itself", HttpStatus.BAD_REQUEST)
+        }
+        if (other.works.any { it.company.id == company.id }) {
+            throw ApiException("Works with conflict exists", HttpStatus.BAD_REQUEST)
+        }
+        for (workCompany in other.works) {
+            val work = workCompany.work
+            val metadata = work.metadata?.let { objectMapper.readValue<WorkMetadata>(it) } ?: WorkMetadata()
+            workService.editMetadata(work, metadata.copy(
+                studios = metadata.studios?.map {
+                    if (it == other.name) company.name else it
+                }
+            ))
+        }
+        companyRepository.delete(other)
     }
 
     private fun checkPermission(user: User) {

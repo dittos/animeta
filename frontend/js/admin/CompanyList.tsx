@@ -7,7 +7,7 @@ class CompanyList extends React.Component<{location: any}> {
   render() {
     return <ObjectList
       location={this.props.location}
-      loader={(page) => API.getCompanies()}
+      loader={(page) => API.getCompanies(false)}
       basePath="/companies"
       renderItem={this._renderItem}
       paginated={false}

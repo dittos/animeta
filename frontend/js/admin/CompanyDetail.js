@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Table, Form, FormGroup, FormControl, Button } from 'react-bootstrap';
 import * as API from './API';
+import CompanyMergeForm from './CompanyMergeForm';
 
 class CompanyDetail extends React.Component {
   state = {
@@ -55,6 +56,9 @@ class CompanyDetail extends React.Component {
           </FormGroup>
           <Button type="submit">Rename</Button>
         </Form>
+
+        <h3>Merge</h3>
+        <CompanyMergeForm company={company} onMerge={this._reload} />
 
         <h3>Metadata</h3>
         <FormGroup>
