@@ -141,3 +141,15 @@ export function getCompanies() {
   }
   return _companies;
 }
+
+export function getCompany(id) {
+  return fetchWithSession(`/api/admin/companies/${id}`);
+}
+
+export function editCompany(id, request) {
+  return fetchWithSession(`/api/admin/companies/${id}`, {
+    method: 'POST',
+    body: JSON.stringify(request),
+    headers: { 'Content-Type': 'application/json' },
+  });
+}

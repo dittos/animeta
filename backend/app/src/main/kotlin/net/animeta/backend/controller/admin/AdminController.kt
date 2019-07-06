@@ -34,6 +34,7 @@ import net.animeta.backend.service.admin.AnnService
 import net.animeta.backend.service.admin.ImageService
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -379,6 +380,55 @@ class AdminController(private val datastore: Datastore,
     fun getCompanies(): Iterable<Company> {
         // TODO: define DTO
         return companyRepository.findAll()
+    }
+
+    data class CompanyDTO(
+        val id: Int,
+        val name: String,
+        val works: List<CompanyWorkDTO>
+    )
+    data class CompanyWorkDTO(
+        val id: Int,
+        val title: String
+    )
+
+    @GetMapping("/companies/{id}")
+    fun getCompany(@PathVariable id: Int): CompanyDTO {
+        return companyRepository.findByIdOrNull(id)?.let {
+            CompanyDTO(
+                id = it.id!!,
+                name = it.name,
+                works = it.works.map { CompanyWorkDTO(it.work.id!!, it.work.title) }
+            )
+        } ?: throw ApiException.notFound()
+    }
+
+    data class EditCompanyRequest(val name: String?)
+
+    @PostMapping("/companies/{id}")
+    @Transactional
+    fun editCompany(@CurrentUser currentUser: User, @PathVariable id: Int, @RequestBody request: EditCompanyRequest): CompanyDTO {
+        checkPermission(currentUser)
+        val company = companyRepository.findById(id).get()
+        if (request.name != null && company.name != request.name) {
+            if (companyRepository.findOneByName(request.name) != null) {
+                throw Exception("Name collision")
+            }
+            val prevName = company.name
+            company.name = request.name
+            companyRepository.save(company)
+
+            for (workCompany in company.works) {
+                val work = workCompany.work
+                val metadata = work.metadata?.let { objectMapper.readValue<WorkMetadata>(it) } ?: WorkMetadata()
+                workService.editMetadata(work, metadata.copy(
+                    studios = metadata.studios?.map {
+                        if (it == prevName) company.name else it
+                    }
+                ))
+            }
+        }
+        return getCompany(id)
     }
 
     private fun checkPermission(user: User) {

@@ -12,6 +12,7 @@ export interface ObjectListProps<T extends Entity> {
   basePath: string;
   loader: (page: number) => Promise<any[]>;
   renderItem: (item: T, context: ObjectListContext) => React.ReactNode;
+  paginated?: boolean;
 }
 
 interface ObjectListState<T extends Entity> {
@@ -62,11 +63,11 @@ class ObjectList<T extends Entity> extends React.Component<ObjectListProps<T>, O
           ))}
         </ul>
 
-        <p>
+        {this.props.paginated !== false && <p>
           <Link to={{ pathname: this.props.basePath, search: `?page=${page + 1}` }}>
             Next
           </Link>
-        </p>
+        </p>}
       </div>
     );
   }

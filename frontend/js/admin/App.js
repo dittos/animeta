@@ -58,6 +58,7 @@ class App extends React.Component {
             <Nav>
               <LinkContainer to="/works"><NavItem>Works</NavItem></LinkContainer>
               <LinkContainer to="/people"><NavItem>People</NavItem></LinkContainer>
+              <LinkContainer to="/companies"><NavItem>Companies</NavItem></LinkContainer>
             </Nav>
             <Nav pullRight>
               <NavDropdown
