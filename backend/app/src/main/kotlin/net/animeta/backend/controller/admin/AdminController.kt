@@ -34,7 +34,6 @@ import net.animeta.backend.service.admin.AnnService
 import net.animeta.backend.service.admin.ImageService
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -394,7 +393,7 @@ class AdminController(private val datastore: Datastore,
 
     @GetMapping("/companies/{id}")
     fun getCompany(@PathVariable id: Int): CompanyDTO {
-        return companyRepository.findByIdOrNull(id)?.let {
+        return companyRepository.findById(id).orElse(null)?.let {
             CompanyDTO(
                 id = it.id!!,
                 name = it.name,
@@ -438,8 +437,8 @@ class AdminController(private val datastore: Datastore,
     }
 
     private fun mergeCompany(companyId: Int, otherCompanyId: Int) {
-        val company = companyRepository.findByIdOrNull(companyId)!!
-        val other = companyRepository.findByIdOrNull(otherCompanyId)!!
+        val company = companyRepository.findById(companyId).get()
+        val other = companyRepository.findById(otherCompanyId).get()
         if (company.id == other.id) {
             throw ApiException("Cannot merge itself", HttpStatus.BAD_REQUEST)
         }
