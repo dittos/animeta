@@ -6,10 +6,12 @@ import net.animeta.backend.metadata.PersonMetadata
 import net.animeta.backend.metadata.WorkCastMetadata
 import net.animeta.backend.metadata.WorkMetadata
 import net.animeta.backend.metadata.WorkStaffMetadata
+import net.animeta.backend.model.Company
 import net.animeta.backend.model.Person
 import net.animeta.backend.model.Work
 import net.animeta.backend.model.WorkCast
 import net.animeta.backend.model.WorkStaff
+import net.animeta.backend.repository.CompanyRepository
 import net.animeta.backend.repository.PersonRepository
 import net.animeta.backend.repository.WorkCastRepository
 import net.animeta.backend.repository.WorkStaffRepository
@@ -24,6 +26,7 @@ class AnnService(
     private val personRepository: PersonRepository,
     private val workStaffRepository: WorkStaffRepository,
     private val workCastRepository: WorkCastRepository,
+    private val companyRepository: CompanyRepository,
     private val workService: WorkService,
     private val mapper: ObjectMapper
 ) {
@@ -54,7 +57,12 @@ class AnnService(
         val studios = metadata.studios ?:
             anime.select("credit")
                 .filter { it.selectFirst("task")?.text() == "Animation Production" }
-                .mapNotNull { it.selectFirst("company")?.text() }
+                .mapNotNull { it.selectFirst("company") }
+                .map {
+                    val annId = it.attr("id").toInt()
+                    val annName = it.text()
+                    getOrCreateCompany(annName, annId).name
+                }
                 .takeIf { it.isNotEmpty() }
         workService.editMetadata(work, metadata.copy(
             durationMinutes = durationMinutes,
@@ -106,6 +114,17 @@ class AnnService(
             name = name,
             metadata = mapper.writeValueAsString(PersonMetadata(name_en = name)),
             annId = annId
+        ))
+    }
+
+    private fun getOrCreateCompany(name: String, annId: Int): Company {
+        val existing = companyRepository.findOneByAnnIds(annId) ?:
+            companyRepository.findOneByName(name)
+        return existing ?: companyRepository.save(Company(
+            name = name,
+            metadata = null,
+            annId = annId,
+            annIds = setOf(annId)
         ))
     }
 }

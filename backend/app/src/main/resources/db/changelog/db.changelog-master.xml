@@ -141,4 +141,22 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet id="7" author="ditto">
+        <createTable tableName="company_ann_ids">
+            <column name="company_id" type="int">
+                <constraints foreignKeyName="fk_company_ann_ids_company"
+                             nullable="false"
+                             referencedTableName="company"
+                             referencedColumnNames="id"
+                             deleteCascade="false"
+                />
+            </column>
+            <column name="ann_ids" type="int">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <createIndex tableName="company_ann_ids" indexName="idx_company_ann_ids_1">
+            <column name="ann_ids" />
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>

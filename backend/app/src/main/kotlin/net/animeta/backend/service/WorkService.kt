@@ -103,8 +103,8 @@ class WorkService(private val workRepository: WorkRepository,
                 annId = null
             ))
         }
+        work.companies.clear()
         if (studios != null) {
-            work.companies.clear()
             work.companies.addAll(studios.withIndex().map { (index, company) ->
                 WorkCompany(work = work, position = index, company = company)
             })
