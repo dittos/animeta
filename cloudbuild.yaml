@@ -2,10 +2,11 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/animeta-frontend', '-f', 'Dockerfile.frontend', '.' ]
 - name: 'gcr.io/cloud-builders/docker'
-  args: [ 'run', '-v', '/workspace:/workspace', 'gcr.io/$PROJECT_ID/animeta-frontend', '--entrypoint', '/bin/bash', 'cp', '-r', '/app/frontend-dist', '/workspace/' ]
+  args: [ 'run', '-v', '/workspace:/workspace', '--entrypoint', '/bin/bash', 'gcr.io/$PROJECT_ID/animeta-frontend',
+          '-c', 'cp -r /app/animeta/static /workspace/' ]
 images:
 - 'gcr.io/$PROJECT_ID/animeta-frontend'
 artifacts:
   objects:
     location: gs://animeta-static/static/
-    paths: ['frontend-dist/static/**']
+    paths: ['static/**']
