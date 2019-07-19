@@ -4,9 +4,7 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: [ 'run', '-v', '/workspace:/workspace', '--entrypoint', '/bin/bash', 'gcr.io/$PROJECT_ID/animeta-frontend',
           '-c', 'cp -r /app/animeta/static /workspace/' ]
+- name: 'gcr.io/cloud-builders/gsutil'
+  args: [ 'cp', '-r', 'static/**', 'gs://animeta-static/static/' ]
 images:
 - 'gcr.io/$PROJECT_ID/animeta-frontend'
-artifacts:
-  objects:
-    location: gs://animeta-static/static/
-    paths: ['static/**']
