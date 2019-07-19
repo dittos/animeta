@@ -19,6 +19,4 @@ RUN cp frontend/assets.json frontend-server/bundle.js frontend-server/bundle.js.
 
 ENV NODE_ENV production
 
-COPY ./docker-entrypoint.sh /
-ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["node", "frontend-dist/frontendServer.js"]

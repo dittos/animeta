@@ -90,7 +90,7 @@ export function createServer({ server = express(), appProvider, getAssets }) {
   function renderDefault(res, locals, content) {
     const context = {
       DEBUG,
-      STATIC_URL: '/static/',
+      STATIC_URL: config.staticUrl || '/static/',
       ASSET_BASE: config.assetBase || '',
       assets: getAssets(res),
       title: '',
