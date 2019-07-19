@@ -41,10 +41,8 @@ services:
         condition: on-failure
       update_config:
         order: start-first
-    volumes:
-      - "static:/app/static"
     configs:
-      - source: frontend_v3
+      - source: frontend_v4
         target: /app/frontend-dist/config.json
     environment:
       - PORT=3000
@@ -63,7 +61,5 @@ configs:
     file: ./application.properties
   google_credentials:
     file: ./google-credentials.json
-  frontend_v3:
+  frontend_v4:
     file: ./frontend.json
-volumes:
-  static:
