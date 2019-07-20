@@ -1,0 +1,111 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: animeta-frontend
+spec:
+  selector:
+    app: animeta-frontend
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: animeta-frontend
+  labels:
+    app: animeta-frontend
+    keel.sh/policy: force
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: animeta-frontend
+  template:
+    metadata:
+      labels:
+        app: animeta-frontend
+        invalidation: "1"
+    spec:
+      containers:
+      - name: frontend
+        image: gcr.io/ditto-1470749749381/animeta-frontend
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+        - name: PORT
+          value: "3000"
+        resources:
+          limits:
+            memory: "128Mi"
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 10
+        volumeMounts:
+        - mountPath: /app/frontend-dist/config.json
+          name: config
+          subPath: frontend.json
+      volumes:
+      - name: config
+        configMap:
+          name: animeta
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: animeta-backend
+spec:
+  selector:
+    app: animeta-backend
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: animeta-backend
+  labels:
+    app: animeta-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: animeta-backend
+  template:
+    metadata:
+      labels:
+        app: animeta-backend
+    spec:
+      containers:
+      - name: backend
+        image: sapzilorg/animeta-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_CONFIG_LOCATION
+          value: file:/app/conf/application.properties
+        resources:
+          limits:
+            memory: "512Mi"
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 40
+        volumeMounts:
+        - mountPath: /app/conf
+          name: config
+      volumes:
+      - name: config
+        configMap:
+          name: animeta
