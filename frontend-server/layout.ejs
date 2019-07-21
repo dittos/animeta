@@ -49,12 +49,12 @@
 <% } else { %>
     <script>function ga(){}</script>
 <% } %>
-    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <% assetEntries.forEach(entry => { %>
     <% if (assets[entry].css) { %>
     <link href="<%= ASSET_BASE %><%= assets[entry].css %>" rel="stylesheet">
     <% } %>
 <% }) %>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body>
 <div id="app"><%- content %></div>
