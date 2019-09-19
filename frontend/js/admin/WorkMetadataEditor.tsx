@@ -153,7 +153,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                     <FormControl
                         name="annId"
                         value={metadata.annId || ''}
-                        onChange={this.handleInputChange}
+                        onChange={this.handleAnnIdChange}
                     />
                     <button onClick={this.handleAnnImport} disabled={!metadata.annId}>
                         Import Metadata
@@ -272,6 +272,20 @@ export default class WorkMetadataEditor extends React.Component<Props> {
         }
         periods.sort();
         this.props.onChange({ ...this.props.metadata, periods });
+    };
+
+    private handleAnnIdChange = (e: React.FormEvent<FormControl>) => {
+        const el = e.target as HTMLInputElement;
+        const value = el.value.replace(/^https?:\/\/(?:www\.)?animenewsnetwork\.com\/encyclopedia\/anime\.php\?id=([0-9]+)$/, '$1');
+        if (value) {
+            this.props.onChange({
+                ...this.props.metadata,
+                annId: value,
+            });
+        } else {
+            const {annId: _, ...rest} = this.props.metadata as any;
+            this.props.onChange(rest);
+        }
     };
 
     private handleInputChange = (e: React.FormEvent<FormControl>) => {
