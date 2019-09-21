@@ -249,9 +249,9 @@ class AdminController(private val datastore: Datastore,
             when (options.source) {
                 "ann" -> {
                     imageService.downloadAnnPoster(options.annId!!, tempFile)
-                    imageService.generateThumbnail(tempFile, tempThumbFile, removeAnnWatermark = true)
+                    imageService.generateThumbnail(tempFile, tempThumbFile)
                     work.original_image_filename = "ann${options.annId}.jpg"
-                    work.image_filename = "thumb/${work.original_image_filename}"
+                    work.image_filename = "thumb/v2/${work.original_image_filename}"
                     imageService.upload(tempFile, work.original_image_filename!!)
                     imageService.upload(tempThumbFile, work.image_filename!!)
                     workRepository.save(work)
