@@ -54,7 +54,7 @@ class DropdownUserMenu extends React.Component {
 
 export class GlobalHeader extends React.Component {
   static LAST_NOTICE_CLICKED = 'lastNoticeClicked';
-  static noticeId = '2019Q3';
+  static noticeId = '2019Q4';
 
   state = {
     showNotice: false,
