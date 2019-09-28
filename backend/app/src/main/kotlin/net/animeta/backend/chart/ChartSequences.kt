@@ -1,8 +1,6 @@
 package net.animeta.backend.chart
 
-import kotlin.coroutines.experimental.buildSequence
-
-fun <T> ranked(seq: Sequence<Pair<T, Long>>): Sequence<ChartItem<T>> = buildSequence {
+fun <T> ranked(seq: Sequence<Pair<T, Long>>): Sequence<ChartItem<T>> = sequence {
     var rank = 0L
     var prev = -1L
     var ptr = 1L

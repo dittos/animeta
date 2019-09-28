@@ -17,7 +17,7 @@ interface RecordRepository : CrudRepository<Record, Int> {
 
     fun findOneByWorkIdAndUser(workId: Int, user: User): Record?
 
-    fun findAllByUserAndWorkIdIn(user: User, workIds: Iterable<Int>): List<Record>
+    fun findAllByUserAndWorkIdIn(user: User, workIds: Collection<Int>): List<Record>
 
     @Modifying
     @Query("update Record r set r.category = NULL where r.category = ?1")

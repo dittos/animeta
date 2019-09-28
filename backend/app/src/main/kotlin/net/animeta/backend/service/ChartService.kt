@@ -49,7 +49,7 @@ class ChartService(val transactionManager: PlatformTransactionManager,
         return popularWorksCache.get(Optional.ofNullable(range)) {
             val template = TransactionTemplate(transactionManager)
             template.isReadOnly = true
-            template.execute { getPopularWorksUncached(range) }
+            template.execute { _ -> getPopularWorksUncached(range) }
         }.take(limit)
     }
 
@@ -88,7 +88,7 @@ class ChartService(val transactionManager: PlatformTransactionManager,
         return activeUsersCache.get(Optional.ofNullable(range)) {
             val template = TransactionTemplate(transactionManager)
             template.isReadOnly = true
-            template.execute { getActiveUsersUncached(range) }
+            template.execute { _ -> getActiveUsersUncached(range) }
         }.take(limit)
     }
 
