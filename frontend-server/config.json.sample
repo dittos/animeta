@@ -6,5 +6,6 @@
     "sentryDsn": "",
     "kakaoApiKey": "",
     "assetBase": "",
-    "staticUrl": ""
+    "staticUrl": "",
+    "sessionCookieDomain": null
 }

@@ -61,6 +61,32 @@ export function createServer({ server = express(), appProvider, getAssets }) {
     next();
   });
 
+  server.post('/api/fe/sessions', express.json(), (req, res) => {
+    const cookieOptions = {
+      path: '/',
+      httpOnly: true,
+    };
+    if (config.sessionCookieDomain) {
+      cookieOptions.domain = config.sessionCookieDomain;
+    }
+    if (req.body.transient === false) {
+      cookieOptions.maxAge = 1000 * 60 * 60 * 24 * 14;
+    }
+    res.cookie('sessionid', req.body.session_key, cookieOptions);
+    res.json({ ok: true });
+  });
+  server.delete('/api/fe/sessions', (req, res) => {
+    const cookieOptions = {
+      path: '/',
+      httpOnly: true,
+    };
+    if (config.sessionCookieDomain) {
+      cookieOptions.domain = config.sessionCookieDomain;
+    }
+    res.clearCookie('sessionid', cookieOptions);
+    res.json({ ok: true });
+  });
+
   function onProxyReq(proxyReq, req, res, options) {
     if (req.cookies.sessionid && !req.headers['x-animeta-session-key']) {
       proxyReq.setHeader('x-animeta-session-key', req.cookies.sessionid);
