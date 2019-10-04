@@ -55,7 +55,7 @@ class WorkServiceTest {
             date_joined = Timestamp.from(Instant.now()),
             staff = true
         ))
-        val workId = transactionTemplate.execute { _ ->
+        val workId = transactionTemplate.execute {
             val work = workService.getOrCreate("hi")
             work.id
         }!!

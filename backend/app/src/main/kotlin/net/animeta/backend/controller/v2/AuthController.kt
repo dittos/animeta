@@ -3,7 +3,12 @@ package net.animeta.backend.controller.v2
 import net.animeta.backend.model.User
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.service.AuthService
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.HttpServletResponse
 
 @RestController
