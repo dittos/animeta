@@ -11,12 +11,9 @@ import net.animeta.backend.exception.ApiException
 import net.animeta.backend.metadata.WorkMetadata
 import net.animeta.backend.model.Company
 import net.animeta.backend.model.Person
-import net.animeta.backend.model.QUser.user
 import net.animeta.backend.model.QWork.work
-import net.animeta.backend.model.TitleMapping
 import net.animeta.backend.model.User
 import net.animeta.backend.repository.CompanyRepository
-import net.animeta.backend.repository.HistoryRepository
 import net.animeta.backend.repository.PersonRepository
 import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.repository.TitleMappingRepository
@@ -24,10 +21,11 @@ import net.animeta.backend.repository.WorkCastRepository
 import net.animeta.backend.repository.WorkIndexRepository
 import net.animeta.backend.repository.WorkRepository
 import net.animeta.backend.repository.WorkStaffRepository
-import net.animeta.backend.repository.WorkTitleIndexRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.WorkSerializer
 import net.animeta.backend.service.ChartService
+import net.animeta.backend.service.CompanyMutations
+import net.animeta.backend.service.WorkMutations
 import net.animeta.backend.service.WorkService
 import net.animeta.backend.service.admin.AnnMetadataCache
 import net.animeta.backend.service.admin.AnnService
@@ -49,25 +47,27 @@ import java.util.UUID
 
 @RestController
 @RequestMapping("/admin")
-class AdminController(private val datastore: Datastore,
-                      private val workService: WorkService,
-                      private val imageService: ImageService,
-                      private val workRepository: WorkRepository,
-                      private val workIndexRepository: WorkIndexRepository,
-                      private val workTitleIndexRepository: WorkTitleIndexRepository,
-                      private val recordRepository: RecordRepository,
-                      private val titleMappingRepository: TitleMappingRepository,
-                      private val historyRepository: HistoryRepository,
-                      private val chartService: ChartService,
-                      private val workStaffRepository: WorkStaffRepository,
-                      private val workCastRepository: WorkCastRepository,
-                      private val personRepository: PersonRepository,
-                      private val companyRepository: CompanyRepository,
-                      private val workSerializer: WorkSerializer,
-                      private val tablePeriodController: TablePeriodController,
-                      private val annService: AnnService,
-                      private val annMetadataCache: AnnMetadataCache,
-                      private val objectMapper: ObjectMapper) {
+class AdminController(
+    private val datastore: Datastore,
+    private val workService: WorkService,
+    private val workMutations: WorkMutations,
+    private val imageService: ImageService,
+    private val workRepository: WorkRepository,
+    private val workIndexRepository: WorkIndexRepository,
+    private val recordRepository: RecordRepository,
+    private val titleMappingRepository: TitleMappingRepository,
+    private val chartService: ChartService,
+    private val workStaffRepository: WorkStaffRepository,
+    private val workCastRepository: WorkCastRepository,
+    private val personRepository: PersonRepository,
+    private val companyRepository: CompanyRepository,
+    private val companyMutations: CompanyMutations,
+    private val workSerializer: WorkSerializer,
+    private val tablePeriodController: TablePeriodController,
+    private val annService: AnnService,
+    private val annMetadataCache: AnnMetadataCache,
+    private val objectMapper: ObjectMapper
+) {
     @GetMapping("/works")
     fun getWorks(@CurrentUser currentUser: User,
                  @RequestParam("orphans", defaultValue = "false") onlyOrphans: Boolean,
@@ -88,7 +88,7 @@ class AdminController(private val datastore: Datastore,
     fun createWork(@CurrentUser currentUser: User,
                    @RequestBody request: CreateWorkRequest): WorkDTO {
         checkPermission(currentUser)
-        val work = workService.getOrCreate(request.title)
+        val work = workMutations.getOrCreate(request.title)
         return workSerializer.serialize(work)
     }
 
@@ -169,76 +169,35 @@ class AdminController(private val datastore: Datastore,
                  @RequestBody request: EditWorkRequest): AdminWorkDTO {
         checkPermission(currentUser)
         if (request.primaryTitleMappingId != null) {
-            setPrimaryTitleMapping(request.primaryTitleMappingId)
+            val work = workRepository.findById(id).get()
+            workMutations.updatePrimaryTitleMapping(work, request.primaryTitleMappingId)
         }
         if (request.mergeWorkId != null) {
-            mergeWork(id, request.mergeWorkId, request.forceMerge ?: false)
+            val work = workRepository.findById(id).get()
+            val other = workRepository.findById(request.mergeWorkId).get()
+            workMutations.merge(work, other, force = request.forceMerge ?: false)
         }
         if (request.rawMetadata != null) {
-            editMetadata(id, request.rawMetadata)
+            val work = workRepository.findById(id).orElse(null)
+            workMutations.updateMetadata(work, workService.parseMetadata(request.rawMetadata))
         }
         if (request.crawlImage != null) {
             crawlImage(id, request.crawlImage)
         }
         if (request.blacklisted != null) {
             val work = workRepository.findById(id).orElse(null)
-            work.blacklisted = request.blacklisted
-            workRepository.save(work)
+            workMutations.blacklist(work)
         }
         if (request.imageCenterY != null) {
             val work = workRepository.findById(id).orElse(null)
-            work.image_center_y = request.imageCenterY
-            workRepository.save(work)
+            workMutations.updateImageCenter(work, request.imageCenterY)
         }
         if (request.importAnnMetadata != null) {
             val work = workRepository.findById(id).orElse(null)
             annService.importMetadata(work, annMetadataCache.getMetadata(request.importAnnMetadata))
-            workRepository.save(work)
+            workRepository.save(work) // FIXME
         }
         return getWork(currentUser, id)
-    }
-
-    private fun setPrimaryTitleMapping(primaryTitleMappingId: Int) {
-        val mapping = titleMappingRepository.findById(primaryTitleMappingId).orElse(null)
-        mapping.work.title = mapping.title
-        workRepository.save(mapping.work)
-    }
-
-    data class MergeError(val conflicts: List<MergeConflictDTO>)
-    data class MergeConflictDTO(val user_id: Int, val username: String, val ids: List<Int>)
-
-    private fun mergeWork(workId: Int, otherWorkId: Int, force: Boolean) {
-        val work = workRepository.findById(workId).orElse(null)
-        val other = workRepository.findById(otherWorkId).orElse(null)
-        if (work.id == other.id) {
-            throw ApiException("Cannot merge itself", HttpStatus.BAD_REQUEST)
-        }
-        val conflicts = datastore.query(user.query.filter(user.records.any().workId.eq(work.id!!)
-                .and(user.records.any().workId.eq(other.id!!))))
-        if (conflicts.isNotEmpty() && !force) {
-            throw ApiException("Users with conflict exist", HttpStatus.UNPROCESSABLE_ENTITY,
-                    MergeError(conflicts = conflicts.map { MergeConflictDTO(
-                            user_id = it.id!!,
-                            username = it.username,
-                            ids = it.records.filter { it.workId == work.id || it.workId == other.id }.map { it.id!! }
-                    ) }))
-        }
-        for (u in conflicts) {
-            historyRepository.deleteByUserAndWorkId(u, other.id!!)
-            recordRepository.deleteByUserAndWorkId(u, other.id!!)
-        }
-        titleMappingRepository.replaceWork(other, work)
-        historyRepository.replaceWorkId(other.id!!, work.id!!)
-        recordRepository.replaceWorkId(other.id!!, work.id!!)
-        workTitleIndexRepository.deleteAllByWork(other)
-        workIndexRepository.deleteById(other.id!!)
-        workRepository.delete(other)
-    }
-
-    @Transactional
-    fun editMetadata(id: Int, rawMetadata: String) {
-        val work = workRepository.findById(id).orElse(null)
-        workService.editMetadata(work, rawMetadata)
     }
 
     private fun crawlImage(id: Int, options: CrawlImageOptions) {
@@ -250,20 +209,20 @@ class AdminController(private val datastore: Datastore,
                 "ann" -> {
                     imageService.downloadAnnPoster(options.annId!!, tempFile)
                     imageService.generateThumbnail(tempFile, tempThumbFile)
-                    work.original_image_filename = "ann${options.annId}.jpg"
-                    work.image_filename = "thumb/v2/${work.original_image_filename}"
-                    imageService.upload(tempFile, work.original_image_filename!!)
-                    imageService.upload(tempThumbFile, work.image_filename!!)
-                    workRepository.save(work)
+                    val originalFilename = "ann${options.annId}.jpg"
+                    val filename = "thumb/v2/${originalFilename}"
+                    imageService.upload(tempFile, originalFilename)
+                    imageService.upload(tempThumbFile, filename)
+                    workMutations.updateImageFilename(work, filename, originalFilename)
                 }
                 "url" -> {
                     imageService.download(options.url!!, tempFile)
                     imageService.generateThumbnail(tempFile, tempThumbFile)
-                    work.original_image_filename = UUID.randomUUID().toString()
-                    work.image_filename = "thumb/${work.original_image_filename}"
-                    imageService.upload(tempFile, work.original_image_filename!!)
-                    imageService.upload(tempThumbFile, work.image_filename!!)
-                    workRepository.save(work)
+                    val originalFilename = UUID.randomUUID().toString()
+                    val filename = "thumb/${work.original_image_filename}"
+                    imageService.upload(tempFile, originalFilename)
+                    imageService.upload(tempThumbFile, filename)
+                    workMutations.updateImageFilename(work, filename, originalFilename)
                 }
             }
         } finally {
@@ -280,10 +239,7 @@ class AdminController(private val datastore: Datastore,
                    @PathVariable id: Int): DeleteResponse {
         checkPermission(currentUser)
         val work = workRepository.findById(id).orElse(null)
-        if (recordRepository.countByWorkId(work.id!!) != 0) {
-            throw ApiException("Record exists", HttpStatus.FORBIDDEN)
-        }
-        workRepository.delete(work)
+        workMutations.delete(work)
         return DeleteResponse(true)
     }
 
@@ -297,23 +253,15 @@ class AdminController(private val datastore: Datastore,
         checkPermission(currentUser)
         val work = workRepository.findById(id).orElse(null)
         val title = request.title.trim()
-        val key = WorkService.normalizeTitle(title)
-        if (titleMappingRepository.countByKeyAndWorkIsNot(key, work) > 0) {
-            throw ApiException("Title already mapped", HttpStatus.FORBIDDEN)
-        }
-        val mapping = TitleMapping(work = work, title = title, key = key)
-        titleMappingRepository.save(mapping)
+        val mapping = workMutations.addTitleMapping(work, title)
         return TitleMappingDTO(id = mapping.id!!, title = title, record_count = 0)
     }
 
     @DeleteMapping("/title-mappings/{id}")
     fun deleteTitleMapping(@CurrentUser currentUser: User, @PathVariable id: Int): DeleteResponse {
         checkPermission(currentUser)
-        val mapping = titleMappingRepository.findById(id).orElse(null)
-        if (recordRepository.countByTitle(mapping.title) > 0) {
-            throw ApiException("Record exists", HttpStatus.FORBIDDEN)
-        }
-        titleMappingRepository.delete(mapping)
+        val titleMapping = titleMappingRepository.findById(id).orElse(null)
+        workMutations.deleteTitleMapping(titleMapping)
         return DeleteResponse(true)
     }
 
@@ -412,49 +360,14 @@ class AdminController(private val datastore: Datastore,
     fun editCompany(@CurrentUser currentUser: User, @PathVariable id: Int, @RequestBody request: EditCompanyRequest): CompanyDTO {
         checkPermission(currentUser)
         val company = companyRepository.findById(id).get()
-        if (request.name != null && company.name != request.name) {
-            if (companyRepository.findOneByName(request.name) != null) {
-                throw Exception("Name collision")
-            }
-            val prevName = company.name
-            company.name = request.name
-            companyRepository.save(company)
-
-            for (workCompany in company.works) {
-                val work = workCompany.work
-                val metadata = work.metadata?.let { objectMapper.readValue<WorkMetadata>(it) } ?: WorkMetadata()
-                workService.editMetadata(work, metadata.copy(
-                    studios = metadata.studios?.map {
-                        if (it == prevName) company.name else it
-                    }
-                ))
-            }
+        if (request.name != null) {
+            companyMutations.updateName(company, request.name)
         }
         if (request.mergeCompanyId != null) {
-            mergeCompany(id, request.mergeCompanyId)
+            val other = companyRepository.findById(request.mergeCompanyId).get()
+            companyMutations.merge(company, other)
         }
         return getCompany(id)
-    }
-
-    private fun mergeCompany(companyId: Int, otherCompanyId: Int) {
-        val company = companyRepository.findById(companyId).get()
-        val other = companyRepository.findById(otherCompanyId).get()
-        if (company.id == other.id) {
-            throw ApiException("Cannot merge itself", HttpStatus.BAD_REQUEST)
-        }
-        if (other.works.any { it.company.id == company.id }) {
-            throw ApiException("Works with conflict exists", HttpStatus.BAD_REQUEST)
-        }
-        for (workCompany in other.works) {
-            val work = workCompany.work
-            val metadata = work.metadata?.let { objectMapper.readValue<WorkMetadata>(it) } ?: WorkMetadata()
-            workService.editMetadata(work, metadata.copy(
-                studios = metadata.studios?.map {
-                    if (it == other.name) company.name else it
-                }
-            ))
-        }
-        companyRepository.delete(other)
     }
 
     private fun checkPermission(user: User) {

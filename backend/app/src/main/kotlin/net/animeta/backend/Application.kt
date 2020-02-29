@@ -9,7 +9,6 @@ import net.animeta.backend.serializer.PostSerializer
 import net.animeta.backend.serializer.RecordSerializer
 import net.animeta.backend.serializer.UserSerializer
 import org.apache.tomcat.util.http.LegacyCookieProcessor
-import org.jetbrains.exposed.sql.Database
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -28,7 +27,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.stereotype.Component
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
-import javax.sql.DataSource
 
 fun main(args: Array<String>) {
     runApplication<Application>(*args)
@@ -37,11 +35,6 @@ fun main(args: Array<String>) {
 @SpringBootApplication
 @PropertySource("classpath:/common.properties")
 class Application {
-    @Bean
-    fun database(dataSource: DataSource): Database {
-        return Database.connect(dataSource)
-    }
-
     @Bean
     @Primary
     fun objectMapper(builder: Jackson2ObjectMapperBuilder): ObjectMapper {

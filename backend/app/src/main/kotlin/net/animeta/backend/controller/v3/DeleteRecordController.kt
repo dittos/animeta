@@ -4,6 +4,7 @@ import net.animeta.backend.exception.ApiException
 import net.animeta.backend.model.User
 import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.security.CurrentUser
+import net.animeta.backend.service.RecordMutations
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -11,7 +12,8 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class DeleteRecordController(
-    private val recordRepository: RecordRepository
+    private val recordRepository: RecordRepository,
+    private val recordMutations: RecordMutations
 ) {
     data class Params(
         val id: Int
@@ -27,7 +29,7 @@ class DeleteRecordController(
         if (currentUser.id != record.user.id) {
             throw ApiException.permissionDenied()
         }
-        recordRepository.delete(record)
+        recordMutations.delete(record)
         return Result(true)
     }
 }

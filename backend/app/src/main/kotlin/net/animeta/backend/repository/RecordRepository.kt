@@ -1,5 +1,6 @@
 package net.animeta.backend.repository
 
+import com.google.common.annotations.VisibleForTesting
 import net.animeta.backend.model.Category
 import net.animeta.backend.model.Record
 import net.animeta.backend.model.StatusType
@@ -16,6 +17,9 @@ interface RecordRepository : CrudRepository<Record, Int> {
     fun countByUser(user: User): Int
 
     fun findOneByWorkIdAndUser(workId: Int, user: User): Record?
+
+    @VisibleForTesting
+    fun findAllByUser(user: User): List<Record>
 
     fun findAllByUserAndWorkIdIn(user: User, workIds: Collection<Int>): List<Record>
 
@@ -38,4 +42,12 @@ interface RecordRepository : CrudRepository<Record, Int> {
     fun countGroupsByUser(user: User): List<CountGroupRow>
 
     data class CountGroupRow(val statusType: StatusType, val categoryId: Int?, val count: Long)
+
+    @Query("""
+        SELECT NEW kotlin.Pair(r, r2)
+        FROM Record r
+        JOIN Record r2 ON r.user = r2.user
+        WHERE r.workId = :workId AND r2.workId = :otherWorkId
+    """)
+    fun findConflictingRecords(workId: Int, otherWorkId: Int): List<Pair<Record, Record>>
 }

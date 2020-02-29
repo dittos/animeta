@@ -6,16 +6,15 @@ import net.animeta.backend.metadata.PersonMetadata
 import net.animeta.backend.metadata.WorkCastMetadata
 import net.animeta.backend.metadata.WorkMetadata
 import net.animeta.backend.metadata.WorkStaffMetadata
-import net.animeta.backend.model.Company
 import net.animeta.backend.model.Person
 import net.animeta.backend.model.Work
 import net.animeta.backend.model.WorkCast
 import net.animeta.backend.model.WorkStaff
-import net.animeta.backend.repository.CompanyRepository
 import net.animeta.backend.repository.PersonRepository
 import net.animeta.backend.repository.WorkCastRepository
 import net.animeta.backend.repository.WorkStaffRepository
-import net.animeta.backend.service.WorkService
+import net.animeta.backend.service.CompanyMutations
+import net.animeta.backend.service.WorkMutations
 import org.jsoup.nodes.Element
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -26,8 +25,8 @@ class AnnService(
     private val personRepository: PersonRepository,
     private val workStaffRepository: WorkStaffRepository,
     private val workCastRepository: WorkCastRepository,
-    private val companyRepository: CompanyRepository,
-    private val workService: WorkService,
+    private val companyMutations: CompanyMutations,
+    private val workMutations: WorkMutations,
     private val mapper: ObjectMapper
 ) {
     fun importMetadata(work: Work, anime: Element) {
@@ -61,10 +60,10 @@ class AnnService(
                 .map {
                     val annId = it.attr("id").toInt()
                     val annName = it.text()
-                    getOrCreateCompany(annName, annId).name
+                    companyMutations.getOrCreate(annName, annId).name
                 }
                 .takeIf { it.isNotEmpty() }
-        workService.editMetadata(work, metadata.copy(
+        workMutations.updateMetadata(work, metadata.copy(
             durationMinutes = durationMinutes,
             schedules = schedules,
             website = website,
@@ -114,17 +113,6 @@ class AnnService(
             name = name,
             metadata = mapper.writeValueAsString(PersonMetadata(name_en = name)),
             annId = annId
-        ))
-    }
-
-    private fun getOrCreateCompany(name: String, annId: Int): Company {
-        val existing = companyRepository.findOneByAnnIds(annId) ?:
-            companyRepository.findOneByName(name)
-        return existing ?: companyRepository.save(Company(
-            name = name,
-            metadata = null,
-            annId = annId,
-            annIds = setOf(annId)
         ))
     }
 }

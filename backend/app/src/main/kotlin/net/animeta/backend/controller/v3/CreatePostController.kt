@@ -2,27 +2,23 @@ package net.animeta.backend.controller.v3
 
 import net.animeta.backend.dto.PostDTO
 import net.animeta.backend.exception.ApiException
-import net.animeta.backend.model.History
 import net.animeta.backend.model.StatusType
 import net.animeta.backend.model.User
-import net.animeta.backend.repository.HistoryRepository
 import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.PostSerializer
+import net.animeta.backend.service.HistoryMutations
 import net.animeta.backend.service.TweetFormatter
 import net.animeta.backend.service.TwitterService
-import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import java.sql.Timestamp
-import java.time.Instant
 
 @RestController
 class CreatePostController(
     private val recordRepository: RecordRepository,
-    private val historyRepository: HistoryRepository,
+    private val historyMutations: HistoryMutations,
     private val twitterService: TwitterService,
     private val postSerializer: PostSerializer
 ) {
@@ -47,25 +43,15 @@ class CreatePostController(
         if (currentUser.id != record.user.id) {
             throw ApiException.permissionDenied()
         }
-        if (params.rating != null && params.rating !in 1..5) {
-            throw ApiException("별점은 1부터 5까지 입력할 수 있습니다.", HttpStatus.BAD_REQUEST)
-        }
-        val history = History(
-            user = currentUser,
-            workId = record.workId,
+
+        val history = historyMutations.create(
             record = record,
             status = params.status,
-            status_type = params.statusType,
+            statusType = params.statusType,
             comment = params.comment,
-            contains_spoiler = params.containsSpoiler,
-            updatedAt = Timestamp.from(Instant.now()),
+            containsSpoiler = params.containsSpoiler,
             rating = params.rating
         )
-        historyRepository.save(history)
-        record.status_type = history.status_type
-        record.status = history.status
-        record.updated_at = history.updatedAt
-        recordRepository.save(record)
 
         if (params.publishTwitter) {
             // TODO: after commit

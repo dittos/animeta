@@ -5,55 +5,16 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import net.animeta.backend.dto.Episode
 import net.animeta.backend.exception.ApiException
 import net.animeta.backend.metadata.WorkMetadata
-import net.animeta.backend.model.Company
-import net.animeta.backend.model.TitleMapping
 import net.animeta.backend.model.Work
-import net.animeta.backend.model.WorkCompany
-import net.animeta.backend.model.WorkPeriodIndex
-import net.animeta.backend.repository.CompanyRepository
 import net.animeta.backend.repository.HistoryRepository
-import net.animeta.backend.repository.TitleMappingRepository
-import net.animeta.backend.repository.WorkRepository
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 @Service
-class WorkService(private val workRepository: WorkRepository,
-                  private val titleMappingRepository: TitleMappingRepository,
-                  private val historyRepository: HistoryRepository,
-                  private val companyRepository: CompanyRepository,
-                  private val objectMapper: ObjectMapper) {
-    fun getOrCreate(title: String): Work {
-        val mapping = titleMappingRepository.findOneByTitle(title)
-        if (mapping != null) {
-            return mapping.work
-        }
-        val key = normalizeTitle(title)
-        val similarMapping = titleMappingRepository.findFirstByKey(key)
-        if (similarMapping != null) {
-            val mapping = titleMappingRepository.save(TitleMapping(
-                    work = similarMapping.work,
-                    title = title,
-                    key = key
-            ))
-            return mapping.work
-        } else {
-            val work = workRepository.save(Work(
-                    title = title,
-                    image_filename = null,
-                    raw_metadata = null,
-                    metadata = null,
-                    blacklisted = false
-            ))
-            titleMappingRepository.save(TitleMapping(
-                    work = work,
-                    title = title,
-                    key = key
-            ))
-            return work
-        }
-    }
-
+class WorkService(
+    private val historyRepository: HistoryRepository,
+    private val objectMapper: ObjectMapper
+) {
     fun getEpisodes(work: Work): List<Episode> {
         val result = historyRepository.findAllStatusWithCountAndCommentByWorkId(work.id!!)
                 .mapNotNull { (status, count) ->
@@ -75,7 +36,7 @@ class WorkService(private val workRepository: WorkRepository,
         return result.values.sortedBy { it.number }
     }
 
-    fun editMetadata(work: Work, rawMetadata: String) {
+    fun parseMetadata(rawMetadata: String): WorkMetadata {
         val metadata: WorkMetadata
         try {
             metadata = objectMapper.readValue(if (rawMetadata.isEmpty()) "{}" else rawMetadata)
@@ -85,37 +46,13 @@ class WorkService(private val workRepository: WorkRepository,
         } catch (e: Exception) {
             throw ApiException("Metadata parse failed: ${e.message}", HttpStatus.BAD_REQUEST)
         }
-        editMetadata(work, metadata)
-    }
-
-    fun editMetadata(work: Work, metadata: WorkMetadata) {
-        work.metadata = objectMapper.writeValueAsString(metadata)
-        work.raw_metadata = work.metadata
-        val periods = metadata.periods ?: emptyList()
-        work.periodIndexes.clear()
-        work.periodIndexes.addAll(periods.sorted().mapIndexed { index, period ->
-            WorkPeriodIndex(work = work, period = period.toString(), firstPeriod = index == 0)
-        })
-        val studios = metadata.studios?.map {
-            companyRepository.findOneByName(it) ?: companyRepository.save(Company(
-                name = it,
-                metadata = null,
-                annId = null
-            ))
-        }
-        work.companies.clear()
-        if (studios != null) {
-            work.companies.addAll(studios.withIndex().map { (index, company) ->
-                WorkCompany(work = work, position = index, company = company)
-            })
-        }
-        workRepository.saveAndFlush(work)
+        return metadata
     }
 
     companion object {
         private const val exceptionChars = "!+"
 
-        fun normalizeTitle(title: String): String {
+        fun titleKey(title: String): String {
             return title
                     .map {
                         // full width -> half width

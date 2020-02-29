@@ -1,10 +1,9 @@
-package net.animeta.backend.service
+package net.animeta.backend.repository
 
 import com.google.cloud.storage.Storage
 import net.animeta.backend.Application
 import net.animeta.backend.TestDatabaseConfiguration
 import net.animeta.backend.model.Company
-import net.animeta.backend.repository.CompanyRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith

@@ -6,7 +6,7 @@ import net.animeta.backend.model.User
 import net.animeta.backend.repository.CategoryRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.CategorySerializer
-import org.springframework.http.HttpStatus
+import net.animeta.backend.service.CategoryMutations
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class UpdateCategoryController(
     private val categoryRepository: CategoryRepository,
+    private val categoryMutations: CategoryMutations,
     private val categorySerializer: CategorySerializer
 ) {
     data class Params(
@@ -33,12 +34,8 @@ class UpdateCategoryController(
             throw ApiException.permissionDenied()
         }
         if (params.name != null) {
-            if (params.name.isBlank()) {
-                throw ApiException("분류 이름을 입력하세요.", HttpStatus.BAD_REQUEST)
-            }
-            category.name = params.name
+            categoryMutations.updateName(category, params.name)
         }
-        categoryRepository.save(category)
         return Result(categorySerializer.serialize(category))
     }
 }

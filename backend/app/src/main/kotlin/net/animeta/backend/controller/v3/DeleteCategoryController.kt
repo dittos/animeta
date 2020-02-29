@@ -3,8 +3,8 @@ package net.animeta.backend.controller.v3
 import net.animeta.backend.exception.ApiException
 import net.animeta.backend.model.User
 import net.animeta.backend.repository.CategoryRepository
-import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.security.CurrentUser
+import net.animeta.backend.service.CategoryMutations
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class DeleteCategoryController(
     private val categoryRepository: CategoryRepository,
-    private val recordRepository: RecordRepository
+    private val categoryMutations: CategoryMutations
 ) {
     data class Params(
         val id: Int
@@ -29,8 +29,7 @@ class DeleteCategoryController(
         if (currentUser.id != category.user.id) {
             throw ApiException.permissionDenied()
         }
-        recordRepository.unsetCategory(category)
-        categoryRepository.delete(category)
+        categoryMutations.delete(category)
         return Result(true)
     }
 }

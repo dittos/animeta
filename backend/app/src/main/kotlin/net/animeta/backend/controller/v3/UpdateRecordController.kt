@@ -7,8 +7,7 @@ import net.animeta.backend.repository.CategoryRepository
 import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.RecordSerializer
-import net.animeta.backend.service.WorkService
-import org.springframework.http.HttpStatus
+import net.animeta.backend.service.RecordMutations
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -18,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController
 class UpdateRecordController(
     private val recordRepository: RecordRepository,
     private val categoryRepository: CategoryRepository,
-    private val recordSerializer: RecordSerializer,
-    private val workService: WorkService
+    private val recordMutations: RecordMutations,
+    private val recordSerializer: RecordSerializer
 ) {
     data class Params(
         val id: Int,
@@ -42,10 +41,7 @@ class UpdateRecordController(
             throw ApiException.permissionDenied()
         }
         if (params.title != null) {
-            val work = workService.getOrCreate(params.title)
-            record.workId = work.id!!
-            record.histories.forEach { it.workId = work.id!! }
-            record.title = params.title
+            recordMutations.updateTitle(record, params.title)
         }
         if (params.categoryIdIsSet) {
             if (params.categoryId != null) {
@@ -53,18 +49,14 @@ class UpdateRecordController(
                 if (category.user.id != record.user.id) {
                     throw ApiException.permissionDenied()
                 }
-                record.category = category
+                recordMutations.updateCategory(record, category)
             } else {
-                record.category = null
+                recordMutations.updateCategory(record, null)
             }
         }
         if (params.ratingIsSet) {
-            if (params.rating != null && params.rating !in 1..5) {
-                throw ApiException("별점은 1부터 5까지 입력할 수 있습니다.", HttpStatus.BAD_REQUEST)
-            }
-            record.rating = params.rating
+            recordMutations.updateRating(record, params.rating)
         }
-        recordRepository.save(record)
         return Result(
             record = params.options?.let { recordSerializer.serialize(record, params.options) }
         )

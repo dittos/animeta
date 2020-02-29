@@ -6,14 +6,9 @@ import net.animeta.backend.dto.PostDTO
 import net.animeta.backend.exception.ApiException
 import net.animeta.backend.model.QHistory.history
 import net.animeta.backend.model.StatusType
+import net.animeta.backend.repository.HistoryRepository
 import net.animeta.backend.repository.WorkRepository
 import net.animeta.backend.serializer.PostSerializer
-import net.animeta.backend.sql.Histories
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.countDistinct
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -23,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/v2/works/{id:[0-9]+}/posts")
 class WorkPostsController(val workRepository: WorkRepository,
+                          val historyRepository: HistoryRepository,
                           val datastore: Datastore,
-                          val database: Database,
                           val postSerializer: PostSerializer) {
     data class GetWithCountsResponse(val data: List<PostDTO>, val userCount: Int?, val suspendedUserCount: Int?)
 
@@ -53,17 +48,11 @@ class WorkPostsController(val workRepository: WorkRepository,
         }
 
         val (userCount, suspendedUserCount) = if (episode != null) {
-            transaction(database) {
-                val counts = Histories.slice(Histories.statusType, Histories.userId.countDistinct())
-                    .select { Histories.workId.eq(work.id!!).and(Histories.status.eq(episode)) }
-                    .groupBy(Histories.statusType)
-                    .toList()
-                Pair(
-                    counts.sumBy { it[Histories.userId.countDistinct()] },
-                    counts.find { it[Histories.statusType] == StatusType.SUSPENDED.ordinal }
-                        ?.let { it[Histories.userId.countDistinct()] } ?: 0
-                )
-            }
+            val counts = historyRepository.countDistinctUsersByStatusType(work.id!!, episode)
+            Pair(
+                counts.sumBy { it.second.toInt() },
+                counts.find { it.first == StatusType.SUSPENDED }?.second?.toInt() ?: 0
+            )
         } else {
             Pair(null, null) // TODO
         }

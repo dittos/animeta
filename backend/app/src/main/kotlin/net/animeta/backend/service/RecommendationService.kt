@@ -8,16 +8,12 @@ import net.animeta.backend.dto.Recommendation
 import net.animeta.backend.dto.WorkCredit
 import net.animeta.backend.model.User
 import net.animeta.backend.repository.WorkStaffRepository
-import net.animeta.backend.repository.batchFindRelatedByUser2
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Service
 import java.util.concurrent.TimeUnit
 
 @Service
 class RecommendationService(
-    private val workStaffRepository: WorkStaffRepository,
-    private val database: Database
+    private val workStaffRepository: WorkStaffRepository
 ) {
     private val scoreByCreditType = mapOf(
         CreditType.ORIGINAL_WORK to 10,
@@ -46,10 +42,7 @@ class RecommendationService(
         if (workIds.isEmpty()) {
             return Context(relatedStaffs = emptyMap())
         }
-        val relatedStaffs = transaction(database) {
-//            addLogger(StdOutSqlLogger)
-            batchFindRelatedByUser2(workIds, user.id!!)
-        }
+        val relatedStaffs = workStaffRepository.batchFindRelatedByUser(workIds, user)
             .groupBy { it.personId }
         return Context(relatedStaffs = relatedStaffs)
     }
