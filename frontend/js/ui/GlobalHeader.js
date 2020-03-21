@@ -54,7 +54,7 @@ class DropdownUserMenu extends React.Component {
 
 export class GlobalHeader extends React.Component {
   static LAST_NOTICE_CLICKED = 'lastNoticeClicked';
-  static noticeId = '2020Q1';
+  static noticeId = '2020Q2';
 
   state = {
     showNotice: false,
@@ -117,7 +117,7 @@ export class GlobalHeader extends React.Component {
                 <span className={Styles.globalMenuItemText}>작품 찾기</span>
                 {showNotice && (
                   <span className={Styles.globalMenuItemPopover}>
-                    2020년 1월 신작 업데이트
+                    4월 신작 업데이트
                   </span>
                 )}
               </Link>
