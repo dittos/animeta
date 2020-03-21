@@ -110,6 +110,7 @@ class WorkDetail extends React.Component {
           <WorkMetadataEditor
             onChange={this._onMetadataChange}
             onAnnImport={this._onAnnImport}
+            title={work.title || ''}
             metadata={work.metadata || {}}
           />
         )}

@@ -138,6 +138,7 @@ interface WorkMetadata {
 }
 
 interface Props {
+    title: string;
     metadata: WorkMetadata;
     onChange(newMetadata: WorkMetadata): any;
     onAnnImport(annId: string): any;
@@ -227,6 +228,13 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                         value={metadata.namuRef || ''}
                         onChange={this.handleInputChange}
                     />
+                    <div>
+                        {[this.props.title, `${this.props.title}/애니메이션`].map(namuRef => (
+                            <button onClick={() => this.setNamuRef(namuRef)}>
+                                {namuRef}
+                            </button>
+                        ))}
+                    </div>
                 </FormGroup>
             </>
         );
@@ -321,4 +329,11 @@ export default class WorkMetadataEditor extends React.Component<Props> {
     private handleAnnImport = () => {
         this.props.onAnnImport(this.props.metadata.annId);
     };
+
+    private setNamuRef(namuRef: string) {
+        this.props.onChange({
+            ...this.props.metadata,
+            namuRef,
+        });
+    }
 }
