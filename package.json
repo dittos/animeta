@@ -13,7 +13,7 @@
     "ejs": "^2.3.4",
     "express": "^4.13.4",
     "http-proxy": "^1.16.2",
-    "jquery": "^2.1.4",
+    "jquery": "^3.5.0",
     "lodash": "^4.17.11",
     "nprogress": "^0.2.0",
     "nuri": "github:dittos/nuri-builds#9431abf9f2bb69d48cc72f12c885de163b92e719",
