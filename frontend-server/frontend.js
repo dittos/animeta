@@ -65,6 +65,9 @@ export function createServer({ server = express(), appProvider, getAssets }) {
   if (MAINTENANCE) {
     console.log('Starting in maintenance mode!');
     const maintenanceMessage = `서버 점검중입니다. (${MAINTENANCE} 완료 예정)`;
+    server.get('/healthz', (req, res) => {
+      res.send('ok');
+    });
     server.use('/api', (req, res) => {
       res.status(503).json({
         message: maintenanceMessage,
