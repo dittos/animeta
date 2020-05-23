@@ -12,6 +12,7 @@ import config from './config.json';
 import { render, injectLoaderFactory } from 'nuri/server';
 
 const DEBUG = process.env.NODE_ENV !== 'production';
+const MAINTENANCE = process.env.MAINTENANCE;
 const backend = new Backend(config.backend.baseUrl);
 if (config.sentryDsn) {
   Raven.config(config.sentryDsn).install();
@@ -60,6 +61,20 @@ export function createServer({ server = express(), appProvider, getAssets }) {
     res.cookie('crumb', req.csrfToken());
     next();
   });
+
+  if (MAINTENANCE) {
+    console.log('Starting in maintenance mode!');
+    const maintenanceMessage = `서버 점검중입니다. (${MAINTENANCE} 완료 예정)`;
+    server.use('/api', (req, res) => {
+      res.status(503).json({
+        message: maintenanceMessage,
+      });
+    });
+    server.use((req, res) => {
+      res.status(503).send(maintenanceMessage);
+    });
+    return server;
+  }
 
   server.post('/api/fe/sessions', express.json(), (req, res) => {
     const cookieOptions = {
