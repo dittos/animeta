@@ -25,7 +25,7 @@ appProvider.start().then(() => {
     })
   );
   server.use(webpackHotMiddleware(compiler));
-  server.use('/static', express.static(__dirname + '/../animeta/static'));
+  server.use('/static', express.static(__dirname + '/../static'));
   createServer({
     server,
     appProvider,

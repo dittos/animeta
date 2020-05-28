@@ -39,7 +39,7 @@ module.exports = env => {
           libraryTarget: 'commonjs2',
         }
       : {
-          path: path.join(__dirname, '../animeta/static/build'),
+          path: path.join(__dirname, '../static/build'),
           publicPath: '/static/build/',
           filename: env.prod ? '[name]-[hash].js' : '[name].js',
           chunkFilename: env.prod ? '[name]-[hash].js' : '[name].js',

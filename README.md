@@ -19,10 +19,12 @@ PostgreSQL DB에 `schema.sql`을 반영합니다.
 
 ### 개발 서버 실행
 
-    ./gradlew bootRun
+    ./gradlew bootRun --args=--spring.config.location=../application.properties
 
 
 ## 프론트엔드 / 프론트엔드 서버
+
+`web` 디렉토리에서 작업합니다.
 
 ### 의존성 설치
 

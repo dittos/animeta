@@ -1,6 +1,6 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/animeta-frontend', '-f', 'Dockerfile.frontend', '.' ]
+  args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/animeta-frontend', '-f', 'web/Dockerfile', 'web' ]
 - name: 'gcr.io/cloud-builders/docker'
   args: [ 'run', '-v', '/workspace:/workspace', '--entrypoint', '/bin/bash', 'gcr.io/$PROJECT_ID/animeta-frontend',
           '-c', 'cp -r /app/animeta/static /workspace/' ]

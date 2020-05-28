@@ -10,7 +10,7 @@ COPY frontend-server /app/frontend-server
 RUN npm run build-dist
 RUN cp frontend-server/*.ejs frontend-dist/
 
-COPY animeta /app/animeta
+COPY static /app/static
 
 COPY frontend /app/frontend
 RUN npm run build-assets

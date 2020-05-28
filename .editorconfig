@@ -4,5 +4,5 @@ root = true
 indent_style = space
 indent_size = 4
 
-[frontend/**.{js,ts,tsx}]
+[web/frontend/**.{js,ts,tsx}]
 indent_size = 2

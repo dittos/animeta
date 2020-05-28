@@ -5,15 +5,9 @@ backup
 env
 node_modules
 backend-legacy/animeta/settings.py
-animeta/static/build/
-animeta/media/
 .coverage
 htmlcov
 .env
 *.db
-frontend/assets.json
-frontend-server/config.json
-frontend-server/bundle.js*
 .idea
 *.iml
-frontend-dist/
