@@ -1,0 +1,44 @@
+name: Web
+
+on:
+  push:
+    branches: [ master ]
+    paths: ['web/**']
+  pull_request:
+    paths: ['web/**']
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./web
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: docker build -t animeta-frontend .
+
+    # Deploy
+    - name: Set up gcloud
+      if: github.event_name == 'push' && github.ref == 'master'
+      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+        version: '270.0.0'
+        service_account_email: ${{ secrets.GCP_SA_EMAIL }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+    - name: Extract assets
+      if: github.event_name == 'push' && github.ref == 'master'
+      run: |
+        mkdir /tmp/extract-static
+        docker run -v /tmp/extract-static:/workspace --entrypoint /bin/bash animeta-frontend -c "cp -r /app/static /workspace/"
+    - name: Upload assets
+      if: github.event_name == 'push' && github.ref == 'master'
+      run: gsutil -m cp -r /tmp/extract-static/static gs://animeta-static/
+    - name: Docker push
+      if: github.event_name == 'push' && github.ref == 'master'
+      run: |
+        gcloud auth configure-docker
+        docker tag animeta-frontend gcr.io/ditto-1470749749381/animeta-frontend:latest
+        docker push gcr.io/ditto-1470749749381/animeta-frontend:latest
