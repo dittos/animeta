@@ -1,6 +1,6 @@
 {
     "backend": {
-        "baseUrl": "https://animeta.net/api-internal",
+        "baseUrl": "https://animeta.net/api",
         "remote": true
     },
     "sentryDsn": "",
