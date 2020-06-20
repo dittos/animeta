@@ -33,9 +33,15 @@ function WeeklyChart({ data }) {
             )}
             <div className={Styles.content}>
               <div className={Styles.title}>{work.title}</div>
-              <div className={Styles.rank}>
-                {item.rank}위 &middot; {diff}
-              </div>
+              {diff ? (
+                <div className={Styles.rank}>
+                  {item.rank}위 &middot; {diff}
+                </div>
+              ) : (
+                <div className={Styles.rank}>
+                  {item.rank}위
+                </div>
+              )}
             </div>
           </Link>
         );
