@@ -54,7 +54,7 @@ class AuthService(private val userRepository: UserRepository,
         }
         cookie.path = "/"
         if (persistent) {
-            cookie.maxAge = Duration.ofDays(14).seconds.toInt()
+            cookie.maxAge = Duration.ofDays(90).seconds.toInt()
         } else {
             // A negative value means that the cookie is not stored persistently and will be deleted when the Web browser exits.
             cookie.maxAge = -1

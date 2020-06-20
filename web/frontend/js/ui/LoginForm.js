@@ -46,7 +46,7 @@ class LoginForm extends React.Component {
                   })
                 }
               />
-              2주 동안 자동 로그인
+              90일 동안 자동 로그인
             </label>
           </div>
         </form>
