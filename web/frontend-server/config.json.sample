@@ -1,11 +1,10 @@
 {
     "backend": {
-        "baseUrl": "https://animeta.net/api",
-        "remote": true
+        "baseUrl": "http://localhost:8080",
+        "remote": false
     },
     "sentryDsn": "",
     "kakaoApiKey": "",
     "assetBase": "",
-    "staticUrl": "",
-    "sessionCookieDomain": null
+    "staticUrl": ""
 }

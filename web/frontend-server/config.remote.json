@@ -1,0 +1,11 @@
+{
+    "backend": {
+        "baseUrl": "https://animeta.net/api",
+        "remote": true
+    },
+    "sentryDsn": "",
+    "kakaoApiKey": "",
+    "assetBase": "",
+    "staticUrl": "",
+    "sessionCookieDomain": null
+}

@@ -30,10 +30,13 @@ PostgreSQL DB에 `schema.sql`을 반영합니다.
 
     npm install
 
-### 설정
+### 원격 백엔드를 사용하는 경우
 
-`frontend-server/config.json.sample`을 가지고 `frontend-server/config.json`을 작성합니다.
+프론트엔드만 수정하고 싶을 때 사용할 수 있는 방법입니다. **(주의: 프로덕션 서비스 백엔드를 그대로 사용하게 됩니다.)**
 
-### 개발 서버 실행
+    npm run start-remote
 
-    npm start
+### 로컬 백엔드를 사용하는 경우
+
+1. `frontend-server/config.json.sample`을 가지고 `frontend-server/config.json`을 작성합니다.
+2. 개발 서버 실행: `npm start`

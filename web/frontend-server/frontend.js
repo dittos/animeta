@@ -8,9 +8,9 @@ import isString from 'lodash/isString';
 import Raven from 'raven';
 import Backend, { HttpNotFound } from './backend';
 import renderFeed from './renderFeed';
-import config from './config.json';
 import { render, injectLoaderFactory } from 'nuri/server';
 
+const config = require(process.env.ANIMETA_CONFIG_PATH || './config.json');
 const DEBUG = process.env.NODE_ENV !== 'production';
 const MAINTENANCE = process.env.MAINTENANCE;
 const backend = new Backend(config.backend.baseUrl);
