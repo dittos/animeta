@@ -18,7 +18,7 @@ import java.time.Duration
 @Component
 class CurrentUserArgumentResolver(val userRepository: UserRepository,
                                   @Value("\${animeta.security.secret-key}") val secretKey: String) : HandlerMethodArgumentResolver {
-    private val sessionCookieAge = Duration.ofDays(14) // 2 weeks
+    private val sessionCookieAge = Duration.ofDays(90)
 
     override fun supportsParameter(parameter: MethodParameter): Boolean {
         return parameter.hasParameterAnnotation(CurrentUser::class.java) &&
