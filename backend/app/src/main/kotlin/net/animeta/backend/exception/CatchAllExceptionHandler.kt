@@ -12,6 +12,7 @@ class CatchAllExceptionHandler {
 
     @ExceptionHandler(Exception::class)
     fun handle(e: Exception): ResponseEntity<ErrorDTO> {
+        logger.error(e.message, e)
         return ResponseEntity.status(500)
                 .body(ErrorDTO(message = e.message ?: "Internal Server Error"))
     }
