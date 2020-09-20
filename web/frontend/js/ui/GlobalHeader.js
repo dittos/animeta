@@ -54,7 +54,7 @@ class DropdownUserMenu extends React.Component {
 
 export class GlobalHeader extends React.Component {
   static LAST_NOTICE_CLICKED = 'lastNoticeClicked';
-  static noticeId = '2020Q3';
+  static noticeId = '2020Q4';
 
   state = {
     showNotice: false,
@@ -73,8 +73,8 @@ export class GlobalHeader extends React.Component {
   render() {
     const activeMenu = this.props.activeMenu;
     const user = this.props.currentUser;
-    // const showNotice = this.state.showNotice && activeMenu !== 'search';
-    const showNotice = false;
+    const showNotice = this.state.showNotice && activeMenu !== 'search';
+    // const showNotice = false;
     return (
       <div className={Styles.container}>
         <Layout.CenteredFullWidth className={Styles.header}>
