@@ -117,7 +117,7 @@ export class GlobalHeader extends React.Component {
                 <span className={Styles.globalMenuItemText}>작품 찾기</span>
                 {showNotice && (
                   <span className={Styles.globalMenuItemPopover}>
-                    7월 신작 업데이트
+                    10월 신작 업데이트
                   </span>
                 )}
               </Link>
