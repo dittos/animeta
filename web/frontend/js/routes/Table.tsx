@@ -14,7 +14,7 @@ import { App } from '../layouts';
 import { trackEvent } from '../Tracking';
 import * as util from '../util';
 import { CreditType, RecordDTO, WorkDTO, WorkSchedule } from '../types';
-import { DataUpdater, Request } from 'nuri/app';
+import { RouteComponentProps, RouteHandler } from 'nuri/app';
 
 function isRecommendationEnabled(period: string): boolean {
   return period === Periods.current || period === Periods.upcoming;
@@ -329,20 +329,15 @@ function nullslast(val: any) {
   return [!val, val];
 }
 
-interface TableRouteData {
+type TableRouteData = {
   currentUser: any;
   period: string;
   items: WorkDTO[];
   containsKRSchedule: boolean;
   ordering: Ordering;
-}
+};
 
-interface TableProps {
-  data: TableRouteData;
-  writeData: DataUpdater;
-}
-
-class Table extends React.Component<TableProps> {
+class Table extends React.Component<RouteComponentProps<TableRouteData>> {
   render() {
     const { period, ordering, containsKRSchedule, items, currentUser } = this.props.data;
     return (
@@ -395,10 +390,10 @@ class Table extends React.Component<TableProps> {
   };
 }
 
-export default {
+const routeHandler: RouteHandler<TableRouteData> = {
   component: App(Table, { activeMenu: 'search' }),
 
-  async load({ params, loader }: Request): Promise<TableRouteData> {
+  async load({ params, loader }) {
     const { period } = params;
     const [currentUser, items] = await Promise.all([
       loader.getCurrentUser({
@@ -422,7 +417,8 @@ export default {
     };
   },
 
-  renderTitle({ period }: TableRouteData) {
+  renderTitle({ period }) {
     return `${formatPeriod(period)} 신작`;
   },
 };
+export default routeHandler;

@@ -16,7 +16,7 @@
     "jquery": "^2.1.4",
     "lodash": "^4.17.11",
     "nprogress": "^0.2.0",
-    "nuri": "github:dittos/nuri-builds#9431abf9f2bb69d48cc72f12c885de163b92e719",
+    "nuri": "github:dittos/nuri-builds#216db22507025da90168afa060183bd3d4017d9a",
     "raven": "^2.4.2",
     "react": "^16.2.0",
     "react-bootstrap": "^0.32.1",
