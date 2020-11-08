@@ -2,7 +2,13 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 import Styles from './Switch.less';
 
-export class Switch extends React.Component {
+interface SwitchProps {
+  flex?: boolean;
+  value: any;
+  onChange: any;
+}
+
+export class Switch extends React.Component<SwitchProps> {
   static childContextTypes = {
     switchValue: PropTypes.any,
     switchOnChange: PropTypes.any,
@@ -26,7 +32,14 @@ export class Switch extends React.Component {
   }
 }
 
-export class SwitchItem extends React.Component {
+interface SwitchItemProps {
+  Component?: any;
+  active?: boolean | null;
+  value: any;
+  onClick: (newValue: any) => any;
+}
+
+export class SwitchItem extends React.Component<SwitchItemProps> {
   static contextTypes = {
     switchValue: PropTypes.any,
     switchOnChange: PropTypes.any,
@@ -52,7 +65,7 @@ export class SwitchItem extends React.Component {
     );
   }
 
-  _onClick = (e) => {
+  _onClick = (e: React.MouseEvent) => {
     if (this.props.Component === 'a') {
       e.preventDefault();
     }

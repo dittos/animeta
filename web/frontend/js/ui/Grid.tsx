@@ -1,6 +1,10 @@
 import React from 'react';
 
-export function Row({ className, children, ...props }) {
+interface RowProps {
+  className?: string;
+}
+
+export const Row: React.SFC<RowProps> = ({ className, children, ...props }) => {
   return (
     <div {...props} className={'grid-row ' + (className || '')}>
       {children}
@@ -8,7 +12,16 @@ export function Row({ className, children, ...props }) {
   );
 }
 
-export function Column({
+interface ColumnProps {
+  className?: string;
+  size: number;
+  midSize?: number;
+  smallSize?: number;
+  style?: React.CSSProperties;
+  pull?: 'left' | 'right';
+}
+
+export const Column: React.SFC<ColumnProps> = ({
   className,
   children,
   size,
@@ -17,7 +30,7 @@ export function Column({
   style,
   pull,
   ...props
-}) {
+}) => {
   if (!className) className = '';
   if (!midSize) midSize = size;
   if (!smallSize) smallSize = getColumns();
@@ -35,6 +48,6 @@ export function Column({
   );
 }
 
-export function getColumns() {
+export function getColumns(): number {
   return 12;
 }

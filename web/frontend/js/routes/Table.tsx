@@ -2,31 +2,32 @@ import React from 'react';
 import sortBy from 'lodash/sortBy';
 import some from 'lodash/some';
 import { Link } from 'nuri';
-import * as util from '../util';
-import { App } from '../layouts';
-import * as Layout from '../ui/Layout';
-import * as Grid from '../ui/Grid';
 import Periods from '../Periods.json';
 import Styles from '../../less/table-period.less';
 import { Switch, SwitchItem } from '../ui/Switch';
+import * as Layout from '../ui/Layout';
+import * as Grid from '../ui/Grid';
+import LoginDialog from '../ui/LoginDialog';
 import AddRecordDialog from '../ui/AddRecordDialog';
 import SearchInput from '../ui/SearchInput';
+import { App } from '../layouts';
 import { trackEvent } from '../Tracking';
-import LoginDialog from '../ui/LoginDialog';
-// TODO: css module
+import * as util from '../util';
+import { CreditType, RecordDTO, WorkDTO, WorkSchedule } from '../types';
+import { DataUpdater, Request } from 'nuri/app';
 
-function isRecommendationEnabled(period) {
+function isRecommendationEnabled(period: string): boolean {
   return period === Periods.current || period === Periods.upcoming;
 }
 
-function formatPeriod(period) {
+function formatPeriod(period: string): string {
   var parts = period.split('Q');
   var year = parts[0],
-    quarter = parts[1];
+    quarter = Number(parts[1]);
   return year + '년 ' + [1, 4, 7, 10][quarter - 1] + '월';
 }
 
-function offsetPeriod(period, offset) {
+function offsetPeriod(period: string, offset: number): string {
   // move to API server?
   var parts = period.split('Q');
   var year = parseInt(parts[0], 10);
@@ -42,7 +43,7 @@ function offsetPeriod(period, offset) {
   return `${year}Q${quarter}`;
 }
 
-function PageTitle(props) {
+function PageTitle(props: { period: string }) {
   var period = props.period;
   var prevPeriod = period !== Periods.min && offsetPeriod(props.period, -1);
   var nextPeriod = period !== Periods.current && offsetPeriod(props.period, +1);
@@ -63,8 +64,16 @@ function PageTitle(props) {
   );
 }
 
-function Header({ excludeKR, ordering, onSort, period, currentUser }) {
-  var options;
+interface HeaderProps {
+  excludeKR: boolean;
+  ordering: Ordering;
+  onSort: (newOrdering: Ordering) => any;
+  period: string;
+  currentUser: any;
+}
+
+function Header({ excludeKR, ordering, onSort, period, currentUser }: HeaderProps) {
+  var options: { value: Ordering; label: string; onClick?: () => any; }[];
   if (!excludeKR) {
     options = [,
       { value: 'schedule', label: '날짜 (日)' },
@@ -106,9 +115,9 @@ function Header({ excludeKR, ordering, onSort, period, currentUser }) {
   );
 }
 
-var WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
-function getDate(value) {
+function getDate(value: Date): string {
   var weekday = WEEKDAYS[value.getDay()];
   return (
     util.zerofill(value.getMonth() + 1) +
@@ -120,7 +129,12 @@ function getDate(value) {
   );
 }
 
-class StatusButton extends React.Component {
+interface StatusButtonProps {
+  item: WorkDTO;
+  onAddRecord: (item: WorkDTO, record: RecordDTO) => any;
+}
+
+class StatusButton extends React.Component<StatusButtonProps> {
   state = {
     showAddModal: false,
   };
@@ -162,7 +176,7 @@ class StatusButton extends React.Component {
     }
   }
 
-  _showAddModal = event => {
+  _showAddModal = (event: React.MouseEvent) => {
     event.preventDefault();
     this.setState({ showAddModal: true });
   };
@@ -171,7 +185,7 @@ class StatusButton extends React.Component {
     this.setState({ showAddModal: false });
   };
 
-  _recordAdded = result => {
+  _recordAdded = (result: { record: RecordDTO }) => {
     this.setState({ showAddModal: false });
     trackEvent({
       eventCategory: 'Record',
@@ -182,7 +196,7 @@ class StatusButton extends React.Component {
   };
 }
 
-function Poster({ item }) {
+function Poster({ item }: { item: WorkDTO }) {
   return (
     <div className={Styles.poster}>
       <img src={item.image_url} className={Styles.posterImage} />
@@ -193,7 +207,7 @@ function Poster({ item }) {
   );
 }
 
-const creditTypeText = {
+const creditTypeText: {[K in CreditType]: string} = {
   'ORIGINAL_WORK': '원작',
   'CHIEF_DIRECTOR': '총감독',
   'SERIES_DIRECTOR': '시리즈 감독',
@@ -203,7 +217,7 @@ const creditTypeText = {
   'MUSIC': '음악',
 };
 
-function Item({ item, onAddRecord }) {
+function Item({ item, onAddRecord }: { item: WorkDTO; onAddRecord: (item: WorkDTO, record: RecordDTO) => any }) {
   var { links, studios, source, schedule, durationMinutes } = item.metadata;
   return (
     <div className={Styles.item}>
@@ -269,20 +283,18 @@ function Item({ item, onAddRecord }) {
   );
 }
 
-function renderSchedule(country, schedule) {
+function renderSchedule(country: string, schedule: WorkSchedule) {
   var { date, date_only = false, broadcasts } = schedule;
-  if (date) {
-    date = new Date(date);
-  }
+  const dateObject = date ? new Date(date) : null;
   return (
     <div className={Styles.schedule + ' item-schedule-' + country}>
-      {date ? (
-        <span className="date">{getDate(date)}</span>
+      {dateObject ? (
+        <span className="date">{getDate(dateObject)}</span>
       ) : (
         <span className="date">미정</span>
       )}
       {date &&
-        !date_only && <span className="time"> {util.formatTime(date)}</span>}
+        !date_only && <span className="time"> {util.formatTime(dateObject)}</span>}
       {broadcasts && [
         ' ',
         <span className="broadcasts">({broadcasts.join(', ')})</span>,
@@ -291,18 +303,18 @@ function renderSchedule(country, schedule) {
   );
 }
 
-const scheduleComparator = item =>
+const scheduleComparator = (item: WorkDTO) =>
   nullslast(item.metadata.schedule.jp && item.metadata.schedule.jp.date);
 
-const preferKRScheduleComparator = item =>
+const preferKRScheduleComparator = (item: WorkDTO) =>
   nullslast(
     (item.metadata.schedule.kr && item.metadata.schedule.kr.date) ||
       (item.metadata.schedule.jp && item.metadata.schedule.jp.date)
   );
 
-const recordCountComparator = item => -item.record_count;
+const recordCountComparator = (item: WorkDTO) => -item.record_count;
 
-const recommendedComparator = item => -item.recommendationScore;
+const recommendedComparator = (item: WorkDTO) => -item.recommendationScore;
 
 const comparatorMap = {
   recommended: recommendedComparator,
@@ -311,11 +323,26 @@ const comparatorMap = {
   recordCount: recordCountComparator,
 };
 
-function nullslast(val) {
+type Ordering = keyof typeof comparatorMap;
+
+function nullslast(val: any) {
   return [!val, val];
 }
 
-class Table extends React.Component {
+interface TableRouteData {
+  currentUser: any;
+  period: string;
+  items: WorkDTO[];
+  containsKRSchedule: boolean;
+  ordering: Ordering;
+}
+
+interface TableProps {
+  data: TableRouteData;
+  writeData: DataUpdater;
+}
+
+class Table extends React.Component<TableProps> {
   render() {
     const { period, ordering, containsKRSchedule, items, currentUser } = this.props.data;
     return (
@@ -353,14 +380,14 @@ class Table extends React.Component {
     );
   }
 
-  _onSort = sort => {
-    this.props.writeData(data => {
+  _onSort = (sort: Ordering) => {
+    this.props.writeData((data: any) => {
       data.ordering = sort;
       data.items = sortBy(data.items, comparatorMap[sort]);
     });
   };
 
-  _recordAdded = (item, record) => {
+  _recordAdded = (item: WorkDTO, record: RecordDTO) => {
     this.props.writeData(() => {
       item.record = record;
       item.record_count++;
@@ -371,7 +398,7 @@ class Table extends React.Component {
 export default {
   component: App(Table, { activeMenu: 'search' }),
 
-  async load({ params, loader }) {
+  async load({ params, loader }: Request): Promise<TableRouteData> {
     const { period } = params;
     const [currentUser, items] = await Promise.all([
       loader.getCurrentUser({
@@ -395,7 +422,7 @@ export default {
     };
   },
 
-  renderTitle({ period }) {
+  renderTitle({ period }: TableRouteData) {
     return `${formatPeriod(period)} 신작`;
   },
 };

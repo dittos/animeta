@@ -1,7 +1,12 @@
 import React from 'react';
 import * as Grid from './Grid';
 
-export function LeftRight({ left, right, style, ...props }) {
+interface LeftRightProps {
+  left: React.ReactNode;
+  right: React.ReactNode;
+}
+
+export function LeftRight({ left, right, style, ...props }: React.HTMLAttributes<HTMLDivElement> & LeftRightProps) {
   return (
     <div
       {...props}
@@ -16,13 +21,14 @@ export function LeftRight({ left, right, style, ...props }) {
   );
 }
 
-export function Stack({ children }) {
+export const Stack: React.SFC = ({ children }) => {
   return (
     <div style={{ position: 'relative' }}>
       {React.Children.map(
         children,
         child =>
           child &&
+          React.isValidElement<{ style?: any }>(child) &&
           React.cloneElement(child, {
             style: {
               ...child.props.style,
@@ -37,7 +43,7 @@ export function Stack({ children }) {
   );
 }
 
-export function CenteredFullWidth({ children, ...props }) {
+export const CenteredFullWidth: React.SFC = ({ children, ...props }) => {
   return (
     <div {...props}>
       <Grid.Row>
