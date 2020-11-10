@@ -156,7 +156,7 @@ export class GlobalHeader extends React.Component {
             {user && (
               <Dropdown
                 containerClassName={`${Styles.accountMenu} hide-mobile`}
-                menuClassName={Styles.userMenu}
+                contentClassName={Styles.userMenu}
                 renderTrigger={({ toggle }) => (
                   <Link
                     to={`/users/${user.name}/`}

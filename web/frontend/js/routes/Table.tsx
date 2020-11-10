@@ -15,6 +15,7 @@ import { trackEvent } from '../Tracking';
 import * as util from '../util';
 import { CreditType, RecordDTO, WorkDTO, WorkSchedule } from '../types';
 import { RouteComponentProps, RouteHandler } from 'nuri/app';
+import { Popover } from '../ui/Popover';
 
 function isRecommendationEnabled(period: string): boolean {
   return period === Periods.current || period === Periods.upcoming;
@@ -27,41 +28,41 @@ function formatPeriod(period: string): string {
   return year + '년 ' + [1, 4, 7, 10][quarter - 1] + '월';
 }
 
-function offsetPeriod(period: string, offset: number): string {
-  // move to API server?
-  var parts = period.split('Q');
-  var year = parseInt(parts[0], 10);
-  var quarter = parseInt(parts[1], 10);
-  quarter += offset;
-  if (quarter === 0) {
-    year--;
-    quarter = 4;
-  } else if (quarter === 5) {
-    year++;
-    quarter = 1;
-  }
-  return `${year}Q${quarter}`;
-}
-
 function PageTitle(props: { period: string }) {
-  var period = props.period;
-  var prevPeriod = period !== Periods.min && offsetPeriod(props.period, -1);
-  var nextPeriod = period !== Periods.current && offsetPeriod(props.period, +1);
-  return (
-    <div className={Styles.pageTitle}>
-      {prevPeriod && (
-        <Link to={`/table/${prevPeriod}/`}>
-          <i className="fa fa-caret-left" />
-        </Link>
-      )}
-      {formatPeriod(period)} 신작
-      {nextPeriod && (
-        <Link to={`/table/${nextPeriod}/`}>
-          <i className="fa fa-caret-right" />
-        </Link>
-      )}
-    </div>
-  );
+  const activePeriod = props.period;
+  const years = [];
+  for (let y = Number(Periods.current.substring(0, 4)); y >= 2014; y--) years.push(y);
+  return <Popover
+    contentClassName={Styles.nav}
+    renderTrigger={({ toggle }) => (
+      <a href="#" className={Styles.pageTitle} onClick={toggle}>
+        {formatPeriod(activePeriod)} 신작
+        <i className="fa fa-caret-down" />
+      </a>
+    )}
+  >
+    {years.map(year => (
+      <div className={Styles.navRow}>
+        <div className={Styles.navYear}>{year}년</div>
+        {[1, 2, 3, 4].map(q => {
+          const period = `${year}Q${q}`;
+          const month = [1, 4, 7, 10][q - 1];
+          const isValidPeriod = Periods.min <= period && period <= Periods.current;
+          if (!isValidPeriod) {
+            return <span className={Styles.navPeriodHidden}>{month}월</span>;
+          }
+          return (
+            <Link
+              to={`/table/${period}/`}
+              className={period === activePeriod ? Styles.navPeriodActive : Styles.navPeriodNormal}
+            >
+              {month}월
+            </Link>
+          );
+        })}
+      </div>
+    ))}
+  </Popover>;
 }
 
 interface HeaderProps {
@@ -404,7 +405,9 @@ const routeHandler: RouteHandler<TableRouteData> = {
         with_recommendations: JSON.stringify(isRecommendationEnabled(period)),
       }),
     ]);
-    const ordering = currentUser && isRecommendationEnabled(period) ? 'recommended' : 'schedule';
+    const ordering = currentUser && isRecommendationEnabled(period) ? 'recommended' :
+      period === Periods.current ? 'schedule' :
+        'recordCount';
     return {
       currentUser,
       period,

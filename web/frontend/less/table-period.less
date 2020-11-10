@@ -41,14 +41,61 @@
     margin: 0 0 20px;
 }
 
+:local(.pageTitleContainer) {
+    position: relative;
+}
+
 :local(.pageTitle) {
     font-size: 20px;
-    margin-left: -5px;
     display: inline-block;
-    a {
-        padding: 5px;
-        color: @color-text-dark;
+    color: @color-text-dark;
+    text-decoration: none;
+    padding: 8px;
+    margin-left: -8px;
+    margin-top: -8px;
+    border-radius: 4px;
+    i {
+        margin-left: 5px;
     }
+    &:hover {
+        background-color: @color-bg-lightest;
+    }
+}
+
+:local(.nav) {
+    margin-left: -8px;
+    width: auto;
+}
+:local(.navRow) {
+    display: flex;
+}
+:local(.navYear) {
+    width: 80px;
+    align-self: center;
+    text-align: center;
+    font-weight: bold;
+    font-size: 15px;
+}
+:local(.navPeriod) {
+    width: 40px;
+    color: @color-text-dark;
+    text-decoration: none;
+    text-align: center;
+    padding: 20px 10px;
+    &:hover {
+        background-color: @color-bg-lightest;
+    }
+}
+:local(.navPeriodNormal) {
+    composes: navPeriod;
+}
+:local(.navPeriodActive) {
+    composes: navPeriod;
+    font-weight: bold;
+}
+:local(.navPeriodHidden) {
+    composes: navPeriod;
+    visibility: hidden;
 }
 
 :local(.settingsItem) {
