@@ -1,26 +1,6 @@
 import React from 'react';
 import * as Grid from './Grid';
 
-interface LeftRightProps {
-  left: React.ReactNode;
-  right: React.ReactNode;
-}
-
-export function LeftRight({ left, right, style, ...props }: React.HTMLAttributes<HTMLDivElement> & LeftRightProps) {
-  return (
-    <div
-      {...props}
-      style={{
-        ...style,
-      }}
-    >
-      <div style={{ float: 'left' }}>{left}</div>
-      <div style={{ float: 'right' }}>{right}</div>
-      <div style={{ clear: 'both' }} />
-    </div>
-  );
-}
-
 export const Stack: React.SFC = ({ children }) => {
   return (
     <div style={{ position: 'relative' }}>

@@ -36,7 +36,7 @@ interface SwitchItemProps {
   Component?: any;
   active?: boolean | null;
   value: any;
-  onClick: (newValue: any) => any;
+  onClick?: (newValue: any) => any;
 }
 
 export class SwitchItem extends React.Component<SwitchItemProps> {

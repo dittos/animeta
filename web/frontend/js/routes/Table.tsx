@@ -32,51 +32,54 @@ function PageTitle(props: { period: string }) {
   const activePeriod = props.period;
   const years = [];
   for (let y = Number(Periods.current.substring(0, 4)); y >= 2014; y--) years.push(y);
-  return <Popover
-    contentClassName={Styles.nav}
-    renderTrigger={({ toggle }) => (
-      <a href="#" className={Styles.pageTitle} onClick={toggle}>
-        {formatPeriod(activePeriod)} 신작
-        <i className="fa fa-caret-down" />
-      </a>
-    )}
-  >
-    {years.map(year => (
-      <div className={Styles.navRow}>
-        <div className={Styles.navYear}>{year}년</div>
-        {[1, 2, 3, 4].map(q => {
-          const period = `${year}Q${q}`;
-          const month = [1, 4, 7, 10][q - 1];
-          const isValidPeriod = Periods.min <= period && period <= Periods.current;
-          if (!isValidPeriod) {
-            return <span className={Styles.navPeriodHidden}>{month}월</span>;
-          }
-          return (
-            <Link
-              to={`/table/${period}/`}
-              className={period === activePeriod ? Styles.navPeriodActive : Styles.navPeriodNormal}
-            >
-              {month}월
-            </Link>
-          );
-        })}
-      </div>
-    ))}
-  </Popover>;
+  return (
+    <Popover
+      contentClassName={Styles.nav}
+      renderTrigger={({ toggle }) => (
+        <a href="#" className={Styles.pageTitle} onClick={toggle}>
+          {formatPeriod(activePeriod)} 신작
+          <i className="fa fa-caret-down" />
+        </a>
+      )}
+    >
+      {years.map(year => (
+        <div className={Styles.navRow}>
+          <div className={Styles.navYear}>{year}년</div>
+          {[1, 2, 3, 4].map(q => {
+            const period = `${year}Q${q}`;
+            const month = [1, 4, 7, 10][q - 1];
+            const isValidPeriod = Periods.min <= period && period <= Periods.current;
+            if (!isValidPeriod) {
+              return <span className={Styles.navPeriodHidden}>{month}월</span>;
+            }
+            return (
+              <Link
+                to={`/table/${period}/`}
+                className={period === activePeriod ? Styles.navPeriodActive : Styles.navPeriodNormal}
+              >
+                {month}월
+              </Link>
+            );
+          })}
+        </div>
+      ))}
+    </Popover>
+  );
 }
 
 interface HeaderProps {
   excludeKR: boolean;
-  ordering: Ordering;
-  onSort: (newOrdering: Ordering) => any;
+  showAddedOnlyFilter: boolean;
+  filter: TableFilter;
+  onFilterChange: (newFilter: TableFilter) => any;
   period: string;
   currentUser: any;
 }
 
-function Header({ excludeKR, ordering, onSort, period, currentUser }: HeaderProps) {
+function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period, currentUser }: HeaderProps) {
   var options: { value: Ordering; label: string; onClick?: () => any; }[];
   if (!excludeKR) {
-    options = [,
+    options = [
       { value: 'schedule', label: '날짜 (日)' },
       { value: 'schedule.kr', label: '날짜 (韓)' },
       { value: 'recordCount', label: '인기' },
@@ -95,24 +98,34 @@ function Header({ excludeKR, ordering, onSort, period, currentUser }: HeaderProp
     });
   }
   return (
-    <Layout.LeftRight
-      className={Styles.header}
-      left={<PageTitle period={period} />}
-      right={
-        <div className={Styles.settings}>
+    <div className={Styles.header}>
+      <div className={Styles.pageTitleContainer}>
+        <PageTitle period={period} />
+      </div>
+      <div className={Styles.settings}>
+        <div className={Styles.settingsItem}>
+          {'정렬: '}
+          <Switch value={filter.sort} onChange={(newSort: Ordering) => onFilterChange({ ...filter, sort: newSort })}>
+            {options.map(option => (
+              <SwitchItem key={option.value} value={option.value} onClick={option.onClick}>
+                {option.label}
+              </SwitchItem>
+            ))}
+          </Switch>
+        </div>
+        {showAddedOnlyFilter && (
           <div className={Styles.settingsItem}>
-            <label className="hide-mobile">정렬: </label>
-            <Switch value={ordering} onChange={onSort}>
-              {options.map(option => (
-                <SwitchItem key={option.value} value={option.value} onClick={option.onClick}>
-                  {option.label}
-                </SwitchItem>
-              ))}
+            <Switch
+              value={filter.addedOnly}
+              onChange={(addedOnly: boolean) => onFilterChange({ ...filter, addedOnly })}
+            >
+              <SwitchItem value={false}>전체 보기</SwitchItem>
+              <SwitchItem value={true}>추가한 작품만 보기</SwitchItem>
             </Switch>
           </div>
-        </div>
-      }
-    />
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -330,17 +343,27 @@ function nullslast(val: any) {
   return [!val, val];
 }
 
+type TableFilter = {
+  sort: Ordering;
+  addedOnly: boolean;
+};
+
 type TableRouteData = {
   currentUser: any;
   period: string;
   items: WorkDTO[];
   containsKRSchedule: boolean;
-  ordering: Ordering;
+  hasAnyRecord: boolean;
+  filter: TableFilter;
 };
 
 class Table extends React.Component<RouteComponentProps<TableRouteData>> {
   render() {
-    const { period, ordering, containsKRSchedule, items, currentUser } = this.props.data;
+    const { period, filter, containsKRSchedule, hasAnyRecord, items, currentUser } = this.props.data;
+    let filteredItems = items;
+    if (filter.addedOnly) {
+      filteredItems = filteredItems.filter(it => it.record != null);
+    }
     return (
       <div className={Styles.container}>
         <Layout.CenteredFullWidth>
@@ -349,9 +372,10 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
           </div>
           <Header
             period={period}
-            ordering={ordering}
+            filter={filter}
             excludeKR={!containsKRSchedule}
-            onSort={this._onSort}
+            showAddedOnlyFilter={hasAnyRecord}
+            onFilterChange={this._onFilterChange}
             currentUser={currentUser}
           />
           {isRecommendationEnabled(period) && (
@@ -363,7 +387,7 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
         </Layout.CenteredFullWidth>
 
         <Grid.Row className={Styles.items}>
-          {items.map((item, i) => (
+          {filteredItems.map((item, i) => (
             <>
               <Grid.Column size={6} midSize={12} pull="left">
                 <Item key={item.id} item={item} onAddRecord={this._recordAdded} />
@@ -376,10 +400,10 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
     );
   }
 
-  _onSort = (sort: Ordering) => {
+  _onFilterChange = (newFilter: TableFilter) => {
     this.props.writeData((data: any) => {
-      data.ordering = sort;
-      data.items = sortBy(data.items, comparatorMap[sort]);
+      data.filter = newFilter;
+      data.items = sortBy(data.items, comparatorMap[newFilter.sort]);
     });
   };
 
@@ -405,18 +429,25 @@ const routeHandler: RouteHandler<TableRouteData> = {
         with_recommendations: JSON.stringify(isRecommendationEnabled(period)),
       }),
     ]);
-    const ordering = currentUser && isRecommendationEnabled(period) ? 'recommended' :
+    const sort: Ordering = currentUser && isRecommendationEnabled(period) ? 'recommended' :
       period === Periods.current ? 'schedule' :
         'recordCount';
     return {
       currentUser,
       period,
-      items: sortBy(items, comparatorMap[ordering]),
+      items: sortBy(items, comparatorMap[sort]),
       containsKRSchedule: some(
         items,
         i => i.metadata.schedule.kr && i.metadata.schedule.kr.date
       ),
-      ordering,
+      hasAnyRecord: some(
+        items,
+        i => i.record
+      ),
+      filter: {
+        sort,
+        addedOnly: false,
+      },
     };
   },
 
