@@ -74,9 +74,11 @@ interface HeaderProps {
   onFilterChange: (newFilter: TableFilter) => any;
   period: string;
   currentUser: any;
+  totalCount: number;
+  addedCount: number;
 }
 
-function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period, currentUser }: HeaderProps) {
+function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period, currentUser, totalCount, addedCount }: HeaderProps) {
   var options: { value: Ordering; label: string; onClick?: () => any; }[];
   if (!excludeKR) {
     options = [
@@ -119,8 +121,8 @@ function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period
               value={filter.addedOnly}
               onChange={(addedOnly: boolean) => onFilterChange({ ...filter, addedOnly })}
             >
-              <SwitchItem value={false}>전체 보기</SwitchItem>
-              <SwitchItem value={true}>추가한 작품만 보기</SwitchItem>
+              <SwitchItem value={false}>전체 보기 ({totalCount})</SwitchItem>
+              <SwitchItem value={true}>추가한 작품만 보기 ({addedCount})</SwitchItem>
             </Switch>
           </div>
         )}
@@ -377,6 +379,8 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
             showAddedOnlyFilter={hasAnyRecord}
             onFilterChange={this._onFilterChange}
             currentUser={currentUser}
+            totalCount={items.length}
+            addedCount={items.reduce((count, it) => count + (it.record != null ? 1 : 0), 0)}
           />
           {isRecommendationEnabled(period) && (
             <div className={Styles.recommendationBetaNotice}>
