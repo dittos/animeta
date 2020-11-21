@@ -4,7 +4,6 @@
 :local(.container) {
     font-size: 14px;
     line-height: 1;
-    margin-top: 16px;
 }
 
 // Header
@@ -12,7 +11,7 @@
 :local(.search) {
     line-height: 1;
     font-size: 14px;
-    margin-bottom: 20px;
+    padding: 10px 0;
 
     .twitter-typeahead {
         width: 100%;
@@ -37,8 +36,16 @@
     }
 }
 
+:local(.headerContainer) {
+    position: sticky;
+    top: @nav-height;
+    padding: 12px 0 10px;
+    z-index: @z-header - 1;
+    background-color: #fff;
+    box-shadow: 0 2px 3px 0 fade(@color-shadow, 50%);
+    margin-bottom: 16px;
+}
 :local(.header) {
-    margin: 0 0 20px;
     display: flex;
     align-items: center;
 }
@@ -151,15 +158,6 @@
     height: auto;
 }
 
-.b-fade {
-    :local(.posterImage) {
-        opacity: 0;
-        transition: opacity 500ms ease-in-out 100ms;
-        backface-visibility: hidden;
-        &.b-loaded { opacity: 1; }
-    }
-}
-
 :local(.posterOverlay) {
     position: absolute;
     right: 0;
@@ -230,11 +228,12 @@
     composes: favoriteButton;
     background: @color-main;
     color: #fff;
-    .episode {
+}
+
+:local(.favoriteButtonSubtext) {
+    margin-left: 4px;
+    font-size: 13px;
         font-weight: normal;
-        font-size: 0.9em;
-        margin-left: 4px;
-    }
 }
 
 :local(.schedules) {

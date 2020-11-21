@@ -166,7 +166,7 @@ class StatusButton extends React.Component<StatusButtonProps> {
           <i className="fa fa-pencil" />
           {util.STATUS_TYPE_TEXT[record.status_type]}
           {record.status && (
-            <span className="episode">@ {util.getStatusDisplay(record)}</span>
+            <span className={Styles.favoriteButtonSubtext}>@ {util.getStatusDisplay(record)}</span>
           )}
         </Link>
       );
@@ -372,6 +372,9 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
           <div className={Styles.search}>
             <SearchInput />
           </div>
+        </Layout.CenteredFullWidth>
+
+        <Layout.CenteredFullWidth className={Styles.headerContainer}>
           <Header
             period={period}
             filter={filter}
@@ -382,6 +385,9 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
             totalCount={items.length}
             addedCount={items.reduce((count, it) => count + (it.record != null ? 1 : 0), 0)}
           />
+        </Layout.CenteredFullWidth>
+
+        <Layout.CenteredFullWidth>
           {isRecommendationEnabled(period) && (
             <div className={Styles.recommendationBetaNotice}>
               <strong>✨ 신작 추천 (베타)</strong>
