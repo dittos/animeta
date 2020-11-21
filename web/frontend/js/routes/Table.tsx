@@ -415,6 +415,9 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
       data.filter = newFilter;
       data.items = sortBy(data.items, comparatorMap[newFilter.sort]);
     });
+    this.forceUpdate(() => {
+      window.scrollTo(0, 0);
+    });
   };
 
   _recordAdded = (item: WorkDTO, record: RecordDTO) => {
