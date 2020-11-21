@@ -23,7 +23,7 @@ export const Stack: React.SFC = ({ children }) => {
   );
 }
 
-export const CenteredFullWidth: React.SFC = ({ children, ...props }) => {
+export const CenteredFullWidth: React.SFC<React.HTMLAttributes<any>> = ({ children, ...props }) => {
   return (
     <div {...props}>
       <Grid.Row>
