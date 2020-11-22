@@ -38,21 +38,21 @@ export function hasSession() {
 }
 
 export async function login(username, password) {
-  const data = new FormData();
-  data.append('username', username);
-  data.append('password', password);
-  const resp = await fetch('/api/v2/auth', {
+  const resp = await fetch('/api/v3/Authenticate', {
     method: 'POST',
-    body: data,
+    body: JSON.stringify({
+      username,
+      password,
+      persistent: false,
+    }),
     headers: {
       'X-CSRF-Token': CSRF.getToken(),
+      'Content-Type': 'application/json',
     },
     credentials: 'same-origin',
   });
   const result = await resp.json();
-  if (result.ok) {
-    sessionKey = result.session_key;
-  }
+  sessionKey = result.sessionKey;
   saveSession();
   return result;
 }

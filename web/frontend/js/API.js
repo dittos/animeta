@@ -64,6 +64,22 @@ export function postJSON(url, data = {}) {
 
 // Login Session
 
+export function authenticate({ username, password, persistent }) {
+  return postJSON('/api/v3/Authenticate', {
+    username,
+    password,
+    persistent,
+  });
+}
+
+export function createFrontendSession(authResult) {
+  return postJSON('/api/fe/sessions', { authResult });
+}
+
+export function deleteFrontendSession() {
+  return doDelete('/api/fe/sessions');
+}
+
 export function getCurrentUser(params) {
   return $.ajax({
     url: '/api/v2/me',
@@ -75,10 +91,6 @@ export function getCurrentUser(params) {
     else deferred.reject(jqXHR);
     return deferred;
   });
-}
-
-export function logout() {
-  return doDelete('/api/v2/auth');
 }
 
 // Account

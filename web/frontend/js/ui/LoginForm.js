@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import React from 'react';
 import Styles from './LoginForm.less';
 import ModalStyles from './Modal.less';
@@ -8,7 +7,7 @@ class LoginForm extends React.Component {
   state = {
     submitted: false,
     errors: false,
-    isTransient: true,
+    isPersistent: false,
   };
 
   render() {
@@ -39,10 +38,10 @@ class LoginForm extends React.Component {
             <label>
               <input
                 type="checkbox"
-                checked={!this.state.isTransient}
+                checked={this.state.isPersistent}
                 onChange={e =>
                   this.setState({
-                    isTransient: !e.target.checked,
+                    isPersistent: e.target.checked,
                   })
                 }
               />
@@ -58,27 +57,20 @@ class LoginForm extends React.Component {
     event.preventDefault();
     this.setState({ submitted: true });
     const username = this.refs.username.value;
-    API.post('/api/v2/auth', {
+    API.authenticate({
       username: username,
       password: this.refs.password.value,
-      transient: this.state.isTransient ? 'true' : 'false',
+      persistent: this.state.isPersistent,
     }).then(
-      result => {
-        if (result.ok) {
-          if (this.props.next) {
-            location.href = this.props.next.redirectToUser
-              ? `/users/${username}/`
-              : this.props.next;
-          } else {
-            location.reload();
-          }
+      authResult => API.createFrontendSession(authResult).then(() => {
+        if (this.props.next) {
+          location.href = this.props.next.redirectToUser
+            ? `/users/${username}/`
+            : this.props.next;
         } else {
-          this.setState({
-            submitted: false,
-            errors: true,
-          });
+          location.reload();
         }
-      },
+      }),
       () => {
         this.setState({
           submitted: false,
