@@ -87,10 +87,11 @@ export function createServer({ server = express(), appProvider, getAssets }) {
     if (config.sessionCookieDomain) {
       cookieOptions.domain = config.sessionCookieDomain;
     }
-    if (req.body.transient === false) {
-      cookieOptions.maxAge = 1000 * 60 * 60 * 24 * 14;
+    const authResult = req.body.authResult;
+    if (authResult.expiryMs) {
+      cookieOptions.maxAge = authResult.expiryMs;
     }
-    res.cookie('sessionid', req.body.session_key, cookieOptions);
+    res.cookie('sessionid', authResult.sessionKey, cookieOptions);
     res.json({ ok: true });
   });
   server.delete('/api/fe/sessions', (req, res) => {
@@ -125,9 +126,6 @@ export function createServer({ server = express(), appProvider, getAssets }) {
   proxy.on('error', onProxyError);
 
   server.use('/api', (req, res) => {
-    proxy.web(req, res);
-  });
-  server.use('/newapi', (req, res) => {
     proxy.web(req, res);
   });
 
