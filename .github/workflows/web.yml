@@ -35,7 +35,7 @@ jobs:
         docker run -v /tmp/extract-static:/workspace --entrypoint /bin/bash animeta-frontend -c "cp -r /app/static /workspace/"
     - name: Upload assets
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-      run: gsutil -m cp -r /tmp/extract-static/static gs://animeta-static/
+      run: gsutil -m cp -z js,css,map -r /tmp/extract-static/static gs://animeta-static/
     - name: Docker push
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       run: |
