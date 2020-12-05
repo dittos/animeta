@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import React from 'react';
 import { App } from '../layouts';
 import * as API from '../API';
@@ -92,30 +91,40 @@ class Signup extends React.Component {
   _onSubmit = event => {
     event.preventDefault();
     this.setState({ submitted: true });
-    API.post('/api/v2/accounts', {
+    API.createAccount({
       username: this.state.username,
       password1: this.state.password,
       password2: this.state.passwordCheck,
-    }).then(
+    }, true).then(
       result => {
-        if (result.ok) {
-          const basePath = `/users/${encodeURIComponent(this.state.username)}/`;
-          trackEvent({
-            eventCategory: 'User',
-            eventAction: 'SignUp',
-          });
+        const basePath = `/users/${encodeURIComponent(this.state.username)}/`;
+        trackEvent({
+          eventCategory: 'User',
+          eventAction: 'SignUp',
+        });
+        API.createFrontendSession(result.authResult).always(() => {
           this.props.controller.load({
             path: basePath,
             query: {},
           });
-        } else {
-          this.setState({
-            submitted: false,
-            errors: result.errors,
-          });
-        }
+        });
       },
-      () => {
+      err => {
+        if (err.responseText) {
+          try {
+            const result = JSON.parse(err.responseText);
+            if (result.extra) {
+              this.setState({
+                submitted: false,
+                errors: result.extra,
+              });
+              return;
+            }
+            alert(result.message);
+          } catch (e) {
+            // ignore
+          }
+        }
         this.setState({
           submitted: false,
         });

@@ -54,11 +54,12 @@ export function post(url, data) {
   return CSRF.refresh().then(() => $.post(url, data));
 }
 
-export function postJSON(url, data = {}) {
+export function postJSON(url, data = {}, customErrorHandling = false) {
   return CSRF.refresh().then(() => $.post({
     url,
     data: JSON.stringify(data),
     contentType: 'application/json',
+    __silent__: customErrorHandling,
   }));
 }
 
@@ -94,6 +95,14 @@ export function getCurrentUser(params) {
 }
 
 // Account
+
+export function createAccount({ username, password1, password2 }, customErrorHandling = false) {
+  return postJSON('/api/v3/CreateAccount', {
+    username,
+    password1,
+    password2,
+  }, customErrorHandling);
+}
 
 export function changePassword(oldPassword, newPassword) {
   return postJSON('/api/v3/ChangePassword', {
