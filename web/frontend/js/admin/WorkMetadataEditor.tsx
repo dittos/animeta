@@ -226,7 +226,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                     <FormControl
                         name="namuRef"
                         value={metadata.namuRef || ''}
-                        onChange={this.handleInputChange}
+                        onChange={this.handleNamuRefChange}
                     />
                     <div>
                         {[this.props.title, `${this.props.title}/애니메이션`].map(namuRef => (
@@ -292,6 +292,26 @@ export default class WorkMetadataEditor extends React.Component<Props> {
             });
         } else {
             const {annId: _, ...rest} = this.props.metadata as any;
+            this.props.onChange(rest);
+        }
+    };
+
+    private handleNamuRefChange = (e: React.FormEvent<FormControl>) => {
+        const el = e.target as HTMLInputElement;
+        let value = el.value;
+        if (value.startsWith('https://namu.wiki/w/')) {
+            const url = new URL(value);
+            const page = decodeURIComponent(url.pathname.substring('/w/'.length));
+            const anchor = decodeURIComponent(url.hash.substring(1));
+            value = anchor ? `${page}#${anchor}` : page;
+        }
+        if (value) {
+            this.props.onChange({
+                ...this.props.metadata,
+                namuRef: value,
+            });
+        } else {
+            const {namuRef: _, ...rest} = this.props.metadata as any;
             this.props.onChange(rest);
         }
     };
