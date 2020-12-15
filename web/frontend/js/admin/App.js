@@ -105,7 +105,7 @@ class App extends React.Component {
   };
 
   _addWork = () => {
-    const title = this.refs.titleSearch.getValue();
+    const title = this.refs.titleSearch.getValue().trim();
     API.createWork(title).then(work => {
       this.props.history.push(`/works/${work.id}`);
     });

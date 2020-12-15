@@ -1,7 +1,7 @@
 import React from 'react';
 import { findDOMNode } from 'react-dom';
 import { Link } from 'react-router-dom';
-import { Table, Form, FormGroup, FormControl, Button } from 'react-bootstrap';
+import { Table, Form, FormGroup, FormControl, Button, Navbar } from 'react-bootstrap';
 import * as API from './API';
 import WorkMergeForm from './WorkMergeForm';
 import ImageUploadForm from './ImageUploadForm';
@@ -12,6 +12,8 @@ class WorkDetail extends React.Component {
   state = {
     work: null,
     editRawMetadata: false,
+    isSavingMetadata: false,
+    showMetadataSaved: false,
   };
 
   componentDidMount() {
@@ -108,6 +110,7 @@ class WorkDetail extends React.Component {
         <h3>Metadata</h3>
         {!this.state.editRawMetadata && (
           <WorkMetadataEditor
+            key={work.id}
             onChange={this._onMetadataChange}
             onAnnImport={this._onAnnImport}
             title={work.title || ''}
@@ -130,7 +133,12 @@ class WorkDetail extends React.Component {
             {this.state.editRawMetadata ? 'Apply raw metadata' : 'Edit raw metadata'}
           </Button>
         </FormGroup>
-        <Button onClick={this._saveMetadata}>Save</Button>
+        <Navbar fixedBottom style={{ padding: '10px 0' }}>
+          <Navbar.Form>
+            <Button bsStyle="primary" onClick={this._saveMetadata} disabled={this.state.isSavingMetadata}>Save</Button>
+            {this.state.showMetadataSaved ? ' Saved!' : null}
+          </Navbar.Form>
+        </Navbar>
 
         <hr />
 
@@ -228,9 +236,14 @@ class WorkDetail extends React.Component {
   };
 
   _saveMetadata = () => {
+    this.setState({ isSavingMetadata: true });
     API.editWork(this.state.work.id, {
       rawMetadata: this.state.work.raw_metadata,
-    }).then(this._reload, e => {
+    }).then(() => {
+      this._reload();
+      this.setState({ isSavingMetadata: false, showMetadataSaved: true });
+      setTimeout(() => this.setState({ showMetadataSaved: false }), 3000);
+    }, e => {
       alert(e.message);
     });
   };
