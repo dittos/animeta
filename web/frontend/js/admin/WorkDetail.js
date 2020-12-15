@@ -67,7 +67,7 @@ class WorkDetail extends React.Component {
         <Table>
           <tbody>
             {work.title_mappings.map(mapping => (
-              <tr key={mapping.id}>
+              <tr key={'M' + mapping.id}>
                 <td>{mapping.title}</td>
                 <td>{mapping.record_count} records</td>
                 {mapping.title === work.title ? (
@@ -110,7 +110,7 @@ class WorkDetail extends React.Component {
         <h3>Metadata</h3>
         {!this.state.editRawMetadata && (
           <WorkMetadataEditor
-            key={work.id}
+            key={'WorkMetadataEditor' + work.id}
             onChange={this._onMetadataChange}
             onAnnImport={this._onAnnImport}
             title={work.title || ''}
@@ -144,7 +144,7 @@ class WorkDetail extends React.Component {
 
         <h3>Image</h3>
         <ImageUploadForm
-          key={work.id}
+          key={'ImageUploadForm' + work.id}
           work={work}
           onUpload={this._uploadImage}
         />
