@@ -36,9 +36,29 @@
     }
 }
 
+:local(.itemMinimal) {
+    padding: 0 5px;
+    color: @color-text-dark;
+    display: inline-block;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center; // for flex
+    flex: 1; // for flex
+    &:hover {
+        color: @color-primary;
+    }
+}
+
 :local(.activeItem) {
     composes: item;
 
     background-color: @color-primary;
     color: #fff !important;
+}
+
+:local(.activeItemMinimal) {
+    composes: itemMinimal;
+
+    font-weight: bold;
+    color: @color-primary;
 }

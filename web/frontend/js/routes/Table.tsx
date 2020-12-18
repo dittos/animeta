@@ -107,7 +107,7 @@ function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period
       <div className={Styles.settings}>
         <div className={Styles.settingsItem}>
           {'정렬: '}
-          <Switch value={filter.sort} onChange={(newSort: Ordering) => onFilterChange({ ...filter, sort: newSort })}>
+          <Switch value={filter.sort} onChange={(newSort: Ordering) => onFilterChange({ ...filter, sort: newSort })} minimal>
             {options.map(option => (
               <SwitchItem key={option.value} value={option.value} onClick={option.onClick}>
                 {option.label}
@@ -120,9 +120,10 @@ function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period
             <Switch
               value={filter.addedOnly}
               onChange={(addedOnly: boolean) => onFilterChange({ ...filter, addedOnly })}
+              minimal
             >
-              <SwitchItem value={false}>전체 보기 ({totalCount})</SwitchItem>
-              <SwitchItem value={true}>추가한 작품만 보기 ({addedCount})</SwitchItem>
+              <SwitchItem value={false}>전체 ({totalCount})</SwitchItem>
+              <SwitchItem value={true}>추가한 작품 ({addedCount})</SwitchItem>
             </Switch>
           </div>
         )}
@@ -387,14 +388,14 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
           />
         </Layout.CenteredFullWidth>
 
-        <Layout.CenteredFullWidth>
+        {/* <Layout.CenteredFullWidth>
           {isRecommendationEnabled(period) && (
             <div className={Styles.recommendationBetaNotice}>
               <strong>✨ 신작 추천 (베타)</strong>
               기록했던 작품과 겹치는 제작진을 표시합니다.
             </div>
           )}
-        </Layout.CenteredFullWidth>
+        </Layout.CenteredFullWidth> */}
 
         <Grid.Row className={Styles.items}>
           {filteredItems.map((item, i) => (

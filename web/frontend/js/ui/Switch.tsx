@@ -4,6 +4,7 @@ import Styles from './Switch.less';
 
 interface SwitchProps {
   flex?: boolean;
+  minimal?: boolean;
   value: any;
   onChange: any;
 }
@@ -12,6 +13,7 @@ export class Switch extends React.Component<SwitchProps> {
   static childContextTypes = {
     switchValue: PropTypes.any,
     switchOnChange: PropTypes.any,
+    switchMinimal: PropTypes.bool,
   };
 
   render() {
@@ -28,6 +30,7 @@ export class Switch extends React.Component<SwitchProps> {
     return {
       switchValue: this.props.value,
       switchOnChange: this.props.onChange,
+      switchMinimal: this.props.minimal,
     };
   }
 }
@@ -43,6 +46,7 @@ export class SwitchItem extends React.Component<SwitchItemProps> {
   static contextTypes = {
     switchValue: PropTypes.any,
     switchOnChange: PropTypes.any,
+    switchMinimal: PropTypes.bool,
   };
 
   render() {
@@ -56,10 +60,14 @@ export class SwitchItem extends React.Component<SwitchItemProps> {
     if (active === null) {
       active = value === this.context.switchValue;
     }
+    let className = active ? Styles.activeItem : Styles.item;
+    if (this.context.switchMinimal) {
+      className = active ? Styles.activeItemMinimal : Styles.itemMinimal;
+    }
     return (
       <Component
         {...props}
-        className={active ? Styles.activeItem : Styles.item}
+        className={className}
         onClick={this._onClick}
       />
     );
