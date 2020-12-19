@@ -135,21 +135,67 @@
 :local(.settingsItem) {
     margin-left: 15px;
 }
-:local(.shareButton) {
+
+:local(.shareButtonContainer) {
+    position: relative;
     margin-left: 15px;
     align-self: center;
+}
+:local(.shareButton) {
     display: inline-block;
     white-space: nowrap;
     font-weight: bold;
     padding: 0 10px;
     color: @color-alt;
     display: inline-block;
-    display: none; // XXX
+    // display: none; // XXX
     cursor: pointer;
     text-decoration: none;
     border-radius: 2px;
     i {
         margin-right: 5px;
+    }
+}
+:local(.shareButtonPopover) {
+    position: absolute;
+    top: 22px;
+    left: 0;
+    z-index: @z-header;
+    color: rgba(255, 255, 255, 0.95);
+    background: #555;
+    box-shadow: rgba(0, 0, 0, 0.24) 0 0 8px 0;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 1.2;
+    padding: 8px;
+    white-space: nowrap;
+    margin-top: 5px;
+    margin-left: 10px;
+
+    &:after {
+        bottom: 100%;
+        left: 20px;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        border-bottom-color: #555;
+        border-width: 5px;
+    }
+
+    animation: .15s ease-in-out tableShareButtonPopoverShow;
+}
+
+@keyframes tableShareButtonPopoverShow {
+    from {
+        opacity: 0;
+        transform: translate3d(0, -10px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0, 0, 0);
     }
 }
 
@@ -275,7 +321,7 @@
 :local(.favoriteButtonSubtext) {
     margin-left: 4px;
     font-size: 13px;
-        font-weight: normal;
+    font-weight: normal;
 }
 
 :local(.schedules) {
@@ -352,6 +398,14 @@
     :local(.pageTitleAndShareContainer) {
         text-align: center;
         padding-bottom: 8px;
+    }
+    :local(.shareButtonPopover) {
+        left: auto;
+        right: 0;
+        &:after {
+            left: auto;
+            right: 20px;
+        }
     }
     :local(.settings) {
         margin: 0 auto;

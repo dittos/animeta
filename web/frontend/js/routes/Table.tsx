@@ -70,19 +70,31 @@ interface HeaderProps {
   currentUser: any;
   totalCount: number;
   addedCount: number;
+  showShareButtonPopoverOnce: boolean;
 }
 
-class ShareButton extends React.Component<{ period: string; username?: string; showAdded: boolean; }> {
+class ShareButton extends React.Component<{
+  period: string;
+  username?: string;
+  showAdded: boolean;
+  showPopoverOnce: boolean;
+}> {
   state = {
     isOpen: false,
+    hidePopover: false,
   };
 
   render() {
-    return <>
+    return <div className={Styles.shareButtonContainer}>
       <a href="#share" className={Styles.shareButton} onClick={this.open}>
         <i className="fa fa-share-square-o" />
         공유
       </a>
+      {this.props.showPopoverOnce && !this.state.hidePopover && (
+        <span className={Styles.shareButtonPopover} onClick={this.hidePopover}>
+          추가한 작품 리스트를 공유해 보세요.
+        </span>
+      )}
       {this.state.isOpen && (
         <TableShareDialog
           period={this.props.period}
@@ -91,18 +103,20 @@ class ShareButton extends React.Component<{ period: string; username?: string; s
           showAdded={this.props.showAdded}
         />
       )}
-    </>;
+    </div>;
   }
 
   private open = (e: React.MouseEvent) => {
     e.preventDefault();
-    this.setState({ isOpen: true });
+    this.setState({ isOpen: true, hidePopover: true });
   };
 
   private close = () => this.setState({ isOpen: false });
+
+  private hidePopover = () => this.setState({ hidePopover: true });
 }
 
-function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period, currentUser, totalCount, addedCount }: HeaderProps) {
+function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period, currentUser, totalCount, addedCount, showShareButtonPopoverOnce }: HeaderProps) {
   var options: { value: Ordering; label: string; onClick?: () => any; }[];
   if (!excludeKR) {
     options = [
@@ -127,7 +141,12 @@ function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period
     <div className={Styles.header}>
       <div className={Styles.pageTitleAndShareContainer}>
         <PageTitle period={period} />
-        <ShareButton period={period} username={currentUser && currentUser.name} showAdded={showAddedOnlyFilter} />
+        <ShareButton
+          period={period}
+          username={currentUser && currentUser.name}
+          showAdded={showAddedOnlyFilter}
+          showPopoverOnce={showShareButtonPopoverOnce}
+        />
       </div>
       <div className={Styles.settings}>
         <div className={Styles.settingsItem}>
@@ -204,6 +223,7 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
 
   state = {
     isHeaderStuck: false,
+    showShareButtonPopoverOnce: false,
   };
 
   componentDidMount() {
@@ -247,6 +267,7 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
             currentUser={currentUser}
             totalCount={items.length}
             addedCount={items.reduce((count, it) => count + (it.record != null ? 1 : 0), 0)}
+            showShareButtonPopoverOnce={this.state.showShareButtonPopoverOnce}
           />
         </Layout.CenteredFullWidth>
 
@@ -289,6 +310,7 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
       item.record_count++;
       data.hasAnyRecord = true;
     });
+    // this.setState({ showShareButtonPopoverOnce: true }); // XXX
   };
 }
 

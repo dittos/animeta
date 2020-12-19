@@ -149,7 +149,10 @@ export function createServer({ server = express(), appProvider, getAssets }) {
 
   server.get('/robots.txt', (req, res) => {
     res.set('content-type', 'text/plain');
-    res.send(`User-Agent: *
+    res.send(`User-agent: Twitterbot
+Disallow:
+
+User-Agent: *
 Allow: /$
 Allow: /table/
 Disallow: /
