@@ -10,6 +10,7 @@ import net.animeta.backend.model.Period
 import net.animeta.backend.model.QWorkPeriodIndex.workPeriodIndex
 import net.animeta.backend.model.User
 import net.animeta.backend.repository.RecordRepository
+import net.animeta.backend.repository.UserRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.RecordSerializer
 import net.animeta.backend.serializer.WorkSerializer
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit
 @RestController
 @RequestMapping("/v2/table/periods/{period:[0-9]{4}Q[1-4]}")
 class TablePeriodController(val datastore: Datastore,
+                            val userRepository: UserRepository,
                             val recordRepository: RecordRepository,
                             val workSerializer: WorkSerializer,
                             val recordSerializer: RecordSerializer,
@@ -45,13 +47,15 @@ class TablePeriodController(val datastore: Datastore,
     fun get(@PathVariable("period") periodParam: String,
             @RequestParam("only_first_period", defaultValue = "false") onlyFirstPeriod: Boolean,
             @RequestParam("with_recommendations", defaultValue = "false") withRecommendations: Boolean,
+            @RequestParam("only_added", defaultValue = "false") onlyAdded: Boolean,
+            @RequestParam("username", required = false) username: String?,
             @CurrentUser(required = false) currentUser: User?): List<WorkDTO> {
         val period = Period.parse(periodParam) ?: throw ApiException.notFound()
         val maxPeriod = Period.now(defaultTimeZone).next()
         if (period < minPeriod || period > maxPeriod) {
             throw ApiException.notFound()
         }
-        val result = cache.get(CacheKey(period, onlyFirstPeriod)) {
+        var result = cache.get(CacheKey(period, onlyFirstPeriod)) {
             var query = workPeriodIndex.query
                     .filter(workPeriodIndex.period.eq(period.toString()))
             if (onlyFirstPeriod) {
@@ -59,29 +63,33 @@ class TablePeriodController(val datastore: Datastore,
             }
             datastore.query(query).map { workSerializer.serialize(it.work) }
         }
-        if (currentUser != null) {
-            val records = recordRepository.findAllByUserAndWorkIdIn(currentUser, result.map { it.id })
-                    .map { recordSerializer.serialize(it, RecordSerializer.legacyOptions()) }
-                    .associateBy { it.work_id }
-            val recommendationContext = if (withRecommendations) {
-                recommendationService.createContext(result.map { it.id }, currentUser)
+        val user = username?.let { userRepository.findByUsername(it) } ?: currentUser
+        if (user == null) {
+            return result
+        }
+        val records = recordRepository.findAllByUserAndWorkIdIn(user, result.map { it.id })
+                .map { recordSerializer.serialize(it, RecordSerializer.legacyOptions()) }
+                .associateBy { it.work_id }
+        val recommendationContext = if (withRecommendations && currentUser != null) {
+            recommendationService.createContext(result.map { it.id }, currentUser)
+        } else {
+            null
+        }
+        if (onlyAdded) {
+            result = result.filter { it.id in records }
+        }
+        return result.map {
+            val record = records[it.id]
+            if (recommendationContext != null) {
+                val (recommendations, recommendationScore) = recommendationService.generate(it.id, recommendationContext)
+                it.copy(
+                    record = record,
+                    recommendations = recommendations,
+                    recommendationScore = recommendationScore
+                )
             } else {
-                null
-            }
-            return result.map {
-                val record = records[it.id]
-                if (recommendationContext != null) {
-                    val (recommendations, recommendationScore) = recommendationService.generate(it.id, recommendationContext)
-                    it.copy(
-                        record = record,
-                        recommendations = recommendations,
-                        recommendationScore = recommendationScore
-                    )
-                } else {
-                    it.copy(record = record)
-                }
+                it.copy(record = record)
             }
         }
-        return result
     }
 }
