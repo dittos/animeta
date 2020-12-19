@@ -80,7 +80,7 @@ class UserTable extends React.Component<RouteComponentProps<UserTableRouteData>>
 }
 
 const routeHandler: RouteHandler<UserTableRouteData> = {
-  component: UserLayout(UserTable, { noContentWrapper: true }, { noHero: true }),
+  component: UserLayout(UserTable, { noContentWrapper: true }, { noHero: true, noNotice: true }),
 
   async load({ loader, params, query }) {
     const { username, period } = params;

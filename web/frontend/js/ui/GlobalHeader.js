@@ -73,7 +73,7 @@ export class GlobalHeader extends React.Component {
   render() {
     const activeMenu = this.props.activeMenu;
     const user = this.props.currentUser;
-    const showNotice = this.state.showNotice && activeMenu !== 'search';
+    const showNotice = this.state.showNotice && activeMenu !== 'search' && !this.props.noNotice;
     // const showNotice = false;
     return (
       <div className={Styles.container}>
