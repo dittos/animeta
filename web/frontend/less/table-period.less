@@ -39,11 +39,14 @@
 :local(.headerContainer) {
     position: sticky;
     top: @nav-height;
-    padding: 12px 0 10px;
+    padding: 16px 0 14px;
     z-index: @z-header - 1;
     background-color: #fff;
-    box-shadow: 0 2px 3px 0 fade(@color-shadow, 50%);
     margin-bottom: 16px;
+}
+:local(.stuckHeaderContainer) {
+    composes: headerContainer;
+    box-shadow: 0 2px 3px 0 fade(@color-shadow, 50%);
 }
 :local(.header) {
     display: flex;

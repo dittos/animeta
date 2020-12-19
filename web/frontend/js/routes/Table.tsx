@@ -361,6 +361,29 @@ type TableRouteData = {
 };
 
 class Table extends React.Component<RouteComponentProps<TableRouteData>> {
+  // TODO: extract stuck detect component
+  private sentinelEl: Element = null;
+  private intersectionObserver: IntersectionObserver = null;
+
+  state = {
+    isHeaderStuck: false,
+  };
+
+  componentDidMount() {
+    if ((window as any).IntersectionObserver) {
+      this.intersectionObserver = new IntersectionObserver((entries) => {
+        const stuck = !entries[0].isIntersecting
+        this.setState({ isHeaderStuck: stuck })
+      }, {threshold: [0], rootMargin: '-48px 0px 0px 0px'});
+      this.intersectionObserver.observe(this.sentinelEl!)
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.intersectionObserver)
+      this.intersectionObserver.disconnect();
+  }
+
   render() {
     const { period, filter, containsKRSchedule, hasAnyRecord, items, currentUser } = this.props.data;
     let filteredItems = items;
@@ -375,7 +398,9 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
           </div>
         </Layout.CenteredFullWidth>
 
-        <Layout.CenteredFullWidth className={Styles.headerContainer}>
+        <div ref={el => this.sentinelEl = el} />
+
+        <Layout.CenteredFullWidth className={this.state.isHeaderStuck ? Styles.stuckHeaderContainer : Styles.headerContainer}>
           <Header
             period={period}
             filter={filter}
