@@ -8,6 +8,7 @@ import Styles from './TableShareDialog.less';
 interface Props {
   period: string;
   username?: string;
+  showAdded: boolean;
   onClose: () => any;
 }
 
@@ -15,13 +16,12 @@ export class TableShareDialog extends React.Component<Props> {
   private isClipboardAvailable = navigator && (navigator as any).clipboard && (navigator as any).clipboard.writeText
 
   state = {
-    shareContent: this.props.username ? 'added' : 'all',
+    shareContent: this.props.showAdded ? 'added' : 'all',
     showCopied: false,
   };
 
   componentWillReceiveProps(nextProps: Props) {
-    console.log(nextProps)
-    this.setState({ shareContent: nextProps.username ? 'added' : 'all' })
+    this.setState({ shareContent: nextProps.showAdded ? 'added' : 'all' })
   }
 
   render() {
@@ -42,7 +42,7 @@ export class TableShareDialog extends React.Component<Props> {
             </button>
             <h2 className={ModalStyles.title}>{formatPeriod(this.props.period)} 신작 공유</h2>
           </div>
-          {this.props.username && (
+          {this.props.showAdded && (
             <div className={Styles.contentSelector}>
               <Switch value={this.state.shareContent} onChange={(value: string) => this.setState({ shareContent: value })} flex>
                 <SwitchItem value="all">전체 작품 리스트</SwitchItem>

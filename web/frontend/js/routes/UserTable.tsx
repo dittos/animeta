@@ -118,6 +118,7 @@ const routeHandler: RouteHandler<UserTableRouteData> = {
       tw_url: `/users/${user.name}/table/${period}/`,
       description: `${user.name}님의 관심 작품을 확인해 보세요.`,
       og_image_static: `share-table-q${period.split('Q')[1]}.jpg`,
+      tw_card_type: 'summary_large_image',
       tw_image_static: `share-table-q${period.split('Q')[1]}.jpg`,
     };
   },

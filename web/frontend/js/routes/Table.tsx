@@ -72,7 +72,7 @@ interface HeaderProps {
   addedCount: number;
 }
 
-class ShareButton extends React.Component<{ period: string; username?: string }> {
+class ShareButton extends React.Component<{ period: string; username?: string; showAdded: boolean; }> {
   state = {
     isOpen: false,
   };
@@ -88,6 +88,7 @@ class ShareButton extends React.Component<{ period: string; username?: string }>
           period={this.props.period}
           username={this.props.username}
           onClose={this.close}
+          showAdded={this.props.showAdded}
         />
       )}
     </>;
@@ -126,7 +127,7 @@ function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period
     <div className={Styles.header}>
       <div className={Styles.pageTitleAndShareContainer}>
         <PageTitle period={period} />
-        <ShareButton period={period} username={currentUser && currentUser.name} />
+        <ShareButton period={period} username={currentUser && currentUser.name} showAdded={showAddedOnlyFilter} />
       </div>
       <div className={Styles.settings}>
         <div className={Styles.settingsItem}>
@@ -273,7 +274,7 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
   }
 
   _onFilterChange = (newFilter: TableFilter) => {
-    this.props.writeData((data: any) => {
+    this.props.writeData((data: TableRouteData) => {
       data.filter = newFilter;
       data.items = sortBy(data.items, comparatorMap[newFilter.sort]);
     });
@@ -283,9 +284,10 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
   };
 
   _recordAdded = (item: WorkDTO, record: RecordDTO) => {
-    this.props.writeData(() => {
+    this.props.writeData((data: TableRouteData) => {
       item.record = record;
       item.record_count++;
+      data.hasAnyRecord = true;
     });
   };
 }
@@ -335,6 +337,7 @@ const routeHandler: RouteHandler<TableRouteData> = {
       og_url: `/table/${period}/`,
       tw_url: `/table/${period}/`,
       og_image_static: `share-table-q${period.split('Q')[1]}.jpg`,
+      tw_card_type: 'summary_large_image',
       tw_image_static: `share-table-q${period.split('Q')[1]}.jpg`,
     };
   },
