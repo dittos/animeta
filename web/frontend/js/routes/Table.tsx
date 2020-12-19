@@ -329,5 +329,14 @@ const routeHandler: RouteHandler<TableRouteData> = {
   renderTitle({ period }) {
     return `${formatPeriod(period)} 신작`;
   },
+  
+  renderMeta({ period }) {
+    return {
+      og_url: `/table/${period}/`,
+      tw_url: `/table/${period}/`,
+      og_image_static: `share-table-q${period.split('Q')[1]}.jpg`,
+      tw_image_static: `share-table-q${period.split('Q')[1]}.jpg`,
+    };
+  },
 };
 export default routeHandler;
