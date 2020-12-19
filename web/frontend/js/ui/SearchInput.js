@@ -44,7 +44,7 @@ class SearchInput extends React.Component {
   }
 
   render() {
-    return <input type="search" placeholder="검색할 작품명 입력" ref="input" />;
+    return <input type="search" placeholder="검색할 작품명 입력" ref="input" className="tt-input" />;
   }
 
   _onSelect = title => {

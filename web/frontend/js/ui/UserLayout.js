@@ -42,7 +42,7 @@ export default function UserLayout(props) {
           </Grid.Column>
         </Grid.Row>
       </div>
-      <div className={Styles.content}>{props.children}</div>
+      {props.noContentWrapper ? props.children : <div className={Styles.content}>{props.children}</div>}
     </div>
   );
 }

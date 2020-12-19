@@ -102,6 +102,7 @@ export default {
       og_url: `/works/${encodeURIComponent(title)}/`,
       og_type: 'tv_show',
       og_image: work.image_url,
+      tw_url: `/works/${encodeURIComponent(title)}/`,
       tw_image: work.image_url,
     };
   },

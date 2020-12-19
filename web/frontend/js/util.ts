@@ -79,3 +79,10 @@ export const SOURCE_TYPE_MAP: {[K in SourceType]: string} = {
   VISUAL_NOVEL: '비주얼 노벨 원작',
   NOVEL: '소설 원작',
 };
+
+export function formatPeriod(period: string): string {
+  var parts = period.split('Q');
+  var year = parts[0],
+    quarter = Number(parts[1]);
+  return year + '년 ' + [1, 4, 7, 10][quarter - 1] + '월';
+}

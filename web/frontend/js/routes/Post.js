@@ -119,6 +119,7 @@ export default {
       og_url: `/-${post.id}`,
       og_type: 'article',
       og_image: work.image_url,
+      tw_url: `/-${post.id}`,
       tw_image: work.image_url,
     };
   },

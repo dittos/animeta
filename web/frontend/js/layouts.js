@@ -42,7 +42,7 @@ export function App(Component, globalHeaderProps) {
   );
 }
 
-export function User(Component) {
+export function User(Component, layoutProps = {}, globalHeaderProps = {}) {
   return props => (
     <ErrorHandler>
       <GlobalHeader
@@ -53,8 +53,9 @@ export function User(Component) {
             ? 'user'
             : null
         }
+        {...globalHeaderProps}
       />
-      <UserLayout {...props}>
+      <UserLayout {...props} {...layoutProps}>
         <Component {...props} />
       </UserLayout>
     </ErrorHandler>

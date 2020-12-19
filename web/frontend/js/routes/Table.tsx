@@ -8,24 +8,17 @@ import { Switch, SwitchItem } from '../ui/Switch';
 import * as Layout from '../ui/Layout';
 import * as Grid from '../ui/Grid';
 import LoginDialog from '../ui/LoginDialog';
-import AddRecordDialog from '../ui/AddRecordDialog';
 import SearchInput from '../ui/SearchInput';
 import { App } from '../layouts';
-import { trackEvent } from '../Tracking';
-import * as util from '../util';
-import { CreditType, RecordDTO, WorkDTO, WorkSchedule } from '../types';
+import { RecordDTO, WorkDTO } from '../types';
 import { RouteComponentProps, RouteHandler } from 'nuri/app';
 import { Popover } from '../ui/Popover';
+import { TableShareDialog } from '../ui/TableShareDialog';
+import { TableItem } from '../ui/TableItem';
+import { formatPeriod } from '../util';
 
 function isRecommendationEnabled(period: string): boolean {
   return period === Periods.current || period === Periods.upcoming;
-}
-
-function formatPeriod(period: string): string {
-  var parts = period.split('Q');
-  var year = parts[0],
-    quarter = Number(parts[1]);
-  return year + '년 ' + [1, 4, 7, 10][quarter - 1] + '월';
 }
 
 function PageTitle(props: { period: string }) {
@@ -34,6 +27,7 @@ function PageTitle(props: { period: string }) {
   for (let y = Number(Periods.current.substring(0, 4)); y >= 2014; y--) years.push(y);
   return (
     <Popover
+      relativeContainer={false}
       contentClassName={Styles.nav}
       renderTrigger={({ toggle }) => (
         <a href="#" className={Styles.pageTitle} onClick={toggle}>
@@ -78,6 +72,35 @@ interface HeaderProps {
   addedCount: number;
 }
 
+class ShareButton extends React.Component<{ period: string; username?: string }> {
+  state = {
+    isOpen: false,
+  };
+
+  render() {
+    return <>
+      <a href="#share" className={Styles.shareButton} onClick={this.open}>
+        <i className="fa fa-share-square-o" />
+        공유
+      </a>
+      {this.state.isOpen && (
+        <TableShareDialog
+          period={this.props.period}
+          username={this.props.username}
+          onClose={this.close}
+        />
+      )}
+    </>;
+  }
+
+  private open = (e: React.MouseEvent) => {
+    e.preventDefault();
+    this.setState({ isOpen: true });
+  };
+
+  private close = () => this.setState({ isOpen: false });
+}
+
 function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period, currentUser, totalCount, addedCount }: HeaderProps) {
   var options: { value: Ordering; label: string; onClick?: () => any; }[];
   if (!excludeKR) {
@@ -101,8 +124,9 @@ function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period
   }
   return (
     <div className={Styles.header}>
-      <div className={Styles.pageTitleContainer}>
+      <div className={Styles.pageTitleAndShareContainer}>
         <PageTitle period={period} />
+        <ShareButton period={period} username={currentUser && currentUser.name} />
       </div>
       <div className={Styles.settings}>
         <div className={Styles.settingsItem}>
@@ -128,194 +152,6 @@ function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
-
-function getDate(value: Date): string {
-  var weekday = WEEKDAYS[value.getDay()];
-  return (
-    util.zerofill(value.getMonth() + 1) +
-    '/' +
-    util.zerofill(value.getDate()) +
-    ' (' +
-    weekday +
-    ')'
-  );
-}
-
-interface StatusButtonProps {
-  item: WorkDTO;
-  onAddRecord: (item: WorkDTO, record: RecordDTO) => any;
-}
-
-class StatusButton extends React.Component<StatusButtonProps> {
-  state = {
-    showAddModal: false,
-  };
-
-  render() {
-    var { record } = this.props.item;
-    if (record) {
-      return (
-        <Link
-          className={Styles.favoriteButtonActive}
-          to={`/records/${record.id}/`}
-        >
-          <i className="fa fa-pencil" />
-          {util.STATUS_TYPE_TEXT[record.status_type]}
-          {record.status && (
-            <span className={Styles.favoriteButtonSubtext}>@ {util.getStatusDisplay(record)}</span>
-          )}
-        </Link>
-      );
-    } else {
-      return (<>
-        <Link
-          className={Styles.favoriteButtonNormal}
-          to={'/records/add/' + encodeURIComponent(this.props.item.title) + '/'}
-          onClick={this._showAddModal}
-        >
-          <i className="fa fa-plus" />
-          작품 추가
-        </Link>
-        {this.state.showAddModal && (
-          <AddRecordDialog
-            initialStatusType="interested"
-            initialTitle={this.props.item.title}
-            onCancel={this._closeAddModal}
-            onCreate={this._recordAdded}
-          />
-        )}
-      </>);
-    }
-  }
-
-  _showAddModal = (event: React.MouseEvent) => {
-    event.preventDefault();
-    this.setState({ showAddModal: true });
-  };
-
-  _closeAddModal = () => {
-    this.setState({ showAddModal: false });
-  };
-
-  _recordAdded = (result: { record: RecordDTO }) => {
-    this.setState({ showAddModal: false });
-    trackEvent({
-      eventCategory: 'Record',
-      eventAction: 'Create',
-      eventLabel: 'Table',
-    });
-    this.props.onAddRecord(this.props.item, result.record);
-  };
-}
-
-function Poster({ item }: { item: WorkDTO }) {
-  return (
-    <div className={Styles.poster}>
-      <img src={item.image_url} className={Styles.posterImage} />
-      <div className={Styles.posterOverlay}>
-        <i className="fa fa-check" /> {item.record_count}
-      </div>
-    </div>
-  );
-}
-
-const creditTypeText: {[K in CreditType]: string} = {
-  'ORIGINAL_WORK': '원작',
-  'CHIEF_DIRECTOR': '총감독',
-  'SERIES_DIRECTOR': '시리즈 감독',
-  'DIRECTOR': '감독',
-  'SERIES_COMPOSITION': '시리즈 구성',
-  'CHARACTER_DESIGN': '캐릭터 디자인',
-  'MUSIC': '음악',
-};
-
-function Item({ item, onAddRecord }: { item: WorkDTO; onAddRecord: (item: WorkDTO, record: RecordDTO) => any }) {
-  var { links, studios, source, schedule, durationMinutes } = item.metadata;
-  return (
-    <div className={Styles.item}>
-      <Link to={util.getWorkURL(item.title)}>
-        <Poster item={item} />
-      </Link>
-      <div className={Styles.itemContent}>
-        <h3 className={Styles.title}>
-          {item.metadata.title}
-          {durationMinutes && <span className={Styles.duration}>{durationMinutes}분</span>}
-        </h3>
-        <div className={Styles.info}>
-          <span className="studio">
-            {studios ? studios.join(', ') : '제작사 미정'}
-          </span>
-          {source && <>
-            {' / '}
-            <span className="source">{util.SOURCE_TYPE_MAP[source]}</span>
-          </>}
-        </div>
-        <div className={Styles.actions}>
-          <StatusButton item={item} onAddRecord={onAddRecord} />
-        </div>
-        <div className={Styles.schedules}>
-          {renderSchedule('jp', schedule.jp)}
-          {schedule.kr && renderSchedule('kr', schedule.kr)}
-        </div>
-        <div className={Styles.credits}>
-          {item.recommendations && item.recommendations.length > 0 && (
-            item.recommendations.map(({ credit, related }) => (
-              <div className={Styles.credit}>
-                <span className={Styles.creditType}>{creditTypeText[credit.type]}</span>
-                {credit.name}{' '}
-                <span className={Styles.creditRelated}>({related.map(it => it.workTitle).join(', ')})</span>
-              </div>
-            ))
-          )}
-        </div>
-        <div className={Styles.links}>
-          {links.website && (
-            <a
-              href={links.website}
-              className="link link-official"
-              target="_blank"
-            >
-              공식 사이트
-            </a>
-          )}
-          {links.namu && (
-            <a href={links.namu} className="link link-namu" target="_blank">
-              나무위키
-            </a>
-          )}
-          {links.ann && (
-            <a href={links.ann} className="link link-ann" target="_blank">
-              ANN (en)
-            </a>
-          )}
-        </div>
-      </div>
-      <div style={{ clear: 'left' }} />
-    </div>
-  );
-}
-
-function renderSchedule(country: string, schedule: WorkSchedule) {
-  var { date, date_only = false, broadcasts } = schedule;
-  const dateObject = date ? new Date(date) : null;
-  return (
-    <div className={Styles.schedule + ' item-schedule-' + country}>
-      {dateObject ? (
-        <span className="date">{getDate(dateObject)}</span>
-      ) : (
-        <span className="date">미정</span>
-      )}
-      {date &&
-        !date_only && <span className="time"> {util.formatTime(dateObject)}</span>}
-      {broadcasts && [
-        ' ',
-        <span className="broadcasts">({broadcasts.join(', ')})</span>,
-      ]}
     </div>
   );
 }
@@ -426,7 +262,7 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
           {filteredItems.map((item, i) => (
             <>
               <Grid.Column size={6} midSize={12} pull="left">
-                <Item key={item.id} item={item} onAddRecord={this._recordAdded} />
+                <TableItem key={item.id} item={item} onAddRecord={this._recordAdded} />
               </Grid.Column>
               {i % 2 === 1 && <div style={{ clear: 'both' }} />}
             </>

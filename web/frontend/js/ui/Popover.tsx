@@ -4,6 +4,7 @@ import Styles from './Popover.less';
 export interface PopoverProps {
   renderTrigger: (obj: { toggle: (event: React.MouseEvent) => any }) => React.ReactElement<any>;
   containerClassName?: string;
+  relativeContainer?: boolean;
   contentClassName?: string;
 }
 
@@ -40,10 +41,10 @@ export class Popover extends React.Component<PopoverProps, PopoverState> {
   };
 
   render() {
-    const { containerClassName, contentClassName, renderTrigger, children } = this.props;
+    const { containerClassName, relativeContainer = true, contentClassName, renderTrigger, children } = this.props;
     const { show } = this.state;
     return (
-      <div className={containerClassName} style={{ position: 'relative' }}>
+      <div className={containerClassName} style={relativeContainer ? { position: 'relative' } : undefined}>
         {renderTrigger({ toggle: this._toggle })}
         {show && <PopoverContent className={contentClassName} onClose={this._close}>{children}</PopoverContent>}
       </div>

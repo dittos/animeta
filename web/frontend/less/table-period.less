@@ -52,8 +52,25 @@
     display: flex;
     align-items: center;
 }
-:local(.pageTitleContainer) {
+:local(.pageTitleAndShareContainer) {
     flex: 1;
+    display: flex;
+}
+
+:local(.userHeader) {
+    display: flex;
+}
+:local(.userPageTitle) {
+    font-size: 20px;
+    color: @color-text-dark;
+    white-space: nowrap;
+    flex: 1;
+}
+:local(.fullTableLink) {
+    color: @color-primary;
+    font-weight: bold;
+    text-decoration: none;
+    line-height: 22px;
 }
 
 :local(.pageTitle) {
@@ -118,6 +135,23 @@
 :local(.settingsItem) {
     margin-left: 15px;
 }
+:local(.shareButton) {
+    margin-left: 15px;
+    align-self: center;
+    display: inline-block;
+    white-space: nowrap;
+    font-weight: bold;
+    padding: 0 10px;
+    color: @color-alt;
+    display: inline-block;
+    display: none; // XXX
+    cursor: pointer;
+    text-decoration: none;
+    border-radius: 2px;
+    i {
+        margin-right: 5px;
+    }
+}
 
 :local(.recommendationBetaNotice) {
     color: @color-text-dark;
@@ -139,6 +173,11 @@
 }
 
 // Content
+
+:local(.itemsEmpty) {
+    text-align: center;
+    padding: 50px 0;
+}
 
 :local(.item) {
     margin-bottom: 20px;
@@ -310,7 +349,7 @@
     :local(.header) {
         flex-direction: column;
     }
-    :local(.pageTitleContainer) {
+    :local(.pageTitleAndShareContainer) {
         text-align: center;
         padding-bottom: 8px;
     }
