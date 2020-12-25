@@ -11,8 +11,10 @@ import * as Grid from './Grid';
 import { Switch, SwitchItem } from './Switch';
 import AddRecordDialog from './AddRecordDialog';
 import { trackEvent } from '../Tracking';
+import { CategoryDTO, RecordDTO, StatusType, UserDTO } from '../types';
+import { LinkProps } from 'nuri/components';
 
-function getDateHeader(record) {
+function getDateHeader(record: RecordDTO): string {
   const now = new Date();
   var days = diffDays(now, record.updated_at);
   if (days <= 60) {
@@ -28,7 +30,7 @@ function getDateHeader(record) {
   return formatDate(record.updated_at, 'YYYY/MM');
 }
 
-function getIndexChar(s) {
+function getIndexChar(s: string): string {
   if (!s) return '#';
 
   s = s.replace(/^the /i, '');
@@ -47,49 +49,53 @@ function getIndexChar(s) {
   }
 }
 
-function groupRecordsByTitle(records) {
+type RecordGroup = { key: string, items: RecordDTO[], index?: number };
+
+function groupRecordsByTitle(records: RecordDTO[]): RecordGroup[] {
   records = sortBy(records, record => getIndexChar(record.title));
-  var groups = [];
-  var lastKey, group;
+  var groups: RecordGroup[] = [];
+  var lastKey: string | null = null;
+  var group: RecordDTO[] = [];
   records.forEach(record => {
     var key = getIndexChar(record.title);
     if (key != lastKey) {
-      if (group) groups.push({ key: lastKey, items: group });
+      if (group.length > 0 && lastKey) groups.push({ key: lastKey, items: group });
       lastKey = key;
       group = [];
     }
     group.push(record);
   });
-  if (group && group.length > 0) groups.push({ key: lastKey, items: group });
+  if (group.length > 0 && lastKey) groups.push({ key: lastKey, items: group });
   for (var i = 0; i < groups.length; i++) groups[i].index = 1 + i;
   return groups;
 }
 
-function groupRecordsByDate(records) {
+function groupRecordsByDate(records: RecordDTO[]): RecordGroup[] {
   records = sortBy(records, record => -record.updated_at);
-  var groups = [];
-  var unknownGroup = [];
-  var lastKey, group;
+  var groups: RecordGroup[] = [];
+  var unknownGroup: RecordDTO[] = [];
+  var lastKey: string | null = null;
+  var group: RecordDTO[] = [];
   records.forEach(record => {
     if (!record.updated_at) {
       unknownGroup.push(record);
     } else {
       var key = getDateHeader(record);
       if (key != lastKey) {
-        if (group) groups.push({ key: lastKey, items: group });
+        if (group.length > 0 && lastKey) groups.push({ key: lastKey, items: group });
         lastKey = key;
         group = [];
       }
       group.push(record);
     }
   });
-  if (group && group.length > 0) groups.push({ key: lastKey, items: group });
+  if (group.length > 0 && lastKey) groups.push({ key: lastKey, items: group });
   if (unknownGroup.length) groups.push({ key: '?', items: unknownGroup });
   for (var i = 0; i < groups.length; i++) groups[i].index = 1 + i;
   return groups;
 }
 
-function LibraryItem({ record }) {
+function LibraryItem({ record }: { record: RecordDTO }) {
   return (
     <div className={`${Styles.groupItem} item-${record.status_type}`}>
       <Link to={`/records/${record.id}/`}>
@@ -101,7 +107,22 @@ function LibraryItem({ record }) {
   );
 }
 
-class LibraryFilter extends React.Component {
+type LibraryFilterProps = {
+  count: number;
+  filteredCount: number;
+  sortBy: string;
+  groups: RecordGroup[];
+  scrollToGroup(event: React.MouseEvent<HTMLAnchorElement>): any;
+  statusTypeFilter: string;
+  categoryFilter: string;
+  getLinkParams(params: Partial<LibraryRouteQuery>): LinkProps;
+  statusTypeStats: {[key: string]: number} & {_all: number};
+  categoryStats: {[key: string]: number} & {_all: number};
+  categoryList: CategoryDTO[];
+  canEdit: boolean;
+};
+
+class LibraryFilter extends React.Component<LibraryFilterProps> {
   render() {
     return (
       <div className={Styles.filter}>
@@ -119,7 +140,7 @@ class LibraryFilter extends React.Component {
             </Link>
           </div>
           {['watching', 'finished', 'suspended', 'interested'].map(
-            statusType => (
+            (statusType: StatusType) => (
               <div
                 className={
                   this.props.statusTypeFilter === statusType
@@ -185,7 +206,26 @@ class LibraryFilter extends React.Component {
   }
 }
 
-class Library extends React.Component {
+export type LibraryRouteQuery = {
+  type?: string;
+  category?: string;
+  sort?: string;
+};
+
+type LibraryProps = {
+  user: UserDTO;
+  count: number;
+  query: LibraryRouteQuery;
+  records: RecordDTO[];
+  filteredCount: number;
+  categoryStats: {[key: string]: number} & {_all: number};
+  categoryList: CategoryDTO[];
+  statusTypeStats: {[key: string]: number} & {_all: number};
+  canEdit: boolean;
+  onAddRecord(record: RecordDTO): any;
+};
+
+class Library extends React.Component<LibraryProps> {
   state = {
     mobileFilterVisible: false,
     showAddModal: false,
@@ -202,7 +242,7 @@ class Library extends React.Component {
       statusTypeStats,
       categoryList,
     } = this.props;
-    var groups;
+    var groups: RecordGroup[] = [];
     if (sort == 'date') {
       groups = groupRecordsByDate(records);
     } else if (sort == 'title') {
@@ -322,7 +362,7 @@ class Library extends React.Component {
     );
   }
 
-  _getLinkParams = updates => {
+  _getLinkParams = (updates: Partial<LibraryRouteQuery>) => {
     const basePath = `/users/${encodeURIComponent(this.props.user.name)}/`;
     return {
       to: basePath,
@@ -330,25 +370,25 @@ class Library extends React.Component {
     };
   };
 
-  _scrollToGroup = event => {
+  _scrollToGroup = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
-    const id = event.target.hash.substring(1);
+    const id = (event.target as HTMLAnchorElement).hash.substring(1);
     const el = document.getElementById(id);
     if (!el) return;
     window.scrollBy(0, el.getBoundingClientRect().top - 50);
   };
 
-  _toggleMobileFilter = event => {
+  _toggleMobileFilter = (event: React.MouseEvent) => {
     event.preventDefault();
     this.setState({ mobileFilterVisible: !this.state.mobileFilterVisible });
   };
 
-  _showAddModal = event => {
+  _showAddModal = (event: React.MouseEvent) => {
     event.preventDefault();
     this.setState({ showAddModal: true });
   };
 
-  _recordCreated = result => {
+  _recordCreated = (result: { record: RecordDTO }) => {
     this.props.onAddRecord(result.record);
     trackEvent({
       eventCategory: 'Record',

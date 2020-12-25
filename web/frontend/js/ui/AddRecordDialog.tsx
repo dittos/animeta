@@ -9,8 +9,15 @@ import { StatusInput } from './StatusInput';
 import ModalStyles from './Modal.less';
 import Styles from './AddRecordDialog.less';
 import { getLastPublishTwitter, setLastPublishTwitter } from '../Prefs';
+import { CategoryDTO, RecordDTO, StatusType, UserDTO } from '../types';
 
-class CategorySelect extends React.Component {
+type CategorySelectProps = {
+  selectedId: string;
+  categoryList: CategoryDTO[];
+  onChange(selectedId: string): any;
+};
+
+class CategorySelect extends React.Component<CategorySelectProps> {
   render() {
     const { selectedId, categoryList, ...props } = this.props;
     return (
@@ -23,13 +30,32 @@ class CategorySelect extends React.Component {
     );
   }
 
-  _onChange = event => {
+  _onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (this.props.onChange) this.props.onChange(event.target.value);
   };
 }
 
-class AddRecord extends React.Component {
-  constructor(props) {
+type AddRecordProps = {
+  initialTitle?: string;
+  initialStatusType: StatusType;
+  currentUser?: UserDTO;
+  onCreate(result: { record: RecordDTO }): any;
+  onCancel(): any;
+};
+type AddRecordState = {
+  selectedCategoryId: string;
+  statusType: StatusType;
+  status: string;
+  comment: string;
+  publishTwitter: boolean;
+  isRequesting: boolean;
+  currentUser: UserDTO | null;
+};
+
+class AddRecord extends React.Component<AddRecordProps, AddRecordState> {
+  private _titleEl: HTMLInputElement | null = null;
+
+  constructor(props: AddRecordProps) {
     super(props);
     this.state = {
       selectedCategoryId: '',
@@ -64,7 +90,7 @@ class AddRecord extends React.Component {
           <form className={Styles.form} onSubmit={this._onSubmit}>
             <div className={Styles.field}>
               <label>작품명</label>
-              <input ref="title" defaultValue={this.props.initialTitle} />
+              <input ref={el => this._titleEl = el} defaultValue={this.props.initialTitle} />
             </div>
             <div className={Styles.field}>
               <label>감상 상태</label>
@@ -91,7 +117,7 @@ class AddRecord extends React.Component {
             <div className={Styles.field}>
               <label>분류</label>
               <CategorySelect
-                categoryList={currentUser.categories}
+                categoryList={currentUser.categories!}
                 selectedId={this.state.selectedCategoryId}
                 onChange={this._onCategoryChange}
               />
@@ -134,15 +160,11 @@ class AddRecord extends React.Component {
     this.setState({ publishTwitter: getLastPublishTwitter() });
   }
 
-  _onTitleChange = event => {
-    this.setState({ title: event.target.value });
-  };
-
-  _onCategoryChange = categoryId => {
+  _onCategoryChange = (categoryId: string) => {
     this.setState({ selectedCategoryId: categoryId });
   };
 
-  _onStatusTypeChange = statusType => {
+  _onStatusTypeChange = (statusType: StatusType) => {
     const status = statusType === 'interested' ? '' : this.state.status;
     this.setState({
       statusType,
@@ -150,20 +172,20 @@ class AddRecord extends React.Component {
     });
   };
 
-  _onStatusChange = status => {
+  _onStatusChange = (status: string) => {
     this.setState({ status });
   };
 
-  _onCommentChange = event => {
+  _onCommentChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     this.setState({ comment: event.target.value });
   };
 
-  _onPublishTwitterChange = event => {
-    if (!this.state.currentUser.is_twitter_connected) {
+  _onPublishTwitterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!this.state.currentUser!.is_twitter_connected) {
       connectTwitter().then(() => {
-        this.setState(state => ({
+        this.setState((state: AddRecordState) => ({
           publishTwitter: true,
-          currentUser: { ...state.currentUser, is_twitter_connected: true },
+          currentUser: { ...state.currentUser!, is_twitter_connected: true },
         }));
       });
     } else {
@@ -171,20 +193,20 @@ class AddRecord extends React.Component {
     }
   };
 
-  _onSubmit = event => {
+  _onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (this.state.isRequesting) return;
     this.setState({ isRequesting: true });
     setLastPublishTwitter(this.state.publishTwitter);
     createRecord({
-      title: this.refs.title.value,
+      title: this._titleEl!.value,
       statusType: this.state.statusType,
       status: this.state.status,
       categoryID: this.state.selectedCategoryId,
       comment: this.state.comment,
       publishTwitter: this.state.publishTwitter,
     })
-      .then(result => {
+      .then((result: {record: RecordDTO}) => {
         this.props.onCreate(result);
       })
       .always(() => {
@@ -209,10 +231,10 @@ class AddRecord extends React.Component {
     this.setState({ currentUser }, () => {
       // FIXME
       setTimeout(() => {
-        if (this.refs.title) {
-          Typeahead.initSuggest(this.refs.title);
+        if (this._titleEl) {
+          Typeahead.initSuggest(this._titleEl);
           if (!this.props.initialTitle) {
-            this.refs.title.focus();
+            this._titleEl.focus();
           }
         }
       }, 10);

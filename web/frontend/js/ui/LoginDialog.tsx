@@ -4,8 +4,13 @@ import { Modal } from 'react-overlays';
 import ModalStyles from './Modal.less';
 import LoginForm from './LoginForm';
 
-class LoginDialog extends React.Component {
-  static open(props) {
+type Props = {
+  onClose?(): any;
+  next: string;
+};
+
+class LoginDialog extends React.Component<Props> {
+  static open(props: Props) {
     var container = document.getElementById('dialog-container');
     if (!container) {
       container = document.createElement('div');

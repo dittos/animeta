@@ -1,11 +1,28 @@
+import { RouteComponentProps, RouteHandler } from 'nuri/app';
 import React from 'react';
 import { User as UserLayout } from '../layouts';
-import Library from '../ui/Library';
+import { RecordDTO, UserDTO } from '../types';
+import Library, { LibraryRouteQuery } from '../ui/Library';
 
-class User extends React.Component {
+type UserRouteData = {
+  currentUser?: UserDTO;
+  user: UserDTO;
+  query: LibraryRouteQuery;
+  records: {
+    data: RecordDTO[];
+    counts: {
+      total: number;
+      filtered: number;
+      by_status_type: {[key: string]: number} & {_all: number};
+      by_category_id: {[key: string]: number} & {_all: number};
+    };
+  };
+};
+
+class User extends React.Component<RouteComponentProps<UserRouteData>> {
   render() {
     const { currentUser, user, query, records } = this.props.data;
-    const canEdit = currentUser && currentUser.id === user.id;
+    const canEdit = currentUser ? currentUser.id === user.id : false;
     return (
       <Library
         user={user}
@@ -14,7 +31,7 @@ class User extends React.Component {
         records={records.data}
         filteredCount={records.counts.filtered}
         categoryStats={records.counts.by_category_id}
-        categoryList={user.categories}
+        categoryList={user.categories!}
         statusTypeStats={records.counts.by_status_type}
         canEdit={canEdit}
         onAddRecord={this._addRecord}
@@ -24,11 +41,11 @@ class User extends React.Component {
 
   _addRecord = () => {
     const basePath = `/users/${encodeURIComponent(this.props.data.user.name)}/`;
-    this.props.controller.load({ path: basePath, query: {} });
+    this.props.controller!.load({ path: basePath, query: {} });
   };
 }
 
-export default {
+const routeHandler: RouteHandler<UserRouteData> = {
   component: UserLayout(User),
 
   async load({ loader, params, query }) {
@@ -66,3 +83,4 @@ export default {
     return `${user.name} 사용자`;
   },
 };
+export default routeHandler;

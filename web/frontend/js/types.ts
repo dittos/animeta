@@ -1,7 +1,27 @@
+export type UserDTO = {
+  id: number;
+  name: string;
+  date_joined: number;
+  is_twitter_connected?: boolean;
+  categories?: CategoryDTO[],
+  record_count?: number;
+  history_count?: number;
+};
+
+export type CategoryDTO = {
+  id: number;
+  name: string;
+};
+
+export type StatusType = 'watching' | 'finished' | 'interested' | 'suspended';
+
 export interface RecordDTO {
   id: number;
+  title: string;
   status: string;
-  status_type: 'watching' | 'finished' | 'interested' | 'suspended';
+  status_type: StatusType;
+  updated_at: number;
+  has_newer_episode?: boolean;
 }
 
 export interface WorkDTO {
