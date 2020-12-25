@@ -18,7 +18,11 @@ function shorten(str, limit) {
   return str;
 }
 
-class VideoSearch extends React.Component {
+function VideoSearch(props) {
+  return <VideoSearchInternal key={props.query} {...props} />;
+}
+
+class VideoSearchInternal extends React.Component {
   state = {
     isLoading: true,
     hasMore: true,
@@ -28,20 +32,6 @@ class VideoSearch extends React.Component {
 
   componentDidMount() {
     this._loadMore();
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.query != nextProps.query) {
-      this.setState(
-        {
-          isLoading: true,
-          hasMore: true,
-          result: [],
-          page: 0,
-        },
-        this._loadMore
-      );
-    }
   }
 
   _loadMore = () => {

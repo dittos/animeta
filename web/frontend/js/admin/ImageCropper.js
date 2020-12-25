@@ -3,17 +3,17 @@ import { Button } from 'react-bootstrap';
 
 const defaultPosition = 0;
 
-class ImageCropper extends React.Component {
+function ImageCropper(props) {
+  return <ImageCropperInternal key={props.url} {...props} />
+}
+
+class ImageCropperInternal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       position: props.position || defaultPosition,
       height: 180,
     };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.setState({ position: nextProps.position || defaultPosition });
   }
 
   render() {

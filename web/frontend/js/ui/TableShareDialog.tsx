@@ -12,17 +12,25 @@ interface Props {
   onClose: () => any;
 }
 
-export class TableShareDialog extends React.Component<Props> {
+type ShareContent = 'all' | 'added';
+
+type State = {
+  shareContent: ShareContent;
+  showCopied: boolean;
+};
+
+export function TableShareDialog(props: Props) {
+  const key = props.showAdded.toString();
+  return <TableShareDialogInternal key={key} {...props} />;
+}
+
+class TableShareDialogInternal extends React.Component<Props, State> {
   private isClipboardAvailable = navigator && (navigator as any).clipboard && (navigator as any).clipboard.writeText
 
-  state = {
+  state: State = {
     shareContent: this.props.showAdded ? 'added' : 'all',
     showCopied: false,
   };
-
-  componentWillReceiveProps(nextProps: Props) {
-    this.setState({ shareContent: nextProps.showAdded ? 'added' : 'all' })
-  }
 
   render() {
     return (
@@ -44,7 +52,7 @@ export class TableShareDialog extends React.Component<Props> {
           </div>
           {this.props.showAdded && (
             <div className={Styles.contentSelector}>
-              <Switch value={this.state.shareContent} onChange={(value: string) => this.setState({ shareContent: value })} flex>
+              <Switch value={this.state.shareContent} onChange={(value: ShareContent) => this.setState({ shareContent: value })} flex>
                 <SwitchItem value="all">전체 작품 리스트</SwitchItem>
                 <SwitchItem value="added">추가한 작품 리스트</SwitchItem>
               </Switch>

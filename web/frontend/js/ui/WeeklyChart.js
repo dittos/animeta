@@ -25,7 +25,7 @@ function WeeklyChart({ data }) {
         }
         var work = item.object;
         return (
-          <Link to={getWorkURL(work.title)} className={Styles.item}>
+          <Link key={work.id} to={getWorkURL(work.title)} className={Styles.item}>
             {work.image_url && (
               <div className={Styles.poster}>
                 <img src={work.image_url} className={Styles.posterImage} />

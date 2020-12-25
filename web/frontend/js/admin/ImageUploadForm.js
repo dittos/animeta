@@ -6,14 +6,14 @@ const ImageSources = {
   URL: 'url',
 };
 
-class ImageUploadForm extends React.Component {
+function ImageUploadForm(props) {
+  return <ImageUploadFormInternal key={props.work.id} {...props} />;
+}
+
+class ImageUploadFormInternal extends React.Component {
   constructor(props) {
     super(props);
     this.state = this._buildState(props);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.setState(this._buildState(nextProps));
   }
 
   _buildState({ work }) {

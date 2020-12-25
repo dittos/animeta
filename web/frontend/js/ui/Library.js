@@ -191,13 +191,6 @@ class Library extends React.Component {
     showAddModal: false,
   };
 
-  componentWillReceiveProps() {
-    this.setState({
-      mobileFilterVisible: false,
-      showAddModal: false,
-    });
-  }
-
   render() {
     var { type = '', category = '', sort } = this.props.query;
     if (!sort) sort = 'date';

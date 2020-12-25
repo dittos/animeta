@@ -217,7 +217,11 @@ function DeleteRecordModal({ record, onConfirm, onCancel }) {
   );
 }
 
-class Record extends React.Component {
+function Record(props) {
+  return <RecordBase key={props.data.record.id} {...props} />;
+}
+
+class RecordBase extends React.Component {
   state = {
     posts: [],
     showDeleteModal: false,
@@ -225,12 +229,6 @@ class Record extends React.Component {
 
   componentDidMount() {
     this.loadPosts(this.props);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.data.record.id !== nextProps.data.record.id) {
-      this.loadPosts(nextProps);
-    }
   }
 
   loadPosts = props => {
