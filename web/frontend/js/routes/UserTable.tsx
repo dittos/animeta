@@ -5,21 +5,21 @@ import * as Layout from '../ui/Layout';
 import * as Grid from '../ui/Grid';
 import Styles from '../../less/table-period.less';
 import { TableItem } from '../ui/TableItem';
-import { WorkDTO } from '../types';
+import { UserDTO, WorkDTO } from '../types';
 import { formatPeriod } from '../util';
 import { Link } from 'nuri';
 
 type UserTableRouteData = {
-  currentUser: any;
-  user: any;
+  currentUser?: UserDTO;
+  user: UserDTO;
   period: string;
   items: WorkDTO[];
 };
 
 class UserTable extends React.Component<RouteComponentProps<UserTableRouteData>> {
   // TODO: extract stuck detect component
-  private sentinelEl: Element = null;
-  private intersectionObserver: IntersectionObserver = null;
+  private sentinelEl: Element | null = null;
+  private intersectionObserver: IntersectionObserver | null = null;
 
   state = {
     isHeaderStuck: false,

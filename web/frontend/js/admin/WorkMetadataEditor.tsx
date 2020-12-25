@@ -16,26 +16,31 @@ const sourceTypesV2 = [
 
 interface ScheduleEditorProps {
     country: string;
-    value: Schedule;
+    value: Schedule | undefined;
     onChange(country: string, newSchedule: Schedule): any;
 }
 
 type DatePrecision = 'YEAR_MONTH' | 'DATE' | 'DATE_TIME';
 
 interface Schedule {
-    date: string | null;
-    datePrecision: DatePrecision | null;
-    broadcasts: string[] | null;
+    date?: string | null;
+    datePrecision?: DatePrecision | null;
+    broadcasts?: string[] | null;
 }
 
 function toDateString(schedule: Schedule): string {
+    if (!schedule.date) {
+        return '';
+    }
     switch (schedule.datePrecision) {
         case 'YEAR_MONTH':
-            return /^\d{4}-\d{2}/.exec(schedule.date)[0];
+            return /^\d{4}-\d{2}/.exec(schedule.date)![0];
         case 'DATE':
-            return /^\d{4}-\d{2}-\d{2}/.exec(schedule.date)[0];
+            return /^\d{4}-\d{2}-\d{2}/.exec(schedule.date)![0];
         case 'DATE_TIME':
             return schedule.date;
+        default:
+            return '';
     }
 }
 
@@ -347,7 +352,8 @@ export default class WorkMetadataEditor extends React.Component<Props> {
     };
 
     private handleAnnImport = () => {
-        this.props.onAnnImport(this.props.metadata.annId);
+        if (this.props.metadata.annId)
+            this.props.onAnnImport(this.props.metadata.annId);
     };
 
     private setNamuRef(namuRef: string) {

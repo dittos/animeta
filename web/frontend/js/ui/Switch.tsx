@@ -5,8 +5,8 @@ import Styles from './Switch.less';
 interface SwitchProps {
   flex?: boolean;
   minimal?: boolean;
-  value: any;
-  onChange: any;
+  value?: any;
+  onChange?: any;
 }
 
 export class Switch extends React.Component<SwitchProps> {
@@ -38,7 +38,7 @@ export class Switch extends React.Component<SwitchProps> {
 interface SwitchItemProps {
   Component?: any;
   active?: boolean | null;
-  value: any;
+  value?: any;
   onClick?: (newValue: any) => any;
 }
 

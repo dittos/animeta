@@ -109,7 +109,7 @@ const creditTypeText: {[K in CreditType]: string} = {
 };
 
 export function TableItem({ item, onAddRecord }: { item: WorkDTO; onAddRecord: (item: WorkDTO, record: RecordDTO) => any }) {
-  var { links, studios, source, schedule, durationMinutes } = item.metadata;
+  var { links, studios, source, schedule, durationMinutes } = item.metadata!;
   return (
     <div className={Styles.item}>
       <Link to={util.getWorkURL(item.title)}>
@@ -117,7 +117,7 @@ export function TableItem({ item, onAddRecord }: { item: WorkDTO; onAddRecord: (
       </Link>
       <div className={Styles.itemContent}>
         <h3 className={Styles.title}>
-          {item.metadata.title}
+          {item.metadata!.title}
           {durationMinutes && <span className={Styles.duration}>{durationMinutes}분</span>}
         </h3>
         <div className={Styles.info}>
@@ -133,8 +133,8 @@ export function TableItem({ item, onAddRecord }: { item: WorkDTO; onAddRecord: (
           <StatusButton item={item} onAddRecord={onAddRecord} />
         </div>
         <div className={Styles.schedules}>
-          {renderSchedule('jp', schedule.jp)}
-          {schedule.kr && renderSchedule('kr', schedule.kr)}
+          {renderSchedule('jp', schedule!.jp)}
+          {schedule!.kr && renderSchedule('kr', schedule!.kr)}
         </div>
         <div className={Styles.credits}>
           {item.recommendations && item.recommendations.length > 0 && (
@@ -184,7 +184,7 @@ function renderSchedule(country: string, schedule: WorkSchedule) {
       ) : (
         <span className="date">미정</span>
       )}
-      {date &&
+      {dateObject &&
         !date_only && <span className="time"> {util.formatTime(dateObject)}</span>}
       {broadcasts && [
         ' ',

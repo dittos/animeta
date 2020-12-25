@@ -177,17 +177,19 @@ function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period
 }
 
 const scheduleComparator = (item: WorkDTO) =>
-  nullslast(item.metadata.schedule.jp && item.metadata.schedule.jp.date);
+  nullslast(item.metadata && item.metadata.schedule && item.metadata.schedule.jp && item.metadata.schedule.jp.date);
 
 const preferKRScheduleComparator = (item: WorkDTO) =>
   nullslast(
-    (item.metadata.schedule.kr && item.metadata.schedule.kr.date) ||
-      (item.metadata.schedule.jp && item.metadata.schedule.jp.date)
+    item.metadata && item.metadata.schedule && (
+      (item.metadata.schedule.kr && item.metadata.schedule.kr.date) ||
+        (item.metadata.schedule.jp && item.metadata.schedule.jp.date)
+    )
   );
 
 const recordCountComparator = (item: WorkDTO) => -item.record_count;
 
-const recommendedComparator = (item: WorkDTO) => -item.recommendationScore;
+const recommendedComparator = (item: WorkDTO) => -(item.recommendationScore || 0);
 
 const comparatorMap = {
   recommended: recommendedComparator,
@@ -218,8 +220,8 @@ type TableRouteData = {
 
 class Table extends React.Component<RouteComponentProps<TableRouteData>> {
   // TODO: extract stuck detect component
-  private sentinelEl: Element = null;
-  private intersectionObserver: IntersectionObserver = null;
+  private sentinelEl: Element | null = null;
+  private intersectionObserver: IntersectionObserver | null = null;
 
   state = {
     isHeaderStuck: false,
