@@ -6,11 +6,11 @@ import LoginForm from './LoginForm';
 
 type Props = {
   onClose?(): any;
-  next: string;
+  next?: string;
 };
 
 class LoginDialog extends React.Component<Props> {
-  static open(props: Props) {
+  static open(props?: Props) {
     var container = document.getElementById('dialog-container');
     if (!container) {
       container = document.createElement('div');

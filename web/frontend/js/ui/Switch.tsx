@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
 import Styles from './Switch.less';
 
 interface SwitchProps {
@@ -9,29 +8,27 @@ interface SwitchProps {
   onChange?: any;
 }
 
-export class Switch extends React.Component<SwitchProps> {
-  static childContextTypes = {
-    switchValue: PropTypes.any,
-    switchOnChange: PropTypes.any,
-    switchMinimal: PropTypes.bool,
-  };
+const SwitchContext = React.createContext<{
+  value?: any;
+  onChange?: any;
+  minimal?: boolean;
+} | null>(null);
 
+export class Switch extends React.Component<SwitchProps> {
   render() {
     return (
       <div
         className={this.props.flex ? Styles.flexContainer : Styles.container}
       >
-        {this.props.children}
+        <SwitchContext.Provider value={{
+          value: this.props.value,
+          onChange: this.props.onChange,
+          minimal: this.props.minimal,
+        }}>
+          {this.props.children}
+        </SwitchContext.Provider>
       </div>
     );
-  }
-
-  getChildContext() {
-    return {
-      switchValue: this.props.value,
-      switchOnChange: this.props.onChange,
-      switchMinimal: this.props.minimal,
-    };
   }
 }
 
@@ -42,12 +39,9 @@ interface SwitchItemProps {
   onClick?: (newValue: any) => any;
 }
 
-export class SwitchItem extends React.Component<SwitchItemProps> {
-  static contextTypes = {
-    switchValue: PropTypes.any,
-    switchOnChange: PropTypes.any,
-    switchMinimal: PropTypes.bool,
-  };
+export class SwitchItem extends React.Component<SwitchItemProps, {}> {
+  static contextType = SwitchContext;
+  context!: React.ContextType<typeof SwitchContext>;
 
   render() {
     let {
@@ -57,11 +51,15 @@ export class SwitchItem extends React.Component<SwitchItemProps> {
       onClick,
       ...props
     } = this.props;
+    const context = this.context;
+    if (!context) {
+      throw new Error('<SwitchItem /> should be children of <Switch />');
+    }
     if (active === null) {
-      active = value === this.context.switchValue;
+      active = value === context.value;
     }
     let className = active ? Styles.activeItem : Styles.item;
-    if (this.context.switchMinimal) {
+    if (context.minimal) {
       className = active ? Styles.activeItemMinimal : Styles.itemMinimal;
     }
     return (
@@ -82,8 +80,8 @@ export class SwitchItem extends React.Component<SwitchItemProps> {
         return;
       }
     }
-    if (this.context.switchOnChange) {
-      this.context.switchOnChange(this.props.value);
+    if (this.context!.onChange) {
+      this.context!.onChange(this.props.value);
     }
   };
 }

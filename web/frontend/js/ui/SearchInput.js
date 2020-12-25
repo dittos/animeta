@@ -1,11 +1,9 @@
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
 import * as Typeahead from './Typeahead';
+import { ControllerContext } from 'nuri/components';
 
 class SearchInput extends React.Component {
-  static contextTypes = {
-    controller: PropTypes.object,
-  };
+  static contextType = ControllerContext;
 
   componentDidMount() {
     const onSelect = this._onSelect;
@@ -53,8 +51,8 @@ class SearchInput extends React.Component {
       this.props.onSelect(title);
     } else {
       const path = '/works/' + encodeURIComponent(title) + '/';
-      if (this.context.controller) {
-        this.context.controller.load({ path, query: {} });
+      if (this.context) {
+        this.context.load({ path, query: {} });
       } else {
         location.href = path;
       }
