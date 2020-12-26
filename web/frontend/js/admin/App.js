@@ -2,19 +2,18 @@ import * as React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import {
   Button,
+  Form,
   FormGroup,
   Navbar,
   Nav,
   NavDropdown,
-  MenuItem,
-  Grid,
+  Container,
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import Loading from './Loading';
 import Login from './Login';
 import TitleAutosuggest from './TitleAutosuggest';
 import * as API from './API';
-import { NavItem } from 'react-bootstrap/lib';
 
 class App extends React.Component {
   state = {
@@ -49,40 +48,38 @@ class App extends React.Component {
     if (this.state.currentUser) {
       return (
         <div>
-          <Navbar>
-            <Navbar.Header>
-              <Navbar.Brand>
-                <Link to="/">animeta</Link>
-              </Navbar.Brand>
-            </Navbar.Header>
-            <Nav>
-              <LinkContainer to="/works"><NavItem>Works</NavItem></LinkContainer>
-              <LinkContainer to="/people"><NavItem>People</NavItem></LinkContainer>
-              <LinkContainer to="/companies"><NavItem>Companies</NavItem></LinkContainer>
+          <Navbar bg="light" expand="lg">
+            <Navbar.Brand>
+              <Link to="/">animeta</Link>
+            </Navbar.Brand>
+            <Nav className="mr-auto">
+              <LinkContainer to="/works"><Nav.Link>Works</Nav.Link></LinkContainer>
+              <LinkContainer to="/people"><Nav.Link>People</Nav.Link></LinkContainer>
+              <LinkContainer to="/companies"><Nav.Link>Companies</Nav.Link></LinkContainer>
             </Nav>
-            <Nav pullRight>
-              <NavDropdown
-                id="navbar-user-dropdown"
-                title={this.state.currentUser.name}
-              >
-                <MenuItem onSelect={this._logout}>Logout</MenuItem>
-              </NavDropdown>
-            </Nav>
-            <Navbar.Form pullRight>
-              <FormGroup>
+            <Form inline className="mr-sm-3">
+              <Button onClick={this._clearCache}>Clear cache</Button>
+            </Form>
+            <Form inline className="mr-sm-3">
+              <FormGroup className="mr-sm-2">
                 <TitleAutosuggest
                   onSelected={this._onTitleSelected}
                   ref="titleSearch"
                 />
               </FormGroup>{' '}
               <Button onClick={this._addWork}>Add work</Button>
-            </Navbar.Form>
-            <Navbar.Form pullRight>
-              <Button onClick={this._clearCache}>Clear cache</Button>
-            </Navbar.Form>
+            </Form>
+            <Nav>
+              <NavDropdown
+                id="navbar-user-dropdown"
+                title={this.state.currentUser.name}
+              >
+                <NavDropdown.Item onSelect={this._logout}>Logout</NavDropdown.Item>
+              </NavDropdown>
+            </Nav>
           </Navbar>
 
-          <Grid>{this.props.children}</Grid>
+          <Container className="py-sm-3">{this.props.children}</Container>
         </div>
       );
     } else {

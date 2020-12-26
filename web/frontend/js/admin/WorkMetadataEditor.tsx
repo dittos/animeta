@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FormGroup, ControlLabel, Checkbox, FormControl, Radio, HelpBlock } from 'react-bootstrap/lib';
+import { FormGroup, FormLabel, FormCheck, FormControl, FormText } from 'react-bootstrap';
 import { getCompanies } from './API';
 import CreatableSelect from 'react-select/lib/Creatable';
 import AsyncCreatableSelect from 'react-select/lib/AsyncCreatable';
@@ -97,7 +97,7 @@ class ScheduleEditor extends React.Component<ScheduleEditorProps> {
                         value={this.props.value ? toDateString(this.props.value) : ''}
                         onChange={this.handleDateChange}
                     />
-                    <HelpBlock>Date is YYYY-MM(-DD(THH:MM:SS))</HelpBlock>
+                    <FormText>Date is YYYY-MM(-DD(THH:MM:SS))</FormText>
                 </div>
 
                 {/* TODO: autocomplete */}
@@ -112,8 +112,8 @@ class ScheduleEditor extends React.Component<ScheduleEditorProps> {
         );
     }
 
-    private handleDateChange = (e: React.FormEvent<FormControl>) => {
-        const el = e.target as HTMLInputElement;
+    private handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const el = e.target;
         const parsed = parseDateString(el.value);
         this.props.onChange(this.props.country, {
             ...this.props.value,
@@ -155,7 +155,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
         return (
             <>
                 <FormGroup>
-                    <ControlLabel>AnimeNewsNetwork ID</ControlLabel>
+                    <FormLabel>AnimeNewsNetwork ID</FormLabel>
                     <FormControl
                         name="annId"
                         value={metadata.annId || ''}
@@ -166,11 +166,11 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                     </button>
                 </FormGroup>
                 <FormGroup>
-                    <ControlLabel>Periods</ControlLabel>
+                    <FormLabel>Periods</FormLabel>
                     {this.renderPeriodCheckboxes()}
                 </FormGroup>
                 <FormGroup>
-                    <ControlLabel>Schedule (JP)</ControlLabel>
+                    <FormLabel>Schedule (JP)</FormLabel>
                     <ScheduleEditor
                         country="jp"
                         value={metadata.schedules && metadata.schedules['jp']}
@@ -178,7 +178,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                     />
                 </FormGroup>
                 <FormGroup>
-                    <ControlLabel>Schedule (KR)</ControlLabel>
+                    <FormLabel>Schedule (KR)</FormLabel>
                     <ScheduleEditor
                         country="kr"
                         value={metadata.schedules && metadata.schedules['kr']}
@@ -186,18 +186,17 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                     />
                 </FormGroup>
                 <FormGroup>
-                    <ControlLabel>Source</ControlLabel>
+                    <FormLabel>Source</FormLabel>
                     <div>
                         {sourceTypesV2.map(source => (
-                            <Radio inline name="source" value={source} checked={metadata.source === source}
-                                onChange={this.handleInputChange}>
-                                {source}
-                            </Radio>
+                            <FormCheck type="radio" inline name="source" value={source} checked={metadata.source === source}
+                                onChange={this.handleInputChange}
+                                label={source} />
                         ))}
                     </div>
                 </FormGroup>
                 <FormGroup>
-                    <ControlLabel>Studios</ControlLabel>
+                    <FormLabel>Studios</FormLabel>
                     <AsyncCreatableSelect
                         isMulti
                         loadOptions={(q: string) => getCompanies()
@@ -211,7 +210,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                     />
                 </FormGroup>
                 <FormGroup>
-                    <ControlLabel>Duration (minutes)</ControlLabel>
+                    <FormLabel>Duration (minutes)</FormLabel>
                     <FormControl
                         name="durationMinutes"
                         value={metadata.durationMinutes || ''}
@@ -219,7 +218,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                     />
                 </FormGroup>
                 <FormGroup>
-                    <ControlLabel>Website URL</ControlLabel>
+                    <FormLabel>Website URL</FormLabel>
                     <FormControl
                         name="website"
                         value={metadata.website || ''}
@@ -227,7 +226,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                     />
                 </FormGroup>
                 <FormGroup>
-                    <ControlLabel>Namuwiki Reference</ControlLabel>
+                    <FormLabel>Namuwiki Reference</FormLabel>
                     <FormControl
                         name="namuRef"
                         value={metadata.namuRef || ''}
@@ -255,19 +254,19 @@ export default class WorkMetadataEditor extends React.Component<Props> {
             for (var q = 1; q <= maxQuarter; q++) {
                 const period = `${y}Q${q}`;
                 items.push(
-                    <Checkbox
+                    <FormCheck
+                        type="checkbox"
                         inline
                         checked={periods.indexOf(period) !== -1}
                         onChange={this.handlePeriodCheckboxChange}
                         value={period}
-                    >
-                        Q{q}
-                    </Checkbox>
+                        label={`Q${q}`}
+                    />
                 );
             }
             lines.unshift(
                 <div key={'y' + y}>
-                    <ControlLabel>{y}</ControlLabel>
+                    <FormLabel className="mr-sm-2">{y}</FormLabel>
                     {items}
                 </div>
             );
@@ -275,8 +274,8 @@ export default class WorkMetadataEditor extends React.Component<Props> {
         return lines;
     }
 
-    private handlePeriodCheckboxChange = (e: React.FormEvent<Checkbox>) => {
-        const el = e.target as HTMLInputElement;
+    private handlePeriodCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const el = e.target;
         const period = el.value;
         let periods = this.props.metadata.periods || [];
         periods = periods.filter(p => p !== period);
@@ -287,8 +286,8 @@ export default class WorkMetadataEditor extends React.Component<Props> {
         this.props.onChange({ ...this.props.metadata, periods });
     };
 
-    private handleAnnIdChange = (e: React.FormEvent<FormControl>) => {
-        const el = e.target as HTMLInputElement;
+    private handleAnnIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const el = e.target;
         const value = el.value.replace(/^https?:\/\/(?:www\.)?animenewsnetwork\.com\/encyclopedia\/anime\.php\?id=([0-9]+)$/, '$1');
         if (value) {
             this.props.onChange({
@@ -301,8 +300,8 @@ export default class WorkMetadataEditor extends React.Component<Props> {
         }
     };
 
-    private handleNamuRefChange = (e: React.FormEvent<FormControl>) => {
-        const el = e.target as HTMLInputElement;
+    private handleNamuRefChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const el = e.target;
         let value = el.value;
         if (value.startsWith('https://namu.wiki/w/')) {
             const url = new URL(value);
@@ -321,8 +320,8 @@ export default class WorkMetadataEditor extends React.Component<Props> {
         }
     };
 
-    private handleInputChange = (e: React.FormEvent<FormControl>) => {
-        const el = e.target as HTMLInputElement;
+    private handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const el = e.target;
         if (el.value) {
             this.props.onChange({
                 ...this.props.metadata,

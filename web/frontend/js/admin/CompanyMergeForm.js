@@ -39,12 +39,12 @@ class CompanyMergeForm extends React.Component {
             </Modal.Body>
             <Modal.Footer>
               <Button
-                bsStyle="danger"
+                variant="danger"
                 onClick={this._merge}
               >
                 Merge
               </Button>
-              <Button bsStyle="link" onClick={this._cancelMerge}>
+              <Button variant="link" onClick={this._cancelMerge}>
                 Cancel
               </Button>
             </Modal.Footer>

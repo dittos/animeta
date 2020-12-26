@@ -37,7 +37,7 @@ class TableShareDialogInternal extends React.Component<Props, State> {
       <Modal
         show={true}
         className={ModalStyles.container}
-        backdropClassName={ModalStyles.backdrop}
+        renderBackdrop={(props: any) => <div className={ModalStyles.backdrop} {...props} />}
         onHide={this.props.onClose}
       >
         <div className={ModalStyles.mobileBottomSheet}>

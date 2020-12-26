@@ -1,7 +1,7 @@
 import React from 'react';
 import { findDOMNode } from 'react-dom';
 import { Link } from 'react-router-dom';
-import { Table, Form, FormGroup, FormControl, Button, Navbar } from 'react-bootstrap';
+import { Table, Form, FormGroup, FormControl, Button, Navbar, Container } from 'react-bootstrap';
 import * as API from './API';
 import WorkMergeForm from './WorkMergeForm';
 import ImageUploadForm from './ImageUploadForm';
@@ -41,7 +41,7 @@ class WorkDetail extends React.Component {
         <h2>{work.title}</h2>
 
         <div>
-          <Button bsStyle="danger" onClick={this._blacklist}>
+          <Button variant="danger" onClick={this._blacklist}>
             Blacklist
           </Button>
         </div>
@@ -129,15 +129,17 @@ class WorkDetail extends React.Component {
             }}
           />
           <br />
-          <Button bsStyle="link" bsSize="sm" onClick={this._toggleEditRawMetadata}>
+          <Button variant="link" size="sm" onClick={this._toggleEditRawMetadata}>
             {this.state.editRawMetadata ? 'Apply raw metadata' : 'Edit raw metadata'}
           </Button>
         </FormGroup>
-        <Navbar fixedBottom style={{ padding: '10px 0' }}>
-          <Navbar.Form>
-            <Button bsStyle="primary" onClick={this._saveMetadata} disabled={this.state.isSavingMetadata}>Save</Button>
-            {this.state.showMetadataSaved ? ' Saved!' : null}
-          </Navbar.Form>
+        <Navbar fixed="bottom" style={{ padding: '10px 0' }} bg="light">
+          <Container>
+            <Form inline>
+              <Button variant="primary" onClick={this._saveMetadata} disabled={this.state.isSavingMetadata}>Save</Button>
+              {this.state.showMetadataSaved ? ' Saved!' : null}
+            </Form>
+          </Container>
         </Navbar>
 
         <hr />

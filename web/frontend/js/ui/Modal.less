@@ -12,6 +12,7 @@
     composes: fullSize;
     z-index: @z-modal;
     overflow-y: auto;
+    pointer-events: none;
 }
 
 :local(.backdrop) {
@@ -19,9 +20,12 @@
     composes: fullSize;
     background: #000;
     opacity: 0.4;
+    z-index: @z-modal;
 }
 
 :local(.dialog) {
+    // reset pointer-events: none set on .container
+    pointer-events: auto;
     position: relative;
     margin: 0 auto;
     width: 320px;

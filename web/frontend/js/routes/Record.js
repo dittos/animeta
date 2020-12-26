@@ -194,7 +194,7 @@ function DeleteRecordModal({ record, onConfirm, onCancel }) {
     <Modal
       show={true}
       className={ModalStyles.container}
-      backdropClassName={ModalStyles.backdrop}
+      renderBackdrop={(props) => <div className={ModalStyles.backdrop} {...props} />}
       onHide={onCancel}
     >
       <div className={ModalStyles.dialog}>

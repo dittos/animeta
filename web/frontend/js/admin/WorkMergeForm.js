@@ -63,13 +63,13 @@ class WorkMergeForm extends React.Component {
                 </label>
               )}
               <Button
-                bsStyle="danger"
+                variant="danger"
                 onClick={this._merge}
                 disabled={this.state.conflicts && !this.state.forceMerge}
               >
                 Merge
               </Button>
-              <Button bsStyle="link" onClick={this._cancelMerge}>
+              <Button variant="link" onClick={this._cancelMerge}>
                 Cancel
               </Button>
             </Modal.Footer>

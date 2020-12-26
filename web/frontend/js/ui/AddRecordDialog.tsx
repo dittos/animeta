@@ -78,7 +78,7 @@ class AddRecord extends React.Component<AddRecordProps, AddRecordState> {
       <Modal
         show={true}
         className={ModalStyles.container}
-        backdropClassName={ModalStyles.backdrop}
+        renderBackdrop={(props: any) => <div className={ModalStyles.backdrop} {...props} />}
       >
         <div className={ModalStyles.dialog} style={{ overflow: 'visible' }}>
           <div className={ModalStyles.header}>

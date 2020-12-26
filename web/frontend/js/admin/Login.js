@@ -2,7 +2,7 @@ import * as React from 'react';
 import { findDOMNode } from 'react-dom';
 import {
   FormGroup,
-  ControlLabel,
+  FormLabel,
   FormControl,
   Button,
   Modal,
@@ -16,17 +16,17 @@ class Login extends React.Component {
         <form onSubmit={this._submit}>
           <Modal.Body>
             <FormGroup>
-              <ControlLabel>Username</ControlLabel>
+              <FormLabel>Username</FormLabel>
               <FormControl ref="username" autoFocus />
             </FormGroup>
             <FormGroup>
-              <ControlLabel>Password</ControlLabel>
+              <FormLabel>Password</FormLabel>
               <FormControl ref="password" type="password" />
             </FormGroup>
           </Modal.Body>
 
           <Modal.Footer>
-            <Button bsStyle="primary" type="submit">
+            <Button variant="primary" type="submit">
               Login
             </Button>
           </Modal.Footer>

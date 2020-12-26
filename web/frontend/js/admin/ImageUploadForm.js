@@ -30,9 +30,9 @@ class ImageUploadFormInternal extends React.Component {
     const { source, options } = this.state;
     return (
       <div>
-        <Nav bsStyle="tabs" activeKey={source} onSelect={this._setSource}>
-          <NavItem eventKey={ImageSources.ANN}>ANN</NavItem>
-          <NavItem eventKey={ImageSources.URL}>URL</NavItem>
+        <Nav variant="tabs" activeKey={source} onSelect={this._setSource}>
+          <Nav.Item><Nav.Link eventKey={ImageSources.ANN}>ANN</Nav.Link></Nav.Item>
+          <Nav.Item><Nav.Link eventKey={ImageSources.URL}>URL</Nav.Link></Nav.Item>
         </Nav>
         {source === ImageSources.ANN && (
           <span>
