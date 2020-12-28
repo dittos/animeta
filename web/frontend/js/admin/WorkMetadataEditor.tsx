@@ -40,7 +40,7 @@ function toDateString(schedule: Schedule): string {
         case 'DATE_TIME':
             return schedule.date;
         default:
-            return '';
+            return schedule.date;
     }
 }
 
