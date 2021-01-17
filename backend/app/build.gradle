@@ -46,6 +46,10 @@ generateTypeScript {
     excludeClasses = [
             'net.animeta.backend.dto.JsonToObjectConverter'
     ]
+    excludeClassPatterns = [
+            '**$Companion'
+    ]
+    customTypeNamingFunction = "function(name, simpleName) { return name.substring(name.lastIndexOf('.') + 1) }"
     outputFile = "$projectDir/../../web/frontend/js/types_generated.d.ts"
     outputKind = 'module'
 }

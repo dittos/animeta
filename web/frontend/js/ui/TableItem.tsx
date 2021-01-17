@@ -5,7 +5,7 @@ import AddRecordDialog from '../ui/AddRecordDialog';
 import { trackEvent } from '../Tracking';
 import * as util from '../util';
 import { CreditType, RecordDTO, StatusType, WorkDTO, WorkSchedule } from '../types';
-import { ByCredit } from '../types_generated';
+import { Recommendation$ByCredit } from '../types_generated';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -139,7 +139,7 @@ export function TableItem({ item, onAddRecord }: { item: WorkDTO; onAddRecord: (
         </div>
         <div className={Styles.credits}>
           {item.recommendations && item.recommendations.length > 0 && (
-            item.recommendations.map(({ credit, related }: ByCredit) => (
+            item.recommendations.map(({ credit, related }: Recommendation$ByCredit) => (
               <div className={Styles.credit}>
                 <span className={Styles.creditType}>{creditTypeText[credit.type]}</span>
                 {credit.name}{' '}

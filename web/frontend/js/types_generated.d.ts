@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 2.28.785 on 2021-01-17 00:46:54.
+// Generated using typescript-generator version 2.28.785 on 2021-01-17 17:22:28.
 
 export interface CategoryDTO {
     id: number;
@@ -11,9 +11,6 @@ export interface Credit {
     type: CreditType;
     name: string;
     personId: number;
-}
-
-export interface Companion {
 }
 
 export interface Episode {
@@ -42,7 +39,7 @@ export interface PostDTO {
 export interface Recommendation {
 }
 
-export interface ByCredit extends Recommendation {
+export interface Recommendation$ByCredit extends Recommendation {
     credit: Credit;
     related: WorkCredit[];
     score: number;
@@ -102,7 +99,7 @@ export interface WorkMetadataDTO {
     title: string;
     links: WorkLinks;
     studios: string[] | null;
-    source: SourceType | null;
+    source: WorkMetadata$SourceType | null;
     schedule: { [index: string]: WorkSchedule | null } | null;
     durationMinutes: number | null;
 }
@@ -115,4 +112,4 @@ export interface WorkSchedule {
 
 export type CreditType = "ORIGINAL_WORK" | "CHIEF_DIRECTOR" | "SERIES_DIRECTOR" | "DIRECTOR" | "SERIES_COMPOSITION" | "CHARACTER_DESIGN" | "MUSIC";
 
-export type SourceType = "MANGA" | "ORIGINAL" | "LIGHT_NOVEL" | "GAME" | "FOUR_KOMA" | "VISUAL_NOVEL" | "NOVEL";
+export type WorkMetadata$SourceType = "MANGA" | "ORIGINAL" | "LIGHT_NOVEL" | "GAME" | "FOUR_KOMA" | "VISUAL_NOVEL" | "NOVEL";

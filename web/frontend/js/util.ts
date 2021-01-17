@@ -1,4 +1,4 @@
-import { PostDTO, RecordDTO, SourceType, StatusType } from "./types";
+import { PostDTO, RecordDTO, WorkMetadata$SourceType, StatusType } from "./types";
 
 export function zerofill(n: number): string {
   let s = String(n);
@@ -70,7 +70,7 @@ export function getPostURL(post: PostDTO): string {
   return '/-' + post.id;
 }
 
-export const SOURCE_TYPE_MAP: {[K in SourceType]: string} = {
+export const SOURCE_TYPE_MAP: {[K in WorkMetadata$SourceType]: string} = {
   MANGA: '만화 원작',
   ORIGINAL: '오리지널 작품',
   LIGHT_NOVEL: '라노베 원작',
