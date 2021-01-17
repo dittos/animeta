@@ -16,6 +16,9 @@ import { LinkProps } from 'nuri/components';
 
 function getDateHeader(record: RecordDTO): string {
   const now = new Date();
+  if (!record.updated_at) {
+    return '?';
+  }
   var days = diffDays(now, record.updated_at);
   if (days <= 60) {
     if (days < 1) return '오늘';
@@ -71,7 +74,7 @@ function groupRecordsByTitle(records: RecordDTO[]): RecordGroup[] {
 }
 
 function groupRecordsByDate(records: RecordDTO[]): RecordGroup[] {
-  records = sortBy(records, record => -record.updated_at);
+  records = sortBy(records, record => -(record.updated_at || 0));
   var groups: RecordGroup[] = [];
   var unknownGroup: RecordDTO[] = [];
   var lastKey: string | null = null;

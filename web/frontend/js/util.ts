@@ -1,4 +1,4 @@
-import { PostDTO, RecordDTO, SourceType } from "./types";
+import { PostDTO, RecordDTO, SourceType, StatusType } from "./types";
 
 export function zerofill(n: number): string {
   let s = String(n);
@@ -52,7 +52,7 @@ export const STATUS_TYPE_TEXT = {
 export function getStatusText(record: RecordDTO): string {
   var status = getStatusDisplay(record);
   if (record.status_type != 'watching' || status === '') {
-    var statusTypeText = STATUS_TYPE_TEXT[record.status_type];
+    var statusTypeText = STATUS_TYPE_TEXT[record.status_type as StatusType];
     if (status !== '') {
       status += ' (' + statusTypeText + ')';
     } else {

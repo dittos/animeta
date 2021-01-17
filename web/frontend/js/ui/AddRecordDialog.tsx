@@ -135,7 +135,7 @@ class AddRecord extends React.Component<AddRecordProps, AddRecordState> {
               <input
                 type="checkbox"
                 checked={
-                  currentUser.is_twitter_connected && this.state.publishTwitter
+                  currentUser.is_twitter_connected === true && this.state.publishTwitter
                 }
                 onChange={this._onPublishTwitterChange}
               />

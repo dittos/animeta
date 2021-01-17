@@ -4,7 +4,8 @@ import Styles from '../../less/table-period.less';
 import AddRecordDialog from '../ui/AddRecordDialog';
 import { trackEvent } from '../Tracking';
 import * as util from '../util';
-import { CreditType, RecordDTO, WorkDTO, WorkSchedule } from '../types';
+import { CreditType, RecordDTO, StatusType, WorkDTO, WorkSchedule } from '../types';
+import { ByCredit } from '../types_generated';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -39,7 +40,7 @@ class StatusButton extends React.Component<StatusButtonProps> {
           to={`/records/${record.id}/`}
         >
           <i className="fa fa-pencil" />
-          {util.STATUS_TYPE_TEXT[record.status_type]}
+          {util.STATUS_TYPE_TEXT[record.status_type as StatusType]}
           {record.status && (
             <span className={Styles.favoriteButtonSubtext}>@ {util.getStatusDisplay(record)}</span>
           )}
@@ -90,7 +91,7 @@ class StatusButton extends React.Component<StatusButtonProps> {
 function Poster({ item }: { item: WorkDTO }) {
   return (
     <div className={Styles.poster}>
-      <img src={item.image_url} className={Styles.posterImage} />
+      <img src={item.image_url!} className={Styles.posterImage} />
       <div className={Styles.posterOverlay}>
         <i className="fa fa-check" /> {item.record_count}
       </div>
@@ -133,12 +134,12 @@ export function TableItem({ item, onAddRecord }: { item: WorkDTO; onAddRecord: (
           <StatusButton item={item} onAddRecord={onAddRecord} />
         </div>
         <div className={Styles.schedules}>
-          {renderSchedule('jp', schedule!.jp)}
+          {renderSchedule('jp', schedule!.jp!)}
           {schedule!.kr && renderSchedule('kr', schedule!.kr)}
         </div>
         <div className={Styles.credits}>
           {item.recommendations && item.recommendations.length > 0 && (
-            item.recommendations.map(({ credit, related }) => (
+            item.recommendations.map(({ credit, related }: ByCredit) => (
               <div className={Styles.credit}>
                 <span className={Styles.creditType}>{creditTypeText[credit.type]}</span>
                 {credit.name}{' '}

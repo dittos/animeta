@@ -42,3 +42,15 @@ docker {
         }
     }
 }
+
+generateTypeScript {
+    jsonLibrary = 'jackson2'
+    classPatterns = [
+            'net.animeta.backend.dto.**'
+    ]
+    excludeClasses = [
+            'net.animeta.backend.dto.JsonToObjectConverter'
+    ]
+    outputFile = "$projectDir/../../web/frontend/js/types_generated.d.ts"
+    outputKind = 'module'
+}
