@@ -20,6 +20,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV JAVA_MAIN_CLASS org.springframework.boot.loader.JarLauncher
 
 COPY --from=builder /app/dependencies/ ./
+RUN true
 COPY --from=builder /app/spring-boot-loader/ ./
+RUN true
 COPY --from=builder /app/snapshot-dependencies/ ./
+RUN true
 COPY --from=builder /app/application/ ./
