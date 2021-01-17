@@ -33,17 +33,9 @@ dependencies {
     }
 }
 
-jar.enabled = true
-bootJar.enabled = false
-
 docker {
-    name 'sapzilorg/animeta-backend:latest'
-    files 'build/libs/app-1.0.0.jar', 'run-java.sh'
-    copySpec.with {
-        from(configurations.runtime) {
-            into 'lib'
-        }
-    }
+    name 'gcr.io/ditto-1470749749381/animeta-backend:latest'
+    files tasks.bootJar.outputs, 'run-java.sh'
 }
 
 generateTypeScript {

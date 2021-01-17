@@ -1,3 +1,10 @@
+FROM openjdk:8 AS builder
+
+WORKDIR /app
+COPY *.jar /app/app.jar
+RUN java -Djarmode=layertools -jar app.jar extract
+
+
 FROM openjdk:8
 
 WORKDIR /app
@@ -10,8 +17,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		jpegoptim \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_MAIN_CLASS net.animeta.backend.ApplicationKt
+ENV JAVA_MAIN_CLASS org.springframework.boot.loader.JarLauncher
 
-ADD lib /app
-#ADD project-lib/*.jar /app/
-ADD *.jar /app/
+COPY --from=builder /app/dependencies/ ./
+COPY --from=builder /app/spring-boot-loader/ ./
+COPY --from=builder /app/snapshot-dependencies/ ./
+COPY --from=builder /app/application/ ./

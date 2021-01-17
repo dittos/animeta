@@ -46,6 +46,4 @@ jobs:
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       run: |
         gcloud auth configure-docker
-        ./gradlew dockerTag
-        docker tag sapzilorg/animeta-backend:latest gcr.io/ditto-1470749749381/animeta-backend:latest
-        docker push gcr.io/ditto-1470749749381/animeta-backend:latest
+        ./gradlew dockerPush
