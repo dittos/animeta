@@ -13,14 +13,14 @@ import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import reactor.core.publisher.UnicastProcessor
+import reactor.core.publisher.Sinks
 import reactor.core.scheduler.Schedulers
 import java.security.MessageDigest
 import java.util.concurrent.atomic.AtomicBoolean
 
 @RestController
 @RequestMapping("/admin/tasks")
-class TasksController(
+class AdminTasksController(
     @Value("\${animeta.security.internal-password}") private val password: String,
     private val indexer: Indexer
 ) {
@@ -31,7 +31,7 @@ class TasksController(
     fun buildIndex(): Flux<String> {
         checkAuth()
 
-        val processor = UnicastProcessor.create<String>()
+        val processor = Sinks.many().unicast().onBackpressureBuffer<String>()
 
         Mono.fromCallable {
             if (buildingIndex.compareAndSet(false, true)) {
@@ -51,14 +51,14 @@ class TasksController(
             .doOnSuccessOrError { _, throwable ->
                 if (throwable != null) {
                     logger.error(throwable.message, throwable)
-                    processor.onNext("Error: ${throwable.message}")
+                    processor.tryEmitNext("Error: ${throwable.message}")
                 }
-                processor.onComplete()
+                processor.tryEmitComplete()
             }
-            .subscribeOn(Schedulers.elastic())
+            .subscribeOn(Schedulers.boundedElastic())
             .subscribe()
 
-        return processor.map { it + "\n" }
+        return processor.asFlux().map { it + "\n" }
     }
 
     private fun checkAuth() {

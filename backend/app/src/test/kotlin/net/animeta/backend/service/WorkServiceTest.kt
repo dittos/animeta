@@ -4,7 +4,7 @@ import com.google.cloud.storage.Storage
 import com.google.common.io.Resources
 import net.animeta.backend.Application
 import net.animeta.backend.TestDatabaseConfiguration
-import net.animeta.backend.controller.admin.AdminController
+import net.animeta.backend.controller.admin.AdminWorksController
 import net.animeta.backend.model.User
 import net.animeta.backend.repository.UserRepository
 import net.animeta.backend.repository.WorkRepository
@@ -42,7 +42,7 @@ class WorkServiceTest {
     lateinit var transactionTemplate: TransactionTemplate
 
     @Autowired
-    lateinit var adminController: AdminController
+    lateinit var adminWorksController: AdminWorksController
 
     @MockBean
     lateinit var annMetadataCache: AnnMetadataCache
@@ -61,7 +61,7 @@ class WorkServiceTest {
         }!!
         Mockito.`when`(annMetadataCache.getMetadata(Mockito.anyString()))
             .thenReturn(Parser.xmlParser().parseInput(Resources.toString(Resources.getResource("ann-metadata-sample.xml"), Charsets.UTF_8), "").selectFirst("anime"))
-        adminController.editWork(user, workId, AdminController.EditWorkRequest(
+        adminWorksController.editWork(user, workId, AdminWorksController.EditWorkRequest(
             rawMetadata = "{\"version\": 2, \"periods\": [\"2018Q1\"]}",
             importAnnMetadata = "12345"
         ))

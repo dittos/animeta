@@ -30,6 +30,8 @@ class CurrentUserArgumentResolver(val userRepository: UserRepository,
         val user = extractUser(webRequest)
         if (annotation.required && user == null) {
             throw ApiException("Login required.", HttpStatus.UNAUTHORIZED)
+        } else if (annotation.staffRequired && user?.staff != true) {
+            throw ApiException("Staff permission required.", HttpStatus.UNAUTHORIZED)
         } else {
             return user
         }

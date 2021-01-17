@@ -3,37 +3,27 @@ package net.animeta.backend.controller.admin
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import net.animeta.backend.controller.v2.TablePeriodController
 import net.animeta.backend.db.Datastore
 import net.animeta.backend.db.query
 import net.animeta.backend.dto.WorkDTO
 import net.animeta.backend.exception.ApiException
 import net.animeta.backend.metadata.WorkMetadata
-import net.animeta.backend.model.Company
-import net.animeta.backend.model.Person
 import net.animeta.backend.model.QUser.user
 import net.animeta.backend.model.QWork.work
 import net.animeta.backend.model.TitleMapping
 import net.animeta.backend.model.User
-import net.animeta.backend.repository.CompanyRepository
 import net.animeta.backend.repository.HistoryRepository
-import net.animeta.backend.repository.PersonRepository
 import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.repository.TitleMappingRepository
-import net.animeta.backend.repository.WorkCastRepository
 import net.animeta.backend.repository.WorkIndexRepository
 import net.animeta.backend.repository.WorkRepository
-import net.animeta.backend.repository.WorkStaffRepository
 import net.animeta.backend.repository.WorkTitleIndexRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.WorkSerializer
-import net.animeta.backend.service.ChartService
 import net.animeta.backend.service.WorkService
 import net.animeta.backend.service.admin.AnnMetadataCache
 import net.animeta.backend.service.admin.AnnService
 import net.animeta.backend.service.admin.ImageService
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -49,31 +39,25 @@ import java.util.UUID
 
 @RestController
 @RequestMapping("/admin")
-class AdminController(private val datastore: Datastore,
-                      private val workService: WorkService,
-                      private val imageService: ImageService,
-                      private val workRepository: WorkRepository,
-                      private val workIndexRepository: WorkIndexRepository,
-                      private val workTitleIndexRepository: WorkTitleIndexRepository,
-                      private val recordRepository: RecordRepository,
-                      private val titleMappingRepository: TitleMappingRepository,
-                      private val historyRepository: HistoryRepository,
-                      private val chartService: ChartService,
-                      private val workStaffRepository: WorkStaffRepository,
-                      private val workCastRepository: WorkCastRepository,
-                      private val personRepository: PersonRepository,
-                      private val companyRepository: CompanyRepository,
-                      private val workSerializer: WorkSerializer,
-                      private val tablePeriodController: TablePeriodController,
-                      private val annService: AnnService,
-                      private val annMetadataCache: AnnMetadataCache,
-                      private val objectMapper: ObjectMapper) {
+class AdminWorksController(
+    private val datastore: Datastore,
+    private val workService: WorkService,
+    private val imageService: ImageService,
+    private val workRepository: WorkRepository,
+    private val workIndexRepository: WorkIndexRepository,
+    private val workTitleIndexRepository: WorkTitleIndexRepository,
+    private val recordRepository: RecordRepository,
+    private val titleMappingRepository: TitleMappingRepository,
+    private val historyRepository: HistoryRepository,
+    private val workSerializer: WorkSerializer,
+    private val annService: AnnService,
+    private val annMetadataCache: AnnMetadataCache,
+    private val objectMapper: ObjectMapper
+) {
     @GetMapping("/works")
-    fun getWorks(@CurrentUser currentUser: User,
+    fun getWorks(@CurrentUser(staffRequired = true) currentUser: User,
                  @RequestParam("orphans", defaultValue = "false") onlyOrphans: Boolean,
                  @RequestParam(defaultValue = "0") offset: Int): List<WorkDTO> {
-        checkPermission(currentUser)
-
         var query = work.query.filter(work.blacklisted.isFalse)
 //        if (onlyOrphans) {
 //            query = query.filter(work.indexes.any().record_count.eq(0))
@@ -85,9 +69,8 @@ class AdminController(private val datastore: Datastore,
     data class CreateWorkRequest(val title: String)
 
     @PostMapping("/works")
-    fun createWork(@CurrentUser currentUser: User,
+    fun createWork(@CurrentUser(staffRequired = true) currentUser: User,
                    @RequestBody request: CreateWorkRequest): WorkDTO {
-        checkPermission(currentUser)
         val work = workService.getOrCreate(request.title)
         return workSerializer.serialize(work)
     }
@@ -95,17 +78,17 @@ class AdminController(private val datastore: Datastore,
     data class TitleMappingDTO(val id: Int, val title: String, val record_count: Int)
     data class AdminWorkIndexDTO(val record_count: Int, val rank: Int)
     data class AdminWorkDTO(
-            val id: Int,
-            val title: String,
-            val image_filename: String?,
-            val image_path: String?,
-            val image_center_y: Double,
-            val raw_metadata: String,
-            val metadata: WorkMetadata?,
-            val title_mappings: List<TitleMappingDTO>,
-            val index: AdminWorkIndexDTO?,
-            val staffs: List<WorkStaffDTO>,
-            val casts: List<WorkCastDTO>
+        val id: Int,
+        val title: String,
+        val image_filename: String?,
+        val image_path: String?,
+        val image_center_y: Double,
+        val raw_metadata: String,
+        val metadata: WorkMetadata?,
+        val title_mappings: List<TitleMappingDTO>,
+        val index: AdminWorkIndexDTO?,
+        val staffs: List<WorkStaffDTO>,
+        val casts: List<WorkCastDTO>
     )
     data class WorkStaffDTO(
         val task: String,
@@ -121,34 +104,33 @@ class AdminController(private val datastore: Datastore,
     )
 
     @GetMapping("/works/{id}")
-    fun getWork(@CurrentUser currentUser: User,
+    fun getWork(@CurrentUser(staffRequired = true) currentUser: User,
                 @PathVariable id: Int): AdminWorkDTO {
-        checkPermission(currentUser)
         val work = workRepository.findById(id).orElse(null)
         val titleMappings = work.titleMappings.map {
             TitleMappingDTO(
-                    id = it.id!!,
-                    title = it.title,
-                    record_count = recordRepository.countByTitle(it.title)
+                id = it.id!!,
+                title = it.title,
+                record_count = recordRepository.countByTitle(it.title)
             )
         }.sortedByDescending { it.record_count }
         val index = workIndexRepository.findOneByWorkId(work.id!!)
         return AdminWorkDTO(
-                id = work.id!!,
-                title = work.title,
-                image_filename = work.image_filename,
-                image_path = workSerializer.getImageUrl(work),
-                image_center_y = work.image_center_y,
-                raw_metadata = work.raw_metadata ?: "",
-                metadata = work.metadata?.let { objectMapper.readValue<WorkMetadata>(it) },
-                title_mappings = titleMappings,
-                index = index?.let { AdminWorkIndexDTO(record_count = it.record_count, rank = it.rank) },
-                staffs = work.staffs.map {
-                    WorkStaffDTO(it.task, it.person.name, it.person.id!!, it.metadata?.let(objectMapper::readTree))
-                },
-                casts = work.casts.map {
-                    WorkCastDTO(it.role, it.actor.name, it.actor.id!!, it.metadata?.let(objectMapper::readTree))
-                }
+            id = work.id!!,
+            title = work.title,
+            image_filename = work.image_filename,
+            image_path = workSerializer.getImageUrl(work),
+            image_center_y = work.image_center_y,
+            raw_metadata = work.raw_metadata ?: "",
+            metadata = work.metadata?.let { objectMapper.readValue<WorkMetadata>(it) },
+            title_mappings = titleMappings,
+            index = index?.let { AdminWorkIndexDTO(record_count = it.record_count, rank = it.rank) },
+            staffs = work.staffs.map {
+                WorkStaffDTO(it.task, it.person.name, it.person.id!!, it.metadata?.let(objectMapper::readTree))
+            },
+            casts = work.casts.map {
+                WorkCastDTO(it.role, it.actor.name, it.actor.id!!, it.metadata?.let(objectMapper::readTree))
+            }
         )
     }
 
@@ -164,10 +146,9 @@ class AdminController(private val datastore: Datastore,
 
     @PostMapping("/works/{id}")
     @Transactional
-    fun editWork(@CurrentUser currentUser: User,
+    fun editWork(@CurrentUser(staffRequired = true) currentUser: User,
                  @PathVariable id: Int,
                  @RequestBody request: EditWorkRequest): AdminWorkDTO {
-        checkPermission(currentUser)
         if (request.primaryTitleMappingId != null) {
             setPrimaryTitleMapping(request.primaryTitleMappingId)
         }
@@ -276,9 +257,8 @@ class AdminController(private val datastore: Datastore,
 
     @DeleteMapping("/works/{id}")
     @Transactional
-    fun deleteWork(@CurrentUser currentUser: User,
+    fun deleteWork(@CurrentUser(staffRequired = true) currentUser: User,
                    @PathVariable id: Int): DeleteResponse {
-        checkPermission(currentUser)
         val work = workRepository.findById(id).orElse(null)
         if (recordRepository.countByWorkId(work.id!!) != 0) {
             throw ApiException("Record exists", HttpStatus.FORBIDDEN)
@@ -291,10 +271,9 @@ class AdminController(private val datastore: Datastore,
 
     @PostMapping("/works/{id}/title-mappings")
     @Transactional
-    fun addTitleMapping(@CurrentUser currentUser: User,
+    fun addTitleMapping(@CurrentUser(staffRequired = true) currentUser: User,
                         @PathVariable id: Int,
                         @RequestBody request: AddTitleMappingRequest): TitleMappingDTO {
-        checkPermission(currentUser)
         val work = workRepository.findById(id).orElse(null)
         val title = request.title.trim()
         val key = WorkService.normalizeTitle(title)
@@ -307,159 +286,12 @@ class AdminController(private val datastore: Datastore,
     }
 
     @DeleteMapping("/title-mappings/{id}")
-    fun deleteTitleMapping(@CurrentUser currentUser: User, @PathVariable id: Int): DeleteResponse {
-        checkPermission(currentUser)
+    fun deleteTitleMapping(@CurrentUser(staffRequired = true) currentUser: User, @PathVariable id: Int): DeleteResponse {
         val mapping = titleMappingRepository.findById(id).orElse(null)
         if (recordRepository.countByTitle(mapping.title) > 0) {
             throw ApiException("Record exists", HttpStatus.FORBIDDEN)
         }
         titleMappingRepository.delete(mapping)
         return DeleteResponse(true)
-    }
-
-    @DeleteMapping("/caches")
-    fun clearCache(@CurrentUser currentUser: User): DeleteResponse {
-        checkPermission(currentUser)
-        chartService.invalidateWorkCache()
-        tablePeriodController.invalidateCache()
-        return DeleteResponse(true)
-    }
-
-    data class PersonWorkDTO(val workId: Int, val workTitle: String, val roleOrTask: String)
-    data class PersonDTO(val id: Int,
-                         val name: String,
-                         val staffs: List<PersonWorkDTO>,
-                         val casts: List<PersonWorkDTO>,
-                         val metadata: JsonNode?)
-
-    @GetMapping("/people")
-    fun listPerson(@CurrentUser currentUser: User,
-                   @RequestParam(defaultValue = "1") page: Int): List<PersonDTO> {
-        checkPermission(currentUser)
-        val pageable = PageRequest.of(page, 128, Sort.by(Sort.Direction.DESC, "id"))
-        val people = personRepository.findAll(pageable)
-        return people.content.map { serialize(it) }
-    }
-
-    @GetMapping("/people/{id}")
-    fun getPerson(@CurrentUser currentUser: User, @PathVariable id: Int): PersonDTO {
-        checkPermission(currentUser)
-        val person = personRepository.findById(id).get()
-        return serialize(person)
-    }
-
-    data class EditPersonRequest(val name: String?)
-
-    @PostMapping("/people/{id}")
-    fun editPerson(@CurrentUser currentUser: User, @PathVariable id: Int, @RequestBody request: EditPersonRequest): PersonDTO {
-        checkPermission(currentUser)
-        val person = personRepository.findById(id).get()
-        if (request.name != null) {
-            person.name = request.name
-        }
-        personRepository.save(person)
-        return serialize(person)
-    }
-
-    private fun serialize(person: Person): PersonDTO {
-        return PersonDTO(
-            id = person.id!!,
-            name = person.name,
-            staffs = workStaffRepository.findByPerson(person).map {
-                PersonWorkDTO(it.work.id!!, it.work.title, it.task)
-            },
-            casts = workCastRepository.findByActor(person).map {
-                PersonWorkDTO(it.work.id!!, it.work.title, it.role)
-            },
-            metadata = person.metadata?.let(objectMapper::readTree)
-        )
-    }
-
-    @GetMapping("/companies")
-    fun getCompanies(): Iterable<Company> {
-        // TODO: define DTO
-        return companyRepository.findAll(Sort.by("name"))
-    }
-
-    data class CompanyDTO(
-        val id: Int,
-        val name: String,
-        val works: List<CompanyWorkDTO>
-    )
-    data class CompanyWorkDTO(
-        val id: Int,
-        val title: String
-    )
-
-    @GetMapping("/companies/{id}")
-    fun getCompany(@PathVariable id: Int): CompanyDTO {
-        return companyRepository.findById(id).orElse(null)?.let {
-            CompanyDTO(
-                id = it.id!!,
-                name = it.name,
-                works = it.works.map { CompanyWorkDTO(it.work.id!!, it.work.title) }
-            )
-        } ?: throw ApiException.notFound()
-    }
-
-    data class EditCompanyRequest(
-        val name: String?,
-        val mergeCompanyId: Int?
-    )
-
-    @PostMapping("/companies/{id}")
-    @Transactional
-    fun editCompany(@CurrentUser currentUser: User, @PathVariable id: Int, @RequestBody request: EditCompanyRequest): CompanyDTO {
-        checkPermission(currentUser)
-        val company = companyRepository.findById(id).get()
-        if (request.name != null && company.name != request.name) {
-            if (companyRepository.findOneByName(request.name) != null) {
-                throw Exception("Name collision")
-            }
-            val prevName = company.name
-            company.name = request.name
-            companyRepository.save(company)
-
-            for (workCompany in company.works) {
-                val work = workCompany.work
-                val metadata = work.metadata?.let { objectMapper.readValue<WorkMetadata>(it) } ?: WorkMetadata()
-                workService.editMetadata(work, metadata.copy(
-                    studios = metadata.studios?.map {
-                        if (it == prevName) company.name else it
-                    }
-                ))
-            }
-        }
-        if (request.mergeCompanyId != null) {
-            mergeCompany(id, request.mergeCompanyId)
-        }
-        return getCompany(id)
-    }
-
-    private fun mergeCompany(companyId: Int, otherCompanyId: Int) {
-        val company = companyRepository.findById(companyId).get()
-        val other = companyRepository.findById(otherCompanyId).get()
-        if (company.id == other.id) {
-            throw ApiException("Cannot merge itself", HttpStatus.BAD_REQUEST)
-        }
-        if (other.works.any { it.company.id == company.id }) {
-            throw ApiException("Works with conflict exists", HttpStatus.BAD_REQUEST)
-        }
-        for (workCompany in other.works) {
-            val work = workCompany.work
-            val metadata = work.metadata?.let { objectMapper.readValue<WorkMetadata>(it) } ?: WorkMetadata()
-            workService.editMetadata(work, metadata.copy(
-                studios = metadata.studios?.map {
-                    if (it == other.name) company.name else it
-                }
-            ))
-        }
-        companyRepository.delete(other)
-    }
-
-    private fun checkPermission(user: User) {
-        if (!user.staff) {
-            throw ApiException("Staff permission required.", HttpStatus.UNAUTHORIZED)
-        }
     }
 }

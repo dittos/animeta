@@ -85,9 +85,7 @@ class RecommendationService(
                 )
             }
         }.filter { it.related.isNotEmpty() }
-        val score = result.sumBy {
-            if (it is Recommendation.ByCredit) it.score else 0
-        } * result.size
+        val score = result.sumBy { it.score } * result.size
         return Pair(result, score)
     }
 
