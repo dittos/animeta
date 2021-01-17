@@ -26,8 +26,11 @@ dependencies {
     compile 'org.jetbrains.exposed:exposed:0.11.2'
     compile 'org.jetbrains.exposed:spring-transaction:0.11.2'
     compile 'org.twitter4j:twitter4j-core:4.0.7'
-    testCompile "org.springframework.boot:spring-boot-starter-test"
-    testCompile "ru.yandex.qatools.embed:postgresql-embedded:2.9"
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "ru.yandex.qatools.embed:postgresql-embedded:2.9"
+    testImplementation("org.junit.vintage:junit-vintage-engine") {
+        exclude group: "org.hamcrest", module: "hamcrest-core"
+    }
 }
 
 jar.enabled = true
