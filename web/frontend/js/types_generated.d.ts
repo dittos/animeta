@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 2.28.785 on 2021-01-27 23:42:22.
+// Generated using typescript-generator version 2.28.785 on 2021-01-27 23:52:18.
 
 export interface CategoryDTO {
     id: number;
