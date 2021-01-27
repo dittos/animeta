@@ -136,12 +136,6 @@ export class Work extends React.Component {
         >
           <h1 className={Styles.title}>{work.title}</h1>
           <div className={Styles.stats}>
-            {work.rank && (
-              <span className={Styles.rankStat}>
-                <i className="fa fa-bar-chart" />
-                전체 {work.rank}위
-              </span>
-            )}
             <span className={Styles.userStat}>
               <i className="fa fa-user" />
               {work.record_count}명이 기록 남김

@@ -36,7 +36,6 @@ class WorkSerializer(val workService: WorkService,
                 image_center_y = work.image_center_y,
                 episodes = if (full) workService.getEpisodes(work) else null,
                 record_count = index?.record_count ?: recordRepository.countByWorkId(work.id!!),
-                rank = index?.rank,
                 record = if (viewer != null) {
                     recordRepository.findOneByWorkIdAndUser(work.id!!, viewer)
                             ?.let { recordSerializer.serialize(it, RecordSerializer.legacyOptions()) }

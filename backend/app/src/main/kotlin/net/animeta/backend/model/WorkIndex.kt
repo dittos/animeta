@@ -13,7 +13,8 @@ data class WorkIndex(
     var workId: Int,
     var title: String,
     var record_count: Int,
-    var rank: Int,
+    @Deprecated("")
+    var rank: Int = 0,
     var blacklisted: Boolean,
     var verified: Boolean
 )

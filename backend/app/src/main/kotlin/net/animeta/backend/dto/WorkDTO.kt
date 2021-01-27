@@ -62,7 +62,6 @@ data class WorkDTO(
     val image_center_y: Double,
     val episodes: List<Episode>?,
     val record_count: Int,
-    val rank: Int?,
     val record: RecordDTO?,
     val metadata: WorkMetadataDTO?,
     val recommendations: List<Recommendation>? = null,

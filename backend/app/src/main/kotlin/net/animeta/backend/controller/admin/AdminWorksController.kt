@@ -76,7 +76,7 @@ class AdminWorksController(
     }
 
     data class TitleMappingDTO(val id: Int, val title: String, val record_count: Int)
-    data class AdminWorkIndexDTO(val record_count: Int, val rank: Int)
+    data class AdminWorkIndexDTO(val record_count: Int)
     data class AdminWorkDTO(
         val id: Int,
         val title: String,
@@ -124,7 +124,7 @@ class AdminWorksController(
             raw_metadata = work.raw_metadata ?: "",
             metadata = work.metadata?.let { objectMapper.readValue<WorkMetadata>(it) },
             title_mappings = titleMappings,
-            index = index?.let { AdminWorkIndexDTO(record_count = it.record_count, rank = it.rank) },
+            index = index?.let { AdminWorkIndexDTO(record_count = it.record_count) },
             staffs = work.staffs.map {
                 WorkStaffDTO(it.task, it.person.name, it.person.id!!, it.metadata?.let(objectMapper::readTree))
             },

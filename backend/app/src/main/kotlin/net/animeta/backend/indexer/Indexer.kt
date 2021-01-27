@@ -32,20 +32,9 @@ class Indexer(
                     workId = work.id!!,
                     title = work.title,
                     record_count = recordCounts[work.id!!]?.toInt() ?: 0,
-                    rank = 0,
                     blacklisted = work.blacklisted,
                     verified = work.metadata != null
                 ))
-            }
-            objects.sortByDescending { it.record_count }
-            var rank = 0
-            var prev = -1
-            for ((i, obj) in objects.withIndex()) {
-                if (prev != obj.record_count) {
-                    rank = i + 1
-                }
-                prev = obj.record_count
-                obj.rank = rank
             }
             workIndexRepository.saveAll(objects)
         }

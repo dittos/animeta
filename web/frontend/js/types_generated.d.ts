@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 2.28.785 on 2021-01-17 17:22:28.
+// Generated using typescript-generator version 2.28.785 on 2021-01-27 23:42:22.
 
 export interface CategoryDTO {
     id: number;
@@ -82,7 +82,6 @@ export interface WorkDTO {
     image_center_y: number;
     episodes: Episode[] | null;
     record_count: number;
-    rank: number | null;
     record: RecordDTO | null;
     metadata: WorkMetadataDTO | null;
     recommendations: Recommendation[] | null;

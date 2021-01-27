@@ -51,14 +51,12 @@ class WorkDetail extends React.Component {
             <tr>
               <th>ID</th>
               <th>Record Count (Index)</th>
-              <th>Rank (Index)</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>{work.id}</td>
               {work.index && <td>{work.index.record_count}</td>}
-              {work.index && <td>{work.index.rank}</td>}
             </tr>
           </tbody>
         </Table>
