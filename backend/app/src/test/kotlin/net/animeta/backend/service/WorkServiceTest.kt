@@ -52,7 +52,7 @@ class WorkServiceTest {
         // https://github.com/dittos/animeta/issues/65
         val user = userRepository.save(User(
             username = "admin",
-            date_joined = Timestamp.from(Instant.now()),
+            date_joined = Instant.now(),
             staff = true
         ))
         val workId = transactionTemplate.execute {

@@ -3,7 +3,6 @@ package net.animeta.backend.repository
 import net.animeta.backend.model.Work
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
-import java.sql.Timestamp
 import java.time.Instant
 import java.util.stream.Stream
 

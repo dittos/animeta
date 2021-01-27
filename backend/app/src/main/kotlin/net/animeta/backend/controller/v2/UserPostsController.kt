@@ -7,8 +7,11 @@ import net.animeta.backend.exception.ApiException
 import net.animeta.backend.model.QHistory.history
 import net.animeta.backend.repository.UserRepository
 import net.animeta.backend.serializer.PostSerializer
-import net.animeta.backend.serializer.RecordSerializer
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/v2/users/{name}/posts")

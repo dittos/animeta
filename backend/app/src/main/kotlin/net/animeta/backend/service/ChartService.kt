@@ -7,15 +7,12 @@ import net.animeta.backend.chart.ChartRange
 import net.animeta.backend.chart.SundayStartWeekRange
 import net.animeta.backend.chart.diff
 import net.animeta.backend.chart.ranked
-import net.animeta.backend.repository.UserRepository
 import net.animeta.backend.repository.WorkRepository
 import net.animeta.backend.serializer.WorkSerializer
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
-import java.sql.Timestamp
 import java.time.ZoneId
-import java.util.Optional
 import java.util.concurrent.TimeUnit
 import java.util.stream.Stream
 import kotlin.streams.asSequence

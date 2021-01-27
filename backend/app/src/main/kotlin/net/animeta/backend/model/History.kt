@@ -1,6 +1,5 @@
 package net.animeta.backend.model
 
-import java.sql.Timestamp
 import java.time.Instant
 import javax.persistence.Column
 import javax.persistence.Entity

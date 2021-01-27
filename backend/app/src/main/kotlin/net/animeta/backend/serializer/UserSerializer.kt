@@ -22,7 +22,7 @@ class UserSerializer(val categorySerializer: CategorySerializer,
         return UserDTO(
                 id = user.id!!,
                 name = user.username,
-                date_joined = user.date_joined.toInstant().toEpochMilli(),
+                date_joined = user.date_joined.toEpochMilli(),
                 is_twitter_connected = if (isViewer && options.twitter) !viewer!!.twitterSettings.isEmpty() else null,
                 categories = if (options.categories) user.categories.map(categorySerializer::serialize) else null,
                 record_count = if (options.stats) recordRepository.countByUser(user) else null,

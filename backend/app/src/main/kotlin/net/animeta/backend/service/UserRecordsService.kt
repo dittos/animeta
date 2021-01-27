@@ -5,7 +5,7 @@ import net.animeta.backend.model.User
 import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.repository.RecordRepository.CountGroupRow
 import org.springframework.stereotype.Service
-import java.util.*
+import java.util.Optional
 
 @Service
 class UserRecordsService(private val recordRepository: RecordRepository) {

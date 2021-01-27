@@ -1,7 +1,15 @@
 package net.animeta.backend.model
 
-import java.sql.Timestamp
-import javax.persistence.*
+import java.time.Instant
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.FetchType
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
+import javax.persistence.OneToMany
+import javax.persistence.OrderBy
+import javax.persistence.Table
 
 @Entity
 @Table(name = "auth_user")
@@ -20,8 +28,8 @@ data class User(
         var active: Boolean = true,
         @get:Column(name = "is_superuser")
         var superuser: Boolean = false,
-        var last_login: Timestamp? = null,
-        var date_joined: Timestamp
+        var last_login: Instant? = null,
+        var date_joined: Instant
 ) {
         @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
         var twitterSettings: List<TwitterSetting> = listOf()

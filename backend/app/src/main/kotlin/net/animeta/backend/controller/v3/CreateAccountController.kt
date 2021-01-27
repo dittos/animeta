@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import java.sql.Timestamp
 import java.time.Instant
 
 @RestController
@@ -63,7 +62,7 @@ class CreateAccountController(
         ) {
             throw ApiException("회원가입 실패", HttpStatus.BAD_REQUEST)
         }
-        val user = User(username = params.username, date_joined = Timestamp.from(Instant.now()))
+        val user = User(username = params.username, date_joined = Instant.now())
         authService.setPassword(user, params.password1)
         try {
             userRepository.save(user)

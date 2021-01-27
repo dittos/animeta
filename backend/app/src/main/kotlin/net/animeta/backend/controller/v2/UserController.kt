@@ -6,7 +6,11 @@ import net.animeta.backend.model.User
 import net.animeta.backend.repository.UserRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.UserSerializer
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/v2/users/{name}")
