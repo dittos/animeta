@@ -1,6 +1,7 @@
 package net.animeta.backend.model
 
 import java.sql.Timestamp
+import java.time.Instant
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -34,7 +35,7 @@ data class Record(
         @get:ManyToOne(fetch = FetchType.LAZY)
         @get:JoinColumn(name = "category_id")
         var category: Category?,
-        var updated_at: Timestamp?,
+        var updated_at: Instant?,
         var rating: Int?
 ) {
     @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "record", cascade = arrayOf(CascadeType.ALL))

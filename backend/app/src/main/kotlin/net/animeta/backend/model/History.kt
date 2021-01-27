@@ -1,6 +1,7 @@
 package net.animeta.backend.model
 
 import java.sql.Timestamp
+import java.time.Instant
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -32,7 +33,7 @@ data class History(
         var status_type: StatusType,
         var comment: String,
         @get:Column(name = "updated_at")
-        var updatedAt: Timestamp?,
+        var updatedAt: Instant?,
         var contains_spoiler: Boolean,
         var rating: Int?
 )

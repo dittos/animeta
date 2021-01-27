@@ -4,6 +4,7 @@ import net.animeta.backend.model.Work
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import java.sql.Timestamp
+import java.time.Instant
 import java.util.stream.Stream
 
 interface WorkRepository : JpaRepository<Work, Int> {
@@ -17,7 +18,7 @@ interface WorkRepository : JpaRepository<Work, Int> {
         HAVING COUNT(DISTINCT h.user) > 1
         ORDER BY factor DESC
     """)
-    fun iterateAllByPopularityWithinRange(minUpdatedAt: Timestamp, maxUpdatedAt: Timestamp): Stream<Pair<Int, Long>>
+    fun iterateAllByPopularityWithinRange(minUpdatedAt: Instant, maxUpdatedAt: Instant): Stream<Pair<Int, Long>>
 
     @Query("""
         SELECT NEW kotlin.Pair(r.workId, COUNT(*) AS factor)

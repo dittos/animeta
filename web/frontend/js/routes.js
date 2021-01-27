@@ -5,7 +5,6 @@ import * as layouts from './layouts';
 import LoginDialog from './ui/LoginDialog';
 import IndexRoute from './routes/Index';
 import SignupRoute from './routes/Signup';
-import ChartRoute from './routes/Chart';
 import PostRoute from './routes/Post';
 import WorkRoute from './routes/Work';
 import TableRoute from './routes/Table';
@@ -29,7 +28,6 @@ app.route('/login/', {
   renderTitle: () => '로그인',
 });
 app.route('/signup/', SignupRoute);
-app.route('/charts/:type/:range/', ChartRoute);
 app.route('/-:id', PostRoute);
 app.route('/works/:title+/ep/:episode/', WorkRoute);
 app.route('/works/:title+/', WorkRoute);

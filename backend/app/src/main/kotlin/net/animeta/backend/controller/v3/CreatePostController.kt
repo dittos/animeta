@@ -58,7 +58,7 @@ class CreatePostController(
             status_type = params.statusType,
             comment = params.comment,
             contains_spoiler = params.containsSpoiler,
-            updatedAt = Timestamp.from(Instant.now()),
+            updatedAt = Instant.now(),
             rating = params.rating
         )
         historyRepository.save(history)

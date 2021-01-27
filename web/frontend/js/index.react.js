@@ -7,7 +7,6 @@ import { serializeParams, getCurrentUser } from './API';
 import { trackPageView } from './Tracking';
 import '../less/nprogress.less';
 import '../less/base.less';
-import '../less/chart.less';
 import '../less/signup.less';
 
 injectLoader({

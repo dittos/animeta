@@ -33,7 +33,7 @@ class RecordSerializer(val userSerializer: UserSerializer,
             title = record.title,
             status = record.status,
             status_type = record.status_type.name.toLowerCase(),
-            updated_at = record.updated_at?.toInstant()?.toEpochMilli(),
+            updated_at = record.updated_at?.toEpochMilli(),
             has_newer_episode = if (options.hasNewerEpisode) hasNewerEpisode(record) else null,
             user = if (options.user != null) userSerializer.serialize(record.user, options = options.user) else null,
             rating = record.rating

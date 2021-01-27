@@ -75,7 +75,7 @@ class CreateRecordController(
             category = category,
             status = params.status,
             status_type = params.statusType,
-            updated_at = Timestamp.from(Instant.now()),
+            updated_at = Instant.now(),
             rating = params.rating
         )
         recordRepository.save(record)

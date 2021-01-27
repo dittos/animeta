@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import org.springframework.data.repository.CrudRepository
 import java.sql.Timestamp
+import java.time.Instant
 import java.util.stream.Stream
 
 interface HistoryRepository : CrudRepository<History, Int>, QuerydslPredicateExecutor<History> {
@@ -17,7 +18,7 @@ interface HistoryRepository : CrudRepository<History, Int>, QuerydslPredicateExe
 
     fun countByUser(user: User): Int
 
-    fun existsByWorkIdAndStatusAndUpdatedAtGreaterThan(workId: Int, status: String, updatedAt: Timestamp): Boolean
+    fun existsByWorkIdAndStatusAndUpdatedAtGreaterThan(workId: Int, status: String, updatedAt: Instant): Boolean
 
     fun deleteByUserAndWorkId(user: User, workId: Int)
 

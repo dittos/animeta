@@ -23,7 +23,7 @@ class PostSerializer(val userSerializer: UserSerializer, val recordSerializer: R
             status = history.status,
             status_type = history.status_type.name.toLowerCase(),
             comment = history.comment,
-            updated_at = history.updatedAt?.toInstant()?.toEpochMilli(),
+            updated_at = history.updatedAt?.toEpochMilli(),
             contains_spoiler = history.contains_spoiler,
             record = if (options.record != null) recordSerializer.serialize(history.record, options.record) else null,
             user = if (options.user != null) userSerializer.serialize(history.user, options = options.user) else null,
