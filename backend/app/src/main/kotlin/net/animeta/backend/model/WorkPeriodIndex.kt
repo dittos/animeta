@@ -20,6 +20,7 @@ data class WorkPeriodIndex(
         @get:JoinColumn(name = "work_id")
         var work: Work,
         var period: String,
+        @Deprecated("Use Work.first_period")
         @get:Column(name = "is_first_period")
         var firstPeriod: Boolean
 )

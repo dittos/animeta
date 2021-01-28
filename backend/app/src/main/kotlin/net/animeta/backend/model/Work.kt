@@ -27,7 +27,8 @@ data class Work(
         var raw_metadata: String?,
         @get:Type(type = "jsonb")
         var metadata: String?,
-        var blacklisted: Boolean
+        var blacklisted: Boolean,
+        var first_period: String? = null
 ) {
     @get:OneToMany(fetch = FetchType.LAZY, mappedBy = "work", cascade = [CascadeType.ALL], orphanRemoval = true)
     var periodIndexes: MutableList<WorkPeriodIndex> = mutableListOf()

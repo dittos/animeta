@@ -157,4 +157,11 @@
             <column name="ann_ids" />
         </createIndex>
     </changeSet>
+    <changeSet id="8" author="ditto">
+        <addColumn tableName="work_work">
+            <column name="first_period" type="varchar(6)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

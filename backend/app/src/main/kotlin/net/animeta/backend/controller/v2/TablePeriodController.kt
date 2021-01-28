@@ -31,8 +31,7 @@ class TablePeriodController(val datastore: Datastore,
                             val workSerializer: WorkSerializer,
                             val recordSerializer: RecordSerializer,
                             val recommendationService: RecommendationService) {
-    data class CacheKey(val period: Period, val onlyFirstPeriod: Boolean)
-    private val cache: Cache<CacheKey, List<WorkDTO>> = CacheBuilder.newBuilder()
+    private val cache: Cache<Period, List<WorkDTO>> = CacheBuilder.newBuilder()
             .expireAfterWrite(1, TimeUnit.HOURS)
             .build()
     private val defaultTimeZone = ZoneId.of("Asia/Seoul")
@@ -45,7 +44,6 @@ class TablePeriodController(val datastore: Datastore,
 
     @GetMapping
     fun get(@PathVariable("period") periodParam: String,
-            @RequestParam("only_first_period", defaultValue = "false") onlyFirstPeriod: Boolean,
             @RequestParam("with_recommendations", defaultValue = "false") withRecommendations: Boolean,
             @RequestParam("only_added", defaultValue = "false") onlyAdded: Boolean,
             @RequestParam("username", required = false) username: String?,
@@ -55,12 +53,10 @@ class TablePeriodController(val datastore: Datastore,
         if (period < minPeriod || period > maxPeriod) {
             throw ApiException.notFound()
         }
-        var result = cache.get(CacheKey(period, onlyFirstPeriod)) {
+        var result = cache.get(period) {
             var query = workPeriodIndex.query
                     .filter(workPeriodIndex.period.eq(period.toString()))
-            if (onlyFirstPeriod) {
-                query = query.filter(workPeriodIndex.firstPeriod.isTrue)
-            }
+            query = query.filter(workPeriodIndex.firstPeriod.isTrue)
             datastore.query(query).map { workSerializer.serialize(it.work) }
         }
         val user = username?.let { userRepository.findByUsername(it) } ?: currentUser
