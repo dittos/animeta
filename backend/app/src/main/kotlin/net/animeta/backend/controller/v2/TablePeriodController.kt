@@ -2,15 +2,13 @@ package net.animeta.backend.controller.v2
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
-import net.animeta.backend.db.Datastore
-import net.animeta.backend.db.query
 import net.animeta.backend.dto.WorkDTO
 import net.animeta.backend.exception.ApiException
 import net.animeta.backend.model.Period
-import net.animeta.backend.model.QWorkPeriodIndex.workPeriodIndex
 import net.animeta.backend.model.User
 import net.animeta.backend.repository.RecordRepository
 import net.animeta.backend.repository.UserRepository
+import net.animeta.backend.repository.WorkRepository
 import net.animeta.backend.security.CurrentUser
 import net.animeta.backend.serializer.RecordSerializer
 import net.animeta.backend.serializer.WorkSerializer
@@ -25,12 +23,14 @@ import java.util.concurrent.TimeUnit
 
 @RestController
 @RequestMapping("/v2/table/periods/{period:[0-9]{4}Q[1-4]}")
-class TablePeriodController(val datastore: Datastore,
-                            val userRepository: UserRepository,
-                            val recordRepository: RecordRepository,
-                            val workSerializer: WorkSerializer,
-                            val recordSerializer: RecordSerializer,
-                            val recommendationService: RecommendationService) {
+class TablePeriodController(
+    private val userRepository: UserRepository,
+    private val recordRepository: RecordRepository,
+    private val workRepository: WorkRepository,
+    private val workSerializer: WorkSerializer,
+    private val recordSerializer: RecordSerializer,
+    private val recommendationService: RecommendationService
+) {
     private val cache: Cache<Period, List<WorkDTO>> = CacheBuilder.newBuilder()
             .expireAfterWrite(1, TimeUnit.HOURS)
             .build()
@@ -54,10 +54,8 @@ class TablePeriodController(val datastore: Datastore,
             throw ApiException.notFound()
         }
         var result = cache.get(period) {
-            var query = workPeriodIndex.query
-                    .filter(workPeriodIndex.period.eq(period.toString()))
-            query = query.filter(workPeriodIndex.firstPeriod.isTrue)
-            datastore.query(query).map { workSerializer.serialize(it.work) }
+            workRepository.findByFirstPeriod(period.toString())
+                .map { workSerializer.serialize(it) }
         }
         val user = username?.let { userRepository.findByUsername(it) } ?: currentUser
         if (user == null) {

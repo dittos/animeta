@@ -326,7 +326,6 @@ const routeHandler: RouteHandler<TableRouteData> = {
         options: {},
       }),
       loader.call(`/table/periods/${period}`, {
-        only_first_period: JSON.stringify(true),
         with_recommendations: JSON.stringify(isRecommendationEnabled(period)),
       }),
     ]);

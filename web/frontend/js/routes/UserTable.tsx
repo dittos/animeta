@@ -95,7 +95,6 @@ const routeHandler: RouteHandler<UserTableRouteData> = {
         },
       }),
       loader.call(`/table/periods/${period}`, {
-        only_first_period: JSON.stringify(true),
         only_added: JSON.stringify(true),
         username,
       }),

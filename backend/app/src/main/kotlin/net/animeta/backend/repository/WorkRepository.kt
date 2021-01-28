@@ -7,6 +7,8 @@ import java.time.Instant
 import java.util.stream.Stream
 
 interface WorkRepository : JpaRepository<Work, Int> {
+    fun findByFirstPeriod(firstPeriod: String): List<Work>
+
     // Returns Work ID instead of Work (HHH-1615)
 
     @Query("""
