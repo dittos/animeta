@@ -96,7 +96,7 @@ class WorkService(private val workRepository: WorkRepository,
         work.periodIndexes.addAll(periods.sorted().mapIndexed { index, period ->
             WorkPeriodIndex(work = work, period = period.toString(), firstPeriod = index == 0)
         })
-        work.first_period = periods.minOrNull()?.toString()
+        work.firstPeriod = periods.minOrNull()?.toString()
         val studios = metadata.studios?.map {
             companyRepository.findOneByName(it) ?: companyRepository.save(Company(
                 name = it,
