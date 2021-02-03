@@ -32,6 +32,8 @@
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.27",
+    "@types/cookie": "^0.4.0",
+    "@types/jquery": "^2.0.56",
     "@types/lodash": "^4.14.165",
     "@types/memory-fs": "^0.3.2",
     "@types/node": "^9.6.61",

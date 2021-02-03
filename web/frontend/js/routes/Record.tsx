@@ -5,7 +5,7 @@ import { Modal } from 'react-overlays';
 import { Link } from 'nuri';
 import * as util from '../util';
 import { TimeAgo } from '../ui/TimeAgo';
-import { PostComposer } from '../ui/PostComposer';
+import { PostComposer, PostComposerResult } from '../ui/PostComposer';
 import * as Typeahead from '../ui/Typeahead';
 import PostComment from '../ui/PostComment';
 import Styles from '../ui/RecordDetail.less';
@@ -16,24 +16,39 @@ import {
   deleteRecord,
   deletePost,
   createPost,
-} from '../API';
+} from '../TypedAPI';
 import connectTwitter from '../connectTwitter';
 import { User } from '../layouts';
 import { CenteredFullWidth } from '../ui/Layout';
 import ModalStyles from '../ui/Modal.less';
 import { trackEvent } from '../Tracking';
 import { setLastPublishTwitter } from '../Prefs';
+import { RouteComponentProps, RouteHandler } from 'nuri/app';
+import { CategoryDTO, PostDTO, RecordDTO, UserDTO } from '../types_generated';
+import { RecordFetchOptions } from '../types';
 
-const recordFetchOptions = {
+type RecordRouteData = {
+  currentUser: UserDTO | null;
+  user: UserDTO;
+  record: RecordDTO;
+};
+
+const recordFetchOptions: RecordFetchOptions = {
   user: {
     stats: true,
   },
 };
 
-class TitleEditView extends React.Component {
+type TitleEditViewProps = {
+  originalTitle: string;
+  onSave(newTitle: string): void;
+  onCancel(): void;
+};
+
+class TitleEditView extends React.Component<TitleEditViewProps> {
   componentDidMount() {
     var typeahead = Typeahead.initSuggest(this.refs.titleInput);
-    typeahead.on('keypress', event => {
+    typeahead.on('keypress', (event: KeyboardEvent) => {
       if (event.keyCode == 13) {
         this._onSave();
       }
@@ -53,16 +68,22 @@ class TitleEditView extends React.Component {
   }
 
   _onSave = () => {
-    this.props.onSave(this.refs.titleInput.value);
+    this.props.onSave((this.refs.titleInput as HTMLInputElement).value);
   };
 
-  _onCancel = event => {
+  _onCancel = (event: React.MouseEvent) => {
     event.preventDefault();
     this.props.onCancel();
   };
 }
 
-class CategoryEditView extends React.Component {
+type CategoryEditViewProps = {
+  selectedId: number | null;
+  categoryList: CategoryDTO[];
+  onChange(categoryId: string): void;
+};
+
+class CategoryEditView extends React.Component<CategoryEditViewProps> {
   render() {
     var name = '지정 안함';
     if (this.props.selectedId) {
@@ -84,18 +105,26 @@ class CategoryEditView extends React.Component {
     );
   }
 
-  _onChange = event => {
+  _onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     var categoryId = event.target.value;
     this.props.onChange(categoryId);
   };
 }
 
-class HeaderView extends React.Component {
+type HeaderViewProps = {
+  record: RecordDTO;
+  currentUser: UserDTO | null;
+  onCategoryChange(categoryId: string): void;
+  onTitleChange(title: string): Promise<void>;
+  onDelete(): void;
+};
+
+class HeaderView extends React.Component<HeaderViewProps> {
   state = { isEditingTitle: false };
 
   render() {
     const { record, currentUser } = this.props;
-    const canEdit = currentUser && currentUser.id === record.user.id;
+    const canEdit = currentUser && currentUser.id === record.user!.id;
 
     var titleEditor, editTitleButton;
     if (this.state.isEditingTitle) {
@@ -131,7 +160,7 @@ class HeaderView extends React.Component {
             삭제
           </a>
           <CategoryEditView
-            categoryList={currentUser.categories}
+            categoryList={currentUser?.categories || []}
             selectedId={record.category_id}
             onChange={this.props.onCategoryChange}
           />
@@ -148,24 +177,29 @@ class HeaderView extends React.Component {
     );
   }
 
-  _onTitleEditButtonClick = event => {
+  _onTitleEditButtonClick = (event: React.MouseEvent) => {
     event.preventDefault();
     this.setState({ isEditingTitle: true });
   };
 
-  _onTitleSave = title => {
+  _onTitleSave = (title: string) => {
     this.props.onTitleChange(title).then(() => {
       this.setState({ isEditingTitle: false });
     });
   };
 
-  _onDelete = event => {
+  _onDelete = (event: React.MouseEvent) => {
     event.preventDefault();
     this.props.onDelete();
   };
 }
 
-function PostView({ post, canEdit, canDelete, onDelete }) {
+function PostView({ post, canEdit, canDelete, onDelete }: {
+  post: PostDTO;
+  canEdit: boolean;
+  canDelete: boolean;
+  onDelete(): void;
+}) {
   return (
     <div className={cx({ [Styles.post]: true, 'no-comment': !post.comment })}>
       <div className="progress">{util.getStatusText(post)}</div>
@@ -177,7 +211,7 @@ function PostView({ post, canEdit, canDelete, onDelete }) {
           </span>
         )}
         <Link to={util.getPostURL(post)} className="time">
-          <TimeAgo time={new Date(post.updated_at)} />
+          {post.updated_at ? <TimeAgo time={new Date(post.updated_at)} /> : '#'}
         </Link>
         {canDelete && (
           <span className="btn-delete" onClick={onDelete}>
@@ -189,7 +223,11 @@ function PostView({ post, canEdit, canDelete, onDelete }) {
   );
 }
 
-function DeleteRecordModal({ record, onConfirm, onCancel }) {
+function DeleteRecordModal({ record, onConfirm, onCancel }: {
+  record: RecordDTO;
+  onConfirm(): void;
+  onCancel(): void;
+}) {
   return (
     <Modal
       show={true}
@@ -217,13 +255,13 @@ function DeleteRecordModal({ record, onConfirm, onCancel }) {
   );
 }
 
-function Record(props) {
+function Record(props: RouteComponentProps<RecordRouteData>) {
   return <RecordBase key={props.data.record.id} {...props} />;
 }
 
-class RecordBase extends React.Component {
+class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
   state = {
-    posts: [],
+    posts: [] as PostDTO[],
     showDeleteModal: false,
   };
 
@@ -231,7 +269,7 @@ class RecordBase extends React.Component {
     this.loadPosts(this.props);
   }
 
-  loadPosts = props => {
+  loadPosts = (props: RouteComponentProps<RecordRouteData>) => {
     this.setState({
       posts: [],
       showDeleteModal: false,
@@ -244,9 +282,9 @@ class RecordBase extends React.Component {
   };
 
   render() {
-    const { user, record, currentUser } = this.props.data;
+    const { record, currentUser } = this.props.data;
     const { posts } = this.state;
-    const canEdit = currentUser && currentUser.id === record.user.id;
+    const canEdit = currentUser ? currentUser.id === record.user?.id : false;
     const canDeletePosts = canEdit && posts.length > 1;
     return (
       <CenteredFullWidth>
@@ -263,7 +301,7 @@ class RecordBase extends React.Component {
             <PostComposer
               key={'post-composer' + record.id + '/' + record.updated_at}
               record={record}
-              currentUser={currentUser}
+              currentUser={currentUser!}
               onSave={this._createPost}
               onTwitterConnect={this._connectTwitter}
             />
@@ -276,7 +314,6 @@ class RecordBase extends React.Component {
               post={post}
               canEdit={canEdit}
               canDelete={canDeletePosts}
-              user={user}
               onDelete={() => this._deletePost(post)}
             />
           ))}
@@ -293,7 +330,7 @@ class RecordBase extends React.Component {
     );
   }
 
-  _updateTitle = title => {
+  _updateTitle = (title: string) => {
     return updateRecordTitle(this.props.data.record.id, title, recordFetchOptions).then(result => {
       this.props.writeData(data => {
         data.record = result.record;
@@ -301,8 +338,8 @@ class RecordBase extends React.Component {
     });
   };
 
-  _updateCategory = categoryID => {
-    return updateRecordCategoryID(this.props.data.record.id, categoryID, recordFetchOptions).then(
+  _updateCategory = (categoryID: string) => {
+    return updateRecordCategoryID(this.props.data.record.id, categoryID !== '' ? Number(categoryID) : null, recordFetchOptions).then(
       result => {
         this.props.writeData(data => {
           data.record = result.record;
@@ -317,7 +354,7 @@ class RecordBase extends React.Component {
     });
   };
 
-  _deletePost = post => {
+  _deletePost = (post: PostDTO) => {
     if (
       confirm(
         '삭제 후에는 복구할 수 없습니다.\n기록을 정말로 삭제하시겠습니까?'
@@ -326,14 +363,14 @@ class RecordBase extends React.Component {
       deletePost(post.id, recordFetchOptions).then(result => {
         this.loadPosts(this.props);
         this.props.writeData(data => {
-          data.record = result.record;
-          data.user = result.record.user;
+          data.record = result.record!;
+          data.user = result.record!.user!;
         });
       });
     }
   };
 
-  _createPost = post => {
+  _createPost = (post: PostComposerResult) => {
     setLastPublishTwitter(post.publishTwitter);
     return createPost(this.props.data.record.id, post).then(() => {
       trackEvent({
@@ -354,21 +391,21 @@ class RecordBase extends React.Component {
   _connectTwitter = () => {
     return connectTwitter().then(() => {
       this.props.writeData(data => {
-        data.currentUser.is_twitter_connected = true;
+        data.currentUser!.is_twitter_connected = true;
       });
     });
   };
 
   _redirectToUser = () => {
     const basePath = `/users/${encodeURIComponent(this.props.data.user.name)}/`;
-    this.props.controller.load({
+    this.props.controller!.load({
       path: basePath,
       query: {},
     });
   };
 }
 
-export default {
+const routeHandler: RouteHandler<RecordRouteData> = {
   component: User(Record),
 
   async load({ loader, params }) {
@@ -391,7 +428,8 @@ export default {
     };
   },
 
-  renderTitle({ record }) {
-    return `${record.user.name} 사용자 > ${record.title}`;
+  renderTitle({ user, record }) {
+    return `${user.name} 사용자 > ${record.title}`;
   },
 };
+export default routeHandler;

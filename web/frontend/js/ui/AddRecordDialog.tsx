@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal } from 'react-overlays';
-import { getCurrentUser, createRecord } from '../API';
+import { getCurrentUser } from '../API';
+import { createRecord } from '../TypedAPI';
 import connectTwitter from '../connectTwitter';
 import * as Typeahead from './Typeahead';
 import { Switch, SwitchItem } from './Switch';
@@ -202,14 +203,14 @@ class AddRecord extends React.Component<AddRecordProps, AddRecordState> {
       title: this._titleEl!.value,
       statusType: this.state.statusType,
       status: this.state.status,
-      categoryID: this.state.selectedCategoryId,
+      categoryID: this.state.selectedCategoryId !== '' ? Number(this.state.selectedCategoryId) : null,
       comment: this.state.comment,
       publishTwitter: this.state.publishTwitter,
     })
-      .then((result: {record: RecordDTO}) => {
-        this.props.onCreate(result);
-      })
-      .always(() => {
+      .then(result => {
+        this.props.onCreate({ record: result.record! });
+        this.setState({ isRequesting: false });
+      }, () => {
         this.setState({ isRequesting: false });
       });
   };

@@ -1,5 +1,10 @@
 import { PostDTO, RecordDTO, WorkMetadata$SourceType, StatusType } from "./types";
 
+interface HasStatus {
+  status_type: string;
+  status: string;
+}
+
 export function zerofill(n: number): string {
   let s = String(n);
   if (s.length == 1) s = '0' + s;
@@ -38,7 +43,7 @@ export function plusOne(val: string): string {
   return val.replace(/(\d+)([^\d]*)$/, add1 + '$2');
 }
 
-export function getStatusDisplay(record: RecordDTO): string {
+export function getStatusDisplay(record: HasStatus): string {
   return record.status.trim().replace(/([0-9]+)$/, '$1화');
 }
 
@@ -49,7 +54,7 @@ export const STATUS_TYPE_TEXT = {
   suspended: '중단',
 };
 
-export function getStatusText(record: RecordDTO): string {
+export function getStatusText(record: HasStatus): string {
   var status = getStatusDisplay(record);
   if (record.status_type != 'watching' || status === '') {
     var statusTypeText = STATUS_TYPE_TEXT[record.status_type as StatusType];

@@ -3,10 +3,29 @@ import * as util from '../util';
 import { StatusInput } from './StatusInput';
 import Styles from './PostComposer.less';
 import { getLastPublishTwitter } from '../Prefs';
+import { RecordDTO, UserDTO } from '../types_generated';
+import { StatusType } from '../types';
 
-export class PostComposer extends React.Component {
+export type PostComposerProps = {
+  record: RecordDTO;
+  currentUser: UserDTO;
+  onTwitterConnect(): Promise<void>;
+  onSave(result: PostComposerResult): Promise<any>;
+};
+
+export type PostComposerResult = {
+  status: string;
+  statusType: StatusType;
+  comment: string;
+  containsSpoiler: boolean;
+  publishTwitter: boolean;
+};
+
+export class PostComposer extends React.Component<PostComposerProps> {
+  private _submitting: boolean;
+
   state = {
-    statusType: this.props.record.status_type,
+    statusType: this.props.record.status_type as StatusType,
     status: util.plusOne(this.props.record.status),
     comment: '',
     publishTwitter: false,
@@ -67,7 +86,7 @@ export class PostComposer extends React.Component {
             <input
               type="checkbox"
               checked={
-                currentUser.is_twitter_connected && this.state.publishTwitter
+                currentUser.is_twitter_connected ? this.state.publishTwitter : false
               }
               onChange={this._onPublishTwitterChange}
             />
@@ -81,19 +100,19 @@ export class PostComposer extends React.Component {
     );
   }
 
-  _commonOnChange = event => {
+  _commonOnChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     this.setState({ [event.target.name]: event.target.value });
   };
 
-  _onStatusChange = newValue => {
+  _onStatusChange = (newValue: string) => {
     this.setState({ status: newValue });
   };
 
-  _onContainsSpoilerChange = event => {
+  _onContainsSpoilerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ containsSpoiler: event.target.checked });
   };
 
-  _onPublishTwitterChange = event => {
+  _onPublishTwitterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!this.props.currentUser.is_twitter_connected) {
       this.props.onTwitterConnect().then(() => {
         this.setState({ publishTwitter: true });
@@ -103,7 +122,7 @@ export class PostComposer extends React.Component {
     }
   };
 
-  _onSubmit = event => {
+  _onSubmit = (event: React.MouseEvent) => {
     event.preventDefault();
     if (this._submitting) return;
     this._submitting = true;

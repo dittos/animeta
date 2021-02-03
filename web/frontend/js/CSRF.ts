@@ -15,3 +15,13 @@ export function refresh() {
     getCurrentUser().always(() => deferred.resolve(null));
   return deferred;
 }
+
+export function refreshPromise() {
+  const cookies = cookie.parse(document.cookie);
+  return new Promise((resolve) => {
+    if (cookies.crumb && cookies._csrf)
+      resolve(null);
+    else
+      getCurrentUser().always(() => resolve(null));
+  });
+}
