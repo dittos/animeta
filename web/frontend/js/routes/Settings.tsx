@@ -1,17 +1,20 @@
 import React from 'react';
 import connectTwitter from '../connectTwitter';
-import { changePassword, disconnectTwitter, createBackup, deleteFrontendSession } from '../API';
+import { changePassword, disconnectTwitter, createBackup, deleteFrontendSession } from '../TypedAPI';
 import * as Layout from '../ui/Layout';
 import { App } from '../layouts';
 import Styles from './Settings.less';
+import { RouteComponentProps, RouteHandler } from 'nuri/app';
+import { UserDTO } from '../types_generated';
+
+type SettingsRouteData = {
+  currentUser: UserDTO;
+};
 
 class ChangePassword extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isChangingPassword: false,
-    };
-  }
+  state = {
+    isChangingPassword: false,
+  };
 
   render() {
     return (
@@ -66,29 +69,29 @@ class ChangePassword extends React.Component {
   }
 
   _changePassword() {
-    if (!this.refs.newPassword1.value) {
+    if (!(this.refs.newPassword1 as HTMLInputElement).value) {
       alert('변경하실 암호를 입력하세요.');
       return;
     }
 
     this.setState({ isChangingPassword: true });
     changePassword(
-      this.refs.oldPassword.value,
-      this.refs.newPassword1.value
+      (this.refs.oldPassword as HTMLInputElement).value,
+      (this.refs.newPassword1 as HTMLInputElement).value
     )
       .then(() => {
         alert('암호를 변경했습니다.');
-        this.refs.oldPassword.value = '';
-        this.refs.newPassword1.value = '';
-        this.refs.newPassword2.value = '';
-      })
-      .always(() => {
+        (this.refs.oldPassword as HTMLInputElement).value = '';
+        (this.refs.newPassword1 as HTMLInputElement).value = '';
+        (this.refs.newPassword2 as HTMLInputElement).value = '';
+        this.setState({ isChangingPassword: false });
+      }, () => {
         this.setState({ isChangingPassword: false });
       });
   }
 }
 
-class SettingsRoute extends React.Component {
+class SettingsRoute extends React.Component<RouteComponentProps<SettingsRouteData>> {
   state = {
     backupState: null,
   };
@@ -138,7 +141,7 @@ class SettingsRoute extends React.Component {
     );
   }
 
-  _connectTwitter = (event) => {
+  _connectTwitter = (event: React.MouseEvent) => {
     event.preventDefault();
     connectTwitter().then(() => {
       this.props.writeData(data => {
@@ -147,7 +150,7 @@ class SettingsRoute extends React.Component {
     });
   };
 
-  _disconnectTwitter = (event) => {
+  _disconnectTwitter = (event: React.MouseEvent) => {
     event.preventDefault();
     disconnectTwitter().then(() => {
       this.props.writeData(data => {
@@ -156,7 +159,7 @@ class SettingsRoute extends React.Component {
     });
   };
 
-  _downloadBackup = (event) => {
+  _downloadBackup = (event: React.MouseEvent) => {
     event.preventDefault();
     this.setState({ backupState: 'preparing' });
     createBackup().then(
@@ -168,7 +171,7 @@ class SettingsRoute extends React.Component {
     );
   };
 
-  _logout = (event) => {
+  _logout = (event: React.MouseEvent) => {
     event.preventDefault();
     deleteFrontendSession().then(() => {
       location.href = '/';
@@ -176,7 +179,7 @@ class SettingsRoute extends React.Component {
   };
 }
 
-export default {
+const routeHandler: RouteHandler<SettingsRouteData> = {
   component: App(SettingsRoute, { activeMenu: 'user' }),
 
   async load({ loader, redirect }) {
@@ -191,3 +194,4 @@ export default {
     };
   },
 };
+export default routeHandler;

@@ -1,16 +1,19 @@
 import React from 'react';
 import { App } from '../layouts';
-import * as API from '../API';
+import { createAccount, createFrontendSession } from '../TypedAPI';
 import { trackEvent } from '../Tracking';
+import { RouteComponentProps } from 'nuri/app';
 // TODO: css module
 
-class Signup extends React.Component {
+class Signup extends React.Component<RouteComponentProps<any>> {
   state = {
     submitted: false,
     username: '',
     password: '',
     passwordCheck: '',
-    errors: null,
+    errors: null as {
+      username?: string;
+    } | null,
   };
 
   render() {
@@ -29,7 +32,7 @@ class Signup extends React.Component {
               </span>
               <input
                 name="username"
-                maxLength="30"
+                maxLength={30}
                 autoFocus
                 value={this.state.username}
                 onChange={e => this.setState({ username: e.target.value })}
@@ -88,25 +91,28 @@ class Signup extends React.Component {
     );
   }
 
-  _onSubmit = event => {
+  _onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     this.setState({ submitted: true });
-    API.createAccount({
+    createAccount({
       username: this.state.username,
       password1: this.state.password,
       password2: this.state.passwordCheck,
     }, true).then(
-      result => {
+      async result => {
         const basePath = `/users/${encodeURIComponent(this.state.username)}/`;
         trackEvent({
           eventCategory: 'User',
           eventAction: 'SignUp',
         });
-        API.createFrontendSession(result.authResult).always(() => {
-          this.props.controller.load({
-            path: basePath,
-            query: {},
-          });
+        try {
+          await createFrontendSession(result.authResult);
+        } catch (e) {
+          // ignore
+        }
+        this.props.controller!.load({
+          path: basePath,
+          query: {},
         });
       },
       err => {

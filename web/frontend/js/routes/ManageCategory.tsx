@@ -8,11 +8,27 @@ import {
   removeCategory,
   addCategory,
   updateCategoryOrder,
-} from '../API';
+} from '../TypedAPI';
 import Styles from './ManageCategory.less';
+import { CategoryDTO, UserDTO } from '../types_generated';
+import { RouteComponentProps, RouteHandler } from 'nuri/app';
+import { UserLayoutPropsData } from '../ui/UserLayout';
 
-class CategoryItem extends React.Component {
-  state = { isEditing: false };
+type ManageCategoryRouteData = UserLayoutPropsData & {
+  currentUser: UserDTO;
+  categories: CategoryDTO[];
+};
+
+class CategoryItem extends React.Component<{
+  isSorting: boolean;
+  category: CategoryDTO;
+  onRename(name: string): Promise<void>;
+  onRemove(): void;
+}> {
+  state = {
+    isEditing: false,
+    name: '',
+  };
 
   render() {
     const itemClassName = this.props.isSorting
@@ -55,7 +71,7 @@ class CategoryItem extends React.Component {
     }
   }
 
-  _onChange = event => {
+  _onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ name: event.target.value });
   };
 
@@ -67,14 +83,16 @@ class CategoryItem extends React.Component {
     this.setState({ isEditing: false });
   };
 
-  _onSubmit = event => {
+  _onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     this.props.onRename(this.state.name).then(() => this._endEditing());
   };
 }
 
-class ManageCategory extends React.Component {
-  state = {
+class ManageCategory extends React.Component<RouteComponentProps<ManageCategoryRouteData>> {
+  state: {
+    sortingCategories: CategoryDTO[] | null;
+  } = {
     sortingCategories: null,
   };
 
@@ -86,7 +104,7 @@ class ManageCategory extends React.Component {
         <div className={Styles.title}>분류 관리</div>
         {isSorting ? (
           <Sortable onSwap={this._onSwap}>
-            {this.state.sortingCategories.map(this._renderItem)}
+            {this.state.sortingCategories!.map(this._renderItem)}
           </Sortable>
         ) : (
           this.props.data.categories.map(this._renderItem)
@@ -120,7 +138,7 @@ class ManageCategory extends React.Component {
     );
   }
 
-  _renderItem = category => {
+  _renderItem = (category: CategoryDTO) => {
     const isSorting = this.state.sortingCategories != null;
     return (
       <CategoryItem
@@ -138,7 +156,7 @@ class ManageCategory extends React.Component {
   };
 
   _endSorting = () => {
-    const categoryIDs = this.state.sortingCategories.map(c => c.id);
+    const categoryIDs = this.state.sortingCategories!.map(c => c.id);
     updateCategoryOrder(categoryIDs).then(
       result => {
         this.setState({ sortingCategories: null });
@@ -149,17 +167,17 @@ class ManageCategory extends React.Component {
     );
   };
 
-  _onSwap = (i, j) => {
-    const nextList = this.state.sortingCategories.slice();
+  _onSwap = (i: number, j: number) => {
+    const nextList = this.state.sortingCategories!.slice();
     var temp = nextList[i];
     nextList[i] = nextList[j];
     nextList[j] = temp;
     this.setState({ sortingCategories: nextList });
   };
 
-  _addCategory = event => {
+  _addCategory = (event: React.FormEvent) => {
     event.preventDefault();
-    var input = this.refs.nameInput;
+    var input = this.refs.nameInput as HTMLInputElement;
     addCategory(input.value).then(result => {
       input.value = '';
       this.props.writeData(data => {
@@ -168,7 +186,7 @@ class ManageCategory extends React.Component {
     });
   };
 
-  _removeCategory = category => {
+  _removeCategory = (category: CategoryDTO) => {
     if (
       confirm(
         '분류를 삭제해도 기록은 삭제되지 않습니다.\n분류를 삭제하시려면 [확인]을 누르세요.'
@@ -182,7 +200,7 @@ class ManageCategory extends React.Component {
     }
   };
 
-  _renameCategory = (category, name) => {
+  _renameCategory = (category: CategoryDTO, name: string) => {
     return renameCategory(category.id, name).then(() => {
       this.props.writeData(() => {
         category.name = name;
@@ -191,7 +209,7 @@ class ManageCategory extends React.Component {
   };
 }
 
-export default {
+const routeHandler: RouteHandler<ManageCategoryRouteData> = {
   component: User(ManageCategory),
 
   async load({ loader }) {
@@ -212,3 +230,4 @@ export default {
     return `${currentUser.name} 사용자`;
   },
 };
+export default routeHandler;

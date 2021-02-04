@@ -38,7 +38,7 @@ class CategorySelect extends React.Component<CategorySelectProps> {
 
 type AddRecordProps = {
   initialTitle?: string;
-  initialStatusType: StatusType;
+  initialStatusType?: StatusType;
   currentUser?: UserDTO;
   onCreate(result: { record: RecordDTO }): any;
   onCancel(): any;

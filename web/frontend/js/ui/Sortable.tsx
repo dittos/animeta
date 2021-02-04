@@ -2,7 +2,11 @@ import * as React from 'react';
 import { findDOMNode } from 'react-dom';
 import cx from 'classnames';
 
-export class Sortable extends React.Component {
+export class Sortable extends React.Component<{
+  onDrop?(): void;
+  onSwap(i: number, j: number): void;
+  children: React.ReactElement[];
+}> {
   render() {
     var i = 0;
     var items = React.Children.map(this.props.children, child => (
@@ -18,23 +22,39 @@ export class Sortable extends React.Component {
     return <div>{items}</div>;
   }
 
-  _onMoveUp = i => {
+  _onMoveUp = (i: number) => {
     if (i > 0) {
       this.props.onSwap(i, i - 1);
     }
   };
 
-  _onMoveDown = i => {
+  _onMoveDown = (i: number) => {
     if (i < React.Children.count(this.props.children) - 1) {
       this.props.onSwap(i, i + 1);
     }
   };
 }
 
-class SortableItem extends React.Component {
-  state = { dragging: false };
+type ItemProps = {
+  order: number;
+  component: React.ReactNode;
+  onMoveUp(order: number): void;
+  onMoveDown(order: number): void;
+  onDrop?(): void;
+};
 
-  componentDidUpdate(prevProps) {
+class SortableItem extends React.Component<ItemProps> {
+  _registeredEventListeners = false;
+
+  state = {
+    dragging: false,
+    origTop: 0,
+    origBottom: 0,
+    holdY: 0,
+    mouseY: 0,
+  };
+
+  componentDidUpdate(prevProps: ItemProps) {
     if (this.state.dragging && this.props.order != prevProps.order) {
       this._remeasure();
     }
@@ -46,7 +66,7 @@ class SortableItem extends React.Component {
   }
 
   render() {
-    var style = {};
+    var style: any = {};
     if (this.state.dragging) {
       style.position = 'relative';
       style.top = this.state.mouseY - this.state.origTop - this.state.holdY;
@@ -65,8 +85,8 @@ class SortableItem extends React.Component {
     );
   }
 
-  _manageEventListeners = isDragging => {
-    var body = findDOMNode(this).ownerDocument;
+  _manageEventListeners = (isDragging: boolean) => {
+    var body = findDOMNode(this)!.ownerDocument;
     if (isDragging && !this._registeredEventListeners) {
       body.addEventListener('mousemove', this._onMouseMove);
       body.addEventListener('mouseup', this._onMouseUp);
@@ -78,8 +98,8 @@ class SortableItem extends React.Component {
     }
   };
 
-  _onMouseDown = event => {
-    var bounds = findDOMNode(this).getBoundingClientRect();
+  _onMouseDown = (event: React.MouseEvent) => {
+    var bounds = (findDOMNode(this)! as Element).getBoundingClientRect();
     this.setState({
       dragging: true,
       origTop: bounds.top,
@@ -96,7 +116,7 @@ class SortableItem extends React.Component {
     }
   };
 
-  _onMouseMove = event => {
+  _onMouseMove = (event: MouseEvent) => {
     if (!this.state.dragging) {
       return;
     }
@@ -115,7 +135,7 @@ class SortableItem extends React.Component {
 
   _remeasure = () => {
     var offset = this.state.mouseY - this.state.origTop - this.state.holdY;
-    var bounds = findDOMNode(this).getBoundingClientRect();
+    var bounds = (findDOMNode(this) as Element).getBoundingClientRect();
     this.setState({
       origTop: bounds.top - offset,
       origBottom: bounds.bottom - offset,

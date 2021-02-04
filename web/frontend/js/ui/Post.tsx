@@ -4,6 +4,7 @@ import * as util from '../util';
 import { TimeAgo } from './TimeAgo';
 import PostComment from './PostComment';
 import Styles from './Post.less';
+import { PostDTO } from '../types_generated';
 
 export function Post({
   post,
@@ -11,13 +12,19 @@ export function Post({
   showTitle = true,
   showStatusType = false,
   highlighted = false,
+}: {
+  post: PostDTO;
+  showUser?: boolean;
+  showTitle?: boolean;
+  showStatusType?: boolean;
+  highlighted?: boolean;
 }) {
   return (
     <div className={highlighted ? Styles.highlightedPost : Styles.post}>
       <div className="meta">
         {showUser && (
-          <Link to={'/users/' + post.user.name + '/'} className="user">
-            {post.user.name}
+          <Link to={'/users/' + post.user!.name + '/'} className="user">
+            {post.user!.name}
           </Link>
         )}
         {showUser &&
@@ -25,8 +32,8 @@ export function Post({
             <i className="fa fa-caret-right separator" />
           )}
         {showTitle && (
-          <Link to={util.getWorkURL(post.record.title)} className="work">
-            {post.record.title}
+          <Link to={util.getWorkURL(post.record!.title)} className="work">
+            {post.record!.title}
           </Link>
         )}
         {(showStatusType || post.status) && (
@@ -37,7 +44,7 @@ export function Post({
           </span>
         )}
         <Link to={util.getPostURL(post)} className="time">
-          <TimeAgo time={new Date(post.updated_at)} />
+          {post.updated_at ? <TimeAgo time={new Date(post.updated_at)} /> : '#'}
         </Link>
       </div>
       <PostComment post={post} className="comment" />

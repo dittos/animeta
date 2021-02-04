@@ -7,10 +7,13 @@ import SearchInput from './SearchInput';
 import { Dropdown } from './Dropdown';
 import Styles from './GlobalHeader.less';
 import { getStatusDisplay } from '../util';
+import { RecordDTO, UserDTO } from '../types_generated';
 
-class DropdownUserMenu extends React.Component {
+class DropdownUserMenu extends React.Component<{
+  user: UserDTO;
+}> {
   state = {
-    records: null,
+    records: null as RecordDTO[] | null,
   };
 
   componentDidMount() {
@@ -52,7 +55,14 @@ class DropdownUserMenu extends React.Component {
   }
 }
 
-export class GlobalHeader extends React.Component {
+export type GlobalHeaderProps = {
+  currentUser?: UserDTO | null;
+  noNotice?: boolean;
+  noHero?: boolean;
+  activeMenu?: 'home' | 'search' | 'user' | null;
+};
+
+export class GlobalHeader extends React.Component<GlobalHeaderProps> {
   static LAST_NOTICE_CLICKED = 'lastNoticeClicked';
   static noticeId = '2021Q1_v2';
 
@@ -207,14 +217,14 @@ export class GlobalHeader extends React.Component {
     );
   }
 
-  _openLoginIfNeeded = e => {
+  _openLoginIfNeeded = (e: React.MouseEvent) => {
     if (!this.props.currentUser) {
       e.preventDefault();
       LoginDialog.open({ next: { redirectToUser: true } }); // FIXME
     }
   };
 
-  _openLogin = e => {
+  _openLogin = (e: React.MouseEvent) => {
     if (e) e.preventDefault();
     LoginDialog.open();
   };

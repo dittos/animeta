@@ -1,10 +1,19 @@
 import React from 'react';
-import { User, Stackable } from '../layouts';
+import { User, Stackable, StackablePropsData } from '../layouts';
 import AddRecordDialog from '../ui/AddRecordDialog';
 import { trackEvent } from '../Tracking';
 import * as Mutations from '../Mutations';
+import { RouteComponentProps, RouteHandler } from 'nuri/app';
+import { RecordDTO, UserDTO } from '../types_generated';
 
-class AddRecord extends React.Component {
+type AddRecordRouteData = StackablePropsData & {
+  currentUser: UserDTO;
+  user: UserDTO;
+  title?: string;
+  referrer: string;
+};
+
+class AddRecord extends React.Component<RouteComponentProps<AddRecordRouteData>> {
   render() {
     return (
       <AddRecordDialog
@@ -15,7 +24,7 @@ class AddRecord extends React.Component {
     );
   }
 
-  _onCreate = (result) => {
+  _onCreate = (result: { record: RecordDTO }) => {
     trackEvent({
       eventCategory: 'Record',
       eventAction: 'Create',
@@ -27,11 +36,11 @@ class AddRecord extends React.Component {
 
   _returnToUser = () => {
     const basePath = `/users/${encodeURIComponent(this.props.data.user.name)}/`;
-    this.props.controller.load({ path: basePath, query: {} }, { returnToParent: true });
+    this.props.controller!.load({ path: basePath, query: {} }, { stacked: false, returnToParent: true });
   };
 }
 
-export default {
+const routeHandler: RouteHandler<AddRecordRouteData> = {
   component: Stackable(User, AddRecord),
 
   async load({ loader, params, query, stacked }) {
@@ -54,3 +63,4 @@ export default {
     return `${currentUser.name} 사용자`;
   },
 };
+export default routeHandler;

@@ -1,9 +1,11 @@
 import React from 'react';
 import Styles from './LoginForm.less';
 import ModalStyles from './Modal.less';
-import * as API from '../API';
+import * as API from '../TypedAPI';
 
-class LoginForm extends React.Component {
+class LoginForm extends React.Component<{
+  next?: string | { redirectToUser: true };
+}> {
   state = {
     submitted: false,
     errors: false,
@@ -22,7 +24,7 @@ class LoginForm extends React.Component {
           <div className={Styles.loginRowGroup}>
             <div className={Styles.loginRow}>
               <label>아이디</label>
-              <input name="username" maxLength="30" autoFocus ref="username" />
+              <input name="username" maxLength={30} autoFocus ref="username" />
             </div>
             <div className={Styles.loginRow}>
               <label>암호</label>
@@ -53,20 +55,20 @@ class LoginForm extends React.Component {
     );
   }
 
-  _onSubmit = event => {
+  _onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     this.setState({ submitted: true });
-    const username = this.refs.username.value;
+    const username = (this.refs.username as HTMLInputElement).value;
     API.authenticate({
       username: username,
-      password: this.refs.password.value,
+      password: (this.refs.password as HTMLInputElement).value,
       persistent: this.state.isPersistent,
     }).then(
       authResult => API.createFrontendSession(authResult).then(() => {
         if (this.props.next) {
-          location.href = this.props.next.redirectToUser
+          location.href = (this.props.next as any).redirectToUser
             ? `/users/${username}/`
-            : this.props.next;
+            : this.props.next as string;
         } else {
           location.reload();
         }

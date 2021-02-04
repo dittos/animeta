@@ -3,7 +3,7 @@ import Styles from './PostComment.less';
 
 type Props = {
   className: string;
-  showSpoiler: boolean;
+  showSpoiler?: boolean;
   post: {
     id: number;
     comment: string;

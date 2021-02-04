@@ -2,8 +2,20 @@ import * as React from 'react';
 import { Link } from 'nuri';
 import Styles from './UserLayout.less';
 import * as Grid from './Grid';
+import { UserDTO } from '../types_generated';
 
-export default function UserLayout(props) {
+export interface UserLayoutProps {
+  data: UserLayoutPropsData;
+  noContentWrapper?: boolean;
+  children: React.ReactNode;
+}
+
+export interface UserLayoutPropsData {
+  currentUser?: UserDTO | null;
+  user: UserDTO;
+}
+
+export default function UserLayout(props: UserLayoutProps) {
   const { user, currentUser } = props.data;
   const basePath = `/users/${encodeURIComponent(user.name)}/`;
   const joinedDate = new Date(user.date_joined);

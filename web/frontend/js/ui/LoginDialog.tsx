@@ -6,7 +6,7 @@ import LoginForm from './LoginForm';
 
 type Props = {
   onClose?(): any;
-  next?: string;
+  next?: string | { redirectToUser: true };
 };
 
 class LoginDialog extends React.Component<Props> {

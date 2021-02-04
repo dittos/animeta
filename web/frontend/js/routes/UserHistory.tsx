@@ -1,29 +1,42 @@
+import { RouteComponentProps, RouteHandler } from 'nuri/app';
 import React from 'react';
 import { getUserPosts } from '../API';
 import { User } from '../layouts';
+import { PostDTO, UserDTO } from '../types_generated';
 import * as Layout from '../ui/Layout';
 import { LoadMore } from '../ui/LoadMore';
 import { Post } from '../ui/Post';
 import Styles from './UserHistory.less';
 
-function getDateHeader(post) {
+type UserHistoryRouteData = {
+  user: UserDTO;
+};
+
+function getDateHeader(post: PostDTO) {
+  if (!post.updated_at) {
+    return '';
+  }
   var date = new Date(post.updated_at);
   return date.getFullYear() + '/' + (date.getMonth() + 1);
 }
 
-class UserHistory extends React.Component {
-  static defaultProps = { pageSize: 32 };
-  state = { isLoading: true, hasMore: true, posts: [] };
+class UserHistory extends React.Component<RouteComponentProps<UserHistoryRouteData>> {
+  pageSize = 32;
+  state: {
+    isLoading: boolean;
+    hasMore: boolean;
+    posts: PostDTO[];
+  } = { isLoading: true, hasMore: true, posts: [] };
 
   componentDidMount() {
     this._loadMore();
   }
 
   render() {
-    var groups = [];
-    var unknownGroup = [];
-    var lastKey, group;
-    this.state.posts.forEach(post => {
+    var groups: { key: string; items: PostDTO[]; }[] = [];
+    var unknownGroup: PostDTO[] = [];
+    var lastKey: string = '', group: PostDTO[] | null = null;
+    for (let post of this.state.posts) {
       if (!post.updated_at) {
         unknownGroup.push(post);
       } else {
@@ -33,9 +46,9 @@ class UserHistory extends React.Component {
           lastKey = key;
           group = [];
         }
-        group.push(post);
+        if (group) group.push(post);
       }
-    });
+    }
     if (group && group.length > 0) groups.push({ key: lastKey, items: group });
     if (unknownGroup.length) groups.push({ key: '?', items: unknownGroup });
 
@@ -61,10 +74,10 @@ class UserHistory extends React.Component {
     var beforeID;
     if (this.state.posts.length > 0)
       beforeID = this.state.posts[this.state.posts.length - 1].id;
-    getUserPosts(this.props.data.user.name, this.props.pageSize, beforeID).then(
+    getUserPosts(this.props.data.user.name, this.pageSize, beforeID).then(
       data => {
         this.setState({
-          hasMore: data.length >= this.props.pageSize,
+          hasMore: data.length >= this.pageSize,
           isLoading: false,
           posts: this.state.posts.concat(data),
         });
@@ -73,7 +86,7 @@ class UserHistory extends React.Component {
   };
 }
 
-export default {
+const routeHandler: RouteHandler<UserHistoryRouteData> = {
   component: User(UserHistory),
 
   async load({ loader, params }) {
@@ -98,3 +111,4 @@ export default {
     return `${user.name} 사용자`;
   },
 };
+export default routeHandler;
