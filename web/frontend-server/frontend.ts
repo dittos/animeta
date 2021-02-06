@@ -222,11 +222,8 @@ Disallow: /
       return;
     }
 
-    render(appProvider.get(), {
-      url: req.url,
-      path: req.path,
-      query: req.query as any, // TODO
-    })
+    // TODO
+    render(appProvider.get(), req as any)
       .then(result => {
         const {
           preloadData,
