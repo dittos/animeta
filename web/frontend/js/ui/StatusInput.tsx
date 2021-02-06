@@ -23,7 +23,6 @@ export class StatusInput extends React.Component<{
           style={style}
           value={value}
           onChange={this._onChange}
-          ref="input"
         />
         {showSuffix ? '화' : null}
         <span

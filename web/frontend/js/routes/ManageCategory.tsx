@@ -90,6 +90,7 @@ class CategoryItem extends React.Component<{
 }
 
 class ManageCategory extends React.Component<RouteComponentProps<ManageCategoryRouteData>> {
+  nameInput = React.createRef<HTMLInputElement>();
   state: {
     sortingCategories: CategoryDTO[] | null;
   } = {
@@ -129,7 +130,7 @@ class ManageCategory extends React.Component<RouteComponentProps<ManageCategoryR
           <div>
             <div className={Styles.title}>분류 추가</div>
             <form onSubmit={this._addCategory}>
-              분류 이름: <input size={12} ref="nameInput" maxLength={30} />
+              분류 이름: <input size={12} ref={this.nameInput} maxLength={30} />
               <button className={Styles.button}>추가</button>
             </form>
           </div>
@@ -177,7 +178,7 @@ class ManageCategory extends React.Component<RouteComponentProps<ManageCategoryR
 
   _addCategory = (event: React.FormEvent) => {
     event.preventDefault();
-    var input = this.refs.nameInput as HTMLInputElement;
+    var input = this.nameInput.current!;
     addCategory(input.value).then(result => {
       input.value = '';
       this.props.writeData(data => {

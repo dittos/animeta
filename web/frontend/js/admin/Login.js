@@ -10,6 +10,9 @@ import {
 import * as API from './API';
 
 class Login extends React.Component {
+  usernameInput = React.createRef()
+  passwordInput = React.createRef()
+
   render() {
     return (
       <Modal.Dialog>
@@ -17,11 +20,11 @@ class Login extends React.Component {
           <Modal.Body>
             <FormGroup>
               <FormLabel>Username</FormLabel>
-              <FormControl ref="username" autoFocus />
+              <FormControl ref={this.usernameInput} autoFocus />
             </FormGroup>
             <FormGroup>
               <FormLabel>Password</FormLabel>
-              <FormControl ref="password" type="password" />
+              <FormControl ref={this.passwordInput} type="password" />
             </FormGroup>
           </Modal.Body>
 
@@ -38,8 +41,8 @@ class Login extends React.Component {
   _submit = event => {
     event.preventDefault();
     API.login(
-      findDOMNode(this.refs.username).value,
-      findDOMNode(this.refs.password).value
+      this.usernameInput.current.value,
+      this.passwordInput.current.value
     ).then(this.props.onLogin);
   };
 }

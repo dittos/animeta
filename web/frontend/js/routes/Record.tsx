@@ -46,8 +46,10 @@ type TitleEditViewProps = {
 };
 
 class TitleEditView extends React.Component<TitleEditViewProps> {
+  titleInput = React.createRef<HTMLInputElement>();
+
   componentDidMount() {
-    var typeahead = Typeahead.initSuggest(this.refs.titleInput as Element);
+    var typeahead = Typeahead.initSuggest(this.titleInput.current!);
     typeahead.on('keypress', (event: KeyboardEvent) => {
       if (event.keyCode == 13) {
         this._onSave();
@@ -58,7 +60,7 @@ class TitleEditView extends React.Component<TitleEditViewProps> {
   render() {
     return (
       <div className={Styles.titleForm}>
-        <input ref="titleInput" defaultValue={this.props.originalTitle} />
+        <input ref={this.titleInput} defaultValue={this.props.originalTitle} />
         <button onClick={this._onSave}>저장</button>{' '}
         <a href="#" onClick={this._onCancel}>
           취소
@@ -68,7 +70,7 @@ class TitleEditView extends React.Component<TitleEditViewProps> {
   }
 
   _onSave = () => {
-    this.props.onSave((this.refs.titleInput as HTMLInputElement).value);
+    this.props.onSave(this.titleInput.current!.value);
   };
 
   _onCancel = (event: React.MouseEvent) => {

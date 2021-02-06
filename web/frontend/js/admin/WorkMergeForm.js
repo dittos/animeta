@@ -4,6 +4,7 @@ import * as API from './API';
 import TitleAutosuggest from './TitleAutosuggest';
 
 class WorkMergeForm extends React.Component {
+  titleSearch = React.createRef();
   state = {
     workToMerge: null,
     forceMerge: false,
@@ -15,7 +16,7 @@ class WorkMergeForm extends React.Component {
         <FormGroup>
           <TitleAutosuggest
             onSelected={this._onWorkToMergeSelected}
-            ref="titleSearch"
+            ref={this.titleSearch}
           />
         </FormGroup>
 
@@ -81,7 +82,7 @@ class WorkMergeForm extends React.Component {
 
   _onWorkToMergeSelected = work => {
     this.setState({ workToMerge: work });
-    this.refs.titleSearch.clear();
+    this.titleSearch.current.clear();
   };
 
   _merge = () => {

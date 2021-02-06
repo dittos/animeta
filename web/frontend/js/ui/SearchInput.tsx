@@ -8,11 +8,12 @@ class SearchInput extends React.Component<{
 }> {
   static contextType = ControllerContext;
   private $: any;
+  private input = React.createRef<HTMLInputElement>();
 
   componentDidMount() {
     const onSelect = this._onSelect;
     this.$ = Typeahead.init(
-      this.refs.input as Element,
+      this.input.current!,
       { highlight: true, hint: false },
       {
         source: Typeahead.searchSource,
@@ -46,7 +47,7 @@ class SearchInput extends React.Component<{
   }
 
   render() {
-    return <input type="search" placeholder="검색할 작품명 입력" ref="input" className="tt-input" />;
+    return <input type="search" placeholder="검색할 작품명 입력" ref={this.input} className="tt-input" />;
   }
 
   _onSelect = (title: string) => {

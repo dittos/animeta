@@ -20,6 +20,7 @@ class App extends React.Component {
     isLoading: true,
     currentUser: null,
   };
+  titleSearch = React.createRef();
 
   componentDidMount() {
     API.loadSession();
@@ -64,7 +65,7 @@ class App extends React.Component {
               <FormGroup className="mr-sm-2">
                 <TitleAutosuggest
                   onSelected={this._onTitleSelected}
-                  ref="titleSearch"
+                  ref={this.titleSearch}
                 />
               </FormGroup>{' '}
               <Button onClick={this._addWork}>Add work</Button>
@@ -98,11 +99,11 @@ class App extends React.Component {
 
   _onTitleSelected = item => {
     this.props.history.push(`/works/${item.id}`);
-    this.refs.titleSearch.clear();
+    this.titleSearch.current.clear();
   };
 
   _addWork = () => {
-    const title = this.refs.titleSearch.getValue().trim();
+    const title = this.titleSearch.current.getValue().trim();
     API.createWork(title).then(work => {
       this.props.history.push(`/works/${work.id}`);
     });

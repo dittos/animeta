@@ -12,6 +12,9 @@ type SettingsRouteData = {
 };
 
 class ChangePassword extends React.Component {
+  oldPasswordInput = React.createRef<HTMLInputElement>();
+  newPassword1Input = React.createRef<HTMLInputElement>();
+  newPassword2Input = React.createRef<HTMLInputElement>();
   state = {
     isChangingPassword: false,
   };
@@ -25,7 +28,7 @@ class ChangePassword extends React.Component {
               <label htmlFor="id_old_password">기존 암호</label>
             </th>
             <td>
-              <input id="id_old_password" ref="oldPassword" type="password" />
+              <input id="id_old_password" ref={this.oldPasswordInput} type="password" />
             </td>
           </tr>
           <tr>
@@ -35,7 +38,7 @@ class ChangePassword extends React.Component {
             <td>
               <input
                 id="id_new_password1"
-                ref="newPassword1"
+                ref={this.newPassword1Input}
                 type="password"
               />
             </td>
@@ -47,7 +50,7 @@ class ChangePassword extends React.Component {
             <td>
               <input
                 id="id_new_password2"
-                ref="newPassword2"
+                ref={this.newPassword2Input}
                 type="password"
               />
             </td>
@@ -69,21 +72,26 @@ class ChangePassword extends React.Component {
   }
 
   _changePassword() {
-    if (!(this.refs.newPassword1 as HTMLInputElement).value) {
+    if (!this.newPassword1Input.current?.value) {
       alert('변경하실 암호를 입력하세요.');
+      return;
+    }
+    
+    if (this.newPassword1Input.current?.value !== this.newPassword2Input.current?.value) {
+      alert('새 암호 확인을 정확히 입력하세요.');
       return;
     }
 
     this.setState({ isChangingPassword: true });
     changePassword(
-      (this.refs.oldPassword as HTMLInputElement).value,
-      (this.refs.newPassword1 as HTMLInputElement).value
+      this.oldPasswordInput.current!.value,
+      this.newPassword1Input.current!.value
     )
       .then(() => {
         alert('암호를 변경했습니다.');
-        (this.refs.oldPassword as HTMLInputElement).value = '';
-        (this.refs.newPassword1 as HTMLInputElement).value = '';
-        (this.refs.newPassword2 as HTMLInputElement).value = '';
+        this.oldPasswordInput.current!.value = '';
+        this.newPassword1Input.current!.value = '';
+        this.newPassword2Input.current!.value = '';
         this.setState({ isChangingPassword: false });
       }, () => {
         this.setState({ isChangingPassword: false });

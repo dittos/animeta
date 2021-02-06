@@ -6,6 +6,8 @@ import * as API from '../API';
 class LoginForm extends React.Component<{
   next?: string | { redirectToUser: true };
 }> {
+  usernameInput = React.createRef<HTMLInputElement>();
+  passwordInput = React.createRef<HTMLInputElement>();
   state = {
     submitted: false,
     errors: false,
@@ -24,11 +26,11 @@ class LoginForm extends React.Component<{
           <div className={Styles.loginRowGroup}>
             <div className={Styles.loginRow}>
               <label>아이디</label>
-              <input name="username" maxLength={30} autoFocus ref="username" />
+              <input name="username" maxLength={30} autoFocus ref={this.usernameInput} />
             </div>
             <div className={Styles.loginRow}>
               <label>암호</label>
-              <input type="password" name="password" ref="password" />
+              <input type="password" name="password" ref={this.passwordInput} />
             </div>
           </div>
           {!this.state.submitted && (
@@ -58,10 +60,10 @@ class LoginForm extends React.Component<{
   _onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     this.setState({ submitted: true });
-    const username = (this.refs.username as HTMLInputElement).value;
+    const username = this.usernameInput.current!.value;
     API.authenticate({
       username: username,
-      password: (this.refs.password as HTMLInputElement).value,
+      password: this.passwordInput.current!.value,
       persistent: this.state.isPersistent,
     }).then(
       authResult => API.createFrontendSession(authResult).then(() => {

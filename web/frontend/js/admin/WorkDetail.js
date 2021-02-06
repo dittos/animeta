@@ -15,6 +15,7 @@ class WorkDetail extends React.Component {
     isSavingMetadata: false,
     showMetadataSaved: false,
   };
+  titleToAddInput = React.createRef();
 
   componentDidMount() {
     this._reload();
@@ -93,7 +94,7 @@ class WorkDetail extends React.Component {
 
         <Form inline onSubmit={this._submitAddMapping}>
           <FormGroup>
-            <FormControl ref="titleToAdd" />
+            <FormControl ref={this.titleToAddInput} />
           </FormGroup>
           <Button type="submit">Add title</Button>
         </Form>
@@ -231,7 +232,7 @@ class WorkDetail extends React.Component {
   _submitAddMapping = event => {
     event.preventDefault();
     API.addTitleMapping(this.state.work.id, {
-      title: findDOMNode(this.refs.titleToAdd).value,
+      title: this.titleToAddInput.current.value,
     }).then(this._reload);
   };
 
