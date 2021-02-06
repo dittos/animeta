@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "@sentry/node": "^6.1.0",
+    "@sentry/react": "^6.1.0",
     "babel-polyfill": "^6.26.0",
     "bootstrap": "^4.5.3",
     "classnames": "^2.1.3",
@@ -17,7 +18,6 @@
     "lodash": "^4.17.11",
     "nprogress": "^0.2.0",
     "nuri": "github:dittos/nuri-builds#1d2996f2c89957dfc26012e2936c0485139796ba",
-    "raven": "^2.4.2",
     "react": "^16.14.0",
     "react-bootstrap": "^1.4.0",
     "react-dom": "^16.14.0",

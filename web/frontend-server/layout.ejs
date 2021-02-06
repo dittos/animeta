@@ -58,22 +58,7 @@
 </head>
 <body>
 <div id="app"><%- content %></div>
-<script src="https://cdn.ravenjs.com/3.25.2/raven.min.js" crossorigin="anonymous"></script>
-<% if (!DEBUG) { %>
-<script>
-window.addEventListener('load', function(){
-    if (!window.gaLoaded && window.Raven)
-        Raven.captureMessage('GoogleAnalyticsBlocked', {level: 'warning'});
-}, false);
-</script>
-<script>
-try {
-    Raven.config('https://0d5693f7775146c0881c305a452bb70b@sentry.io/265318', {
-        ignoreErrors: ['hideGuidePopup']
-    }).install();
-} catch (e) {}
-</script>
-<% } %>
+<script>window.SENTRY_DSN = '<%= SENTRY_DSN %>'</script>
 <% assetEntries.forEach(entry => { %>
     <% if (assets[entry].js) { %>
     <script type="text/javascript" src="<%= ASSET_BASE %><%= assets[entry].js %>"></script>

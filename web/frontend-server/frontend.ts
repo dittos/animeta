@@ -139,6 +139,7 @@ export function createServer({ server = express(), appProvider, getAssets }: {
       DEBUG,
       STATIC_URL: config.staticUrl || '/static',
       ASSET_BASE: config.assetBase || '',
+      SENTRY_DSN: config.frontendSentryDsn || '',
       assets: getAssets(),
       title: '',
       meta: {},

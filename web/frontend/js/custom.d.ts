@@ -10,9 +10,6 @@ declare module "nprogress" {
 }
 
 // TODO
-declare var Raven: any;
-
-// TODO
 declare var __nuri: any;
 
 declare interface JQueryAjaxSettings {

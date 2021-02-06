@@ -1,5 +1,5 @@
-/* global Raven */
 import $ from 'jquery';
+import * as Sentry from '@sentry/react';
 import { injectLoader, bootstrap } from 'nuri/client';
 import nprogress from 'nprogress';
 import app from './routes';
@@ -8,6 +8,13 @@ import { trackPageView } from './Tracking';
 import '../less/nprogress.less';
 import '../less/base.less';
 import '../less/signup.less';
+
+if ((window as any).SENTRY_DSN) {
+  Sentry.init({
+    dsn: (window as any).SENTRY_DSN,
+    ignoreErrors: ['hideGuidePopup'],
+  });
+}
 
 injectLoader({
   call(path: string, params: any) {
@@ -23,7 +30,7 @@ $(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) => {
   if (ajaxSettings.__silent__) return;
 
   try {
-    Raven.captureMessage(thrownError || jqXHR.statusText, {
+    Sentry.captureMessage(thrownError || jqXHR.statusText, {
       extra: {
         type: ajaxSettings.type,
         url: ajaxSettings.url,
@@ -35,7 +42,7 @@ $(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) => {
     });
   } catch (e) {
     try {
-      Raven.captureMessage(e);
+      Sentry.captureException(e);
     } catch (e2) {
       // ignore
     }

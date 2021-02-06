@@ -5,6 +5,7 @@
     },
     "sentryDsn": "",
     "sentryDsnNew": "",
+    "frontendSentryDsn": "",
     "kakaoApiKey": "",
     "assetBase": "",
     "staticUrl": ""
