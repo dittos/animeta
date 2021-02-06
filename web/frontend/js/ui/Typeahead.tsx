@@ -2,8 +2,15 @@ import throttle from 'lodash/throttle';
 var $ = require('jquery');
 require('../typeahead');
 
-function cachingSource(source, maxSize) {
-  var cache = [];
+export type SearchResultItem = {
+  title: string;
+  n: number;
+  id: number;
+};
+type TypeaheadSource = (q: string, cb: (result: SearchResultItem[]) => void) => void
+
+function cachingSource(source: TypeaheadSource, maxSize: number): TypeaheadSource {
+  var cache: [string, SearchResultItem[]][] = [];
   return function(q, cb) {
     for (var i = cache.length - 1; i >= 0; i--) {
       if (cache[i][0] == q) {
@@ -28,11 +35,11 @@ export const searchSource = cachingSource(
   20
 );
 
-export function init(node, viewOptions, sourceOptions) {
+export function init(node: Element, viewOptions: any, sourceOptions: any) {
   return $(node).typeahead(viewOptions, sourceOptions);
 }
 
-export function initSuggest(node) {
+export function initSuggest(node: Element) {
   return init(node, null, {
     source: cachingSource(
       throttle(function(q, cb) {
@@ -46,7 +53,7 @@ export function initSuggest(node) {
 }
 
 export const templates = {
-  suggestion: function(item) {
+  suggestion: function(item: SearchResultItem) {
     return $('<div />')
       .append($('<span class="title" />').text(item.title))
       .append(' ')

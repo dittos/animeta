@@ -1,14 +1,37 @@
 import React from 'react';
 import * as WorkViews from '../ui/WorkViews';
 import { App } from '../layouts';
+import { PostDTO, RecordDTO, UserDTO, WorkDTO } from '../types_generated';
+import { RouteComponentProps, RouteHandler } from 'nuri/app';
+import { WeeklyChartItem } from '../ui/WeeklyChart';
+import { PostFetchOptions } from '../types';
+
+type WorkRouteData = {
+  currentUser?: UserDTO;
+  work: WorkDTO;
+  chart: WeeklyChartItem[];
+  posts: PostDTO[];
+  hasMorePosts: boolean;
+  userCount: number;
+  suspendedUserCount: number;
+  episode: string;
+};
+
+type WorkPostsParams = {
+  count: number;
+  options: PostFetchOptions;
+  before_id?: number;
+  episode?: string;
+  withCounts?: boolean;
+};
 
 const POSTS_PER_PAGE = 10;
 
-function Work({ data, writeData, loader }) {
+function Work({ data, writeData, loader }: RouteComponentProps<WorkRouteData>) {
   const { work, chart, episode, posts, hasMorePosts, currentUser, userCount, suspendedUserCount } = data;
 
   async function loadMorePosts() {
-    var params = {
+    var params: WorkPostsParams = {
       count: POSTS_PER_PAGE + 1,
       options: {
         user: {},
@@ -17,14 +40,14 @@ function Work({ data, writeData, loader }) {
     if (posts && posts.length > 0)
       params.before_id = posts[posts.length - 1].id;
     if (episode) params.episode = episode;
-    const result = await loader.call(`/works/${work.id}/posts`, params);
+    const result: PostDTO[] = await loader.call(`/works/${work.id}/posts`, params);
     writeData(data => {
       data.posts = data.posts.concat(result.slice(0, POSTS_PER_PAGE));
       data.hasMorePosts = result.length > POSTS_PER_PAGE;
     });
   }
 
-  function applyRecord(record) {
+  function applyRecord(record: RecordDTO) {
     writeData(data => {
       data.work.record = record;
     });
@@ -35,7 +58,6 @@ function Work({ data, writeData, loader }) {
       work={work}
       chart={chart}
       currentUser={currentUser}
-      episode={episode}
       onRecordChange={applyRecord}
     >
       <WorkViews.Episodes
@@ -45,8 +67,6 @@ function Work({ data, writeData, loader }) {
         suspendedUserCount={suspendedUserCount}
       />
       <WorkViews.WorkIndex
-        work={work}
-        episode={episode}
         posts={posts}
         hasMorePosts={hasMorePosts}
         loadMorePosts={loadMorePosts}
@@ -55,7 +75,7 @@ function Work({ data, writeData, loader }) {
   );
 }
 
-export default {
+const routeHandler: RouteHandler<WorkRouteData> = {
   component: App(Work),
 
   async load({ params, loader }) {
@@ -67,7 +87,7 @@ export default {
       loader.call('/works/by-title', { title }),
       loader.call('/charts/works/weekly', { limit: 5 }),
     ]);
-    const postsParams = {
+    const postsParams: WorkPostsParams = {
       count: POSTS_PER_PAGE + 1,
       withCounts: true,
       options: {
@@ -107,3 +127,4 @@ export default {
     };
   },
 };
+export default routeHandler;

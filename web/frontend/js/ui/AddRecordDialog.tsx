@@ -1,7 +1,6 @@
 import React from 'react';
 import { Modal } from 'react-overlays';
-import { getCurrentUser } from '../API';
-import { createRecord } from '../TypedAPI';
+import { getCurrentUser, createRecord } from '../API';
 import connectTwitter from '../connectTwitter';
 import * as Typeahead from './Typeahead';
 import { Switch, SwitchItem } from './Switch';

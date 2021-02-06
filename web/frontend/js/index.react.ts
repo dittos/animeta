@@ -3,18 +3,18 @@ import $ from 'jquery';
 import { injectLoader, bootstrap } from 'nuri/client';
 import nprogress from 'nprogress';
 import app from './routes';
-import { serializeParams, getCurrentUser } from './API';
+import { getCurrentUser, serializeParams } from './API';
 import { trackPageView } from './Tracking';
 import '../less/nprogress.less';
 import '../less/base.less';
 import '../less/signup.less';
 
 injectLoader({
-  call(path, params) {
+  call(path: string, params: any) {
     return $.get('/api/v2' + path, serializeParams(params));
   },
 
-  getCurrentUser(params) {
+  getCurrentUser(params: any) {
     return getCurrentUser(params);
   },
 });
@@ -59,7 +59,7 @@ bootstrap(app, controller => {
     easing: 'ease',
   });
 
-  controller.subscribe({
+  controller!.subscribe({
     willLoad() {
       nprogress.start();
     },

@@ -28,13 +28,13 @@ class ErrorHandler extends React.Component {
 
   componentDidCatch(error: Error, info: ErrorInfo) {
     this.setState({ error });
-    (window as any).Raven.captureException(error, { extra: info });
+    Raven.captureException(error, { extra: info });
   }
 }
 
 export function App<Props extends { data: { currentUser?: UserDTO } }>(
   Component: React.JSXElementConstructor<Props>,
-  globalHeaderProps: Partial<GlobalHeaderProps>
+  globalHeaderProps?: Partial<GlobalHeaderProps>
 ) {
   return (props: Props) => (
     <ErrorHandler>

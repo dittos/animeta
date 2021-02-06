@@ -26,9 +26,9 @@ module.exports = env => {
     mode: env.prod ? 'production' : 'development',
     context: __dirname,
     entry: env.server
-      ? './js/routes.js'
+      ? './js/routes.tsx'
       : {
-          index: hot(env, './js/index.react.js'),
+          index: hot(env, './js/index.react.ts'),
           admin: hot(env, './js/admin.react.js'),
           common: hot(env, './js/common.js'),
         },

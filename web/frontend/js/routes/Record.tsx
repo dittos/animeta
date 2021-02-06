@@ -16,7 +16,7 @@ import {
   deleteRecord,
   deletePost,
   createPost,
-} from '../TypedAPI';
+} from '../API';
 import connectTwitter from '../connectTwitter';
 import { User } from '../layouts';
 import { CenteredFullWidth } from '../ui/Layout';
@@ -47,7 +47,7 @@ type TitleEditViewProps = {
 
 class TitleEditView extends React.Component<TitleEditViewProps> {
   componentDidMount() {
-    var typeahead = Typeahead.initSuggest(this.refs.titleInput);
+    var typeahead = Typeahead.initSuggest(this.refs.titleInput as Element);
     typeahead.on('keypress', (event: KeyboardEvent) => {
       if (event.keyCode == 13) {
         this._onSave();

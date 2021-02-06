@@ -16,6 +16,7 @@ import { Popover } from '../ui/Popover';
 import { TableShareDialog } from '../ui/TableShareDialog';
 import { TableItem } from '../ui/TableItem';
 import { formatPeriod } from '../util';
+import { UserDTO } from '../types_generated';
 
 function isRecommendationEnabled(period: string): boolean {
   return period === Periods.current || period === Periods.upcoming;
@@ -151,7 +152,7 @@ function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period
       <div className={Styles.settings}>
         <div className={Styles.settingsItem}>
           {'정렬: '}
-          <Switch value={filter.sort} onChange={(newSort: Ordering) => onFilterChange({ ...filter, sort: newSort })} minimal>
+          <Switch value={filter.sort} onChange={newSort => onFilterChange({ ...filter, sort: newSort })} minimal>
             {options.map(option => (
               <SwitchItem key={option.value} value={option.value} onClick={option.onClick}>
                 {option.label}
@@ -210,7 +211,7 @@ type TableFilter = {
 };
 
 type TableRouteData = {
-  currentUser: any;
+  currentUser: UserDTO;
   period: string;
   items: WorkDTO[];
   containsKRSchedule: boolean;
@@ -229,7 +230,7 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
   };
 
   componentDidMount() {
-    if ((window as any).IntersectionObserver) {
+    if (window.IntersectionObserver) {
       this.intersectionObserver = new IntersectionObserver((entries) => {
         const stuck = !entries[0].isIntersecting
         this.setState({ isHeaderStuck: stuck })

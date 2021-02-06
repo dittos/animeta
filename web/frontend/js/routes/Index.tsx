@@ -1,12 +1,20 @@
 import React from 'react';
 import { App } from '../layouts';
 import * as Grid from '../ui/Grid';
-import WeeklyChart from '../ui/WeeklyChart';
+import WeeklyChart, { WeeklyChartItem } from '../ui/WeeklyChart';
 import { LoadMore } from '../ui/LoadMore';
 import { Post } from '../ui/Post';
 import Styles from '../../less/index.less';
+import { RouteComponentProps, RouteHandler } from 'nuri/app';
+import { PostDTO, UserDTO } from '../types_generated';
 
-class Index extends React.Component {
+type IndexRouteData = {
+  currentUser?: UserDTO;
+  posts: PostDTO[];
+  chart: WeeklyChartItem[];
+};
+
+class Index extends React.Component<RouteComponentProps<IndexRouteData>> {
   state = {
     isLoading: false,
   };
@@ -25,7 +33,7 @@ class Index extends React.Component {
     );
   }
 
-  _renderTimeline(posts) {
+  _renderTimeline(posts: PostDTO[]) {
     return (
       <div className={Styles.timeline}>
         <h2 className={Styles.sectionTitle}>최근 감상평</h2>
@@ -54,7 +62,7 @@ class Index extends React.Component {
   };
 }
 
-export default {
+const routeHandler: RouteHandler<IndexRouteData> = {
   component: App(Index, { activeMenu: 'home' }),
 
   async load({ loader }) {
@@ -79,3 +87,4 @@ export default {
     };
   },
 };
+export default routeHandler;

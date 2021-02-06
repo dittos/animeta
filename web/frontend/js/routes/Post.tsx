@@ -3,10 +3,33 @@ import * as WorkViews from '../ui/WorkViews';
 import { getStatusDisplay } from '../util';
 import { App } from '../layouts';
 import { Post as PostComponent } from '../ui/Post';
+import { RouteComponentProps, RouteHandler } from 'nuri/app';
+import { PostDTO, RecordDTO, UserDTO, WorkDTO } from '../types_generated';
+import { WeeklyChartItem } from '../ui/WeeklyChart';
+import { PostFetchOptions } from '../types';
+
+type PostRouteData = {
+  currentUser?: UserDTO;
+  post: PostDTO;
+  chart: WeeklyChartItem[];
+  work: WorkDTO;
+  posts?: PostDTO[];
+  hasMorePosts?: boolean;
+  userCount?: number;
+  suspendedUserCount?: number;
+};
+
+type PostsParams = {
+  count: number;
+  options: PostFetchOptions;
+  before_id?: number;
+  episode?: string;
+  withCounts?: boolean;
+};
 
 const POSTS_PER_PAGE = 10;
 
-class Post extends React.Component {
+class Post extends React.Component<RouteComponentProps<PostRouteData>> {
   componentDidMount() {
     // lazy load
     this._loadMorePosts();
@@ -32,15 +55,13 @@ class Post extends React.Component {
         <WorkViews.Episodes
           work={work}
           activeEpisodeNumber={episode}
-          userCount={userCount}
-          suspendedUserCount={suspendedUserCount}
+          userCount={userCount ?? 0}
+          suspendedUserCount={suspendedUserCount ?? 0}
         />
         <PostComponent post={post} showTitle={false} highlighted={true} />
         <WorkViews.WorkIndex
-          work={work}
-          episode={episode}
           posts={posts}
-          hasMorePosts={hasMorePosts}
+          hasMorePosts={hasMorePosts ?? false}
           loadMorePosts={this._loadMorePosts}
           excludePostID={post.id}
         />
@@ -50,7 +71,7 @@ class Post extends React.Component {
 
   _loadMorePosts = async () => {
     const { work, posts, post } = this.props.data;
-    var params = {
+    var params: PostsParams = {
       count: POSTS_PER_PAGE + 1,
       episode: post.status,
       options: {
@@ -65,11 +86,11 @@ class Post extends React.Component {
       `/works/${work.id}/posts`,
       params
     );
-    const posts = params.withCounts ? result.data : result;
+    const posts2 = params.withCounts ? result.data : result;
     this.props.writeData(data => {
       if (!data.posts) data.posts = [];
-      data.posts = data.posts.concat(posts.slice(0, POSTS_PER_PAGE));
-      data.hasMorePosts = posts.length > POSTS_PER_PAGE;
+      data.posts = data.posts.concat(posts2.slice(0, POSTS_PER_PAGE));
+      data.hasMorePosts = posts2.length > POSTS_PER_PAGE;
       if (params.withCounts) {
         data.userCount = result.userCount;
         data.suspendedUserCount = result.suspendedUserCount;
@@ -77,14 +98,14 @@ class Post extends React.Component {
     });
   };
 
-  _applyRecord = record => {
+  _applyRecord = (record: RecordDTO) => {
     this.props.writeData(data => {
       data.work.record = record;
     });
   };
 }
 
-export default {
+const routeHandler: RouteHandler<PostRouteData> = {
   component: App(Post),
 
   async load({ params, loader }) {
@@ -111,7 +132,7 @@ export default {
   },
 
   renderTitle({ post, work }) {
-    return `${post.user.name} 사용자 > ${work.title} ${getStatusDisplay(post)}`;
+    return `${post.user!.name} 사용자 > ${work.title} ${getStatusDisplay(post)}`;
   },
 
   renderMeta({ post, work }) {
@@ -124,3 +145,4 @@ export default {
     };
   },
 };
+export default routeHandler;

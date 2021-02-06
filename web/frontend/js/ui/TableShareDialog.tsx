@@ -25,7 +25,7 @@ export function TableShareDialog(props: Props) {
 }
 
 class TableShareDialogInternal extends React.Component<Props, State> {
-  private isClipboardAvailable = navigator && (navigator as any).clipboard && (navigator as any).clipboard.writeText
+  private isClipboardAvailable = Boolean(navigator?.clipboard?.writeText)
 
   state: State = {
     shareContent: this.props.showAdded ? 'added' : 'all',
@@ -52,7 +52,7 @@ class TableShareDialogInternal extends React.Component<Props, State> {
           </div>
           {this.props.showAdded && (
             <div className={Styles.contentSelector}>
-              <Switch value={this.state.shareContent} onChange={(value: ShareContent) => this.setState({ shareContent: value })} flex>
+              <Switch value={this.state.shareContent} onChange={value => this.setState({ shareContent: value })} flex>
                 <SwitchItem value="all">전체 작품 리스트</SwitchItem>
                 <SwitchItem value="added">추가한 작품 리스트</SwitchItem>
               </Switch>
@@ -83,11 +83,12 @@ class TableShareDialogInternal extends React.Component<Props, State> {
     } else if (this.state.shareContent === 'added') {
       return `https://animeta.net/users/${this.props.username}/table/${this.props.period}/`;
     }
+    throw new Error('unreachable');
   }
 
   private copy = async (e: React.MouseEvent) => {
     e.preventDefault();
-    await (navigator as any).clipboard.writeText(this.getShareUrl());
+    await navigator.clipboard.writeText(this.getShareUrl());
     this.setState({ showCopied: true });
     setTimeout(() => this.setState({ showCopied: false }), 1000);
   };

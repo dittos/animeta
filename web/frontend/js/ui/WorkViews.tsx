@@ -8,12 +8,18 @@ import * as util from '../util';
 import { LoadMore } from './LoadMore';
 import WorkStatusButton from './WorkStatusButton';
 import VideoSearch from './VideoSearch';
-import WeeklyChart from './WeeklyChart';
+import WeeklyChart, { WeeklyChartItem } from './WeeklyChart';
 import { Post } from './Post';
 import Styles from './WorkViews.less';
 import * as Mutations from '../Mutations';
+import { PostDTO, RecordDTO, UserDTO, WorkDTO } from '../types_generated';
+import { Subscription } from 'rxjs';
 
-function Sidebar({ work, chart, episode }) {
+function Sidebar({ work, chart, episode }: {
+  work: WorkDTO;
+  chart: WeeklyChartItem[];
+  episode?: string;
+}) {
   const metadata = work.metadata;
   var videoQuery = work.title;
   if (episode) {
@@ -30,7 +36,7 @@ function Sidebar({ work, chart, episode }) {
               {metadata.studios && ' 제작'}
               {metadata.source && ' / ' + util.SOURCE_TYPE_MAP[metadata.source]}
             </p>
-            {metadata.schedule.jp && (
+            {metadata.schedule?.jp?.date && (
               <p>
                 <i className="fa fa-calendar" /> 첫 방영:{' '}
                 {dateFnsFormat(metadata.schedule.jp.date, 'YYYY-MM-DD')}
@@ -77,12 +83,20 @@ function Sidebar({ work, chart, episode }) {
   );
 }
 
-export class Work extends React.Component {
+export class Work extends React.Component<{
+  currentUser?: UserDTO;
+  work: WorkDTO;
+  episode?: string;
+  chart: WeeklyChartItem[];
+  onRecordChange(record: RecordDTO): void;
+}> {
+  private _subscription: Subscription;
+
   componentDidMount() {
     // TODO: move subscription up to route
     if (this.props.currentUser) {
       this._subscription = Mutations.records
-        .pipe(filter(it => it.work_id === this.props.work.id && it.user_id === this.props.currentUser.id))
+        .pipe(filter(it => it.work_id === this.props.work.id && it.user_id === this.props.currentUser?.id))
         .subscribe(it => {
           this.props.onRecordChange(it);
         });
@@ -152,7 +166,12 @@ export class Work extends React.Component {
   }
 }
 
-export class WorkIndex extends React.Component {
+export class WorkIndex extends React.Component<{
+  posts?: PostDTO[];
+  hasMorePosts: boolean;
+  excludePostID?: number;
+  loadMorePosts(): Promise<void>;
+}> {
   state = {
     isLoading: false,
   };
@@ -186,9 +205,14 @@ export class WorkIndex extends React.Component {
   };
 }
 
-export function Episodes({ work, activeEpisodeNumber, userCount, suspendedUserCount }) {
+export function Episodes({ work, activeEpisodeNumber, userCount, suspendedUserCount }: {
+  work: WorkDTO;
+  activeEpisodeNumber: string;
+  userCount: number;
+  suspendedUserCount: number;
+}) {
   const title = encodeURIComponent(work.title);
-  const activeEpisode = activeEpisodeNumber && work.episodes.filter(it => it.number == activeEpisodeNumber)[0];
+  const activeEpisode = activeEpisodeNumber && work.episodes!.filter(it => String(it.number) === activeEpisodeNumber)[0];
   return <>
     <div className={Styles.episodes}>
       <Link
@@ -200,12 +224,12 @@ export function Episodes({ work, activeEpisodeNumber, userCount, suspendedUserCo
       >
         최신
       </Link>
-      {work.episodes.map(ep => (
+      {work.episodes!.map(ep => (
         <Link
           to={`/works/${title}/ep/${ep.number}/`}
           className={cx({
-            'has-post': ep.post_count > 0,
-            active: ep.number == activeEpisodeNumber,
+            'has-post': (ep.post_count ?? 0) > 0,
+            active: String(ep.number) === activeEpisodeNumber,
           })}
           key={ep.number}
         >

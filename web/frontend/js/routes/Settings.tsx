@@ -1,6 +1,6 @@
 import React from 'react';
 import connectTwitter from '../connectTwitter';
-import { changePassword, disconnectTwitter, createBackup, deleteFrontendSession } from '../TypedAPI';
+import { changePassword, disconnectTwitter, createBackup, deleteFrontendSession } from '../API';
 import * as Layout from '../ui/Layout';
 import { App } from '../layouts';
 import Styles from './Settings.less';

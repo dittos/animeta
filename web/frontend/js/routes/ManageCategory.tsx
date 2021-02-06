@@ -8,7 +8,7 @@ import {
   removeCategory,
   addCategory,
   updateCategoryOrder,
-} from '../TypedAPI';
+} from '../API';
 import Styles from './ManageCategory.less';
 import { CategoryDTO, UserDTO } from '../types_generated';
 import { RouteComponentProps, RouteHandler } from 'nuri/app';

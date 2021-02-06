@@ -1,7 +1,20 @@
 import $ from 'jquery';
-import { PostDTO, PostFetchOptions, RecordDTO, RecordFetchOptions, StatusType } from './types';
+import { PostDTO, PostFetchOptions, RecordDTO, RecordFetchOptions, StatusType, UserFetchOptions } from './types';
 import * as CSRF from './CSRF';
-import { CategoryDTO } from './types_generated';
+import { CategoryDTO, UserDTO } from './types_generated';
+import isString from 'lodash/isString';
+
+export function serializeParams(params: any) {
+  if (!params) {
+    return params;
+  }
+  const result: {[key: string]: string} = {};
+  for (var k in params) {
+    const v = params[k];
+    result[k] = isString(v) ? v : JSON.stringify(v);
+  }
+  return result;
+}
 
 function toPromise<T>(jqXHR: JQueryXHR): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -9,21 +22,25 @@ function toPromise<T>(jqXHR: JQueryXHR): Promise<T> {
   })
 }
 
-function get<T>(url: string, params: any): Promise<T> {
-  return toPromise($.get(url, params))
+function get<T>(url: string, data: any = {}, customErrorHandling: boolean = false): Promise<T> {
+  return toPromise($.get({
+    url,
+    data,
+    __silent__: customErrorHandling,
+  }))
 }
 
 function postJSON<T>(url: string, data: any = {}, customErrorHandling: boolean = false): Promise<T> {
-  return CSRF.refreshPromise().then(() => toPromise($.post({
+  return CSRF.refresh().then(() => toPromise($.post({
     url,
     data: JSON.stringify(data),
     contentType: 'application/json',
     __silent__: customErrorHandling,
-  } as any)));
+  })));
 }
 
 export function doDelete(url: string) {
-  return CSRF.refreshPromise().then(() => toPromise($.ajax({ type: 'DELETE', url })));
+  return CSRF.refresh().then(() => toPromise($.ajax({ type: 'DELETE', url })));
 }
 
 //////////////////////////
@@ -53,6 +70,20 @@ export function createFrontendSession(authResult: AuthResult) {
 
 export function deleteFrontendSession() {
   return doDelete('/api/fe/sessions');
+}
+
+export async function getCurrentUser(params?: {
+  options?: UserFetchOptions
+}): Promise<UserDTO | null> {
+  const data = params?.options ? {
+    options: JSON.stringify(params.options)
+  } : {}
+  try {
+    return await get('/api/v2/me', data, true);
+  } catch (e) {
+    if (e.statusCode) return null;
+    else throw e;
+  }
 }
 
 // Account
@@ -189,4 +220,16 @@ export function addCategory(name: string): Promise<{ category: CategoryDTO }> {
 
 export function updateCategoryOrder(categoryIds: number[]): Promise<{ categories: CategoryDTO[] }> {
   return postJSON('/api/v3/UpdateCategoryOrder', { categoryIds });
+}
+
+// User Posts
+
+export function getUserPosts(userName: string, count: number, beforeID?: number): Promise<PostDTO[]> {
+  return get(`/api/v2/users/${userName}/posts`, {
+    count,
+    before_id: beforeID,
+    options: JSON.stringify({
+      record: {},
+    }),
+  });
 }

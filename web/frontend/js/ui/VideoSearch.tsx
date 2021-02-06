@@ -3,7 +3,7 @@ import React from 'react';
 import { LoadMore } from './LoadMore';
 import Styles from './VideoSearch.less';
 
-function formatDate(t) {
+function formatDate(t: string): string {
   // YYYY-MM-DDTHH:MM:SS+09:00
   var d = new Date(
     parseInt(t.substr(0, 4), 10),
@@ -13,16 +13,20 @@ function formatDate(t) {
   return d.toLocaleDateString();
 }
 
-function shorten(str, limit) {
+function shorten(str: string, limit: number): string {
   if (str.length > limit) str = str.substring(0, limit - 3) + '...';
   return str;
 }
 
-function VideoSearch(props) {
+type Props = {
+  query: string;
+};
+
+function VideoSearch(props: Props) {
   return <VideoSearchInternal key={props.query} {...props} />;
 }
 
-class VideoSearchInternal extends React.Component {
+class VideoSearchInternal extends React.Component<Props> {
   state = {
     isLoading: true,
     hasMore: true,
@@ -70,7 +74,7 @@ class VideoSearchInternal extends React.Component {
 
     return (
       <div>
-        {result.slice(0, limit).map(item => (
+        {result.slice(0, limit).map((item: any) => (
           <a href={item.url} target="_blank" className={Styles.item}>
             <div className={Styles.thumbnail}>
               <img src={item.thumbnail} />

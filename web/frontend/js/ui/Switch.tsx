@@ -1,11 +1,11 @@
 import * as React from 'react';
 import Styles from './Switch.less';
 
-interface SwitchProps {
+interface SwitchProps<T> {
   flex?: boolean;
   minimal?: boolean;
-  value?: any;
-  onChange?: any;
+  value?: T;
+  onChange?(value: T): void;
 }
 
 const SwitchContext = React.createContext<{
@@ -14,7 +14,7 @@ const SwitchContext = React.createContext<{
   minimal?: boolean;
 } | null>(null);
 
-export class Switch extends React.Component<SwitchProps> {
+export class Switch<T> extends React.Component<SwitchProps<T>> {
   render() {
     return (
       <div
@@ -32,14 +32,14 @@ export class Switch extends React.Component<SwitchProps> {
   }
 }
 
-interface SwitchItemProps {
+interface SwitchItemProps<T> {
   Component?: any;
   active?: boolean | null;
-  value?: any;
-  onClick?: (newValue: any) => any;
+  value?: T;
+  onClick?: (newValue: T | undefined) => boolean;
 }
 
-export class SwitchItem extends React.Component<SwitchItemProps, {}> {
+export class SwitchItem<T> extends React.Component<SwitchItemProps<T>, {}> {
   static contextType = SwitchContext;
   context!: React.ContextType<typeof SwitchContext>;
 

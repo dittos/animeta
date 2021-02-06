@@ -295,7 +295,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                 annId: value,
             });
         } else {
-            const {annId: _, ...rest} = this.props.metadata as any;
+            const {annId: _, ...rest} = this.props.metadata;
             this.props.onChange(rest);
         }
     };
@@ -315,7 +315,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                 namuRef: value,
             });
         } else {
-            const {namuRef: _, ...rest} = this.props.metadata as any;
+            const {namuRef: _, ...rest} = this.props.metadata;
             this.props.onChange(rest);
         }
     };

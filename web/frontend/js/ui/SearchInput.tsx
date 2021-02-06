@@ -1,14 +1,18 @@
 import * as React from 'react';
 import * as Typeahead from './Typeahead';
 import { ControllerContext } from 'nuri/components';
+import { SearchResultItem } from './Typeahead';
 
-class SearchInput extends React.Component {
+class SearchInput extends React.Component<{
+  onSelect?(title: string): void;
+}> {
   static contextType = ControllerContext;
+  private $: any;
 
   componentDidMount() {
     const onSelect = this._onSelect;
     this.$ = Typeahead.init(
-      this.refs.input,
+      this.refs.input as Element,
       { highlight: true, hint: false },
       {
         source: Typeahead.searchSource,
@@ -16,10 +20,10 @@ class SearchInput extends React.Component {
         templates: Typeahead.templates,
       }
     )
-      .on('typeahead:selected', function(event, item) {
+      .on('typeahead:selected', function(_: any, item: SearchResultItem) {
         onSelect(item.title);
       })
-      .on('keypress', function(event) {
+      .on('keypress', function(event: KeyboardEvent) {
         if (event.keyCode == 13) {
           var self = this;
           var q = self.value;
@@ -45,7 +49,7 @@ class SearchInput extends React.Component {
     return <input type="search" placeholder="검색할 작품명 입력" ref="input" className="tt-input" />;
   }
 
-  _onSelect = title => {
+  _onSelect = (title: string) => {
     this.$.typeahead('close').typeahead('val', '');
     if (this.props.onSelect) {
       this.props.onSelect(title);

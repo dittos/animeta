@@ -1,6 +1,6 @@
 import React from 'react';
 import { App } from '../layouts';
-import { createAccount, createFrontendSession } from '../TypedAPI';
+import { createAccount, createFrontendSession } from '../API';
 import { trackEvent } from '../Tracking';
 import { RouteComponentProps } from 'nuri/app';
 // TODO: css module

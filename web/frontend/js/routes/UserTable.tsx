@@ -26,7 +26,7 @@ class UserTable extends React.Component<RouteComponentProps<UserTableRouteData>>
   };
 
   componentDidMount() {
-    if ((window as any).IntersectionObserver) {
+    if (window.IntersectionObserver) {
       this.intersectionObserver = new IntersectionObserver((entries) => {
         const stuck = !entries[0].isIntersecting
         this.setState({ isHeaderStuck: stuck })

@@ -2,8 +2,20 @@ import React from 'react';
 import { Link } from 'nuri';
 import { getWorkURL } from '../util';
 import Styles from './WeeklyChart.less';
+import { WorkDTO } from '../types_generated';
 
-function WeeklyChart({ data }) {
+export type WeeklyChartItem = {
+  rank: number;
+  object: WorkDTO;
+  factor: number;
+  factor_percent: number;
+  diff?: number;
+  sign?: number;
+};
+
+function WeeklyChart({ data }: {
+  data: WeeklyChartItem[]
+}) {
   return (
     <div>
       {data.map(item => {

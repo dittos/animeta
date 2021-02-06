@@ -1,7 +1,7 @@
 import React from 'react';
 import Styles from './LoginForm.less';
 import ModalStyles from './Modal.less';
-import * as API from '../TypedAPI';
+import * as API from '../API';
 
 class LoginForm extends React.Component<{
   next?: string | { redirectToUser: true };
