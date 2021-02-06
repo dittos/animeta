@@ -1,14 +1,15 @@
 import request from 'request';
-import Promise from 'bluebird';
 
 export const HttpNotFound = {};
 
 export default class {
-  constructor(baseUrl) {
+  private endpoint: string;
+
+  constructor(baseUrl: string) {
     this.endpoint = baseUrl + '/v2';
   }
 
-  async call(req, path, params) {
+  async call(req: any, path: string, params?: any) {
     const { response, body } = await this._call(req, path, params);
     if (response.statusCode === 404) {
       throw HttpNotFound;
@@ -16,7 +17,7 @@ export default class {
     return JSON.parse(body);
   }
 
-  async getCurrentUser(req, params) {
+  async getCurrentUser(req: any, params?: any) {
     const { response, body } = await this._call(req, '/me', params);
     if (response.statusCode !== 200) {
       return null;
@@ -24,7 +25,7 @@ export default class {
     return JSON.parse(body);
   }
 
-  _call(req, path, params) {
+  _call(req: any, path: string, params?: any): Promise<{ response: request.Response, body: any }> {
     return new Promise((resolve, reject) => {
       request(
         {
@@ -33,7 +34,7 @@ export default class {
           qs: params,
           forever: true,
           headers: {
-            'x-animeta-session-key': req.cookies.sessionid,
+            'x-animeta-session-key': req.cookies?.sessionid,
           },
         },
         (err, response, body) => {

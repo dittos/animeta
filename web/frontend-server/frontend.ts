@@ -5,24 +5,25 @@ import csurf from 'csurf';
 import httpProxy from 'http-proxy';
 import serializeJS from 'serialize-javascript';
 import isString from 'lodash/isString';
-import Raven from 'raven';
+import * as Sentry from '@sentry/node';
 import Backend, { HttpNotFound } from './backend';
 import renderFeed from './renderFeed';
 import { render, injectLoaderFactory } from 'nuri/server';
+import { AppProvider } from './lib/core/AppProvider';
 
 const config = require(process.env.ANIMETA_CONFIG_PATH || './config.json');
 const DEBUG = process.env.NODE_ENV !== 'production';
 const MAINTENANCE = process.env.MAINTENANCE;
 const backend = new Backend(config.backend.baseUrl);
-if (config.sentryDsn) {
-  Raven.config(config.sentryDsn).install();
+if (config.sentryDsnNew) {
+  Sentry.init({ dsn: config.sentryDsnNew });
 }
 
-function serializeParams(params) {
+function serializeParams(params: any) {
   if (!params) {
     return params;
   }
-  const result = {};
+  const result: {[key: string]: string} = {};
   for (var k in params) {
     const v = params[k];
     result[k] = isString(v) ? v : JSON.stringify(v);
@@ -32,23 +33,27 @@ function serializeParams(params) {
 
 injectLoaderFactory(serverRequest => {
   return {
-    call(path, params) {
+    call(path: string, params: any) {
       return backend.call(serverRequest, path, serializeParams(params));
     },
-    getCurrentUser(params) {
+    getCurrentUser(params: any) {
       return backend.getCurrentUser(serverRequest, serializeParams(params));
     },
   };
 });
 
-export function createServer({ server = express(), appProvider, getAssets }) {
+export function createServer({ server = express(), appProvider, getAssets }: {
+  server: express.Express;
+  appProvider: AppProvider;
+  getAssets: () => any;
+}) {
   server.set('view engine', 'ejs');
   server.set('views', __dirname);
   server.set('strict routing', true);
   server.set('etag', false);
 
-  if (config.sentryDsn) {
-    server.use(Raven.requestHandler());
+  if (config.sentryDsnNew) {
+    server.use(Sentry.Handlers.requestHandler());
   }
   if (config.staticUrl) {
     server.use('/static', (req, res) => res.redirect(config.staticUrl + req.path));
@@ -58,7 +63,7 @@ export function createServer({ server = express(), appProvider, getAssets }) {
   server.use(cookieParser());
   server.use(csurf({ cookie: true }));
   server.use((req, res, next) => {
-    res.cookie('crumb', req.csrfToken());
+    res.cookie('crumb', (req as any).csrfToken());
     next();
   });
 
@@ -80,7 +85,7 @@ export function createServer({ server = express(), appProvider, getAssets }) {
   }
 
   server.post('/api/fe/sessions', express.json(), (req, res) => {
-    const cookieOptions = {
+    const cookieOptions: express.CookieOptions = {
       path: '/',
       httpOnly: true,
     };
@@ -95,7 +100,7 @@ export function createServer({ server = express(), appProvider, getAssets }) {
     res.json({ ok: true });
   });
   server.delete('/api/fe/sessions', (req, res) => {
-    const cookieOptions = {
+    const cookieOptions: express.CookieOptions = {
       path: '/',
       httpOnly: true,
     };
@@ -106,12 +111,12 @@ export function createServer({ server = express(), appProvider, getAssets }) {
     res.json({ ok: true });
   });
 
-  function onProxyReq(proxyReq, req, res, options) {
+  function onProxyReq(proxyReq: any, req: express.Request, res: express.Response, options: any) {
     if (req.cookies.sessionid && !req.headers['x-animeta-session-key']) {
       proxyReq.setHeader('x-animeta-session-key', req.cookies.sessionid);
     }
   }
-  function onProxyError(err, req, res) {
+  function onProxyError(err: any, req: express.Request, res: express.Response) {
     console.error(err);
     res.writeHead(500, { 'content-type': 'text/plain' });
     res.end('API error');
@@ -129,12 +134,12 @@ export function createServer({ server = express(), appProvider, getAssets }) {
     proxy.web(req, res);
   });
 
-  function renderDefault(res, locals, content) {
+  function renderDefault(res: express.Response, locals: any, content: string) {
     const context = {
       DEBUG,
       STATIC_URL: config.staticUrl || '/static',
       ASSET_BASE: config.assetBase || '',
-      assets: getAssets(res),
+      assets: getAssets(),
       title: '',
       meta: {},
       serializeJS,
@@ -217,7 +222,11 @@ Disallow: /
       return;
     }
 
-    render(appProvider.get(), req)
+    render(appProvider.get(), {
+      url: req.url,
+      path: req.path,
+      query: req.query as any, // TODO
+    })
       .then(result => {
         const {
           preloadData,
@@ -309,8 +318,8 @@ Disallow: /
     next();
   });
 
-  if (config.sentryDsn) {
-    server.use(Raven.errorHandler());
+  if (config.sentryDsnNew) {
+    server.use(Sentry.Handlers.errorHandler());
   }
 
   return server;

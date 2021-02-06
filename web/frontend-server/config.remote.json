@@ -4,6 +4,7 @@
         "remote": true
     },
     "sentryDsn": "",
+    "sentryDsnNew": "",
     "kakaoApiKey": "",
     "assetBase": "",
     "staticUrl": "",
