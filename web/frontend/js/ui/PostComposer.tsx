@@ -3,8 +3,8 @@ import * as util from '../util';
 import { StatusInput } from './StatusInput';
 import Styles from './PostComposer.less';
 import { getLastPublishTwitter } from '../Prefs';
-import { RecordDTO, UserDTO } from '../types_generated';
-import { StatusType } from '../types';
+import { RecordDTO, UserDTO } from '../../../shared/types_generated';
+import { StatusType } from '../../../shared/types';
 
 export type PostComposerProps = {
   record: RecordDTO;

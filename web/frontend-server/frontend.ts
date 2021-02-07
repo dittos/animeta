@@ -8,8 +8,9 @@ import isString from 'lodash/isString';
 import * as Sentry from '@sentry/node';
 import Backend, { HttpNotFound } from './backend';
 import renderFeed from './renderFeed';
-import { render, injectLoaderFactory } from 'nuri/server';
+import { render, ServerRequest } from 'nuri/server';
 import { AppProvider } from './lib/core/AppProvider';
+import { Loader } from '../shared/loader';
 
 const config = require(process.env.ANIMETA_CONFIG_PATH || './config.json');
 const DEBUG = process.env.NODE_ENV !== 'production';
@@ -31,16 +32,16 @@ function serializeParams(params: any) {
   return result;
 }
 
-injectLoaderFactory(serverRequest => {
+function loaderFactory(serverRequest: ServerRequest): Loader {
   return {
-    call(path: string, params: any) {
+    call(path, params) {
       return backend.call(serverRequest, path, serializeParams(params));
     },
-    getCurrentUser(params: any) {
+    getCurrentUser(params) {
       return backend.getCurrentUser(serverRequest, serializeParams(params));
     },
   };
-});
+}
 
 export function createServer({ server = express(), appProvider, getAssets }: {
   server: express.Express;
@@ -223,8 +224,8 @@ Disallow: /
       return;
     }
 
-    // TODO
-    render(appProvider.get(), req as any)
+    // TODO: remove type assertion
+    render(appProvider.get(), req as ServerRequest, loaderFactory(req as ServerRequest))
       .then(result => {
         const {
           preloadData,

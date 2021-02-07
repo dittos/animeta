@@ -4,8 +4,8 @@ import { changePassword, disconnectTwitter, createBackup, deleteFrontendSession 
 import * as Layout from '../ui/Layout';
 import { App } from '../layouts';
 import Styles from './Settings.less';
-import { RouteComponentProps, RouteHandler } from 'nuri/app';
-import { UserDTO } from '../types_generated';
+import { RouteComponentProps, RouteHandler } from '../routes';
+import { UserDTO } from '../../../shared/types_generated';
 
 type SettingsRouteData = {
   currentUser: UserDTO;
@@ -83,10 +83,10 @@ class ChangePassword extends React.Component {
     }
 
     this.setState({ isChangingPassword: true });
-    changePassword(
-      this.oldPasswordInput.current!.value,
-      this.newPassword1Input.current!.value
-    )
+    changePassword({
+      oldPassword: this.oldPasswordInput.current!.value,
+      newPassword: this.newPassword1Input.current!.value
+    })
       .then(() => {
         alert('암호를 변경했습니다.');
         this.oldPasswordInput.current!.value = '';

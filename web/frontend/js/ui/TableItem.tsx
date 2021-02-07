@@ -4,8 +4,8 @@ import Styles from '../../less/table-period.less';
 import AddRecordDialog from '../ui/AddRecordDialog';
 import { trackEvent } from '../Tracking';
 import * as util from '../util';
-import { CreditType, RecordDTO, StatusType, WorkDTO, WorkSchedule } from '../types';
-import { Recommendation$ByCredit } from '../types_generated';
+import { CreditType, RecordDTO, StatusType, WorkDTO, WorkSchedule } from '../../../shared/types';
+import { Recommendation$ByCredit } from '../../../shared/types_generated';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 

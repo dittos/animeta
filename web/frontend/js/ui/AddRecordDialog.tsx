@@ -9,7 +9,7 @@ import { StatusInput } from './StatusInput';
 import ModalStyles from './Modal.less';
 import Styles from './AddRecordDialog.less';
 import { getLastPublishTwitter, setLastPublishTwitter } from '../Prefs';
-import { CategoryDTO, RecordDTO, StatusType, UserDTO } from '../types';
+import { CategoryDTO, RecordDTO, StatusType, UserDTO } from '../../../shared/types';
 
 type CategorySelectProps = {
   selectedId: string;
@@ -202,7 +202,7 @@ class AddRecord extends React.Component<AddRecordProps, AddRecordState> {
       title: this._titleEl!.value,
       statusType: this.state.statusType,
       status: this.state.status,
-      categoryID: this.state.selectedCategoryId !== '' ? Number(this.state.selectedCategoryId) : null,
+      categoryId: this.state.selectedCategoryId !== '' ? Number(this.state.selectedCategoryId) : null,
       comment: this.state.comment,
       publishTwitter: this.state.publishTwitter,
     })

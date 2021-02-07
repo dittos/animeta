@@ -1,10 +1,11 @@
 import $ from 'jquery';
 import * as Sentry from '@sentry/react';
-import { injectLoader, bootstrap } from 'nuri/client';
+import { bootstrap } from 'nuri/client';
 import nprogress from 'nprogress';
 import app from './routes';
-import { getCurrentUser, serializeParams } from './API';
+import { getCurrentUser, serializeParams, toPromise } from './API';
 import { trackPageView } from './Tracking';
+import { Loader } from '../../shared/loader';
 import '../less/nprogress.less';
 import '../less/base.less';
 import '../less/signup.less';
@@ -16,15 +17,13 @@ if ((window as any).SENTRY_DSN) {
   });
 }
 
-injectLoader({
-  call(path: string, params: any) {
-    return $.get('/api/v2' + path, serializeParams(params));
+const loader: Loader = {
+  call(path: string, params?: any) {
+    return toPromise($.get('/api/v2' + path, serializeParams(params)));
   },
 
-  getCurrentUser(params: any) {
-    return getCurrentUser(params);
-  },
-});
+  getCurrentUser,
+};
 
 $(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) => {
   if (ajaxSettings.__silent__) return;
@@ -59,14 +58,14 @@ $(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) => {
   alert('서버 오류로 요청에 실패했습니다.');
 });
 
-bootstrap(app, controller => {
+bootstrap(app, loader, controller => {
   nprogress.configure({
     trickleRate: 0.4,
     trickleSpeed: 600,
     easing: 'ease',
   });
 
-  controller!.subscribe({
+  controller.subscribe({
     willLoad() {
       nprogress.start();
     },

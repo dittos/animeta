@@ -1,17 +1,16 @@
-import { RouteComponentProps, RouteHandler } from 'nuri/app';
+import { RouteComponentProps, RouteHandler } from '../routes';
 import React from 'react';
 import { User as UserLayout } from '../layouts';
 import * as Layout from '../ui/Layout';
 import * as Grid from '../ui/Grid';
 import Styles from '../../less/table-period.less';
 import { TableItem } from '../ui/TableItem';
-import { UserDTO, WorkDTO } from '../types';
+import { WorkDTO } from '../../../shared/types';
 import { formatPeriod } from '../util';
 import { Link } from 'nuri';
+import { UserLayoutPropsData } from '../ui/UserLayout';
 
-type UserTableRouteData = {
-  currentUser?: UserDTO;
-  user: UserDTO;
+type UserTableRouteData = UserLayoutPropsData & {
   period: string;
   items: WorkDTO[];
 };

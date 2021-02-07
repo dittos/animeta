@@ -3,8 +3,8 @@ import { User, Stackable, StackablePropsData } from '../layouts';
 import AddRecordDialog from '../ui/AddRecordDialog';
 import { trackEvent } from '../Tracking';
 import * as Mutations from '../Mutations';
-import { RouteComponentProps, RouteHandler } from 'nuri/app';
-import { RecordDTO, UserDTO } from '../types_generated';
+import { RouteComponentProps, RouteHandler } from '../routes';
+import { RecordDTO, UserDTO } from '../../../shared/types_generated';
 
 type AddRecordRouteData = StackablePropsData & {
   currentUser: UserDTO;
@@ -49,7 +49,10 @@ const routeHandler: RouteHandler<AddRecordRouteData> = {
         stats: true,
       },
     });
-    // TODO: login check
+    // TODO: redirect to login page
+    if (!currentUser) {
+      throw new Error('Login required.');
+    }
     return {
       currentUser,
       user: currentUser, // for layout

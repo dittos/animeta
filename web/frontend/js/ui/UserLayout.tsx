@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Link } from 'nuri';
 import Styles from './UserLayout.less';
 import * as Grid from './Grid';
-import { UserDTO } from '../types_generated';
+import { UserDTO } from '../../../shared/types_generated';
 
 export interface UserLayoutProps {
   data: UserLayoutPropsData;
@@ -11,7 +11,7 @@ export interface UserLayoutProps {
 }
 
 export interface UserLayoutPropsData {
-  currentUser?: UserDTO | null;
+  currentUser: UserDTO | null;
   user: UserDTO;
 }
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'nuri';
 import { getWorkURL } from '../util';
 import Styles from './WeeklyChart.less';
-import { WorkDTO } from '../types_generated';
+import { WorkDTO } from '../../../shared/types_generated';
 
 export type WeeklyChartItem = {
   rank: number;

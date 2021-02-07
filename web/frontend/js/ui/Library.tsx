@@ -11,7 +11,7 @@ import * as Grid from './Grid';
 import { Switch, SwitchItem } from './Switch';
 import AddRecordDialog from './AddRecordDialog';
 import { trackEvent } from '../Tracking';
-import { CategoryDTO, RecordDTO, StatusType, UserDTO } from '../types';
+import { CategoryDTO, RecordDTO, StatusType, UserDTO } from '../../../shared/types';
 import { LinkProps } from 'nuri/components';
 
 function getDateHeader(record: RecordDTO): string {

@@ -66,7 +66,7 @@ class LoginForm extends React.Component<{
       password: this.passwordInput.current!.value,
       persistent: this.state.isPersistent,
     }).then(
-      authResult => API.createFrontendSession(authResult).then(() => {
+      authResult => API.createFrontendSession({ authResult }).then(() => {
         if (this.props.next) {
           location.href = (this.props.next as any).redirectToUser
             ? `/users/${username}/`

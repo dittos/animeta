@@ -12,6 +12,9 @@
       "dom"
     ]
   },
+  "include": [
+    "../shared/**/*"
+  ],
   "exclude": [
     "bundle.js"
   ]

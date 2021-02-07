@@ -7,7 +7,7 @@ export class CompilingAppProvider implements AppProvider {
   private compiler: webpack.Compiler;
   private vfs: MemoryFileSystem;
   private bundleFilename: string;
-  private app: App;
+  private app: App<any>;
 
   constructor(webpackConfig: webpack.Configuration) {
     this.compiler = webpack(webpackConfig);

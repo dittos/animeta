@@ -10,13 +10,13 @@ import * as Grid from '../ui/Grid';
 import LoginDialog from '../ui/LoginDialog';
 import SearchInput from '../ui/SearchInput';
 import { App } from '../layouts';
-import { RecordDTO, WorkDTO } from '../types';
-import { RouteComponentProps, RouteHandler } from 'nuri/app';
+import { RecordDTO, WorkDTO } from '../../../shared/types';
+import { RouteComponentProps, RouteHandler } from '../routes';
 import { Popover } from '../ui/Popover';
 import { TableShareDialog } from '../ui/TableShareDialog';
 import { TableItem } from '../ui/TableItem';
 import { formatPeriod } from '../util';
-import { UserDTO } from '../types_generated';
+import { UserDTO } from '../../../shared/types_generated';
 
 function isRecommendationEnabled(period: string): boolean {
   return period === Periods.current || period === Periods.upcoming;
@@ -211,7 +211,7 @@ type TableFilter = {
 };
 
 type TableRouteData = {
-  currentUser: UserDTO;
+  currentUser: UserDTO | null;
   period: string;
   items: WorkDTO[];
   containsKRSchedule: boolean;

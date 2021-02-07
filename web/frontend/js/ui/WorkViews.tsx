@@ -12,7 +12,7 @@ import WeeklyChart, { WeeklyChartItem } from './WeeklyChart';
 import { Post } from './Post';
 import Styles from './WorkViews.less';
 import * as Mutations from '../Mutations';
-import { PostDTO, RecordDTO, UserDTO, WorkDTO } from '../types_generated';
+import { PostDTO, RecordDTO, UserDTO, WorkDTO } from '../../../shared/types_generated';
 import { Subscription } from 'rxjs';
 
 function Sidebar({ work, chart, episode }: {
@@ -84,7 +84,7 @@ function Sidebar({ work, chart, episode }: {
 }
 
 export class Work extends React.Component<{
-  currentUser?: UserDTO;
+  currentUser: UserDTO | null;
   work: WorkDTO;
   episode?: string;
   chart: WeeklyChartItem[];

@@ -7,7 +7,7 @@ import SearchInput from './SearchInput';
 import { Dropdown } from './Dropdown';
 import Styles from './GlobalHeader.less';
 import { getStatusDisplay } from '../util';
-import { RecordDTO, UserDTO } from '../types_generated';
+import { RecordDTO, UserDTO } from '../../../shared/types_generated';
 
 class DropdownUserMenu extends React.Component<{
   user: UserDTO;

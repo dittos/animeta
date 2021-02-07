@@ -23,9 +23,9 @@ import { CenteredFullWidth } from '../ui/Layout';
 import ModalStyles from '../ui/Modal.less';
 import { trackEvent } from '../Tracking';
 import { setLastPublishTwitter } from '../Prefs';
-import { RouteComponentProps, RouteHandler } from 'nuri/app';
-import { CategoryDTO, PostDTO, RecordDTO, UserDTO } from '../types_generated';
-import { RecordFetchOptions } from '../types';
+import { RouteComponentProps, RouteHandler } from '../routes';
+import { CategoryDTO, PostDTO, RecordDTO, UserDTO } from '../../../shared/types_generated';
+import { RecordFetchOptions } from '../../../shared/types';
 
 type RecordRouteData = {
   currentUser: UserDTO | null;

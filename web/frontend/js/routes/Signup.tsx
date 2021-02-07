@@ -2,7 +2,7 @@ import React from 'react';
 import { App } from '../layouts';
 import { createAccount, createFrontendSession } from '../API';
 import { trackEvent } from '../Tracking';
-import { RouteComponentProps } from 'nuri/app';
+import { RouteComponentProps } from '../routes';
 // TODO: css module
 
 class Signup extends React.Component<RouteComponentProps<any>> {
@@ -106,7 +106,7 @@ class Signup extends React.Component<RouteComponentProps<any>> {
           eventAction: 'SignUp',
         });
         try {
-          await createFrontendSession(result.authResult);
+          await createFrontendSession({ authResult: result.authResult });
         } catch (e) {
           // ignore
         }

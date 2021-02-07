@@ -3,11 +3,11 @@ import fs from 'fs';
 import { App } from 'nuri/app';
 
 export interface AppProvider {
-  get(): App;
+  get(): App<any>;
 }
 
 export class DefaultAppProvider implements AppProvider {
-  private app: App;
+  private app: App<any>;
 
   constructor(bundlePath: string) {
     const code = fs.readFileSync(bundlePath).toString('utf8');
@@ -19,7 +19,7 @@ export class DefaultAppProvider implements AppProvider {
   }
 }
 
-export function evalCode(code: string): App {
+export function evalCode(code: string): App<any> {
   const sandbox = {
     require,
     module: { exports: <any>{} }

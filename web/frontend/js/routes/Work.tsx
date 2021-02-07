@@ -1,13 +1,13 @@
 import React from 'react';
 import * as WorkViews from '../ui/WorkViews';
 import { App } from '../layouts';
-import { PostDTO, RecordDTO, UserDTO, WorkDTO } from '../types_generated';
-import { RouteComponentProps, RouteHandler } from 'nuri/app';
+import { PostDTO, RecordDTO, UserDTO, WorkDTO } from '../../../shared/types_generated';
+import { RouteComponentProps, RouteHandler } from '../routes';
 import { WeeklyChartItem } from '../ui/WeeklyChart';
-import { PostFetchOptions } from '../types';
+import { PostFetchOptions } from '../../../shared/types';
 
 type WorkRouteData = {
-  currentUser?: UserDTO;
+  currentUser: UserDTO | null;
   work: WorkDTO;
   chart: WeeklyChartItem[];
   posts: PostDTO[];

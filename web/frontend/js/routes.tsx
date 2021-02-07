@@ -1,5 +1,6 @@
 import React from 'react';
 import { createApp } from 'nuri';
+import * as NuriApp from 'nuri/app';
 import Periods from './Periods.json';
 import * as layouts from './layouts';
 import LoginDialog from './ui/LoginDialog';
@@ -15,8 +16,13 @@ import UserTableRoute from './routes/UserTable';
 import RecordRoute from './routes/Record';
 import AddRecordRoute from './routes/AddRecord';
 import ManageCategoryRoute from './routes/ManageCategory';
+import { Loader } from '../../shared/loader';
 
-var app = createApp();
+export type RouteHandler<D> = NuriApp.RouteHandler<D, Loader>;
+export type RouteComponent<D> = NuriApp.RouteComponent<D, Loader>;
+export type RouteComponentProps<D> = NuriApp.RouteComponentProps<D, Loader>;
+
+var app = createApp<Loader>();
 
 app.title = routeTitle => {
   return routeTitle + (routeTitle ? ' - ' : '') + '애니메타';

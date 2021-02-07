@@ -1,4 +1,4 @@
-import { PostDTO, RecordDTO, WorkMetadata$SourceType, StatusType } from "./types";
+import { PostDTO, RecordDTO, WorkMetadata$SourceType, StatusType } from "../../shared/types";
 
 interface HasStatus {
   status_type: string;

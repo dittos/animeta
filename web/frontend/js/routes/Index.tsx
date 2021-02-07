@@ -5,11 +5,11 @@ import WeeklyChart, { WeeklyChartItem } from '../ui/WeeklyChart';
 import { LoadMore } from '../ui/LoadMore';
 import { Post } from '../ui/Post';
 import Styles from '../../less/index.less';
-import { RouteComponentProps, RouteHandler } from 'nuri/app';
-import { PostDTO, UserDTO } from '../types_generated';
+import { RouteComponentProps, RouteHandler } from '../routes';
+import { PostDTO, UserDTO } from '../../../shared/types_generated';
 
 type IndexRouteData = {
-  currentUser?: UserDTO;
+  currentUser: UserDTO | null;
   posts: PostDTO[];
   chart: WeeklyChartItem[];
 };

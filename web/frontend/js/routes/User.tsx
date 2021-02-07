@@ -1,11 +1,11 @@
-import { RouteComponentProps, RouteHandler } from 'nuri/app';
+import { RouteComponentProps, RouteHandler } from '../routes';
 import React from 'react';
 import { User as UserLayout } from '../layouts';
-import { RecordDTO, UserDTO } from '../types';
+import { RecordDTO, UserDTO } from '../../../shared/types';
 import Library, { LibraryRouteQuery } from '../ui/Library';
 
 type UserRouteData = {
-  currentUser?: UserDTO;
+  currentUser: UserDTO | null;
   user: UserDTO;
   query: LibraryRouteQuery;
   records: {
@@ -19,30 +19,29 @@ type UserRouteData = {
   };
 };
 
-class User extends React.Component<RouteComponentProps<UserRouteData>> {
-  render() {
-    const { currentUser, user, query, records } = this.props.data;
-    const canEdit = currentUser ? currentUser.id === user.id : false;
-    return (
-      <Library
-        user={user}
-        count={records.counts.total}
-        query={query}
-        records={records.data}
-        filteredCount={records.counts.filtered}
-        categoryStats={records.counts.by_category_id}
-        categoryList={user.categories!}
-        statusTypeStats={records.counts.by_status_type}
-        canEdit={canEdit}
-        onAddRecord={this._addRecord}
-      />
-    );
+function User({ data, controller }: RouteComponentProps<UserRouteData>) {
+  const { currentUser, user, query, records } = data;
+  const canEdit = currentUser ? currentUser.id === user.id : false;
+
+  function addRecord() {
+    const basePath = `/users/${encodeURIComponent(user.name)}/`;
+    controller!.load({ path: basePath, query: {} });
   }
 
-  _addRecord = () => {
-    const basePath = `/users/${encodeURIComponent(this.props.data.user.name)}/`;
-    this.props.controller!.load({ path: basePath, query: {} });
-  };
+  return (
+    <Library
+      user={user}
+      count={records.counts.total}
+      query={query}
+      records={records.data}
+      filteredCount={records.counts.filtered}
+      categoryStats={records.counts.by_category_id}
+      categoryList={user.categories!}
+      statusTypeStats={records.counts.by_status_type}
+      canEdit={canEdit}
+      onAddRecord={addRecord}
+    />
+  );
 }
 
 const routeHandler: RouteHandler<UserRouteData> = {

@@ -1,14 +1,15 @@
-import { RouteComponentProps, RouteHandler } from 'nuri/app';
+import { RouteComponentProps, RouteHandler } from '../routes';
 import React from 'react';
 import { getUserPosts } from '../API';
 import { User } from '../layouts';
-import { PostDTO, UserDTO } from '../types_generated';
+import { PostDTO, UserDTO } from '../../../shared/types_generated';
 import * as Layout from '../ui/Layout';
 import { LoadMore } from '../ui/LoadMore';
 import { Post } from '../ui/Post';
 import Styles from './UserHistory.less';
+import { UserLayoutPropsData } from '../ui/UserLayout';
 
-type UserHistoryRouteData = {
+type UserHistoryRouteData = UserLayoutPropsData & {
   user: UserDTO;
 };
 

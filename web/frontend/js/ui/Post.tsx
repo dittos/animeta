@@ -4,7 +4,7 @@ import * as util from '../util';
 import { TimeAgo } from './TimeAgo';
 import PostComment from './PostComment';
 import Styles from './Post.less';
-import { PostDTO } from '../types_generated';
+import { PostDTO } from '../../../shared/types_generated';
 
 export function Post({
   post,

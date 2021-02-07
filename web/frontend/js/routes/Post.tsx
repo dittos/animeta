@@ -3,13 +3,13 @@ import * as WorkViews from '../ui/WorkViews';
 import { getStatusDisplay } from '../util';
 import { App } from '../layouts';
 import { Post as PostComponent } from '../ui/Post';
-import { RouteComponentProps, RouteHandler } from 'nuri/app';
-import { PostDTO, RecordDTO, UserDTO, WorkDTO } from '../types_generated';
+import { RouteComponentProps, RouteHandler } from '../routes';
+import { PostDTO, RecordDTO, UserDTO, WorkDTO } from '../../../shared/types_generated';
 import { WeeklyChartItem } from '../ui/WeeklyChart';
-import { PostFetchOptions } from '../types';
+import { PostFetchOptions } from '../../../shared/types';
 
 type PostRouteData = {
-  currentUser?: UserDTO;
+  currentUser: UserDTO | null;
   post: PostDTO;
   chart: WeeklyChartItem[];
   work: WorkDTO;

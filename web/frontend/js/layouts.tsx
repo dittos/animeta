@@ -1,6 +1,6 @@
-import { RouteComponentProps } from 'nuri/app';
+import { RouteComponentProps } from './routes';
 import React from 'react';
-import { UserDTO } from './types_generated';
+import { UserDTO } from '../../shared/types';
 import { GlobalHeader, GlobalHeaderProps } from './ui/GlobalHeader';
 import UserLayout, { UserLayoutProps, UserLayoutPropsData } from './ui/UserLayout';
 import * as Sentry from '@sentry/react';
@@ -16,7 +16,7 @@ function ErrorFallback() {
   </>
 }
 
-export function App<Props extends { data: { currentUser?: UserDTO } }>(
+export function App<Props extends { data: { currentUser: UserDTO | null } }>(
   Component: React.JSXElementConstructor<Props>,
   globalHeaderProps?: Partial<GlobalHeaderProps>
 ) {

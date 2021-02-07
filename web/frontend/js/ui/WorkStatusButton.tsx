@@ -3,12 +3,12 @@ import { Link } from 'nuri';
 import * as util from '../util';
 import Styles from './WorkStatusButton.less';
 import LoginDialog from './LoginDialog';
-import { RecordDTO, UserDTO, WorkDTO } from '../types_generated';
+import { RecordDTO, UserDTO, WorkDTO } from '../../../shared/types_generated';
 
 function WorkStatusButton({ work, record, currentUser }: {
   work: WorkDTO;
   record: RecordDTO | null;
-  currentUser?: UserDTO;
+  currentUser: UserDTO | null;
 }) {
   if (record) {
     return (

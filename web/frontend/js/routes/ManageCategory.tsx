@@ -10,8 +10,8 @@ import {
   updateCategoryOrder,
 } from '../API';
 import Styles from './ManageCategory.less';
-import { CategoryDTO, UserDTO } from '../types_generated';
-import { RouteComponentProps, RouteHandler } from 'nuri/app';
+import { CategoryDTO, UserDTO } from '../../../shared/types_generated';
+import { RouteComponentProps, RouteHandler } from '../routes';
 import { UserLayoutPropsData } from '../ui/UserLayout';
 
 type ManageCategoryRouteData = UserLayoutPropsData & {
@@ -220,10 +220,14 @@ const routeHandler: RouteHandler<ManageCategoryRouteData> = {
         categories: true,
       },
     });
+    // TODO: redirect to login page
+    if (!currentUser) {
+      throw new Error('Login required.');
+    }
     return {
       currentUser,
       user: currentUser, // for layout
-      categories: currentUser.categories,
+      categories: currentUser.categories!,
     };
   },
 
