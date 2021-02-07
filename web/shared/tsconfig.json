@@ -1,12 +1,10 @@
 {
   "compilerOptions": {
+    "composite": true,
     "outDir": "./dist/",
     "noImplicitAny": true,
-    "strictNullChecks": true,
-    "module": "esnext",
-    "moduleResolution": "node",
+    "module": "commonjs",
     "esModuleInterop": true,
-    "resolveJsonModule": true,
     "target": "es5",
     "jsx": "react",
     "allowJs": true,
@@ -17,11 +15,5 @@
   },
   "include": [
     "./**/*"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
-  "references": [
-    { "path": "../shared" }
   ]
 }

@@ -6,6 +6,7 @@ WORKDIR /app
 COPY package.json package-lock.json /app/
 RUN npm ci
 
+COPY shared /app/shared
 COPY frontend-server /app/frontend-server
 RUN npm run build-dist
 RUN cp frontend-server/*.ejs frontend-dist/

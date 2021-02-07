@@ -76,6 +76,7 @@ module.exports = env => {
             loader: 'ts-loader',
             options: {
               transpileOnly: !env.prod,
+              projectReferences: true,
             }
           },
         },

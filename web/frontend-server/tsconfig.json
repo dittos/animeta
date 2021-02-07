@@ -13,9 +13,12 @@
     ]
   },
   "include": [
-    "../shared/**/*"
+    "./**/*",
   ],
   "exclude": [
     "bundle.js"
+  ],
+  "references": [
+    { "path": "../shared" }
   ]
 }
