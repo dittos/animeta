@@ -79,5 +79,5 @@ class CreateAccountController(
     }
 
     private fun usernameAlreadyExistError() =
-        ApiException("회원가입 실패", HttpStatus.BAD_REQUEST, extra = mapOf("username" to "해당 사용자명은 이미 존재합니다."))
+        ApiException("이미 사용 중인 아이디입니다. 다른 아이디로 가입하세요.", HttpStatus.BAD_REQUEST)
 }

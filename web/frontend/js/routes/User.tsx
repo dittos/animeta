@@ -4,19 +4,21 @@ import { User as UserLayout } from '../layouts';
 import { RecordDTO, UserDTO } from '../../../shared/types';
 import Library, { LibraryRouteQuery } from '../ui/Library';
 
+type RecordsResult = {
+  data: RecordDTO[];
+  counts: {
+    total: number;
+    filtered: number;
+    by_status_type: {[key: string]: number} & {_all: number};
+    by_category_id: {[key: string]: number} & {_all: number};
+  };
+};
+
 type UserRouteData = {
   currentUser: UserDTO | null;
   user: UserDTO;
   query: LibraryRouteQuery;
-  records: {
-    data: RecordDTO[];
-    counts: {
-      total: number;
-      filtered: number;
-      by_status_type: {[key: string]: number} & {_all: number};
-      by_category_id: {[key: string]: number} & {_all: number};
-    };
-  };
+  records: RecordsResult;
 };
 
 function User({ data, controller }: RouteComponentProps<UserRouteData>) {
@@ -54,13 +56,13 @@ const routeHandler: RouteHandler<UserRouteData> = {
       loader.getCurrentUser({
         options: {},
       }),
-      loader.call(`/users/${encodeURIComponent(username)}`, {
+      loader.call<UserDTO>(`/users/${encodeURIComponent(username)}`, {
         options: {
           stats: true,
           categories: true,
         },
       }),
-      loader.call(`/users/${encodeURIComponent(username)}/records`, {
+      loader.call<RecordsResult>(`/users/${encodeURIComponent(username)}/records`, {
         sort,
         status_type: type,
         category_id: category,

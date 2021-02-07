@@ -1,0 +1,77 @@
+@import "../../less/variables.less";
+
+.container {
+    padding: 20px 10px;
+    margin: 0 auto;
+    width: 320px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.header {
+    margin-bottom: 30px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: normal;
+    text-align: center;
+    margin: 0;
+}
+
+.errors {
+    background-color: #ffa;
+    border: 1px solid #deb200;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 16px;
+    font-size: 13px;
+}
+
+.row {
+    margin-bottom: 25px;
+
+    label {
+        display: block;
+        color: @color-text-title;
+        padding-bottom: 10px;
+        font-weight: bold;
+        pointer-events: none;
+    }
+
+    input {
+        padding: 10px;
+        border: 1px solid @color-border-control;
+        line-height: 25px;
+        font-size: 18px;
+        width: 100%;
+        border-radius: 5px;
+        background: #fff;
+        box-sizing: border-box;
+        &:focus {
+            background: @color-bg-lightest;
+            outline: 0;
+        }
+    }
+}
+
+.hint {
+    padding-top: 10px;
+    color: @color-text-light;
+    font-size: 14px;
+}
+
+.signupButton {
+    display: block;
+    background: @color-main;
+    border: none;
+    border-radius: 5px;
+    margin-top: 5px;
+    height: 45px;
+    padding: 0;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+}

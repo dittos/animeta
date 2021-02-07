@@ -47,7 +47,7 @@ export function doDelete(url: string) {
 
 // Login Session
 
-type AuthResult = {
+export type AuthResult = {
   sessionKey: string;
   expiryMs: number;
 };

@@ -8,7 +8,6 @@ import { trackPageView } from './Tracking';
 import { Loader } from '../../shared/loader';
 import '../less/nprogress.less';
 import '../less/base.less';
-import '../less/signup.less';
 
 if ((window as any).SENTRY_DSN) {
   Sentry.init({

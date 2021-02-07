@@ -21,6 +21,29 @@ function hot(env, entry) {
   return entry;
 }
 
+function cssLoader(env, modules) {
+  return [
+    {
+      loader: 'css-loader',
+      options: {
+        localIdentName: '[name]_[local]_[hash:base64:5]',
+        importLoaders: 1,
+        modules,
+        exportOnlyLocals: env.server,
+      },
+    },
+    {
+      loader: 'postcss-loader',
+      options: {
+        config: {
+          path: path.join(__dirname, 'postcss.config.js'),
+        },
+      },
+    },
+    'less-loader',
+  ]
+}
+
 module.exports = env => {
   const config = {
     mode: env.prod ? 'production' : 'development',
@@ -61,27 +84,13 @@ module.exports = env => {
           use: 'url-loader',
         },
         {
+          test: /\.module\.less$/,
+          use: styleLoader(env, cssLoader(env, 'local')),
+        },
+        {
           test: /\.less$/,
-          use: styleLoader(env, [
-            {
-              loader: 'css-loader',
-              options: {
-                localIdentName: '[name]_[local]_[hash:base64:5]',
-                importLoaders: 1,
-                modules: 'global',
-                exportOnlyLocals: env.server,
-              },
-            },
-            {
-              loader: 'postcss-loader',
-              options: {
-                config: {
-                  path: path.join(__dirname, 'postcss.config.js'),
-                },
-              },
-            },
-            'less-loader',
-          ]),
+          exclude: /\.module\.less/,
+          use: styleLoader(env, cssLoader(env, 'global')),
         },
         {
           test: /\.css$/,

@@ -1,9 +1,9 @@
 import React from 'react';
 import { App } from '../layouts';
-import { createAccount, createFrontendSession } from '../API';
+import { AuthResult, createAccount, createFrontendSession } from '../API';
 import { trackEvent } from '../Tracking';
 import { RouteComponentProps } from '../routes';
-// TODO: css module
+import Styles from './Signup.module.less';
 
 class Signup extends React.Component<RouteComponentProps<any>> {
   state = {
@@ -11,132 +11,115 @@ class Signup extends React.Component<RouteComponentProps<any>> {
     username: '',
     password: '',
     passwordCheck: '',
-    errors: null as {
-      username?: string;
-    } | null,
   };
 
   render() {
     return (
-      <div className="signup-form" onSubmit={this._onSubmit}>
-        <div className="signup-header">
-          <h2 className="signup-title">회원 가입</h2>
+      <div className={Styles.container} onSubmit={this.onSubmit}>
+        <div className={Styles.header}>
+          <h2 className={Styles.title}>회원 가입</h2>
         </div>
-        {this._renderError()}
         <form method="post" action="/signup/">
-          <div className="signup-row-group">
-            <div className="signup-row signup-row-hint">
-              <label>아이디</label>
-              <span className="signup-hint">
-                알파벳, 숫자, '_' 만 가능. 최대 30글자.
-              </span>
-              <input
-                name="username"
-                maxLength={30}
-                autoFocus
-                value={this.state.username}
-                onChange={e => this.setState({ username: e.target.value })}
-              />
-            </div>
-            <div className="signup-row">
-              <label>암호</label>
-              <input
-                type="password"
-                value={this.state.password}
-                onChange={e => this.setState({ password: e.target.value })}
-              />
-            </div>
-            <div className="signup-row">
-              <label>암호 (확인)</label>
-              <input
-                type="password"
-                value={this.state.passwordCheck}
-                onChange={e =>
-                  this.setState({
-                    passwordCheck: e.target.value,
-                  })
-                }
-              />
+          <div className={Styles.row}>
+            <label>아이디</label>
+            <input
+              name="username"
+              maxLength={30}
+              autoFocus
+              value={this.state.username}
+              onChange={e => this.setState({ username: e.target.value })}
+            />
+            <div className={Styles.hint}>
+              알파벳, 숫자, '_' 만 가능. 최대 30글자.
             </div>
           </div>
-          {!this.state.submitted && (
-            <button
-              type="submit"
-              className="btn-signup"
-              disabled={!this._isValid()}
-            >
-              회원 가입
-            </button>
-          )}
+          <div className={Styles.row}>
+            <label>암호</label>
+            <input
+              type="password"
+              value={this.state.password}
+              onChange={e => this.setState({ password: e.target.value })}
+            />
+          </div>
+          <div className={Styles.row}>
+            <label>암호 (확인)</label>
+            <input
+              type="password"
+              value={this.state.passwordCheck}
+              onChange={e =>
+                this.setState({
+                  passwordCheck: e.target.value,
+                })
+              }
+            />
+          </div>
+          <button
+            type="submit"
+            className={Styles.signupButton}
+            disabled={this.state.submitted}
+          >
+            회원 가입
+          </button>
         </form>
       </div>
     );
   }
 
-  _renderError() {
-    if (!this.state.errors) return null;
-    var error = this.state.errors.username;
-    if (!error) return null;
-    return <div className="signup-errors">{error}</div>;
+  validate(): string | null {
+    const { username, password, passwordCheck } = this.state;
+    if (username.length === 0) {
+      return '아이디를 입력하세요.';
+    }
+    if (username.length > 30 || !username.match(/^[A-Za-z0-9_]+$/)) {
+      return '사용할 수 없는 아이디 형식입니다.';
+    }
+    if (password.length === 0) {
+      return '암호를 입력하세요.';
+    }
+    if (password !== passwordCheck) {
+      return '암호 확인을 정확히 입력하세요.';
+    }
+    return null;
   }
 
-  _isValid() {
-    return (
-      this.state.username.length > 0 &&
-      this.state.username.length <= 30 &&
-      this.state.username.match(/^[A-Za-z0-9_]+$/) &&
-      this.state.password.length > 0 &&
-      this.state.passwordCheck.length > 0 &&
-      this.state.passwordCheck == this.state.password
-    );
-  }
-
-  _onSubmit = (event: React.FormEvent) => {
+  private onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    const invalid = this.validate();
+    if (invalid) {
+      alert(invalid);
+      return;
+    }
+
     this.setState({ submitted: true });
-    createAccount({
-      username: this.state.username,
-      password1: this.state.password,
-      password2: this.state.passwordCheck,
-    }, true).then(
-      async result => {
-        const basePath = `/users/${encodeURIComponent(this.state.username)}/`;
-        trackEvent({
-          eventCategory: 'User',
-          eventAction: 'SignUp',
-        });
-        try {
-          await createFrontendSession({ authResult: result.authResult });
-        } catch (e) {
-          // ignore
-        }
-        this.props.controller!.load({
-          path: basePath,
-          query: {},
-        });
-      },
-      err => {
-        if (err.responseText) {
-          try {
-            const result = JSON.parse(err.responseText);
-            if (result.extra) {
-              this.setState({
-                submitted: false,
-                errors: result.extra,
-              });
-              return;
-            }
-            alert(result.message);
-          } catch (e) {
-            // ignore
-          }
-        }
-        this.setState({
-          submitted: false,
-        });
-      }
-    );
+    try {
+      const result = await createAccount({
+        username: this.state.username,
+        password1: this.state.password,
+        password2: this.state.passwordCheck,
+      });
+      this.handleSuccess(result);
+    } catch (e) {
+      this.setState({ submitted: false });
+    }
   };
+
+  private handleSuccess = async (result: { authResult: AuthResult }) => {
+    const basePath = `/users/${encodeURIComponent(this.state.username)}/`;
+    trackEvent({
+      eventCategory: 'User',
+      eventAction: 'SignUp',
+    });
+    try {
+      await createFrontendSession({ authResult: result.authResult });
+    } catch (e) {
+      // ignore
+    }
+    this.props.controller!.load({
+      path: basePath,
+      query: {},
+    });
+  }
 }
 
 export default {

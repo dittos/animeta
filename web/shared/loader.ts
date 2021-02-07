@@ -1,6 +1,6 @@
 import { UserDTO, UserFetchOptions } from './types';
 
 export type Loader = {
-  call(path: string, params?: any): Promise<any>;
+  call<T = any>(path: string, params?: any): Promise<T>;
   getCurrentUser(params?: { options?: UserFetchOptions }): Promise<UserDTO | null>;
 };

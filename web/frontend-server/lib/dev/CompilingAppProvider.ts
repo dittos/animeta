@@ -41,6 +41,10 @@ export class CompilingAppProvider implements AppProvider {
 
   private reloadApp() {
     const code = this.vfs.readFileSync('/' + this.bundleFilename).toString('utf8');
-    this.app = evalCode(code);
+    try {
+      this.app = evalCode(code);
+    } catch (e) {
+      console.error(e);
+    }
   }
 }
