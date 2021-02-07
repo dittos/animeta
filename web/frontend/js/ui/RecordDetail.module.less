@@ -1,6 +1,6 @@
 @import "../../less/variables.less";
 
-:local(.header) {
+.header {
     margin-bottom: 20px;
 
     @media (min-width: 481px) {
@@ -9,7 +9,7 @@
     }
 }
 
-:local(.title) {
+.title {
     float: left;
     margin: 0;
     font-size: 20px;
@@ -23,7 +23,7 @@
     }
 }
 
-:local(.toolbar) {
+.toolbar {
     float: right;
 
     @media (max-width: 480px) {
@@ -33,7 +33,7 @@
     }
 }
 
-:local(.titleForm) {
+.titleForm {
     float: left;
 
     input {
@@ -43,7 +43,7 @@
 
 @toolbar-button-spacing: 20px;
 
-:local(.toolbarButton) {
+.toolbarButton {
     float: left;
     vertical-align: middle;
     text-decoration: none;
@@ -52,14 +52,14 @@
     color: @color-text-dark;
 }
 
-:local(.deleteButton) {
+.deleteButton {
     composes: toolbarButton;
     margin-left: @toolbar-button-spacing;
     color: @color-danger;
     border-color: @color-danger;
 }
 
-:local(.categoryForm) {
+.categoryForm {
     composes: toolbarButton;
 
     float: left;
@@ -79,44 +79,43 @@
     }
 }
 
-:local(.postComposerContainer) {
+.postComposerContainer {
     padding-bottom: 20px;
 }
 
-:local(.posts) {
+.posts {
 }
 
-:local(.post) {
-    // TODO: css module
+.post {
     padding-bottom: 16px;
     line-height: 1.8;
     font-size: 14px;
 
-    &.no-comment {
-        .meta {
+    &.noComment {
+        .postMeta {
             display: inline;
         }
     }
 
-    .progress {
+    .postProgress {
         font-weight: bold;
         margin-right: 8px;
         display: inline;
     }
-    .comment {
+    .postComment {
         display: inline;
     }
-    .meta {
+    .postMeta {
         font-size: 12px;
     }
-    .time {
+    .postTime {
         color: @color-text-light;
         text-decoration: none;
         &:hover {
             text-decoration: underline;
         }
     }
-    .btn-delete {
+    .deletePostButton {
         margin-left: 8px;
         color: @color-danger;
         text-decoration: none;
@@ -127,7 +126,7 @@
     }
 }
 
-:local(.spoilerMark) {
+.spoilerMark {
     color: @color-text-light;
     margin-right: 8px;
 }

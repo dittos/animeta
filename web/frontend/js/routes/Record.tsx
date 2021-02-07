@@ -8,7 +8,7 @@ import { TimeAgo } from '../ui/TimeAgo';
 import { PostComposer, PostComposerResult } from '../ui/PostComposer';
 import * as Typeahead from '../ui/Typeahead';
 import PostComment from '../ui/PostComment';
-import Styles from '../ui/RecordDetail.less';
+import Styles from '../ui/RecordDetail.module.less';
 import {
   getRecordPosts,
   updateRecordTitle,
@@ -203,20 +203,20 @@ function PostView({ post, canEdit, canDelete, onDelete }: {
   onDelete(): void;
 }) {
   return (
-    <div className={cx({ [Styles.post]: true, 'no-comment': !post.comment })}>
-      <div className="progress">{util.getStatusText(post)}</div>
-      <PostComment post={post} className="comment" showSpoiler={canEdit} />
-      <div className="meta">
+    <div className={`${Styles.post} ${post.comment ? '' : Styles.noComment}`}>
+      <div className={Styles.postProgress}>{util.getStatusText(post)}</div>
+      <PostComment post={post} className={Styles.postComment} showSpoiler={canEdit} />
+      <div className={Styles.postMeta}>
         {post.contains_spoiler && (
           <span className={Styles.spoilerMark}>
             <i className="fa fa-microphone-slash" />
           </span>
         )}
-        <Link to={util.getPostURL(post)} className="time">
+        <Link to={util.getPostURL(post)} className={Styles.postTime}>
           {post.updated_at ? <TimeAgo time={new Date(post.updated_at)} /> : '#'}
         </Link>
         {canDelete && (
-          <span className="btn-delete" onClick={onDelete}>
+          <span className={Styles.deletePostButton} onClick={onDelete}>
             지우기
           </span>
         )}

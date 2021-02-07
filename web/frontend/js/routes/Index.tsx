@@ -4,7 +4,7 @@ import * as Grid from '../ui/Grid';
 import WeeklyChart, { WeeklyChartItem } from '../ui/WeeklyChart';
 import { LoadMore } from '../ui/LoadMore';
 import { Post } from '../ui/Post';
-import Styles from '../../less/index.less';
+import Styles from './Index.module.less';
 import { RouteComponentProps, RouteHandler } from '../routes';
 import { PostDTO, UserDTO } from '../../../shared/types_generated';
 
