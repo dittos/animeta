@@ -6,3 +6,6 @@ indent_size = 4
 
 [web/{frontend,shared}/**.{js,ts,tsx}]
 indent_size = 2
+
+[backend-ts/**.{js,ts,tsx,json}]
+indent_size = 2

@@ -15,7 +15,8 @@ import { Loader } from '../shared/loader';
 const config = require(process.env.ANIMETA_CONFIG_PATH || './config.json');
 const DEBUG = process.env.NODE_ENV !== 'production';
 const MAINTENANCE = process.env.MAINTENANCE;
-const backend = new Backend(config.backend.baseUrl);
+
+const backend = new Backend(config.backend.baseUrl, config.backend.v4BaseUrl);
 if (config.sentryDsnNew) {
   Sentry.init({ dsn: config.sentryDsnNew });
 }
@@ -36,6 +37,9 @@ function loaderFactory(serverRequest: ServerRequest): Loader {
   return {
     call(path, params) {
       return backend.call(serverRequest, path, serializeParams(params));
+    },
+    callV4(path, params) {
+      return backend.callV4(serverRequest, path, serializeParams(params));
     },
     getCurrentUser(params) {
       return backend.getCurrentUser(serverRequest, serializeParams(params));
@@ -131,6 +135,17 @@ export function createServer({ server = express(), appProvider, getAssets }: {
   proxy.on('proxyReq', onProxyReq);
   proxy.on('error', onProxyError);
 
+  const v4Proxy = httpProxy.createProxyServer({
+    target: config.backend.v4BaseUrl,
+    changeOrigin: false,
+    cookieDomainRewrite: false,
+  });
+  v4Proxy.on('proxyReq', onProxyReq);
+  v4Proxy.on('error', onProxyError);
+
+  server.use('/api/v4', (req, res) => {
+    v4Proxy.web(req, res);
+  });
   server.use('/api', (req, res) => {
     proxy.web(req, res);
   });

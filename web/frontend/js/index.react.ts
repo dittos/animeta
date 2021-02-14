@@ -20,6 +20,9 @@ const loader: Loader = {
   call(path: string, params?: any) {
     return toPromise($.get('/api/v2' + path, serializeParams(params)));
   },
+  callV4(path: string, params?: any) {
+    return toPromise($.get('/api/v4' + path, serializeParams(params)));
+  },
 
   getCurrentUser,
 };
