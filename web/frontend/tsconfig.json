@@ -16,12 +16,10 @@
     ]
   },
   "include": [
-    "./**/*"
+    "./**/*",
+    "../shared/**/*"
   ],
   "exclude": [
     "node_modules"
-  ],
-  "references": [
-    { "path": "../shared" }
   ]
 }
