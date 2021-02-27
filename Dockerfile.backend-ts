@@ -1,0 +1,11 @@
+FROM node:10
+
+WORKDIR /app/backend-ts
+COPY backend-ts/package*.json ./
+COPY web/shared ../web/shared
+RUN npm install
+
+COPY backend-ts .
+RUN node_modules/.bin/nest build
+
+ENTRYPOINT ["node", "dist/backend-ts/src/main.js"]
