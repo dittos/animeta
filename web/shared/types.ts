@@ -17,3 +17,10 @@ export type PostFetchOptions = {
   record?: RecordFetchOptions | null;
   user?: UserFetchOptions | null;
 };
+
+export type SearchResultItem = {
+  id: number;
+  title: string;
+  recordCount: number;
+  imageUrl?: string;
+};
