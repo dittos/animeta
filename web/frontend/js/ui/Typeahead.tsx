@@ -1,12 +1,8 @@
 import throttle from 'lodash/throttle';
+import { SearchResultItem } from '../../../shared/types';
 var $ = require('jquery');
 require('../typeahead');
 
-export type SearchResultItem = {
-  title: string;
-  n: number;
-  id: number;
-};
 type TypeaheadSource = (q: string, cb: (result: SearchResultItem[]) => void) => void
 
 function cachingSource(source: TypeaheadSource, maxSize: number): TypeaheadSource {
@@ -30,7 +26,7 @@ function cachingSource(source: TypeaheadSource, maxSize: number): TypeaheadSourc
 
 export const searchSource = cachingSource(
   throttle(function(q, cb) {
-    $.getJSON('/api/v2/search', { q: q }, cb);
+    $.getJSON('/api/v4/search', { q: q }, cb);
   }, 200),
   20
 );
@@ -43,7 +39,7 @@ export function initSuggest(node: Element) {
   return init(node, null, {
     source: cachingSource(
       throttle(function(q, cb) {
-        $.getJSON('/api/v2/search/suggest', { q: q }, cb);
+        $.getJSON('/api/v4/search/suggest', { q: q }, cb);
       }, 200),
       20
     ),
@@ -57,7 +53,7 @@ export const templates = {
     return $('<div />')
       .append($('<span class="title" />').text(item.title))
       .append(' ')
-      .append($('<span class="count" />').text(item.n + '명 기록'))
+      .append($('<span class="count" />').text(item.recordCount + '명 기록'))
       .html();
   },
 };
