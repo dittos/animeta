@@ -1,0 +1,36 @@
+name: Backend (TS)
+
+on:
+  push:
+    branches: [ master ]
+    paths: ['backend-ts/**', '.github/workflows/backend-ts.yml']
+  pull_request:
+    paths: ['backend-ts/**']
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: docker build -t animeta-backend-ts -f Dockerfile.backend-ts .
+
+    # Deploy
+    - name: Set up gcloud
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+        version: '270.0.0'
+        service_account_email: ${{ secrets.GCP_SA_EMAIL }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+    - name: Docker push
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      run: |
+        gcloud auth configure-docker
+        docker tag animeta-backend-ts gcr.io/ditto-1470749749381/animeta-backend-ts:latest
+        docker push gcr.io/ditto-1470749749381/animeta-backend-ts:latest
