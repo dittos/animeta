@@ -2,6 +2,7 @@
     "backend": {
         "baseUrl": "http://localhost:8080",
         "v4BaseUrl": "http://localhost:8081/api/v4",
+        "graphqlUrl": "http://localhost:8081/api/graphql",
         "remote": false
     },
     "sentryDsn": "",

@@ -4,4 +4,5 @@ export type Loader = {
   call<T = any>(path: string, params?: any): Promise<T>;
   callV4<T = any>(path: string, params?: any): Promise<T>;
   getCurrentUser(params?: { options?: UserFetchOptions }): Promise<UserDTO | null>;
+  graphql<T>(doc: any /* DocumentNode */, variables?: any): Promise<T>;
 };

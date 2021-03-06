@@ -16,7 +16,7 @@ const config = require(process.env.ANIMETA_CONFIG_PATH || './config.json');
 const DEBUG = process.env.NODE_ENV !== 'production';
 const MAINTENANCE = process.env.MAINTENANCE;
 
-const backend = new Backend(config.backend.baseUrl, config.backend.v4BaseUrl);
+const backend = new Backend(config.backend.baseUrl, config.backend.v4BaseUrl, config.backend.graphqlUrl);
 if (config.sentryDsnNew) {
   Sentry.init({ dsn: config.sentryDsnNew });
 }
@@ -44,6 +44,9 @@ function loaderFactory(serverRequest: ServerRequest): Loader {
     getCurrentUser(params) {
       return backend.getCurrentUser(serverRequest, serializeParams(params));
     },
+    graphql(doc, variables) {
+      return backend.graphql(serverRequest, doc, variables);
+    }
   };
 }
 
@@ -66,6 +69,19 @@ export function createServer({ server = express(), appProvider, getAssets }: {
     server.use('/static', express.static('static'));
   }
   server.use(cookieParser());
+
+  // graphql route should go before csurf middlware (FIXME when start using mutations)
+  const graphqlProxy = httpProxy.createProxyServer({
+    target: config.backend.graphqlUrl,
+    changeOrigin: false,
+    cookieDomainRewrite: false,
+  });
+  graphqlProxy.on('proxyReq', onProxyReq);
+  graphqlProxy.on('error', onProxyError);
+  server.use('/api/graphql', (req, res) => {
+    graphqlProxy.web(req, res);
+  })
+
   server.use(csurf({ cookie: true }));
   server.use((req, res, next) => {
     res.cookie('crumb', (req as any).csrfToken());

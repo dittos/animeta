@@ -8,6 +8,7 @@ import { trackPageView } from './Tracking';
 import { Loader } from '../../shared/loader';
 import '../less/nprogress.less';
 import '../less/base.less';
+import { ApolloClient, DocumentNode, InMemoryCache } from '@apollo/client';
 
 if ((window as any).SENTRY_DSN) {
   Sentry.init({
@@ -15,6 +16,11 @@ if ((window as any).SENTRY_DSN) {
     ignoreErrors: ['hideGuidePopup'],
   });
 }
+
+const apollo = new ApolloClient({
+  cache: new InMemoryCache(),
+  uri: '/api/graphql',
+});
 
 const loader: Loader = {
   call(path: string, params?: any) {
@@ -25,6 +31,14 @@ const loader: Loader = {
   },
 
   getCurrentUser,
+
+  graphql<T>(doc: DocumentNode, variables?: any): Promise<T> {
+    return apollo.query<T>({
+      fetchPolicy: 'no-cache',
+      query: doc,
+      variables,
+    }).then(result => result.data)
+  }
 };
 
 $(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) => {

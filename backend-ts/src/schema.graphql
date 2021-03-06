@@ -1,0 +1,35 @@
+type Query {
+  currentUser: User
+  userByName(name: String): User
+  timeline(beforeId: ID, count: Int): [Post]
+}
+
+scalar GraphQLTimestamp
+
+type User {
+  id: ID
+  name: String
+  joinedAt: GraphQLTimestamp
+  isTwitterConnected: Boolean
+  categories: [Category]
+  recordCount: Int
+  postCount: Int
+}
+
+type Category {
+  id: ID
+  user: User
+  name: String
+}
+
+type Post {
+  id: ID
+  record: Record
+  status: String
+  comment: String
+  user: User
+}
+
+type Record {
+  id: ID
+}
