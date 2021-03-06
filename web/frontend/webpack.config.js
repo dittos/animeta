@@ -84,10 +84,7 @@ module.exports = env => {
           test: /(@wry\/.+|nanoid)\/.+\.[tj]s[x]?$/,
           include: /node_modules/,
           use: {
-            loader: 'ts-loader',
-            options: {
-              transpileOnly: true,
-            }
+            loader: 'swc-loader',
           },
         },
         {
