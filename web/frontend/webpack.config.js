@@ -79,6 +79,17 @@ module.exports = env => {
             }
           },
         },
+        // IE11 compat
+        {
+          test: /(@wry\/.+|nanoid)\/.+\.[tj]s[x]?$/,
+          include: /node_modules/,
+          use: {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+            }
+          },
+        },
         {
           test: /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/,
           use: 'url-loader',

@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import * as Sentry from '@sentry/react';
+import fetch from 'cross-fetch';
 import { bootstrap } from 'nuri/client';
 import nprogress from 'nprogress';
 import app from './routes';
@@ -8,7 +9,7 @@ import { trackPageView } from './Tracking';
 import { Loader } from '../../shared/loader';
 import '../less/nprogress.less';
 import '../less/base.less';
-import { ApolloClient, DocumentNode, InMemoryCache } from '@apollo/client';
+import { ApolloClient, DocumentNode, InMemoryCache, HttpLink } from '@apollo/client';
 
 if ((window as any).SENTRY_DSN) {
   Sentry.init({
@@ -19,7 +20,10 @@ if ((window as any).SENTRY_DSN) {
 
 const apollo = new ApolloClient({
   cache: new InMemoryCache(),
-  uri: '/api/graphql',
+  link: new HttpLink({
+    uri: '/api/graphql',
+    fetch,
+  }),
 });
 
 const loader: Loader = {
