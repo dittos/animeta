@@ -9,6 +9,7 @@ import { WorkDTO } from '../../../shared/types';
 import { formatPeriod } from '../util';
 import { Link } from 'nuri';
 import { UserLayoutPropsData } from '../ui/UserLayout';
+import { isRecommendationEnabled } from './Table';
 
 type UserTableRouteData = UserLayoutPropsData & {
   period: string;
@@ -96,6 +97,7 @@ const routeHandler: RouteHandler<UserTableRouteData> = {
       loader.call(`/table/periods/${period}`, {
         only_added: JSON.stringify(true),
         username,
+        with_recommendations: JSON.stringify(isRecommendationEnabled(period)),
       }),
     ]);
     return {

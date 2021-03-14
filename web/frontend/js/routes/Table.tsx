@@ -18,7 +18,7 @@ import { TableItem } from '../ui/TableItem';
 import { formatPeriod } from '../util';
 import { UserDTO } from '../../../shared/types_generated';
 
-function isRecommendationEnabled(period: string): boolean {
+export function isRecommendationEnabled(period: string): boolean {
   return period === Periods.current || period === Periods.upcoming;
 }
 

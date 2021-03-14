@@ -64,8 +64,8 @@ class TablePeriodController(
         val records = recordRepository.findAllByUserAndWorkIdIn(user, result.map { it.id })
                 .map { recordSerializer.serialize(it, RecordSerializer.legacyOptions()) }
                 .associateBy { it.work_id }
-        val recommendationContext = if (withRecommendations && currentUser != null) {
-            recommendationService.createContext(result.map { it.id }, currentUser)
+        val recommendationContext = if (withRecommendations && user != null) {
+            recommendationService.createContext(result.map { it.id }, user)
         } else {
             null
         }
