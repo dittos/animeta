@@ -83,8 +83,8 @@ export class GlobalHeader extends React.Component<GlobalHeaderProps> {
   render() {
     const activeMenu = this.props.activeMenu;
     const user = this.props.currentUser;
-//     const showNotice = this.state.showNotice && activeMenu !== 'search' && !this.props.noNotice;
-    const showNotice = false;
+    const showNotice = this.state.showNotice && activeMenu !== 'search' && !this.props.noNotice;
+    // const showNotice = false;
     return (
       <div className={Styles.container}>
         <Layout.CenteredFullWidth className={Styles.header}>
@@ -127,7 +127,7 @@ export class GlobalHeader extends React.Component<GlobalHeaderProps> {
                 <span className={Styles.globalMenuItemText}>작품 찾기</span>
                 {showNotice && (
                   <span className={Styles.globalMenuItemPopover}>
-                    21년 1월 신작 업데이트
+                    4월 신작 업데이트
                   </span>
                 )}
               </Link>
