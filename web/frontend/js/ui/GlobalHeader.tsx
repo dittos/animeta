@@ -64,7 +64,7 @@ export type GlobalHeaderProps = {
 
 export class GlobalHeader extends React.Component<GlobalHeaderProps> {
   static LAST_NOTICE_CLICKED = 'lastNoticeClicked';
-  static noticeId = '2021Q1_v2';
+  static noticeId = '2021Q2';
 
   state = {
     showNotice: false,
