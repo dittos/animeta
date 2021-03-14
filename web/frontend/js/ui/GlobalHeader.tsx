@@ -83,8 +83,8 @@ export class GlobalHeader extends React.Component<GlobalHeaderProps> {
   render() {
     const activeMenu = this.props.activeMenu;
     const user = this.props.currentUser;
-    const showNotice = this.state.showNotice && activeMenu !== 'search' && !this.props.noNotice;
-    // const showNotice = false;
+//     const showNotice = this.state.showNotice && activeMenu !== 'search' && !this.props.noNotice;
+    const showNotice = false;
     return (
       <div className={Styles.container}>
         <Layout.CenteredFullWidth className={Styles.header}>
