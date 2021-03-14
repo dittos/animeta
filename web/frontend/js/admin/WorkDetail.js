@@ -132,14 +132,6 @@ class WorkDetail extends React.Component {
             {this.state.editRawMetadata ? 'Apply raw metadata' : 'Edit raw metadata'}
           </Button>
         </FormGroup>
-        <Navbar fixed="bottom" style={{ padding: '10px 0' }} bg="light">
-          <Container>
-            <Form inline>
-              <Button variant="primary" onClick={this._saveMetadata} disabled={this.state.isSavingMetadata}>Save</Button>
-              {this.state.showMetadataSaved ? ' Saved!' : null}
-            </Form>
-          </Container>
-        </Navbar>
 
         <hr />
 
@@ -184,6 +176,18 @@ class WorkDetail extends React.Component {
           ))}
           </tbody>
         </Table>
+
+        {/* space for bottom navbar */}
+        <div style={{height: '50px'}} />
+
+        <Navbar fixed="bottom" style={{ padding: '10px 0' }} bg="light">
+          <Container>
+            <Form inline>
+              <Button variant="primary" onClick={this._saveMetadata} disabled={this.state.isSavingMetadata}>Save</Button>
+              {this.state.showMetadataSaved ? ' Saved!' : null}
+            </Form>
+          </Container>
+        </Navbar>
       </div>
     );
   }

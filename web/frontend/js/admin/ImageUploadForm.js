@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Nav, NavItem } from 'react-bootstrap';
+import { Button, Nav } from 'react-bootstrap';
 
 const ImageSources = {
   ANN: 'ann',
@@ -7,7 +7,8 @@ const ImageSources = {
 };
 
 function ImageUploadForm(props) {
-  return <ImageUploadFormInternal key={props.work.id} {...props} />;
+  const work = props.work;
+  return <ImageUploadFormInternal key={`${work.id} ${work.metadata?.annId ?? ''}`} {...props} />;
 }
 
 class ImageUploadFormInternal extends React.Component {

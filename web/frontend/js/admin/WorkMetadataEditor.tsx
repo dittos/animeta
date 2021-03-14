@@ -191,7 +191,8 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                         {sourceTypesV2.map(source => (
                             <FormCheck type="radio" inline name="source" value={source} checked={metadata.source === source}
                                 onChange={this.handleInputChange}
-                                label={source} />
+                                label={source}
+                                id={source} />
                         ))}
                     </div>
                 </FormGroup>
@@ -233,7 +234,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                         onChange={this.handleNamuRefChange}
                     />
                     <div>
-                        {[this.props.title, `${this.props.title}/애니메이션`].map(namuRef => (
+                        {[this.props.title, `${this.props.title}#애니메이션`, `${this.props.title}/애니메이션`].map(namuRef => (
                             <button onClick={() => this.setNamuRef(namuRef)}>
                                 {namuRef}
                             </button>
@@ -261,6 +262,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                         onChange={this.handlePeriodCheckboxChange}
                         value={period}
                         label={`Q${q}`}
+                        id={period}
                     />
                 );
             }
