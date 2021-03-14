@@ -77,7 +77,11 @@ class WorkSerializer(val workService: WorkService,
             source = metadata.source,
             schedule = metadata.schedules?.mapValues { (_, v) ->
                 WorkSchedule(
-                    date = v.date?.atZone(defaultTimeZone)?.toInstant()?.toEpochMilli(),
+                    date = if (v.datePrecision != WorkMetadata.Schedule.DatePrecision.YEAR_MONTH) {
+                        v.date?.atZone(defaultTimeZone)?.toInstant()?.toEpochMilli()
+                    } else {
+                        null
+                    },
                     date_only = v.datePrecision?.let { it == WorkMetadata.Schedule.DatePrecision.DATE },
                     broadcasts = v.broadcasts
                 )
