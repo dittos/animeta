@@ -4,7 +4,7 @@ RUN mkdir /app
 WORKDIR /app
 
 COPY package.json package-lock.json /app/
-RUN npm ci
+RUN npm ci && npm cache clean --force
 
 COPY shared /app/shared
 COPY frontend-server /app/frontend-server
