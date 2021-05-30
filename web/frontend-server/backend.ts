@@ -7,7 +7,7 @@ export const HttpNotFound = {};
 export default class {
   private baseUrl: string;
   private v4BaseUrl: string;
-  private apollo: ApolloClient<any>;
+  public apollo: ApolloClient<any>;
 
   constructor(baseUrl: string, v4BaseUrl: string, graphqlUrl: string) {
     this.baseUrl = baseUrl + '/v2';

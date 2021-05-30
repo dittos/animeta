@@ -18,7 +18,7 @@ if ((window as any).SENTRY_DSN) {
   });
 }
 
-const apollo = new ApolloClient({
+const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
   link: new HttpLink({
     uri: '/api/graphql',
@@ -37,12 +37,14 @@ const loader: Loader = {
   getCurrentUser,
 
   graphql<T>(doc: DocumentNode, variables?: any): Promise<T> {
-    return apollo.query<T>({
+    return apolloClient.query<T>({
       fetchPolicy: 'no-cache',
       query: doc,
       variables,
     }).then(result => result.data)
-  }
+  },
+
+  apolloClient,
 };
 
 $(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) => {
