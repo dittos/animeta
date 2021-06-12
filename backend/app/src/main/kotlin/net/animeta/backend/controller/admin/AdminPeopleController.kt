@@ -59,6 +59,21 @@ class AdminPeopleController(
         return serialize(person)
     }
 
+    data class BulkEditPersonRequest(val id: Int, val name: String?)
+
+    @PostMapping
+    fun bulkEditPerson(@CurrentUser(staffRequired = true) currentUser: User, @RequestBody requests: List<BulkEditPersonRequest>): Boolean {
+        val people = personRepository.findAllById(requests.map { it.id }).associateBy { it.id!! }
+        for (request in requests) {
+            val person = people[request.id]!!
+            if (request.name != null) {
+                person.name = request.name
+            }
+        }
+        personRepository.saveAll(people.values)
+        return true
+    }
+
     private fun serialize(person: Person): PersonDTO {
         return PersonDTO(
             id = person.id!!,
@@ -71,5 +86,34 @@ class AdminPeopleController(
             },
             metadata = person.metadata?.let(objectMapper::readTree)
         )
+    }
+
+    data class TransliterationCheckItem(
+        val personId: Int,
+        val name: String,
+        val count: Int
+    )
+
+    @GetMapping("/transliterationCheck")
+    fun transliterationCheck(@RequestParam period: String): List<TransliterationCheckItem> {
+        return workStaffRepository.transliterationCheck(period, listOf(
+            "chief director",
+            "series director",
+            "director",
+            "character design",
+            "animation character design",
+            "music",
+            "series composition",
+            "original creator",
+            "original work",
+            "original story",
+            "original manga"
+        )).map {
+            TransliterationCheckItem(
+                personId = it.id,
+                name = it.name,
+                count = it.count
+            )
+        }
     }
 }

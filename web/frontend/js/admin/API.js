@@ -133,6 +133,14 @@ export function editPerson(id, request) {
   });
 }
 
+export function bulkEditPerson(request) {
+  return fetchWithSession(`/api/admin/people`, {
+    method: 'POST',
+    body: JSON.stringify(request),
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
 let _companies;
 
 export function getCompanies(cached = true) {
@@ -152,4 +160,8 @@ export function editCompany(id, request) {
     body: JSON.stringify(request),
     headers: { 'Content-Type': 'application/json' },
   });
+}
+
+export function getPeopleTransliterationCheck(period) {
+  return fetchWithSession(`/api/admin/people/transliterationCheck?period=${period}`);
 }
