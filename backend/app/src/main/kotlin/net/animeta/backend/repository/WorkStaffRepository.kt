@@ -30,6 +30,7 @@ interface WorkStaffRepository : CrudRepository<WorkStaff, Int> {
             JOIN Record r ON (r.workId = s2.work.id)
         WHERE
             s.work.id IN :workIds
+            AND s2.work.id NOT IN :workIds
             AND r.user = :user
             AND r.status_type IN (0, 1)
         GROUP BY s2.person.id, s2.task, s2.work.id, r.title, r.updated_at
