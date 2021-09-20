@@ -2,6 +2,9 @@ type Query {
   currentUser: User
   userByName(name: String): User
   timeline(beforeId: ID, count: Int): [Post]
+  curatedLists: [CuratedList]
+  curatedList(id: ID): CuratedList
+  searchWorks(query: String!): SearchWorksResult
 }
 
 scalar GraphQLTimestamp
@@ -30,6 +33,47 @@ type Post {
   user: User
 }
 
+enum StatusType {
+  FINISHED,
+  WATCHING,
+  SUSPENDED,
+  INTERESTED,
+}
+
 type Record {
   id: ID
+  statusType: StatusType
+  status: String
+}
+
+type CuratedList {
+  id: ID
+  name: String
+  works: CuratedListWorkConnection
+}
+
+type CuratedListWorkConnection {
+  edges: [CuratedListWorkEdge]
+  totalCount: Int
+}
+
+type CuratedListWorkEdge {
+  node: Work
+}
+
+type Work {
+  id: ID
+  title: String
+  imageUrl: String
+  record: Record
+  recordCount: Int
+}
+
+type SearchWorksResult {
+  edges: [SearchWorksResultEdge!]!
+}
+
+type SearchWorksResultEdge {
+  node: Work!
+  recordCount: Int
 }

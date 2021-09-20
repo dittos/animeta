@@ -12,6 +12,14 @@ import { User } from './entities/user.entity';
 import { SearchService } from './services/search.service';
 import * as path from 'path';
 import { UserResolver } from './resolvers/user.resolver';
+import { CuratedListResolver } from './resolvers/curated_list.resolver';
+import { CuratedListService } from './services/curated_list.service';
+import { Work } from './entities/work.entity';
+import { WorkResolver } from './resolvers/work.resolver';
+import { RecordResolver } from './resolvers/record.resolver';
+import { WorkIndex } from './entities/work_index.entity';
+import { RecordService } from './services/record.service';
+import { WorkService } from './services/work.service';
 
 @Module({
   imports: [
@@ -23,6 +31,8 @@ import { UserResolver } from './resolvers/user.resolver';
       Record,
       History,
       Category,
+      Work,
+      WorkIndex,
     ]),
     GraphQLModule.forRoot({
       path: '/api/graphql',
@@ -30,6 +40,7 @@ import { UserResolver } from './resolvers/user.resolver';
       definitions: {
         path: path.join(process.cwd(), 'src/graphql.ts'),
       },
+      // debug: true,
     }),
   ],
   controllers: [
@@ -37,7 +48,14 @@ import { UserResolver } from './resolvers/user.resolver';
   ],
   providers: [
     SearchService,
+    CuratedListService,
+    RecordService,
+    WorkService,
+
     UserResolver,
+    RecordResolver,
+    WorkResolver,
+    CuratedListResolver,
   ],
 })
 export class AppModule implements NestModule {

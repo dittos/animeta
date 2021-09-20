@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
+import { WorkIndex } from "src/entities/work_index.entity";
 import { Connection } from "typeorm";
 
 export type SearchResultItem = {
   id: number;
   title: string;
   recordCount: number;
-  imageUrl?: string;
 };
 
 @Injectable()
@@ -21,29 +21,20 @@ export class SearchService {
   }
 
   private async doSearch(pattern: string, limit: number): Promise<SearchResultItem[]> {
-    type WorkIndexRow = {
-      id: number;
-      title: string;
-      record_count: number;
-      image_filename: string | null;
-    };
-    const result: WorkIndexRow[] = await this.connection.query(`
-      SELECT DISTINCT w.*, wi.verified, wi.record_count
-      FROM search_worktitleindex wti
-      JOIN search_workindex wi ON (wti.work_id = wi.work_id)
-      JOIN work_work w ON (w.id = wti.work_id)
-      WHERE
-        wti.key LIKE $1
-        AND (wi.verified = true OR wi.record_count >= $2)
-        AND wi.blacklisted = false
-      ORDER BY wi.verified DESC, wi.record_count DESC
-      LIMIT $3
-    `, [pattern, 2, limit])
+    const result = await this.connection.createQueryBuilder(WorkIndex, 'wi')
+      .innerJoin('search_worktitleindex', 'wti', 'wti.work_id = wi.work_id')
+      .where('wti.key LIKE :pattern', { pattern })
+      .andWhere('(wi.verified = true OR wi.record_count >= :minRecordCount)', { minRecordCount: 2 })
+      .andWhere('wi.blacklisted = false')
+      .orderBy('wi.verified', 'DESC')
+      .addOrderBy('wi.record_count', 'DESC')
+      .limit(limit)
+      .distinct()
+      .getMany()
     return result.map(it => ({
-      id: it.id,
+      id: it.work_id,
       title: it.title,
       recordCount: it.record_count,
-      imageUrl: it.image_filename ? `https://storage.googleapis.com/animeta-static/media/${it.image_filename}` : null,
     }))
   }
 }

@@ -14,6 +14,8 @@ import { trackEvent } from '../Tracking';
 import { CategoryDTO, RecordDTO, StatusType, UserDTO } from '../../../shared/types';
 import { LinkProps } from 'nuri/components';
 
+const ENABLE_NEW_ADD_RECORD = true;
+
 function getDateHeader(record: RecordDTO): string {
   const now = new Date();
   if (!record.updated_at) {
@@ -256,7 +258,7 @@ class Library extends React.Component<LibraryProps> {
         <Grid.Column size={3} pull="left">
           {this.props.canEdit && (
             <Link
-              to="/records/add/"
+              to={ENABLE_NEW_ADD_RECORD ? "/records/add-new/" : "/records/add/"}
               className={Styles.addRecordButton}
               onClick={this._showAddModal}
             >
@@ -338,7 +340,7 @@ class Library extends React.Component<LibraryProps> {
               <h2>아직 기록이 하나도 없네요.</h2>
               {this.props.canEdit && (
                 <p>
-                  <Link to="/records/add/" onClick={this._showAddModal}>
+                  <Link to={ENABLE_NEW_ADD_RECORD ? "/records/add-new/" : "/records/add/"} onClick={this._showAddModal}>
                     작품 추가
                   </Link>를 눌러 감상 기록을 등록할 수 있습니다.
                 </p>
@@ -387,6 +389,7 @@ class Library extends React.Component<LibraryProps> {
   };
 
   _showAddModal = (event: React.MouseEvent) => {
+    if (ENABLE_NEW_ADD_RECORD) return;
     event.preventDefault();
     this.setState({ showAddModal: true });
   };
