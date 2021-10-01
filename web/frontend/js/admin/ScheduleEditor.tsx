@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { FormGroup, FormControl, FormText } from 'react-bootstrap';
 import CreatableSelect from 'react-select/lib/Creatable';
-import dateParse from 'date-fns/parse';
 import dateFormat from 'date-fns/format';
+import dateAddDays from 'date-fns/add_days';
 import { DatePrecision, isEmptySchedule, Schedule } from './WorkMetadata';
 
 interface ScheduleEditorProps {
@@ -42,10 +42,14 @@ function normalizeParsedDateTime(parsed: ParsedDateTime) {
     return parsed;
   }
   const [, year, month, day, hour, minute, second] = match;
-  if (Number(hour) < 24) {
+  const hourNumber = Number(hour);
+  if (hourNumber < 24) {
     return parsed;
   }
-  const normalizedDate = dateFormat(dateParse(parsed.date), 'YYYY-MM-DD[T]HH:mm:ss');
+  const normalizedHour = hourNumber % 24;
+  const normalizedHourString = normalizedHour < 10 ? `0${normalizedHour}` : `${normalizedHour}`;
+  const date = dateAddDays(`${year}-${month}-${day}T${normalizedHourString}:${minute}:${second}`, Math.floor(hourNumber / 24));
+  const normalizedDate = dateFormat(date, 'YYYY-MM-DD[T]HH:mm:ss');
   return { ...parsed, date: normalizedDate };
 }
 
