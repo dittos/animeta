@@ -17,7 +17,7 @@ const sourceTypesV2 = [
 interface ScheduleEditorProps {
     country: string;
     value: Schedule | undefined;
-    onChange(country: string, newSchedule: Schedule): any;
+    onChange(country: string, newSchedule: Schedule | null): any;
 }
 
 type DatePrecision = 'YEAR_MONTH' | 'DATE' | 'DATE_TIME';
@@ -26,6 +26,10 @@ interface Schedule {
     date?: string | null;
     datePrecision?: DatePrecision | null;
     broadcasts?: string[] | null;
+}
+
+function isEmptySchedule(schedule: Schedule): boolean {
+  return !schedule.date && !schedule.datePrecision && (!schedule.broadcasts || schedule.broadcasts.length === 0);
 }
 
 function toDateString(schedule: Schedule): string {
@@ -115,7 +119,7 @@ class ScheduleEditor extends React.Component<ScheduleEditorProps> {
     private handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const el = e.target;
         const parsed = parseDateString(el.value);
-        this.props.onChange(this.props.country, {
+        this.emitValue({
             ...this.props.value,
             date: parsed.date,
             datePrecision: parsed.datePrecision,
@@ -123,10 +127,14 @@ class ScheduleEditor extends React.Component<ScheduleEditorProps> {
     };
 
     private handleBroadcastsChange = (newOptions: any) => {
-        this.props.onChange(this.props.country, {
+        this.emitValue({
             ...this.props.value,
             broadcasts: newOptions.map((it: any) => it.value),
         });
+    };
+
+    private emitValue = (schedule: Schedule) => {
+      this.props.onChange(this.props.country, isEmptySchedule(schedule) ? null : schedule);
     };
 }
 
@@ -343,12 +351,14 @@ export default class WorkMetadataEditor extends React.Component<Props> {
     };
 
     private handleScheduleChange = (country: string, newSchedule: Schedule) => {
+        const schedules = this.props.metadata.schedules || {};
+        delete schedules[country];
+        if (newSchedule) {
+          schedules[country] = newSchedule;
+        }
         this.props.onChange({
             ...this.props.metadata,
-            schedules: {
-                ...this.props.metadata.schedules,
-                [country]: newSchedule
-            }
+            schedules,
         });
     };
 
