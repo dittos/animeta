@@ -3,6 +3,8 @@ import { FormGroup, FormLabel, FormCheck, FormControl, FormText } from 'react-bo
 import { getCompanies } from './API';
 import CreatableSelect from 'react-select/lib/Creatable';
 import AsyncCreatableSelect from 'react-select/lib/AsyncCreatable';
+import dateParse from 'date-fns/parse';
+import dateFormat from 'date-fns/format';
 
 const sourceTypesV2 = [
     'MANGA',
@@ -51,6 +53,22 @@ function toDateString(schedule: Schedule): string {
 interface ParsedDateTime {
     date: string | null;
     datePrecision: DatePrecision | null;
+}
+
+function normalizeParsedDateTime(parsed: ParsedDateTime) {
+  if (!parsed.date) {
+    return parsed;
+  }
+  const match = parsed.date.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})$/);
+  if (!match) {
+    return parsed;
+  }
+  const [, year, month, day, hour, minute, second] = match;
+  if (Number(hour) < 24) {
+    return parsed;
+  }
+  const normalizedDate = dateFormat(dateParse(parsed.date), 'YYYY-MM-DD[T]HH:mm:ss');
+  return {...parsed, date: normalizedDate};
 }
 
 function parseDateString(dateString: string): ParsedDateTime {
@@ -118,7 +136,7 @@ class ScheduleEditor extends React.Component<ScheduleEditorProps> {
 
     private handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const el = e.target;
-        const parsed = parseDateString(el.value);
+        const parsed = normalizeParsedDateTime(parseDateString(el.value));
         this.emitValue({
             ...this.props.value,
             date: parsed.date,
