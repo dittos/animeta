@@ -19,6 +19,7 @@ const sourceTypesV2 = [
 interface ScheduleEditorProps {
     country: string;
     value: Schedule | undefined;
+    broadcastOptions: string[];
     onChange(country: string, newSchedule: Schedule | null): any;
 }
 
@@ -125,7 +126,7 @@ class ScheduleEditor extends React.Component<ScheduleEditorProps> {
                 {/* TODO: autocomplete */}
                 <CreatableSelect
                     isMulti
-                    options={broadcasts.map(it => ({ label: it, value: it }))}
+                    options={this.props.broadcastOptions.map(it => ({ label: it, value: it }))}
                     value={broadcasts.map(it => ({ label: it, value: it }))}
                     onChange={this.handleBroadcastsChange}
                     placeholder="Select broadcasts..."
@@ -200,6 +201,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                     <ScheduleEditor
                         country="jp"
                         value={metadata.schedules && metadata.schedules['jp']}
+                        broadcastOptions={[]}
                         onChange={this.handleScheduleChange}
                     />
                 </FormGroup>
@@ -208,6 +210,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                     <ScheduleEditor
                         country="kr"
                         value={metadata.schedules && metadata.schedules['kr']}
+                        broadcastOptions={['ANIPLUS', 'ANIMAX']}
                         onChange={this.handleScheduleChange}
                     />
                 </FormGroup>
