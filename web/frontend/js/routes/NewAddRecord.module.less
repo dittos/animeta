@@ -21,6 +21,10 @@
 }
 
 .search {
+    // position: sticky;
+}
+
+.searchInput {
     @input-height: 50px;
     @icon-size: @input-height;
 
@@ -57,6 +61,16 @@
             background: #fff;
             outline: none;
         }
+    }
+}
+
+.searchCannotFind {
+    text-align: center;
+    padding-top: 20px;
+    font-size: 14px;
+    color: @color-text-dark;
+    a {
+        color: @color-primary;
     }
 }
 
@@ -235,8 +249,22 @@
     }
 
     .search {
+        display: flex;
+        align-items: center;
+    }
+
+    .searchInput {
+        flex: auto;
+        max-width: 600px;
+
         input {
             max-width: 600px;
         }
+    }
+
+    .searchCannotFind {
+        padding-left: 20px;
+        text-align: left;
+        padding-top: 0;
     }
 }

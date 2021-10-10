@@ -228,13 +228,17 @@ function CuratedList({ curatedListId, onSelect }: {
   )
 }
 
+type DialogProps = {
+  initialTitle: string;
+};
+
 class AddRecord extends React.Component<RouteComponentProps<AddRecordRouteData>> {
   state: {
     query: string;
-    selectedItem: SearchResultItem | null;
+    dialogProps: DialogProps | null;
   } = {
     query: '',
-    selectedItem: null,
+    dialogProps: null,
   };
 
   render() {
@@ -248,19 +252,27 @@ class AddRecord extends React.Component<RouteComponentProps<AddRecordRouteData>>
           <div className={Styles.curatedTitle}>제목으로 찾기</div>
 
           <div className={Styles.search}>
-            <i className="fa fa-search" />
-            <input
-              autoFocus
-              value={this.state.query}
-              onChange={event => this.setState({ query: event.target.value })}
-            />
+            <div className={Styles.searchInput}>
+              <i className="fa fa-search" />
+              <input
+                autoFocus
+                value={this.state.query}
+                onChange={event => this.setState({ query: event.target.value })}
+              />
+            </div>
+            {this.state.query !== '' && (
+              <div className={Styles.searchCannotFind}>
+                찾으시는 작품이 없나요?{' '}
+                <a href="#" onClick={this._openDialogFromSearchQuery}>직접 추가</a>
+              </div>
+            )}
           </div>
 
           {this.props.loader.apolloClient && (
             <ApolloProvider client={this.props.loader.apolloClient}>
               {this.state.query !== '' && <GqlSearchResult
                 query={this.state.query}
-                onSelect={item => this.setState({ selectedItem: item })}
+                onSelect={item => this._openDialog({ initialTitle: item.title! })}
               />}
             </ApolloProvider>
           )}
@@ -268,13 +280,13 @@ class AddRecord extends React.Component<RouteComponentProps<AddRecordRouteData>>
 
         {this.props.loader.apolloClient && (
           <ApolloProvider client={this.props.loader.apolloClient}>
-            <CuratedLists onSelect={item => this.setState({ selectedItem: item })} />
+            <CuratedLists onSelect={item => this._openDialog({ initialTitle: item.title! })} />
           </ApolloProvider>
         )}
 
-        {this.state.selectedItem && (
+        {this.state.dialogProps && (
           <AddRecordDialog
-            initialTitle={this.state.selectedItem.title}
+            initialTitle={this.state.dialogProps.initialTitle}
             initialStatusType="finished"
             onCancel={this._closeDialog}
             onCreate={this._onCreate}
@@ -284,7 +296,14 @@ class AddRecord extends React.Component<RouteComponentProps<AddRecordRouteData>>
     );
   }
 
-  _closeDialog = () => this.setState({ selectedItem: null });
+  _openDialog = (dialogProps: DialogProps) => this.setState({ dialogProps });
+
+  _openDialogFromSearchQuery = (event: React.MouseEvent) => {
+    event.preventDefault();
+    this._openDialog({ initialTitle: this.state.query });
+  };
+
+  _closeDialog = () => this.setState({ dialogProps: null });
 
   _onCreate = (result: { record: RecordDTO }) => {
     trackEvent({
