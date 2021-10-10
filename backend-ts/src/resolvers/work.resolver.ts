@@ -42,10 +42,12 @@ export class WorkResolver {
   @Query()
   async searchWorks(@Args('query') query: string): Promise<{ edges: { node: Work, recordCount: number }[] }> {
     const result = await this.searchService.search(query, 30);
-    const edges = await Promise.all(result.map(it => this.workService.get(it.id).then(work => ({
-      node: work,
-      recordCount: it.recordCount,
-    }))));
+    const edges = await Promise.all(
+      result.map(async it => ({
+        node: await this.workService.get(it.id),
+        recordCount: it.recordCount,
+      })
+    ));
     return { edges };
   }
 }
