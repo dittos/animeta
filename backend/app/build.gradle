@@ -33,6 +33,10 @@ dependencies {
     }
 }
 
+bootRun {
+    maxHeapSize '64m'
+}
+
 docker {
     name 'gcr.io/ditto-1470749749381/animeta-backend:latest'
     files tasks.bootJar.outputs, 'run-java.sh'
