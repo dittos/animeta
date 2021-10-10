@@ -13,6 +13,7 @@ import { SearchResultItem } from '../../../shared/types';
 import { of, timer } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { chunk } from 'lodash';
+import { SnackbarProvider, withSnackbar, ProviderContext as SnackbarProviderContext } from 'notistack';
 import { CuratedListsQuery } from './__generated__/CuratedListsQuery';
 import { CuratedListQuery, CuratedListQuery_curatedList_works_edges_node } from './__generated__/CuratedListQuery';
 import { WorksSearchQuery, WorksSearchQuery_searchWorks_edges_node } from './__generated__/WorksSearchQuery';
@@ -233,6 +234,16 @@ type DialogProps = {
 };
 
 class AddRecord extends React.Component<RouteComponentProps<AddRecordRouteData>> {
+  render() {
+    return (
+      <SnackbarProvider anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}>
+        <AddRecordInternalWithSnackbar {...this.props} />
+      </SnackbarProvider>
+    );
+  }
+}
+
+class AddRecordInternal extends React.Component<RouteComponentProps<AddRecordRouteData> & SnackbarProviderContext> {
   state: {
     query: string;
     dialogProps: DialogProps | null;
@@ -313,6 +324,9 @@ class AddRecord extends React.Component<RouteComponentProps<AddRecordRouteData>>
     });
     Mutations.records.next(result.record);
     this._closeDialog();
+    this.props.enqueueSnackbar(<span>작품을 추가했습니다: <strong>{result.record.title}</strong></span>, {
+      variant: 'success',
+    });
 
     const apollo = this.props.loader.apolloClient as ApolloClient<any>;
     if (apollo) {
@@ -331,6 +345,8 @@ class AddRecord extends React.Component<RouteComponentProps<AddRecordRouteData>>
     }
   };
 }
+
+const AddRecordInternalWithSnackbar = withSnackbar(AddRecordInternal);
 
 const routeHandler: RouteHandler<AddRecordRouteData> = {
   component: Stackable(User, AddRecord),
