@@ -9,9 +9,8 @@ import { RouteComponentProps, RouteHandler } from '../routes';
 import { RecordDTO, UserDTO } from '../../../shared/types_generated';
 import { CenteredFullWidth } from '../ui/Layout';
 import Styles from './NewAddRecord.module.less';
-import { SearchResultItem } from '../../../shared/types';
 import { of, timer } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { distinctUntilChanged, map, switchMap, tap } from 'rxjs/operators';
 import { chunk } from 'lodash';
 import { SnackbarProvider, withSnackbar, ProviderContext as SnackbarProviderContext } from 'notistack';
 import { CuratedListsQuery } from './__generated__/CuratedListsQuery';
@@ -66,32 +65,33 @@ function GqlSearchResult({ query, onSelect }: {
   query: string;
   onSelect(item: WorksSearchQuery_searchWorks_edges_node): void;
 }) {
-  const [runQuery, { loading, error, data }] = useLazyQuery<WorksSearchQuery>(WORKS_SEARCH_QUERY)
-  // const [loading, setLoading] = useState(false)
-  const _result = useObservable<SearchResultItem[], [string]>(
+  const [runQuery, { data }] = useLazyQuery<WorksSearchQuery>(WORKS_SEARCH_QUERY)
+  useObservable<boolean, [string]>(
     (_, input$) => {
-      const query$ = input$.pipe(map(([query]) => query.trim()))
+      const query$ = input$.pipe(map(([query]) => query.trim()), distinctUntilChanged())
       return query$.pipe(
-        // tap(() => setLoading(true)),
         switchMap(query => {
           if (query === '')
-            return of([]);
-          return timer(200 /*ms*/).pipe(tap(() => runQuery({ variables: { query } })), map(() => []))
+            return of(false);
+          return timer(250 /*ms*/).pipe(
+            tap(() => runQuery({ variables: { query } })),
+            map(() => true),
+          );
         }),
-        // tap(() => setLoading(false)),
       )
     },
-    [],
+    false,
     [query]
   )
-  const result = data?.searchWorks?.edges ?? []
+  const result = data?.searchWorks?.edges
+  const loading = !result // XXX: loading=false인데 result=undefined일 때가 있음
   const rowSize = 2
 
   return (
     <div className={query ? Styles.searchResult : ''}>
       {loading ? (
         <Loading />
-      ) : result.length > 0 ? chunk(result, rowSize).map((row, j) => {
+      ) : result && result.length > 0 ? chunk(result, rowSize).map((row, j) => {
         const rowHasImage = row.some(it => it.node.imageUrl != null)
         const items = row.map(({ node, recordCount }) => (
           <div key={`item-${node.id}`} className={rowHasImage ? Styles.searchItem : Styles.searchItemCompact}>
