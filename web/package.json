@@ -86,7 +86,7 @@
     "build-assets": "webpack --config frontend/webpack.config.js --env.prod",
     "build-server": "webpack --config frontend/webpack.config.js --env.server --env.prod",
     "build-dist": "tsc --build frontend-server",
-    "graphql-codegen": "apollo client:codegen --target typescript --watch",
+    "graphql-codegen": "apollo client:codegen --target typescript --watch --globalTypesFile frontend/js/__generated__/globalTypes.ts",
     "test": "cd frontend; mocha --require ts-node/register test"
   }
 }

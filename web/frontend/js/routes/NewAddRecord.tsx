@@ -17,7 +17,7 @@ import { CuratedListsQuery } from './__generated__/CuratedListsQuery';
 import { CuratedListQuery, CuratedListQuery_curatedList_works_edges_node } from './__generated__/CuratedListQuery';
 import { WorksSearchQuery, WorksSearchQuery_searchWorks_edges_node } from './__generated__/WorksSearchQuery';
 import { SearchItemWorkFragment } from './__generated__/SearchItemWorkFragment';
-import { StatusType } from '../../../__generated__/globalTypes';
+import { StatusType } from '../__generated__/globalTypes';
 
 type AddRecordRouteData = StackablePropsData & {
   currentUser: UserDTO;
