@@ -2,7 +2,7 @@ import { PostDTO, RecordDTO, WorkMetadata$SourceType, StatusType } from "../../s
 
 interface HasStatus {
   status_type: string;
-  status: string;
+  status: string | null;
 }
 
 export function zerofill(n: number): string {
@@ -44,7 +44,7 @@ export function plusOne(val: string): string {
 }
 
 export function getStatusDisplay(record: HasStatus): string {
-  return record.status.trim().replace(/([0-9]+)$/, '$1화');
+  return (record.status ?? '').trim().replace(/([0-9]+)$/, '$1화');
 }
 
 export const STATUS_TYPE_TEXT = {
