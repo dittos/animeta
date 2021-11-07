@@ -14,7 +14,7 @@ import { trackEvent } from '../Tracking';
 import { CategoryDTO, RecordDTO, StatusType, UserDTO } from '../../../shared/types';
 import { LinkProps } from 'nuri/components';
 
-const ENABLE_NEW_ADD_RECORD = true;
+const ENABLE_NEW_ADD_RECORD = false;
 
 function getDateHeader(record: RecordDTO): string {
   const now = new Date();
