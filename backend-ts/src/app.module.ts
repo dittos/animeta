@@ -20,6 +20,9 @@ import { RecordResolver } from './resolvers/record.resolver';
 import { WorkIndex } from './entities/work_index.entity';
 import { RecordService } from './services/record.service';
 import { WorkService } from './services/work.service';
+import { UserSerializer } from './serializers/user.serializer';
+import { CategorySerializer } from './serializers/category.serializer';
+import { UserController } from './controllers/user.controller';
 
 @Module({
   imports: [
@@ -45,6 +48,7 @@ import { WorkService } from './services/work.service';
   ],
   controllers: [
     SearchController,
+    UserController,
   ],
   providers: [
     SearchService,
@@ -56,6 +60,9 @@ import { WorkService } from './services/work.service';
     RecordResolver,
     WorkResolver,
     CuratedListResolver,
+
+    UserSerializer,
+    CategorySerializer,
   ],
 })
 export class AppModule implements NestModule {
