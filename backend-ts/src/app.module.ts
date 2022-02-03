@@ -27,7 +27,6 @@ import { UserController } from './controllers/user.controller';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    TypeOrmModule.forRoot(),
     TypeOrmModule.forFeature([
       User,
       TwitterSetting,
@@ -69,4 +68,13 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(AuthMiddleware).forRoutes(':any*')
   }
+}
+
+@Module({
+  imports: [
+    AppModule,
+    TypeOrmModule.forRoot(),
+  ]
+})
+export class AppProdModule {
 }
