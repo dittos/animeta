@@ -34,7 +34,7 @@ export class ChartService {
       () => this.getPopularWorksUncached(range),
       { ttl: 60 * 60 }
     )
-    return result.slice(limit)
+    return result.slice(0, limit)
   }
 
   private async getPopularWorksUncached(range: ChartRange): Promise<Array<ChartItem<ChartItemWork>>> {
@@ -73,6 +73,6 @@ export class ChartService {
       .orderBy('factor', 'DESC')
       .limit(this.maxLimit)
       .getRawMany()
-    return result.map(it => [it.workId, it.factor])
+    return result.map(it => [it.workId, Number(it.factor)])
   }
 }
