@@ -37,5 +37,4 @@ export type ChartItemWork = {
   id: number;
   title: string;
   image_url: string | null;
-  image_center_y: number;
 };

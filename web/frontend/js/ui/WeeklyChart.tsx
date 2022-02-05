@@ -2,16 +2,9 @@ import React from 'react';
 import { Link } from 'nuri';
 import { getWorkURL } from '../util';
 import Styles from './WeeklyChart.less';
-import { WorkDTO } from '../../../shared/types_generated';
+import { ChartItem, ChartItemWork } from '../../../shared/types';
 
-export type WeeklyChartItem = {
-  rank: number;
-  object: WorkDTO;
-  factor: number;
-  factor_percent: number;
-  diff?: number;
-  sign?: number;
-};
+export type WeeklyChartItem = ChartItem<ChartItemWork>;
 
 function WeeklyChart({ data }: {
   data: WeeklyChartItem[]

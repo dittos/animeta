@@ -27,7 +27,7 @@ export class ChartService {
   ) {}
 
   async getWeeklyWorks(limit: number): Promise<Array<ChartItem<ChartItemWork>>> {
-    const range = SundayStartWeekRange.now(this.defaultTimeZone)
+    const range = SundayStartWeekRange.now(this.defaultTimeZone).prev()
     const cacheKey = `getWeeklyWorks:${range.sunday}`
     const result = await this.cache.wrap<Array<ChartItem<ChartItemWork>>>(
       cacheKey,
@@ -39,10 +39,10 @@ export class ChartService {
 
   private async getPopularWorksUncached(range: ChartRange): Promise<Array<ChartItem<ChartItemWork>>> {
     const [currentChart, prevChart] = await Promise.all([
-      this.getPopularWorks(range),
+      this.getPopularWorks(range, this.maxLimit),
       this.getPopularWorks(range.prev())
     ])
-    const chart = diff(ranked(currentChart).slice(0, this.maxLimit), ranked(prevChart))
+    const chart = diff(ranked(currentChart), ranked(prevChart))
     const works = await Promise.all(chart.map(it => this.workService.get(it.object)))
     const worksById = new Map<number, Work>(works.map(it => [it.id, it]))
     return chart.map(item => {
@@ -53,17 +53,16 @@ export class ChartService {
           id: work.id,
           title: work.title,
           image_url: this.workService.getImageUrl(work),
-          image_center_y: null,
         }
       }
       return newItem
     })
   }
 
-  private async getPopularWorks(range: ChartRange): Promise<Array<[number, number]>> {
+  private async getPopularWorks(range: ChartRange, limit?: number): Promise<Array<[number, number]>> {
     const startInstant = range.startDate().toZonedDateTime({ timeZone: this.defaultTimeZone }).toInstant()
     const endInstant = range.endDate().add({ days: 1 }).toZonedDateTime({ timeZone: this.defaultTimeZone }).toInstant()
-    const result = await this.connection.createQueryBuilder()
+    let qb = this.connection.createQueryBuilder()
       .from(History, 'h')
       .select('h.work_id', 'workId')
       .addSelect('COUNT(DISTINCT h.user_id)', 'factor')
@@ -71,8 +70,8 @@ export class ChartService {
       .groupBy('h.work_id')
       .having('COUNT(DISTINCT h.user_id) > 1')
       .orderBy('factor', 'DESC')
-      .limit(this.maxLimit)
-      .getRawMany()
+    if (limit) qb = qb.limit(limit)
+    const result = await qb.getRawMany()
     return result.map(it => [it.workId, Number(it.factor)])
   }
 }

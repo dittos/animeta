@@ -78,7 +78,7 @@ const routeHandler: RouteHandler<IndexRouteData> = {
           record: {},
         },
       }),
-      loader.call('/charts/works/weekly', { limit: 5 }),
+      loader.callV4('/charts/works/weekly', { limit: 5 }),
     ]);
     return {
       currentUser,

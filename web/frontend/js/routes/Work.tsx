@@ -85,7 +85,7 @@ const routeHandler: RouteHandler<WorkRouteData> = {
         options: {},
       }),
       loader.call('/works/by-title', { title }),
-      loader.call('/charts/works/weekly', { limit: 5 }),
+      loader.callV4('/charts/works/weekly', { limit: 5 }),
     ]);
     const postsParams: WorkPostsParams = {
       count: POSTS_PER_PAGE + 1,
