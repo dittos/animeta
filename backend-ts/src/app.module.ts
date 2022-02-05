@@ -26,6 +26,7 @@ import { UserController } from './controllers/user.controller';
 import { CurrentUserController } from './controllers/current_user.controller';
 import { ChartController } from './controllers/chart.controller';
 import { ChartService } from './services/chart.service';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { ChartService } from './services/chart.service';
     TypeOrmModule,
   ],
   controllers: [
+    AppController,
     SearchController,
     UserController,
     CurrentUserController,
