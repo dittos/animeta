@@ -37,9 +37,4 @@ export class WorkService {
   private async loadIndex(ids: readonly number[]): Promise<WorkIndex[]> {
     return this.workIndexRepository.findByIds(Array.from(ids));
   }
-
-  getImageUrl(work: Work): string | null {
-    // TODO: config
-    return work.image_filename ? `https://storage.googleapis.com/animeta-static/media/${work.image_filename}` : null
-  }
 }
