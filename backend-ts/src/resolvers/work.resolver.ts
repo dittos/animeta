@@ -22,8 +22,7 @@ export class WorkResolver {
 
   @ResolveField('imageUrl')
   imageUrl(@Parent() work: Work): string {
-    // TODO: config
-    return work.image_filename ? `https://storage.googleapis.com/animeta-static/media/${work.image_filename}` : null
+    return this.workService.getImageUrl(work)
   }
 
   @ResolveField('record')

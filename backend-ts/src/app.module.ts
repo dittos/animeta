@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { CacheModule, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphQLModule } from '@nestjs/graphql';
@@ -24,6 +24,8 @@ import { UserSerializer } from './serializers/user.serializer';
 import { CategorySerializer } from './serializers/category.serializer';
 import { UserController } from './controllers/user.controller';
 import { CurrentUserController } from './controllers/current_user.controller';
+import { ChartController } from './controllers/chart.controller';
+import { ChartService } from './services/chart.service';
 
 @Module({
   imports: [
@@ -45,6 +47,7 @@ import { CurrentUserController } from './controllers/current_user.controller';
       },
       // debug: true,
     }),
+    CacheModule.register(),
   ],
   exports: [
     TypeOrmModule,
@@ -53,12 +56,14 @@ import { CurrentUserController } from './controllers/current_user.controller';
     SearchController,
     UserController,
     CurrentUserController,
+    ChartController,
   ],
   providers: [
     SearchService,
     CuratedListService,
     RecordService,
     WorkService,
+    ChartService,
 
     UserResolver,
     RecordResolver,
