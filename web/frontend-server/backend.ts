@@ -38,7 +38,7 @@ export default class {
   }
 
   async getCurrentUser(req: any, params?: any) {
-    const { response, body } = await this._call(req, this.baseUrl, '/me', params);
+    const { response, body } = await this._call(req, this.v4BaseUrl, '/me', params);
     if (response.statusCode !== 200) {
       return null;
     }

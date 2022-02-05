@@ -227,7 +227,7 @@ Disallow: /
   server.get('/users/:username/feed/', (req, res, next) => {
     const { username } = req.params;
     Promise.all([
-      backend.call(req, `/users/${username}`),
+      backend.callV4(req, `/users/${username}`),
       backend.call(req, `/users/${username}/posts`),
     ])
       .then(([owner, posts]) => {
@@ -333,7 +333,7 @@ Disallow: /
     if (path.match(/^\/[\w.@+-]+$/) && !path.match(/^\/apple-touch-icon/)) {
       const username = path.substring(1);
       backend
-        .call(req, `/users/${username}`)
+        .callV4(req, `/users/${username}`)
         .then(user => {
           res.redirect(`/users/${user.name}/`);
         })

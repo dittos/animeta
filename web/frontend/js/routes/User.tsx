@@ -56,7 +56,7 @@ const routeHandler: RouteHandler<UserRouteData> = {
       loader.getCurrentUser({
         options: {},
       }),
-      loader.call<UserDTO>(`/users/${encodeURIComponent(username)}`, {
+      loader.callV4<UserDTO>(`/users/${encodeURIComponent(username)}`, {
         options: {
           stats: true,
           categories: true,

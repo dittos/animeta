@@ -58,7 +58,7 @@ export async function login(username, password) {
 }
 
 export function getCurrentUser() {
-  return fetchWithSession('/api/v2/me');
+  return fetchWithSession('/api/v4/me');
 }
 
 export function getWorks({ orphans = false, offset = 0 }) {

@@ -96,7 +96,7 @@ const routeHandler: RouteHandler<UserHistoryRouteData> = {
       loader.getCurrentUser({
         options: {},
       }),
-      loader.call(`/users/${encodeURIComponent(username)}`, {
+      loader.callV4(`/users/${encodeURIComponent(username)}`, {
         options: {
           stats: true,
         },

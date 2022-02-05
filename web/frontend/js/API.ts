@@ -75,7 +75,7 @@ export async function getCurrentUser(params?: {
     options: JSON.stringify(params.options)
   } : {}
   try {
-    return await get('/api/v2/me', data, true);
+    return await get('/api/v4/me', data, true);
   } catch (e) {
     if (e.statusCode) return null;
     else throw e;
