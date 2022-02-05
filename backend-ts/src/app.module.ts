@@ -23,10 +23,11 @@ import { WorkService } from './services/work.service';
 import { UserSerializer } from './serializers/user.serializer';
 import { CategorySerializer } from './serializers/category.serializer';
 import { UserController } from './controllers/user.controller';
+import { CurrentUserController } from './controllers/current_user.controller';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule,
     TypeOrmModule.forFeature([
       User,
       TwitterSetting,
@@ -45,9 +46,13 @@ import { UserController } from './controllers/user.controller';
       // debug: true,
     }),
   ],
+  exports: [
+    TypeOrmModule,
+  ],
   controllers: [
     SearchController,
     UserController,
+    CurrentUserController,
   ],
   providers: [
     SearchService,
@@ -72,6 +77,7 @@ export class AppModule implements NestModule {
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     AppModule,
     TypeOrmModule.forRoot(),
   ]

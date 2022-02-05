@@ -5,15 +5,7 @@ import { Request, Response, NextFunction } from 'express';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { Signing } from './django/signing';
-
-const jsonSerializer = {
-  serialize(data: any): Buffer {
-    return Buffer.from(JSON.stringify(data))
-  },
-  deserialize(data: Buffer): any {
-    return JSON.parse(data.toString())
-  },
-}
+import { jsonSerializer } from './serializer';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
