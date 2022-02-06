@@ -28,12 +28,12 @@ export class Record {
   @Column()
   status_type!: StatusType;
 
-  @Column()
+  @Column('integer')
   category_id!: number | null;
 
-  @Column()
+  @Column('timestamp with time zone')
   updated_at!: Date | null;
 
-  @Column()
+  @Column('integer')
   rating!: number | null;
 }

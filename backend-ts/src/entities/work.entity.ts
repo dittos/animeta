@@ -10,10 +10,10 @@ export class Work {
   @Column()
   title!: string;
 
-  @Column()
+  @Column('varchar')
   image_filename!: string | null;
 
-  @Column()
+  @Column('varchar')
   original_image_filename!: string | null;
 
   @Column()

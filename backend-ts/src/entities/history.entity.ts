@@ -30,12 +30,12 @@ export class History {
   @Column()
   comment!: string;
 
-  @Column()
+  @Column('timestamp with time zone')
   updated_at!: Date | null;
 
   @Column()
   contains_spoiler!: boolean;
 
-  @Column()
+  @Column('integer')
   rating!: number | null;
 }
