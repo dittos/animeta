@@ -27,7 +27,7 @@ export class TestFactoryUtils {
       is_staff: false,
       is_active: true,
       is_superuser: false,
-      last_login: null,
+      last_login: new Date(),
       date_joined: new Date(),
     });
   }

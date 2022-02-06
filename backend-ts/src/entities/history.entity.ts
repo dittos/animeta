@@ -13,6 +13,9 @@ export class History {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
   user!: User;
+
+  @Column()
+  user_id!: number;
   
   @Column()
   work_id!: number;
@@ -20,6 +23,9 @@ export class History {
   @ManyToOne(() => Record)
   @JoinColumn({ name: 'record_id' })
   record!: Record;
+
+  @Column()
+  record_id!: number;
   
   @Column()
   status!: string;
