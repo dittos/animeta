@@ -45,7 +45,7 @@ class Index extends React.Component<RouteComponentProps<IndexRouteData>> {
 
   _loadMore = async () => {
     this.setState({ isLoading: true });
-    const result = await this.props.loader.call('/posts', {
+    const result = await this.props.loader.callV4('/posts', {
       before_id: this.props.data.posts[this.props.data.posts.length - 1].id,
       min_record_count: 2,
       options: {
@@ -70,7 +70,7 @@ const routeHandler: RouteHandler<IndexRouteData> = {
       loader.getCurrentUser({
         options: {},
       }),
-      loader.call('/posts', {
+      loader.callV4('/posts', {
         min_record_count: 2,
         count: 10,
         options: {
