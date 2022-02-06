@@ -12,4 +12,13 @@ export class Work {
 
   @Column()
   image_filename: string | null;
+
+  @Column()
+  original_image_filename: string | null;
+
+  @Column()
+  image_center_y: number;
+
+  @Column()
+  blacklisted: boolean;
 }

@@ -27,6 +27,10 @@ import { CurrentUserController } from './controllers/current_user.controller';
 import { ChartController } from './controllers/chart.controller';
 import { ChartService } from './services/chart.service';
 import { AppController } from './app.controller';
+import { PostsController } from './controllers/posts.controller';
+import { PostSerializer } from './serializers/post.serializer';
+import { RecordSerializer } from './serializers/record.serializer';
+import { UserService } from './services/user.service';
 
 @Module({
   imports: [
@@ -59,6 +63,7 @@ import { AppController } from './app.controller';
     UserController,
     CurrentUserController,
     ChartController,
+    PostsController,
   ],
   providers: [
     SearchService,
@@ -66,6 +71,7 @@ import { AppController } from './app.controller';
     RecordService,
     WorkService,
     ChartService,
+    UserService,
 
     UserResolver,
     RecordResolver,
@@ -74,6 +80,8 @@ import { AppController } from './app.controller';
 
     UserSerializer,
     CategorySerializer,
+    PostSerializer,
+    RecordSerializer,
   ],
 })
 export class AppModule implements NestModule {

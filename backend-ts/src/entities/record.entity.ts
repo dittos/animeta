@@ -12,6 +12,9 @@ export class Record {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @Column()
+  user_id: number;
   
   @Column()
   work_id: number;
@@ -25,7 +28,8 @@ export class Record {
   @Column()
   status_type: StatusType;
 
-  // TODO: category
+  @Column()
+  category_id: number | null;
 
   @Column()
   updated_at: Date | null;

@@ -4,6 +4,7 @@ import { AppModule } from 'src/app.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { TestUtils } from './utils';
+import { TestFactoryUtils } from './factory';
 
 export async function getApp(): Promise<INestApplication> {
   const moduleRef = await Test.createTestingModule({
@@ -16,10 +17,12 @@ export async function getApp(): Promise<INestApplication> {
         "type": "postgres",
         "url": process.env.DATABASE_URL,
         "entities": ["src/**/*.entity{.ts,.js}"],
+        // "logging": true,
       }),
     ],
     providers: [
       TestUtils,
+      TestFactoryUtils,
     ]
   })
     .compile();

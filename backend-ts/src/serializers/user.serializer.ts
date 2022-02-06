@@ -17,6 +17,20 @@ export type UserSerializerOptions = {
 
 @Injectable()
 export class UserSerializer {
+  static legacyOptions({
+    includeCategories = true,
+    includeStats = false,
+  }: {
+    includeCategories?: boolean,
+    includeStats?: boolean,
+  }): UserSerializerOptions {
+    return {
+      categories: includeCategories,
+      stats: includeStats,
+      twitter: true,
+    }
+  }
+
   constructor(
     private categorySerializer: CategorySerializer,
     @InjectRepository(TwitterSetting) private twitterSettingRepository: Repository<TwitterSetting>,

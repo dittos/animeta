@@ -12,7 +12,7 @@ describe('UserController', () => {
   });
 
   it(`get user`, async () => {
-    const user = await utils.newUser();
+    const user = await utils.factory.newUser();
     return utils.getHttpClient()
       .get(`/api/v4/users/${user.username}`)
       .expect(200);
