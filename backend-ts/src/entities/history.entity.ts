@@ -8,34 +8,34 @@ import { User } from "./user.entity";
 })
 export class History {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
   
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user!: User;
   
   @Column()
-  work_id: number;
+  work_id!: number;
   
   @ManyToOne(() => Record)
   @JoinColumn({ name: 'record_id' })
-  record: Record;
+  record!: Record;
   
   @Column()
-  status: string;
+  status!: string;
 
   @Column()
-  status_type: StatusType;
+  status_type!: StatusType;
 
   @Column()
-  comment: string;
+  comment!: string;
 
   @Column()
-  updated_at: Date | null;
+  updated_at!: Date | null;
 
   @Column()
-  contains_spoiler: boolean;
+  contains_spoiler!: boolean;
 
   @Column()
-  rating: number | null;
+  rating!: number | null;
 }

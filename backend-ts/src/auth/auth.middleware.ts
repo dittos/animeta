@@ -16,7 +16,9 @@ export class AuthMiddleware implements NestMiddleware {
     private configService: ConfigService,
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {
-    this.secretKey = configService.get('ANIMETA_SECURITY_SECRET_KEY')
+    const secretKey = configService.get('ANIMETA_SECURITY_SECRET_KEY')
+    if (!secretKey) throw new Error('ANIMETA_SECURITY_SECRET_KEY is not set')
+    this.secretKey = secretKey
   }
 
   async use(req: Request, res: Response, next: NextFunction) {
@@ -39,7 +41,7 @@ export class AuthMiddleware implements NestMiddleware {
       const userId: string | undefined | null = session?.['_auth_user_id']
       if (userId) {
         // TODO: do not always load user
-        return this.userRepository.findOne(userId)
+        return await this.userRepository.findOne(userId) ?? null
       }
       return null
     } catch (e) {

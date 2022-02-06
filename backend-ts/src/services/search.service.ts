@@ -39,8 +39,8 @@ export class SearchService {
   }
 }
 
-const codePointOfGa = '가'.codePointAt(0)
-const codePointOfHih = '힣'.codePointAt(0)
+const codePointOfGa = '가'.codePointAt(0)!
+const codePointOfHih = '힣'.codePointAt(0)!
 
 const firsts = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ"
 const middles = [
@@ -57,7 +57,7 @@ const lasts = [
 export function makeKey(query: string): string[] {
   const buf: string[] = []
   for (let c of query) {
-    const codePoint = c.codePointAt(0)
+    const codePoint = c.codePointAt(0)!
     if (codePointOfGa <= codePoint && codePoint <= codePointOfHih) {
       const offset = codePoint - codePointOfGa
       const first = firsts[Math.floor(offset / (middles.length * lasts.length))]

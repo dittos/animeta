@@ -7,33 +7,33 @@ import { User } from "./user.entity";
 })
 export class Record {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
   
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user!: User;
 
   @Column()
-  user_id: number;
+  user_id!: number;
   
   @Column()
-  work_id: number;
+  work_id!: number;
 
   @Column()
-  title: string;
+  title!: string;
   
   @Column()
-  status: string;
+  status!: string;
 
   @Column()
-  status_type: StatusType;
+  status_type!: StatusType;
 
   @Column()
-  category_id: number | null;
+  category_id!: number | null;
 
   @Column()
-  updated_at: Date | null;
+  updated_at!: Date | null;
 
   @Column()
-  rating: number | null;
+  rating!: number | null;
 }

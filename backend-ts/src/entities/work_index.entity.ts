@@ -5,17 +5,17 @@ import { Column, Entity, PrimaryColumn } from "typeorm";
 })
 export class WorkIndex {
   @PrimaryColumn()
-  work_id: number;
+  work_id!: number;
 
   @Column()
-  title: string;
+  title!: string;
 
   @Column()
-  record_count: number;
+  record_count!: number;
 
   @Column()
-  blacklisted: boolean;
+  blacklisted!: boolean;
 
   @Column()
-  verified: boolean;
+  verified!: boolean;
 }

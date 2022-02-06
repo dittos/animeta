@@ -5,35 +5,35 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 })
 export class User {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  username: string;
+  username!: string;
 
   @Column()
-  first_name: string;
+  first_name!: string;
 
   @Column()
-  last_name: string;
+  last_name!: string;
 
   @Column()
-  email: string;
+  email!: string;
 
   @Column()
-  password: string;
+  password!: string;
 
   @Column()
-  is_staff: boolean;
+  is_staff!: boolean;
 
   @Column()
-  is_active: boolean;
+  is_active!: boolean;
 
   @Column()
-  is_superuser: boolean;
+  is_superuser!: boolean;
 
   @Column()
-  last_login: Date;
+  last_login!: Date;
 
   @Column()
-  date_joined: Date;
+  date_joined!: Date;
 }

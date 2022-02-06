@@ -6,15 +6,15 @@ import { User } from "./user.entity";
 })
 export class Category {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user!: User;
 
   @Column()
-  name: string;
+  name!: string;
 
   @Column()
-  position: string; // bigint mapped to string type
+  position!: string; // bigint mapped to string type
 }

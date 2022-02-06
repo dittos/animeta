@@ -19,11 +19,11 @@ export class PostsController {
   async get(
     @Query('before_id', new ParseIntOrNullPipe()) beforeId: number | null,
     @Query('min_record_count', new ParseIntOrNullPipe()) minRecordCount: number | null,
-    @Query('count', new ParseIntOrNullPipe(), new DefaultValuePipe(32)) count: number | null,
+    @Query('count', new ParseIntOrNullPipe(), new DefaultValuePipe(32)) count: number,
     @Query('options') optionsJson: string | null,
   ): Promise<PostDTO[]> {
     const limit = Math.min(count, 128)
-    const options: PostSerializerOptions | null =
+    const options: PostSerializerOptions =
       optionsJson ? JSON.parse(optionsJson) : PostSerializer.legacyOptions({
         includeRecord: true,
         includeUser: true,

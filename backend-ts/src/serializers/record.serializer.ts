@@ -29,7 +29,7 @@ export class RecordSerializer {
       user: includeUser ? UserSerializer.legacyOptions({
         includeCategories: true,
         includeStats: includeUserStats,
-      }) : null,
+      }) : undefined,
     }
   }
 
@@ -48,7 +48,7 @@ export class RecordSerializer {
       title: record.title,
       status: record.status,
       status_type: StatusType[record.status_type].toLowerCase(),
-      updated_at: record.updated_at?.getTime(),
+      updated_at: record.updated_at?.getTime() ?? null,
       has_newer_episode: options.hasNewerEpisode ? await this.hasNewerEpisode(record) : null,
       user: options.user ? await this.userSerializer.serialize(await this.userService.get(record.user_id), null, options.user) : null,
       rating: record.rating,

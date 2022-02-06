@@ -21,7 +21,7 @@ export class WorkResolver {
   // }
 
   @ResolveField('imageUrl')
-  imageUrl(@Parent() work: Work): string {
+  imageUrl(@Parent() work: Work): string | null {
     return this.workService.getImageUrl(work)
   }
 

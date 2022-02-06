@@ -33,8 +33,8 @@ export class CuratedListService {
     return [
       {id: 'popular', name: '인기', source: {type: 'popular'}},
       // TODO: 분기는 임시 값
-      {id: '2021Q4', name: '이번 분기', source: {type: 'period', period: Period.parse('2021Q4')}},
-      {id: '2021Q3', name: '지난 분기', source: {type: 'period', period: Period.parse('2021Q3')}},
+      {id: '2021Q4', name: '이번 분기', source: {type: 'period', period: Period.parse('2021Q4')!}},
+      {id: '2021Q3', name: '지난 분기', source: {type: 'period', period: Period.parse('2021Q3')!}},
       {id: '2021', name: '올해', source: {type: 'year', year: 2021}},
       {id: '2020', name: '작년', source: {type: 'year', year: 2020}},
       {id: '2019', name: '2019년', source: {type: 'year', year: 2019}},
@@ -42,7 +42,7 @@ export class CuratedListService {
   }
 
   getList(id: string): CuratedListMetadata | null {
-    return this.getAllLists().find(it => it.id === id)
+    return this.getAllLists().find(it => it.id === id) ?? null
   }
 
   async getWorks(metadata: CuratedListMetadata, currentUser: User): Promise<{ notAddedWorks: Work[]; totalCount: number; }> {

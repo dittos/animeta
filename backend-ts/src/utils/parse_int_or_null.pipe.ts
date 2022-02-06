@@ -2,7 +2,7 @@ import { ArgumentMetadata, Injectable, PipeTransform } from "@nestjs/common";
 
 @Injectable()
 export class ParseIntOrNullPipe implements PipeTransform<string> {
-  async transform(value: string, metadata: ArgumentMetadata): Promise<number> {
+  async transform(value: string, metadata: ArgumentMetadata): Promise<number | null> {
     const isNumeric =
       ['string', 'number'].includes(typeof value) &&
       /^-?\d+$/.test(value) &&

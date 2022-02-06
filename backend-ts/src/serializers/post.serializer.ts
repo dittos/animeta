@@ -20,8 +20,8 @@ export class PostSerializer {
     includeUser?: boolean;
   } = {}): PostSerializerOptions {
     return {
-      record: includeRecord ? RecordSerializer.legacyOptions() : null,
-      user: includeUser ? UserSerializer.legacyOptions({ includeCategories: false }) : null,
+      record: includeRecord ? RecordSerializer.legacyOptions() : undefined,
+      user: includeUser ? UserSerializer.legacyOptions({ includeCategories: false }) : undefined,
     }
   }
 
@@ -38,7 +38,7 @@ export class PostSerializer {
       status: history.status,
       status_type: StatusType[history.status_type].toLowerCase(),
       comment: history.comment,
-      updated_at: history.updated_at?.getTime(),
+      updated_at: history.updated_at?.getTime() ?? null,
       contains_spoiler: history.contains_spoiler,
       record: options.record ? await this.recordSerializer.serialize(history.record, options.record ?? {}) : null,
       user: options.user ? await this.userSerializer.serialize(history.user, null, options.user ?? {}) : null,
