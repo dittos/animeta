@@ -33,6 +33,8 @@ import { RecordSerializer } from './serializers/record.serializer';
 import { UserService } from './services/user.service';
 import { PostController } from './controllers/post.controller';
 import { RecordController } from './controllers/record.controller';
+import { RecordPostsController } from './controllers/record_posts.controller';
+import { UserPostsController } from './controllers/user_posts.controller';
 
 @Module({
   imports: [
@@ -68,6 +70,8 @@ import { RecordController } from './controllers/record.controller';
     PostsController,
     PostController,
     RecordController,
+    RecordPostsController,
+    UserPostsController,
   ],
   providers: [
     SearchService,
