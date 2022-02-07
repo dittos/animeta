@@ -419,7 +419,7 @@ const routeHandler: RouteHandler<RecordRouteData> = {
           twitter: true,
         },
       }),
-      loader.call(`/records/${recordId}`, {
+      loader.callV4(`/records/${recordId}`, {
         options: recordFetchOptions,
       }),
     ]);

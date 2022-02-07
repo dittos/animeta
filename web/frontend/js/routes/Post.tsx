@@ -114,7 +114,7 @@ const routeHandler: RouteHandler<PostRouteData> = {
       loader.getCurrentUser({
         options: {},
       }),
-      loader.call(`/posts/${id}`, {
+      loader.callV4(`/posts/${id}`, {
         options: {
           user: {},
           record: {},

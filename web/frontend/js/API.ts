@@ -136,7 +136,7 @@ export function createRecord(
 }
 
 export function getRecordPosts(recordID: number): Promise<{posts: PostDTO[]}> {
-  return get(`/api/v2/records/${recordID}/posts`, {
+  return get(`/api/v4/records/${recordID}/posts`, {
     options: JSON.stringify({}),
   });
 }
@@ -217,7 +217,7 @@ export function updateCategoryOrder(categoryIds: number[]): Promise<{ categories
 // User Posts
 
 export function getUserPosts(userName: string, count: number, beforeID?: number): Promise<PostDTO[]> {
-  return get(`/api/v2/users/${userName}/posts`, {
+  return get(`/api/v4/users/${userName}/posts`, {
     count,
     before_id: beforeID,
     options: JSON.stringify({
