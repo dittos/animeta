@@ -37,6 +37,7 @@ import { RecordPostsController } from './controllers/record_posts.controller';
 import { UserPostsController } from './controllers/user_posts.controller';
 import { UserRecordsService } from './services/user_records.service';
 import { UserRecordsController } from './controllers/user_records.controller';
+import { WorkPostsController } from './controllers/work_posts.controller';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { UserRecordsController } from './controllers/user_records.controller';
     RecordPostsController,
     UserPostsController,
     UserRecordsController,
+    WorkPostsController,
   ],
   providers: [
     SearchService,
