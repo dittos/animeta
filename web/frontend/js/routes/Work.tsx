@@ -40,7 +40,7 @@ function Work({ data, writeData, loader }: RouteComponentProps<WorkRouteData>) {
     if (posts && posts.length > 0)
       params.before_id = posts[posts.length - 1].id;
     if (episode) params.episode = episode;
-    const result: PostDTO[] = await loader.call(`/works/${work.id}/posts`, params);
+    const result: PostDTO[] = await loader.callV4(`/works/${work.id}/posts`, params);
     writeData(data => {
       data.posts = data.posts.concat(result.slice(0, POSTS_PER_PAGE));
       data.hasMorePosts = result.length > POSTS_PER_PAGE;
@@ -95,7 +95,7 @@ const routeHandler: RouteHandler<WorkRouteData> = {
       },
     };
     if (episode) postsParams.episode = episode;
-    const { data, userCount, suspendedUserCount } = await loader.call(`/works/${work.id}/posts`, postsParams);
+    const { data, userCount, suspendedUserCount } = await loader.callV4(`/works/${work.id}/posts`, postsParams);
     return {
       currentUser,
       work,

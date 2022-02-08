@@ -17,7 +17,7 @@ class DropdownUserMenu extends React.Component<{
   };
 
   componentDidMount() {
-    $.get(`/api/v2/users/${this.props.user.name}/records`, {
+    $.get(`/api/v4/users/${this.props.user.name}/records`, {
       sort: 'date',
       status_type: 'watching',
       limit: 10,

@@ -82,7 +82,7 @@ class Post extends React.Component<RouteComponentProps<PostRouteData>> {
       params.before_id = posts[posts.length - 1].id;
     else
       params.withCounts = true;
-    const result = await this.props.loader.call(
+    const result = await this.props.loader.callV4(
       `/works/${work.id}/posts`,
       params
     );

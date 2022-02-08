@@ -62,7 +62,7 @@ const routeHandler: RouteHandler<UserRouteData> = {
           categories: true,
         },
       }),
-      loader.call<RecordsResult>(`/users/${encodeURIComponent(username)}/records`, {
+      loader.callV4<RecordsResult>(`/users/${encodeURIComponent(username)}/records`, {
         sort,
         status_type: type,
         category_id: category,
