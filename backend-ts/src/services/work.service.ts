@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as DataLoader from "dataloader";
+import { Episode } from "shared/types_generated";
+import { History } from "src/entities/history.entity";
 import { Work } from "src/entities/work.entity";
 import { WorkIndex } from "src/entities/work_index.entity";
 import { objResults } from "src/utils/dataloader";
@@ -20,6 +22,7 @@ export class WorkService {
   constructor(
     @InjectRepository(Work) private workRepository: Repository<Work>,
     @InjectRepository(WorkIndex) private workIndexRepository: Repository<WorkIndex>,
+    @InjectRepository(History) private historyRepository: Repository<History>,
   ) {}
 
   get(id: number): Promise<Work> {
@@ -28,6 +31,42 @@ export class WorkService {
 
   getIndex(id: number): Promise<WorkIndex> {
     return this.indexDataLoader.load(id);
+  }
+
+  async getEpisodes(work: Work): Promise<Episode[]> {
+    const result = await this.historyRepository.createQueryBuilder()
+      .select('status')
+      .addSelect('COUNT(*)', 'count')
+      .where('work_id = :workId AND comment <> :commentNot', { workId: work.id, commentNot: '' })
+      .groupBy('status')
+      .getRawMany()
+    const result2 = await this.historyRepository.createQueryBuilder()
+      .select('status')
+      .addSelect('COUNT(*)', 'count')
+      .where('work_id = :workId AND comment = :comment', { workId: work.id, comment: '' })
+      .groupBy('status')
+      .getRawMany()
+    const episodeMap = new Map<number, Episode>()
+    for (const { status, count } of result) {
+      if (!/^[0-9]+$/.test(status)) continue
+      const statusNumber = Number(status)
+      episodeMap.set(statusNumber, {
+        number: statusNumber,
+        post_count: Number(count),
+      })
+    }
+    for (const { status, count } of result2) {
+      if (!/^[0-9]+$/.test(status)) continue
+      const statusNumber = Number(status)
+      const countNumber = Number(count)
+      if (!episodeMap.has(statusNumber) && countNumber > 1) {
+        episodeMap.set(statusNumber, {
+          number: statusNumber,
+          post_count: null,
+        })
+      }
+    }
+    return Array.from(episodeMap.values()).sort((a, b) => a.number - b.number)
   }
 
   private async load(ids: readonly number[]): Promise<Work[]> {

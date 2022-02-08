@@ -4,8 +4,10 @@ import * as cuid from "cuid";
 import { History } from "src/entities/history.entity";
 import { Record } from "src/entities/record.entity";
 import { StatusType } from "src/entities/status_type";
+import { TitleMapping } from "src/entities/title_mapping.entity";
 import { User } from "src/entities/user.entity";
 import { Work } from "src/entities/work.entity";
+import { makeKey } from "src/services/search.service";
 import { Repository } from "typeorm";
 
 @Injectable()
@@ -13,6 +15,7 @@ export class TestFactoryUtils {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Work) private workRepository: Repository<Work>,
+    @InjectRepository(TitleMapping) private titleMappingRepository: Repository<TitleMapping>,
     @InjectRepository(Record) private recordRepository: Repository<Record>,
     @InjectRepository(History) private historyRepository: Repository<History>,
   ) {}
@@ -33,12 +36,21 @@ export class TestFactoryUtils {
   }
 
   async newWork(): Promise<Work> {
-    return await this.workRepository.save({
+    const work = await this.workRepository.save({
       title: cuid(),
       image_center_y: 0.0,
       blacklisted: false,
+      metadata: {
+        version: 2,
+      }
     });
+    await this.titleMappingRepository.save({
+      work_id: work.id,
+      title: work.title,
+      key: work.title, // TODO
+    })
     // TODO: create WorkIndex
+    return work
   }
 
   async newRecord({

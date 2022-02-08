@@ -38,6 +38,10 @@ import { UserPostsController } from './controllers/user_posts.controller';
 import { UserRecordsService } from './services/user_records.service';
 import { UserRecordsController } from './controllers/user_records.controller';
 import { WorkPostsController } from './controllers/work_posts.controller';
+import { WorkController } from './controllers/work.controller';
+import { WorkSerializer } from './serializers/work.serializer';
+import { TitleMapping } from './entities/title_mapping.entity';
+import { WorkByTitleController } from './controllers/work_by_title.controller';
 
 @Module({
   imports: [
@@ -50,6 +54,7 @@ import { WorkPostsController } from './controllers/work_posts.controller';
       Category,
       Work,
       WorkIndex,
+      TitleMapping,
     ]),
     GraphQLModule.forRoot({
       path: '/api/graphql',
@@ -77,6 +82,8 @@ import { WorkPostsController } from './controllers/work_posts.controller';
     UserPostsController,
     UserRecordsController,
     WorkPostsController,
+    WorkController,
+    WorkByTitleController,
   ],
   providers: [
     SearchService,
@@ -96,6 +103,7 @@ import { WorkPostsController } from './controllers/work_posts.controller';
     CategorySerializer,
     PostSerializer,
     RecordSerializer,
+    WorkSerializer,
   ],
 })
 export class AppModule implements NestModule {

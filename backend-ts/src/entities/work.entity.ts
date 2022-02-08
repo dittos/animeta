@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { WorkMetadata } from "./work_metadata";
 
 @Entity({
   name: 'work_work',
@@ -18,6 +19,9 @@ export class Work {
 
   @Column()
   image_center_y!: number;
+
+  @Column('jsonb')
+  metadata!: WorkMetadata | null;
 
   @Column()
   blacklisted!: boolean;
