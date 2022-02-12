@@ -122,7 +122,7 @@ const routeHandler: RouteHandler<PostRouteData> = {
       }),
       loader.callV4('/charts/works/weekly', { limit: 5 }),
     ]);
-    const work = await loader.call(`/works/${post.record.work_id}`);
+    const work = await loader.callV4(`/works/${post.record.work_id}`);
     return {
       currentUser,
       post,

@@ -84,7 +84,7 @@ const routeHandler: RouteHandler<WorkRouteData> = {
       loader.getCurrentUser({
         options: {},
       }),
-      loader.call('/works/by-title', { title }),
+      loader.callV4('/works/by-title', { title }),
       loader.callV4('/charts/works/weekly', { limit: 5 }),
     ]);
     const postsParams: WorkPostsParams = {
