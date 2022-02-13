@@ -7,7 +7,7 @@ import { StatusType } from "src/entities/status_type";
 import { TitleMapping } from "src/entities/title_mapping.entity";
 import { User } from "src/entities/user.entity";
 import { Work } from "src/entities/work.entity";
-import { makeKey } from "src/services/search.service";
+import { Period } from "src/utils/period";
 import { Repository } from "typeorm";
 
 @Injectable()
@@ -35,14 +35,20 @@ export class TestFactoryUtils {
     });
   }
 
-  async newWork(): Promise<Work> {
+  async newWork({
+    periods
+  }: {
+    periods?: Period[];
+  } = {}): Promise<Work> {
     const work = await this.workRepository.save({
       title: cuid(),
       image_center_y: 0.0,
       blacklisted: false,
       metadata: {
         version: 2,
-      }
+        ...periods ? { periods: periods.map(it => it.toString()) } : {},
+      },
+      ...periods ? { first_period: periods[0].toString() } : {},
     });
     await this.titleMappingRepository.save({
       work_id: work.id,
@@ -92,5 +98,11 @@ export class TestFactoryUtils {
     await this.historyRepository.delete({})
     await this.recordRepository.delete({})
     // TODO: update WorkIndex
+  }
+
+  async deleteAllWorks() {
+    await this.deleteAllRecords() // hmm...
+    await this.titleMappingRepository.delete({})
+    await this.workRepository.delete({})
   }
 }

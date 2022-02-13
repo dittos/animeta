@@ -25,4 +25,7 @@ export class Work {
 
   @Column()
   blacklisted!: boolean;
+
+  @Column('varchar')
+  first_period!: string | null;
 }

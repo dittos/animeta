@@ -42,6 +42,10 @@ import { WorkController } from './controllers/work.controller';
 import { WorkSerializer } from './serializers/work.serializer';
 import { TitleMapping } from './entities/title_mapping.entity';
 import { WorkByTitleController } from './controllers/work_by_title.controller';
+import { TablePeriodController } from './controllers/table_period.controller';
+import { RecommendationService } from './services/recommendation.service';
+import { WorkStaff } from './entities/work_staff.entity';
+import { Person } from './entities/person.entity';
 
 @Module({
   imports: [
@@ -55,6 +59,8 @@ import { WorkByTitleController } from './controllers/work_by_title.controller';
       Work,
       WorkIndex,
       TitleMapping,
+      WorkStaff,
+      Person,
     ]),
     GraphQLModule.forRoot({
       path: '/api/graphql',
@@ -84,6 +90,7 @@ import { WorkByTitleController } from './controllers/work_by_title.controller';
     WorkPostsController,
     WorkController,
     WorkByTitleController,
+    TablePeriodController,
   ],
   providers: [
     SearchService,
@@ -93,6 +100,7 @@ import { WorkByTitleController } from './controllers/work_by_title.controller';
     ChartService,
     UserService,
     UserRecordsService,
+    RecommendationService,
 
     UserResolver,
     RecordResolver,

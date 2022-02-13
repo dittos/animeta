@@ -1,10 +1,11 @@
 import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { CACHE_MANAGER, INestApplication } from '@nestjs/common';
 import { AppModule } from 'src/app.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { TestUtils } from './utils';
 import { TestFactoryUtils } from './factory';
+import { caching } from 'cache-manager';
 
 export async function getApp(): Promise<INestApplication> {
   const moduleRef = await Test.createTestingModule({
@@ -25,6 +26,7 @@ export async function getApp(): Promise<INestApplication> {
       TestFactoryUtils,
     ]
   })
+    .overrideProvider(CACHE_MANAGER).useValue(caching({ store: 'none', ttl: 0 }))
     .compile();
 
   const app = moduleRef.createNestApplication();
