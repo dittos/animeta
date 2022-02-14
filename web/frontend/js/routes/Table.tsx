@@ -326,7 +326,7 @@ const routeHandler: RouteHandler<TableRouteData> = {
       loader.getCurrentUser({
         options: {},
       }),
-      loader.call(`/table/periods/${period}`, {
+      loader.callV4(`/table/periods/${period}`, {
         with_recommendations: JSON.stringify(isRecommendationEnabled(period)),
       }),
     ]);

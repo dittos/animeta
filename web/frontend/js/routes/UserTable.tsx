@@ -94,7 +94,7 @@ const routeHandler: RouteHandler<UserTableRouteData> = {
           categories: true,
         },
       }),
-      loader.call(`/table/periods/${period}`, {
+      loader.callV4(`/table/periods/${period}`, {
         only_added: JSON.stringify(true),
         username,
         with_recommendations: JSON.stringify(isRecommendationEnabled(period)),
