@@ -154,8 +154,8 @@ export function createServer({ server = express(), appProvider, getAssets }: {
 
   const v4Proxy = httpProxy.createProxyServer({
     target: config.backend.v4BaseUrl,
-    changeOrigin: false,
-    cookieDomainRewrite: false,
+    changeOrigin: config.backend.remote ? true : false,
+    cookieDomainRewrite: config.backend.remote ? '' : false,
   });
   v4Proxy.on('proxyReq', onProxyReq);
   v4Proxy.on('error', onProxyError);
