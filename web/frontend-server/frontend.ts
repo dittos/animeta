@@ -228,7 +228,7 @@ Disallow: /
     const { username } = req.params;
     Promise.all([
       backend.callV4(req, `/users/${username}`),
-      backend.call(req, `/users/${username}/posts`),
+      backend.callV4(req, `/users/${username}/posts`),
     ])
       .then(([owner, posts]) => {
         res
