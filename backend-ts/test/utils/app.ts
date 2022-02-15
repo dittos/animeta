@@ -1,4 +1,4 @@
-import { Test } from '@nestjs/testing';
+import { Test, TestingModuleBuilder } from '@nestjs/testing';
 import { CACHE_MANAGER, INestApplication } from '@nestjs/common';
 import { AppModule } from 'src/app.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -6,9 +6,10 @@ import { ConfigModule } from '@nestjs/config';
 import { TestUtils } from './utils';
 import { TestFactoryUtils } from './factory';
 import { caching } from 'cache-manager';
+import * as cookieParser from 'cookie-parser';
 
-export async function getApp(): Promise<INestApplication> {
-  const moduleRef = await Test.createTestingModule({
+export async function getApp(testingModuleBuilderCustomizer: (tmb: TestingModuleBuilder) => TestingModuleBuilder): Promise<INestApplication> {
+  let tmb = Test.createTestingModule({
     imports: [
       ConfigModule.forRoot({
         envFilePath: '.env.test',
@@ -26,10 +27,12 @@ export async function getApp(): Promise<INestApplication> {
       TestFactoryUtils,
     ]
   })
-    .overrideProvider(CACHE_MANAGER).useValue(caching({ store: 'none', ttl: 0 }))
-    .compile();
+  tmb = testingModuleBuilderCustomizer(tmb)
+  tmb = tmb.overrideProvider(CACHE_MANAGER).useValue(caching({ store: 'none', ttl: 0 }))
+  const moduleRef = await tmb.compile();
 
   const app = moduleRef.createNestApplication();
+  app.use(cookieParser());
   await app.init();
   return app;
 }

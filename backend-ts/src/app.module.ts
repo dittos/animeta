@@ -46,6 +46,9 @@ import { TablePeriodController } from './controllers/table_period.controller';
 import { RecommendationService } from './services/recommendation.service';
 import { WorkStaff } from './entities/work_staff.entity';
 import { Person } from './entities/person.entity';
+import { ExternalServicesController } from './controllers/external_services.controller';
+import { TwitterService } from './services/twitter.service';
+import { TwitterAuthService } from './services/twitter_auth.service';
 
 @Module({
   imports: [
@@ -91,6 +94,7 @@ import { Person } from './entities/person.entity';
     WorkController,
     WorkByTitleController,
     TablePeriodController,
+    ExternalServicesController,
   ],
   providers: [
     SearchService,
@@ -101,6 +105,8 @@ import { Person } from './entities/person.entity';
     UserService,
     UserRecordsService,
     RecommendationService,
+    TwitterService,
+    TwitterAuthService,
 
     UserResolver,
     RecordResolver,
