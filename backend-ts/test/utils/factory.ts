@@ -69,6 +69,7 @@ export class TestFactoryUtils {
     comment?: string,
   } = {}): Promise<{ record: Record, history: History }> {
     if (!work) work = await this.newWork()
+    // TODO: share logic with controller
     const record = await this.recordRepository.save({
       user: user ?? await this.newUser(),
       work_id: work.id,
@@ -92,6 +93,33 @@ export class TestFactoryUtils {
       rating: null,
     })
     return { record, history }
+  }
+  
+  async newHistory({
+    user,
+    work,
+    record,
+    comment,
+  }: {
+    user?: User,
+    work?: Work,
+    record?: Record,
+    comment?: string,
+  } = {}): Promise<History> {
+    if (!record) record = (await this.newRecord({ user, work, comment })).record
+    // TODO: share logic with controller
+    const history = await this.historyRepository.save({
+      user: record.user,
+      work_id: record.work_id,
+      record,
+      status: record.status,
+      status_type: record.status_type,
+      updated_at: record.updated_at,
+      comment: comment ?? '',
+      contains_spoiler: false,
+      rating: null,
+    })
+    return history
   }
 
   async deleteAllRecords() {

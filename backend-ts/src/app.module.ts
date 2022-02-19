@@ -50,6 +50,7 @@ import { ExternalServicesController } from './controllers/external_services.cont
 import { TwitterService } from './services/twitter.service';
 import { TwitterApiService } from './services/twitter_api.service';
 import { CreatePostController } from './controllers/create_post.controller';
+import { DeletePostController } from './controllers/delete_post.controller';
 
 @Module({
   imports: [
@@ -97,6 +98,7 @@ import { CreatePostController } from './controllers/create_post.controller';
     TablePeriodController,
     ExternalServicesController,
     CreatePostController,
+    DeletePostController,
   ],
   providers: [
     SearchService,
