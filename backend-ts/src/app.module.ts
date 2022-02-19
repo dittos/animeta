@@ -70,9 +70,10 @@ import { DeletePostController } from './controllers/delete_post.controller';
     GraphQLModule.forRoot({
       path: '/api/graphql',
       typePaths: ['./**/*.graphql'],
-      definitions: {
+      // Generating definitions is slow, so disable in the test
+      definitions: process.env.NODE_ENV !== 'test' ? {
         path: path.join(process.cwd(), 'src/graphql.ts'),
-      },
+      } : undefined,
       // debug: true,
     }),
     CacheModule.register(),
