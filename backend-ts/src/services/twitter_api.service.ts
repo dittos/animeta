@@ -14,7 +14,7 @@ export type OAuthAccessToken = {
 }
 
 @Injectable()
-export class TwitterAuthService {
+export class TwitterApiService {
   private oauth: OAuth;
 
   constructor(
@@ -59,6 +59,22 @@ export class TwitterAuthService {
           tokenSecret,
         })
       })
+    })
+  }
+
+  async updateStatus(accessToken: OAuthAccessToken, body: string) {
+    await new Promise((resolve, reject) => {
+      this.oauth.post(
+        'https://api.twitter.com/1.1/statuses/update.json',
+        accessToken.token,
+        accessToken.tokenSecret,
+        { status: body },
+        undefined,
+        (err, result) => {
+          if (err) return reject(err)
+          resolve(result)
+        }
+      )
     })
   }
 }

@@ -48,7 +48,8 @@ import { WorkStaff } from './entities/work_staff.entity';
 import { Person } from './entities/person.entity';
 import { ExternalServicesController } from './controllers/external_services.controller';
 import { TwitterService } from './services/twitter.service';
-import { TwitterAuthService } from './services/twitter_auth.service';
+import { TwitterApiService } from './services/twitter_api.service';
+import { CreatePostController } from './controllers/create_post.controller';
 
 @Module({
   imports: [
@@ -95,6 +96,7 @@ import { TwitterAuthService } from './services/twitter_auth.service';
     WorkByTitleController,
     TablePeriodController,
     ExternalServicesController,
+    CreatePostController,
   ],
   providers: [
     SearchService,
@@ -106,7 +108,7 @@ import { TwitterAuthService } from './services/twitter_auth.service';
     UserRecordsService,
     RecommendationService,
     TwitterService,
-    TwitterAuthService,
+    TwitterApiService,
 
     UserResolver,
     RecordResolver,

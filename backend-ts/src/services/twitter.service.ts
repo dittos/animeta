@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { TwitterSetting } from "src/entities/twitter_setting.entity";
 import { User } from "src/entities/user.entity";
 import { Repository } from "typeorm";
-import { TwitterAuthService } from "./twitter_auth.service";
+import { TwitterApiService } from "./twitter_api.service";
 
 export type OAuthRequestToken = {
   token: string;
@@ -14,21 +14,36 @@ export type OAuthRequestToken = {
 @Injectable()
 export class TwitterService {
   constructor(
-    private twitterAuthService: TwitterAuthService,
+    private twitterApiService: TwitterApiService,
     @InjectRepository(TwitterSetting) private twitterSettingRepository: Repository<TwitterSetting>,
   ) {
   }
 
   async getOAuthRequestToken(): Promise<OAuthRequestToken> {
-    return this.twitterAuthService.getOAuthRequestToken()
+    return this.twitterApiService.getOAuthRequestToken()
   }
 
   async finishOAuthAuthorization(user: User, token: string, tokenSecret: string, oauthVerifier: string): Promise<void> {
-    const accessToken = await this.twitterAuthService.getOAuthAccessToken(token, tokenSecret, oauthVerifier)
+    const accessToken = await this.twitterApiService.getOAuthAccessToken(token, tokenSecret, oauthVerifier)
     await this.twitterSettingRepository.save({
       user,
       key: accessToken.token,
       secret: accessToken.tokenSecret,
     })
+  }
+
+  async updateStatus(user: User, body: string): Promise<boolean> {
+    const setting = await this.twitterSettingRepository.findOne({ where: {user} })
+    if (!setting) return false
+    try {
+      await this.twitterApiService.updateStatus({
+        token: setting.key,
+        tokenSecret: setting.secret,
+      }, body)
+      return true
+    } catch (e) {
+      console.error(e)
+      return false
+    }
   }
 }

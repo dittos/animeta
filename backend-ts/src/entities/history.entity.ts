@@ -39,7 +39,7 @@ export class History {
   @Column('timestamp with time zone')
   updated_at!: Date | null;
 
-  @Column()
+  @Column('boolean')
   contains_spoiler!: boolean;
 
   @Column('integer')

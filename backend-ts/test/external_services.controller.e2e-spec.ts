@@ -1,10 +1,10 @@
 import { getTestUtils, TestUtils } from './utils';
-import { OAuthAccessToken, OAuthRequestToken, TwitterAuthService } from 'src/services/twitter_auth.service';
+import { OAuthAccessToken, OAuthRequestToken, TwitterApiService } from 'src/services/twitter_api.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { TwitterSetting } from 'src/entities/twitter_setting.entity';
 import { Repository } from 'typeorm';
 
-class TwitterAuthServiceMock extends TwitterAuthService {
+class TwitterApiServiceMock extends TwitterApiService {
   async getOAuthRequestToken(): Promise<OAuthRequestToken> {
     return {
       token: 'token',
@@ -26,7 +26,7 @@ class TwitterAuthServiceMock extends TwitterAuthService {
 
 describe('ExternalServicesController', () => {
   let utils: TestUtils;
-  beforeAll(async () => utils = await getTestUtils(tmb => tmb.overrideProvider(TwitterAuthService).useClass(TwitterAuthServiceMock)));
+  beforeAll(async () => utils = await getTestUtils(tmb => tmb.overrideProvider(TwitterApiService).useClass(TwitterApiServiceMock)));
   afterAll(() => utils.close());
 
   it(`get without session`, async () => {
