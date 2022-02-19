@@ -20,20 +20,19 @@ export function formatTweet(history: History): string {
   return s
 }
 
-const STATUS_TYPE_TEXT: {[P in keyof typeof StatusType]: string} = {
-  WATCHING: '보는 중',
-  FINISHED: '완료',
-  INTERESTED: '볼 예정',
-  SUSPENDED: '중단',
-};
+const STATUS_TYPE_TEXT = new Map<StatusType, string>()
+  .set(StatusType.WATCHING, '보는 중')
+  .set(StatusType.FINISHED, '완료')
+  .set(StatusType.INTERESTED, '볼 예정')
+  .set(StatusType.SUSPENDED, '중단')
 
-function formatStatusText(history: History): string {
+export function formatStatusText(history: History): string {
   let status = history.status.trim()
   if (status !== '' && /[0-9]$/.test(status)) {
     status += '화'
   }
   if (history.status_type !== StatusType.WATCHING || status === '') {
-    const statusTypeText = STATUS_TYPE_TEXT[history.status_type]
+    const statusTypeText = STATUS_TYPE_TEXT.get(history.status_type)!
     if (status !== '') {
       status += ` (${statusTypeText})`
     } else {
