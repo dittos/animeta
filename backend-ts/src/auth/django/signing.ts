@@ -8,7 +8,7 @@ interface Serializer<T> {
 }
 
 export class Signing {
-  static loadString<T>(s: string, key: string, salt: string, serializer: Serializer<T>, maxAgeMs: number): T {
+  static loadString<T>(s: string, key: string, salt: string, serializer: Serializer<T>, maxAgeMs: number | null): T {
     let base64d = new TimestampSigner(key, salt).unsign(s, maxAgeMs)
     let decompress = false
     if (base64d.startsWith(".")) {

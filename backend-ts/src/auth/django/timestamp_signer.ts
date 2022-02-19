@@ -13,7 +13,7 @@ export class TimestampSigner extends Signer {
     return BaseConverter.BASE62.encode(Date.now() / 1000)
   }
 
-  public unsign(signedValue: string, maxAgeMs?: number): string {
+  public unsign(signedValue: string, maxAgeMs?: number | null): string {
     const result = super.unsign(signedValue)
     const parts = result.split(Signer.SEPARATOR, 2)
     const value = parts[0]
