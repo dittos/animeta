@@ -6,5 +6,6 @@ export class ApolloServer {
 
   applyMiddleware(...args: any) {}
 
+  async start() {}
   async stop() {}
 }

@@ -2,6 +2,7 @@ import { CacheModule, MiddlewareConsumer, Module, NestModule } from '@nestjs/com
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver } from '@nestjs/apollo';
 import { AuthMiddleware } from './auth/auth.middleware';
 import { SearchController } from './controllers/search.controller';
 import { Category } from './entities/category.entity';
@@ -68,6 +69,7 @@ import { DeletePostController } from './controllers/delete_post.controller';
       Person,
     ]),
     GraphQLModule.forRoot({
+      driver: ApolloDriver,
       path: '/api/graphql',
       typePaths: ['./**/*.graphql'],
       // Generating definitions is slow, so disable in the test
