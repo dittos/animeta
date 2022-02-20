@@ -22,6 +22,7 @@
     "test:e2e:watch": "jest --runInBand --config ./test/jest-e2e.json --watch"
   },
   "dependencies": {
+    "@apollo/gateway": "^0.48.1",
     "@js-temporal/polyfill": "^0.3.0",
     "@nestjs/apollo": "^10.0.4",
     "@nestjs/common": "^8.3.1",
@@ -37,14 +38,14 @@
     "cookie-parser": "^1.4.6",
     "cuid": "^2.1.8",
     "dataloader": "^2.0.0",
-    "graphql": "^15.5.0",
-    "graphql-tools": "^7.0.4",
+    "graphql": "^16.3.0",
     "lodash": "^4.17.21",
     "oauth": "^0.9.15",
     "pg": "^8.5.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.5.4",
+    "ts-morph": "^13.0.3",
     "typeorm": "^0.2.30"
   },
   "devDependencies": {
@@ -60,6 +61,7 @@
     "@types/node": "^14.14.6",
     "@types/oauth": "^0.9.1",
     "@types/supertest": "^2.0.10",
+    "@types/ws": "^8.2.3",
     "@typescript-eslint/eslint-plugin": "^4.6.1",
     "@typescript-eslint/parser": "^4.6.1",
     "eslint": "^7.12.1",
