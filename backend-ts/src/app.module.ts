@@ -52,6 +52,8 @@ import { TwitterService } from './services/twitter.service';
 import { TwitterApiService } from './services/twitter_api.service';
 import { CreatePostController } from './controllers/create_post.controller';
 import { DeletePostController } from './controllers/delete_post.controller';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ServiceExceptionInterceptor } from './controllers/service_exception.interceptor';
 
 @Module({
   imports: [
@@ -82,6 +84,8 @@ import { DeletePostController } from './controllers/delete_post.controller';
   ],
   exports: [
     TypeOrmModule,
+
+    RecordService,
   ],
   controllers: [
     AppController,
@@ -125,6 +129,11 @@ import { DeletePostController } from './controllers/delete_post.controller';
     PostSerializer,
     RecordSerializer,
     WorkSerializer,
+
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ServiceExceptionInterceptor,
+    },
   ],
 })
 export class AppModule implements NestModule {

@@ -28,6 +28,6 @@ describe('DeletePostController', () => {
     expect(res.status).toBe(200)
     expect(updatedRecord.status).toBe(history.status)
     expect(updatedRecord.status_type).toBe(StatusType[history.status_type].toLowerCase())
-    expect(updatedRecord.updated_at).toBe(history.updated_at?.getTime())
+    expect(updatedRecord.updated_at).toBe(historyToDelete.updated_at?.getTime())
   });
 });

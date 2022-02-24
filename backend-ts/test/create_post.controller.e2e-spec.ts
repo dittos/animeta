@@ -36,4 +36,23 @@ describe('CreatePostController', () => {
       updated_at: post.updated_at,
     })
   });
+  
+  it(`create post with invalid rating`, async () => {
+    const user = await utils.factory.newUser()
+    const {record} = await utils.factory.newRecord({ user })
+    const params = {
+      recordId: record.id,
+      status: '2',
+      statusType: 'watching',
+      comment: '2',
+      containsSpoiler: false,
+      publishTwitter: false,
+      rating: 100,
+      options: {record: {}},
+    }
+    const res = await utils.getHttpClientForUser(user)
+      .post('/api/v4/CreatePost')
+      .send(params)
+    expect(res.status).toBe(400)
+  });
 });

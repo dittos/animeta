@@ -1,11 +1,11 @@
-import { Body, Controller, HttpStatus, Post } from "@nestjs/common";
+import { Body, Controller, Post } from "@nestjs/common";
 import { PostDTO, StatusType as StatusTypeParam } from 'shared/types';
 import { CurrentUser } from "src/auth/decorators";
-import { History } from "src/entities/history.entity";
 import { Record } from "src/entities/record.entity";
 import { StatusType } from "src/entities/status_type";
 import { User } from "src/entities/user.entity";
 import { PostSerializer, PostSerializerOptions } from "src/serializers/post.serializer";
+import { RecordService } from "src/services/record.service";
 import { TwitterService } from "src/services/twitter.service";
 import { formatTweet } from "src/utils/tweet";
 import { Connection } from "typeorm";
@@ -32,6 +32,7 @@ export class CreatePostController {
     private connection: Connection,
     private postSerializer: PostSerializer,
     private twitterService: TwitterService,
+    private recordService: RecordService,
   ) {}
 
   @Post()
@@ -45,26 +46,14 @@ export class CreatePostController {
         throw ApiException.notFound()
       if (currentUser.id !== record.user_id)
         throw ApiException.permissionDenied()
-      if (params.rating != null && ![1, 2, 3, 4, 5].includes(params.rating))
-        throw new ApiException('별점은 1부터 5까지 입력할 수 있습니다.', HttpStatus.BAD_REQUEST)
-      const history = new History()
-      history.user = currentUser
-      history.work_id = record.work_id
-      history.record = record
-      history.status = params.status
-      history.status_type = StatusType[params.statusType.toUpperCase() as keyof typeof StatusType]
-      history.comment = params.comment
-      history.contains_spoiler = params.containsSpoiler
-      history.updated_at = new Date()
-      history.rating = params.rating ?? null
-      await em.save(history)
-
-      record.status_type = history.status_type
-      record.status = history.status
-      record.updated_at = history.updated_at
-      await em.save(record)
-
-      return history
+      
+      return this.recordService.addHistory(em, record, {
+        status: params.status,
+        statusType: StatusType[params.statusType.toUpperCase() as keyof typeof StatusType],
+        comment: params.comment,
+        containsSpoiler: params.containsSpoiler,
+        rating: params.rating ?? null,
+      })
     })
     
     if (params.publishTwitter) {

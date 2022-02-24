@@ -7,8 +7,9 @@ import { StatusType } from "src/entities/status_type";
 import { TitleMapping } from "src/entities/title_mapping.entity";
 import { User } from "src/entities/user.entity";
 import { Work } from "src/entities/work.entity";
+import { RecordService } from "src/services/record.service";
 import { Period } from "src/utils/period";
-import { Repository } from "typeorm";
+import { EntityManager, Repository } from "typeorm";
 
 @Injectable()
 export class TestFactoryUtils {  
@@ -18,6 +19,8 @@ export class TestFactoryUtils {
     @InjectRepository(TitleMapping) private titleMappingRepository: Repository<TitleMapping>,
     @InjectRepository(Record) private recordRepository: Repository<Record>,
     @InjectRepository(History) private historyRepository: Repository<History>,
+    private entityManager: EntityManager,
+    private recordService: RecordService,
   ) {}
 
   async newUser(): Promise<User> {
@@ -70,7 +73,7 @@ export class TestFactoryUtils {
   } = {}): Promise<{ record: Record, history: History }> {
     if (!work) work = await this.newWork()
     // TODO: share logic with controller
-    const record = await this.recordRepository.save({
+    const record = await this.recordRepository.save(this.recordRepository.create({
       user: user ?? await this.newUser(),
       work_id: work.id,
       title: work.title,
@@ -79,7 +82,7 @@ export class TestFactoryUtils {
       category_id: null,
       updated_at: new Date(),
       rating: null,
-    })
+    }))
     // TODO: update WorkIndex
     const history = await this.historyRepository.save({
       user: record.user,
@@ -107,19 +110,13 @@ export class TestFactoryUtils {
     comment?: string,
   } = {}): Promise<History> {
     if (!record) record = (await this.newRecord({ user, work, comment })).record
-    // TODO: share logic with controller
-    const history = await this.historyRepository.save({
-      user: record.user,
-      work_id: record.work_id,
-      record,
+    return this.recordService.addHistory(this.entityManager, record, {
       status: record.status,
-      status_type: record.status_type,
-      updated_at: record.updated_at,
+      statusType: record.status_type,
       comment: comment ?? '',
-      contains_spoiler: false,
+      containsSpoiler: false,
       rating: null,
     })
-    return history
   }
 
   async deleteAllRecords() {
