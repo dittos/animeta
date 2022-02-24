@@ -175,7 +175,7 @@ export function createPost(
   { status, statusType, comment, containsSpoiler, publishTwitter }: CreatePostParams,
   options?: RecordFetchOptions,
 ): Promise<{ post: PostDTO }> {
-  return postJSON('/api/v3/CreatePost', {
+  return postJSON('/api/v4/CreatePost', {
     recordId,
     status,
     statusType: statusType.toUpperCase(),
@@ -189,7 +189,7 @@ export function createPost(
 // Post
 
 export function deletePost(id: number, recordOptions: RecordFetchOptions): Promise<{ record: RecordDTO | null }> {
-  return postJSON('/api/v3/DeletePost', { id, recordOptions });
+  return postJSON('/api/v4/DeletePost', { id, recordOptions });
 }
 
 // Category
