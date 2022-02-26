@@ -12,7 +12,7 @@ describe('CreatePostController', () => {
     const params = {
       recordId: record.id,
       status: '2',
-      statusType: 'watching',
+      statusType: 'WATCHING',
       comment: '2',
       containsSpoiler: false,
       publishTwitter: false,
@@ -25,14 +25,14 @@ describe('CreatePostController', () => {
     const post = res.body.post as PostDTO
     expect(post).toMatchObject<Partial<PostDTO>>({
       status: params.status,
-      status_type: params.statusType,
+      status_type: params.statusType.toLowerCase(),
       comment: params.comment,
       contains_spoiler: params.containsSpoiler,
     })
     expect(post.record).toMatchObject<Partial<RecordDTO>>({
       id: params.recordId,
       status: params.status,
-      status_type: params.statusType,
+      status_type: params.statusType.toLowerCase(),
       updated_at: post.updated_at,
     })
   });
@@ -43,7 +43,7 @@ describe('CreatePostController', () => {
     const params = {
       recordId: record.id,
       status: '2',
-      statusType: 'watching',
+      statusType: 'WATCHING',
       comment: '2',
       containsSpoiler: false,
       publishTwitter: false,

@@ -1,38 +1,42 @@
 import { Body, Controller, Post } from "@nestjs/common";
-import { PostDTO } from 'shared/types';
+import { PostDTO, RecordDTO } from 'shared/types';
 import { CurrentUser } from "src/auth/decorators";
-import { Record } from "src/entities/record.entity";
 import { StatusType } from "src/entities/status_type";
 import { User } from "src/entities/user.entity";
 import { PostSerializer, PostSerializerOptions } from "src/serializers/post.serializer";
+import { RecordSerializer, RecordSerializerOptions } from "src/serializers/record.serializer";
 import { RecordService } from "src/services/record.service";
 import { TwitterService } from "src/services/twitter.service";
+import { WorkService } from "src/services/work.service";
 import { formatTweet } from "src/utils/tweet";
 import { Connection } from "typeorm";
-import { ApiException } from "./exceptions";
 
 type Params = {
-  recordId: number;
+  title: string;
+  categoryId: number | null;
   status: string;
   statusType: keyof typeof StatusType;
   comment: string;
-  containsSpoiler: boolean;
   publishTwitter: boolean;
   rating?: number | null;
-  options?: PostSerializerOptions;
+  options?: RecordSerializerOptions;
+  postOptions?: PostSerializerOptions;
 }
 
 type Result = {
+  record: RecordDTO | null;
   post: PostDTO | null;
 }
 
-@Controller('/api/v4/CreatePost')
-export class CreatePostController {
+@Controller('/api/v4/CreateRecord')
+export class CreateRecordController {
   constructor(
     private connection: Connection,
+    private recordSerializer: RecordSerializer,
     private postSerializer: PostSerializer,
     private twitterService: TwitterService,
     private recordService: RecordService,
+    private workService: WorkService,
   ) {}
 
   @Post()
@@ -40,18 +44,14 @@ export class CreatePostController {
     @Body() params: Params,
     @CurrentUser() currentUser: User,
   ): Promise<Result> {
-    const history = await this.connection.transaction(async em => {
-      const record = await em.findOne(Record, params.recordId)
-      if (!record)
-        throw ApiException.notFound()
-      if (currentUser.id !== record.user_id)
-        throw ApiException.permissionDenied()
-      
-      return this.recordService.addHistory(em, record, {
+    const work = await this.workService.getOrCreate(params.title)
+    const {record, history} = await this.connection.transaction(async em => {
+      return this.recordService.createRecord(em, currentUser, work, {
+        title: params.title,
+        categoryId: params.categoryId,
         status: params.status,
         statusType: StatusType[params.statusType],
         comment: params.comment,
-        containsSpoiler: params.containsSpoiler,
         rating: params.rating ?? null,
       })
     })
@@ -61,7 +61,8 @@ export class CreatePostController {
     }
 
     return {
-      post: params.options ? await this.postSerializer.serialize(history, params.options) : null,
+      record: params.options ? await this.recordSerializer.serialize(record, params.options) : null,
+      post: params.postOptions ? await this.postSerializer.serialize(history, params.postOptions) : null,
     }
   }
 }

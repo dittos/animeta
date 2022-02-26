@@ -3,10 +3,12 @@ import { InjectRepository } from "@nestjs/typeorm";
 import * as DataLoader from "dataloader";
 import { Episode } from "shared/types_generated";
 import { History } from "src/entities/history.entity";
+import { TitleMapping } from "src/entities/title_mapping.entity";
 import { Work } from "src/entities/work.entity";
 import { WorkIndex } from "src/entities/work_index.entity";
 import { objResults } from "src/utils/dataloader";
 import { Repository } from "typeorm";
+import { ValidationError } from "./exceptions";
 
 @Injectable()
 export class WorkService {
@@ -22,6 +24,7 @@ export class WorkService {
   constructor(
     @InjectRepository(Work) private workRepository: Repository<Work>,
     @InjectRepository(WorkIndex) private workIndexRepository: Repository<WorkIndex>,
+    @InjectRepository(TitleMapping) private titleMappingRepository: Repository<TitleMapping>,
     @InjectRepository(History) private historyRepository: Repository<History>,
   ) {}
 
@@ -81,4 +84,53 @@ export class WorkService {
     // TODO: config
     return work.image_filename ? `https://storage.googleapis.com/animeta-static/media/${work.image_filename}` : null
   }
+
+  async getOrCreate(title: string): Promise<Work> {
+    title = title.trim()
+    if (title === '')
+      throw new ValidationError('작품 제목을 입력하세요.')
+    
+    const mapping = await this.titleMappingRepository.findOne({ where: {title} })
+    if (mapping) {
+      return this.workRepository.findOneOrFail(mapping.work_id)
+    }
+    const key = normalizeTitle(title)
+    const similarMapping = await this.titleMappingRepository.findOne({ where: {key} })
+    if (similarMapping) {
+      await this.titleMappingRepository.save({
+        work_id: similarMapping.work_id,
+        title,
+        key
+      })
+      return this.workRepository.findOneOrFail(similarMapping.work_id)
+    }
+    const work = new Work()
+    work.title = title
+    work.image_center_y = 0.0
+    work.blacklisted = false
+    await this.workRepository.save(work)
+    await this.titleMappingRepository.save({
+      work_id: work.id,
+      title,
+      key,
+    })
+    return work
+  }
+}
+
+const exceptionChars = ['!', '+']
+
+export function normalizeTitle(title: string): string {
+  return Array.from(title)
+    .map(c => {
+      // full width -> half width
+      if ('\uFF01' <= c && c <= '\uFF5E')
+        return String.fromCodePoint(c.codePointAt(0)! - 0xFF01 + 0x21)
+      else
+        return c
+    })
+    .filter(c => exceptionChars.includes(c) || /\p{L}|\p{N}/u.test(c))
+    .join('')
+    .toLowerCase()
+    .trim()
 }

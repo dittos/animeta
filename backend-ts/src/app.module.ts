@@ -54,6 +54,8 @@ import { CreatePostController } from './controllers/create_post.controller';
 import { DeletePostController } from './controllers/delete_post.controller';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ServiceExceptionInterceptor } from './controllers/service_exception.interceptor';
+import { CreateRecordController } from './controllers/create_record.controller';
+import { CategoryService } from './services/category.service';
 
 @Module({
   imports: [
@@ -86,6 +88,8 @@ import { ServiceExceptionInterceptor } from './controllers/service_exception.int
     TypeOrmModule,
 
     RecordService,
+    WorkService,
+    CategoryService,
   ],
   controllers: [
     AppController,
@@ -106,6 +110,7 @@ import { ServiceExceptionInterceptor } from './controllers/service_exception.int
     ExternalServicesController,
     CreatePostController,
     DeletePostController,
+    CreateRecordController,
   ],
   providers: [
     SearchService,
@@ -118,6 +123,7 @@ import { ServiceExceptionInterceptor } from './controllers/service_exception.int
     RecommendationService,
     TwitterService,
     TwitterApiService,
+    CategoryService,
 
     UserResolver,
     RecordResolver,

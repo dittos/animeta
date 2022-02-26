@@ -3,3 +3,6 @@ export class ValidationError extends Error {
     super(message);
   }
 }
+
+export class PermissionError extends Error {
+}

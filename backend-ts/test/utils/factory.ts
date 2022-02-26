@@ -1,13 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as cuid from "cuid";
+import { Category } from "src/entities/category.entity";
 import { History } from "src/entities/history.entity";
 import { Record } from "src/entities/record.entity";
 import { StatusType } from "src/entities/status_type";
 import { TitleMapping } from "src/entities/title_mapping.entity";
 import { User } from "src/entities/user.entity";
 import { Work } from "src/entities/work.entity";
+import { CategoryService } from "src/services/category.service";
 import { RecordService } from "src/services/record.service";
+import { WorkService } from "src/services/work.service";
 import { Period } from "src/utils/period";
 import { EntityManager, Repository } from "typeorm";
 
@@ -21,6 +24,8 @@ export class TestFactoryUtils {
     @InjectRepository(History) private historyRepository: Repository<History>,
     private entityManager: EntityManager,
     private recordService: RecordService,
+    private workService: WorkService,
+    private categoryService: CategoryService,
   ) {}
 
   async newUser(): Promise<User> {
@@ -38,26 +43,31 @@ export class TestFactoryUtils {
     });
   }
 
+  async newCategory({
+    user,
+    name
+  }: {
+    user: User;
+    name?: string;
+  }): Promise<Category> {
+    return this.categoryService.createCategory(user, {
+      name: name ?? cuid()
+    })
+  }
+
   async newWork({
     periods
   }: {
     periods?: Period[];
   } = {}): Promise<Work> {
-    const work = await this.workRepository.save({
-      title: cuid(),
-      image_center_y: 0.0,
-      blacklisted: false,
-      metadata: {
-        version: 2,
-        ...periods ? { periods: periods.map(it => it.toString()) } : {},
-      },
-      ...periods ? { first_period: periods[0].toString() } : {},
-    });
-    await this.titleMappingRepository.save({
-      work_id: work.id,
-      title: work.title,
-      key: work.title, // TODO
-    })
+    const work = await this.workService.getOrCreate(cuid())
+    work.metadata = {
+      version: 2,
+      ...periods ? { periods: periods.map(it => it.toString()) } : {},
+    }
+    if (periods)
+      work.first_period = periods[0].toString()
+    await this.workRepository.save(work)
     // TODO: create WorkIndex
     return work
   }
@@ -71,30 +81,17 @@ export class TestFactoryUtils {
     work?: Work,
     comment?: string,
   } = {}): Promise<{ record: Record, history: History }> {
+    if (!user) user = await this.newUser()
     if (!work) work = await this.newWork()
-    // TODO: share logic with controller
-    const record = await this.recordRepository.save(this.recordRepository.create({
-      user: user ?? await this.newUser(),
-      work_id: work.id,
+    const {record, history} = await this.recordService.createRecord(this.entityManager, user, work, {
       title: work.title,
       status: '1',
-      status_type: StatusType.FINISHED,
-      category_id: null,
-      updated_at: new Date(),
-      rating: null,
-    }))
-    // TODO: update WorkIndex
-    const history = await this.historyRepository.save({
-      user: record.user,
-      work_id: record.work_id,
-      record,
-      status: record.status,
-      status_type: record.status_type,
-      updated_at: record.updated_at,
+      statusType: StatusType.FINISHED,
       comment: comment ?? '',
-      contains_spoiler: false,
+      categoryId: null,
       rating: null,
     })
+    // TODO: update WorkIndex
     return { record, history }
   }
   

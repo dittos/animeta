@@ -11,6 +11,9 @@ export class Category {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
   user!: User;
+  
+  @Column()
+  user_id!: number;
 
   @Column()
   name!: string;
