@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { PostDTO, PostFetchOptions, RecordDTO, RecordFetchOptions, StatusType, UserFetchOptions } from '../../shared/types';
+import { PostDTO, PostFetchOptions, RecordDTO, RecordFetchOptions, LegacyStatusType, UserFetchOptions, StatusType } from '../../shared/types';
 import * as CSRF from './CSRF';
 import { CategoryDTO, UserDTO } from '../../shared/types';
 import isString from 'lodash/isString';
@@ -123,11 +123,11 @@ export function createRecord(
   options: RecordFetchOptions | null = {},
   postOptions: PostFetchOptions | null = null
 ): Promise<{ record: RecordDTO | null; post: PostDTO | null }> {
-  return postJSON('/api/v3/CreateRecord', {
+  return postJSON('/api/v4/CreateRecord', {
     title,
     categoryId,
     status,
-    statusType: statusType.toUpperCase(),
+    statusType,
     comment,
     publishTwitter,
     options,
@@ -164,7 +164,7 @@ export function deleteRecord(id: number): Promise<{ ok: boolean }> {
 
 export type CreatePostParams = {
   status: string;
-  statusType: StatusType;
+  statusType: LegacyStatusType;
   comment: string;
   containsSpoiler: boolean;
   publishTwitter: boolean;

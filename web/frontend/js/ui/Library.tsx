@@ -11,7 +11,7 @@ import * as Grid from './Grid';
 import { Switch, SwitchItem } from './Switch';
 import AddRecordDialog from './AddRecordDialog';
 import { trackEvent } from '../Tracking';
-import { CategoryDTO, RecordDTO, StatusType, UserDTO } from '../../../shared/types';
+import { CategoryDTO, RecordDTO, LegacyStatusType, UserDTO } from '../../../shared/types';
 import { LinkProps } from 'nuri/components';
 
 const ENABLE_NEW_ADD_RECORD = false;
@@ -145,7 +145,7 @@ class LibraryFilter extends React.Component<LibraryFilterProps> {
             </Link>
           </div>
           {['watching', 'finished', 'suspended', 'interested'].map(
-            (statusType: StatusType) => (
+            (statusType: LegacyStatusType) => (
               <div
                 className={
                   this.props.statusTypeFilter === statusType
@@ -268,7 +268,7 @@ class Library extends React.Component<LibraryProps> {
           {this.state.showAddModal && (
             /* TODO: automatically set selected filter state */
             <AddRecordDialog
-              initialStatusType="finished"
+              initialStatusType="FINISHED"
               onCancel={() => this.setState({ showAddModal: false })}
               onCreate={this._recordCreated}
             />

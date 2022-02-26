@@ -1,6 +1,7 @@
 export * from './types_generated'
 
-export type StatusType = 'watching' | 'finished' | 'interested' | 'suspended';
+export type LegacyStatusType = 'watching' | 'finished' | 'interested' | 'suspended';
+export type StatusType = 'WATCHING' | 'FINISHED' | 'INTERESTED' | 'SUSPENDED';
 
 export type UserFetchOptions = {
   categories?: boolean;

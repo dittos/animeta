@@ -1,4 +1,4 @@
-import { PostDTO, RecordDTO, WorkMetadata$SourceType, StatusType } from "../../shared/types";
+import { PostDTO, RecordDTO, WorkMetadata$SourceType, LegacyStatusType } from "../../shared/types";
 
 interface HasStatus {
   status_type: string;
@@ -57,7 +57,7 @@ export const STATUS_TYPE_TEXT = {
 export function getStatusText(record: HasStatus): string {
   var status = getStatusDisplay(record);
   if (record.status_type != 'watching' || status === '') {
-    var statusTypeText = STATUS_TYPE_TEXT[record.status_type as StatusType];
+    var statusTypeText = STATUS_TYPE_TEXT[record.status_type as LegacyStatusType];
     if (status !== '') {
       status += ' (' + statusTypeText + ')';
     } else {

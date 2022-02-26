@@ -298,7 +298,7 @@ class AddRecordInternal extends React.Component<RouteComponentProps<AddRecordRou
         {this.state.dialogProps && (
           <AddRecordDialog
             initialTitle={this.state.dialogProps.initialTitle}
-            initialStatusType="finished"
+            initialStatusType="FINISHED"
             onCancel={this._closeDialog}
             onCreate={this._onCreate}
           />

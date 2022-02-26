@@ -4,7 +4,7 @@ import { StatusInput } from './StatusInput';
 import Styles from './PostComposer.less';
 import { getLastPublishTwitter } from '../Prefs';
 import { RecordDTO, UserDTO } from '../../../shared/types_generated';
-import { StatusType } from '../../../shared/types';
+import { LegacyStatusType } from '../../../shared/types';
 
 export type PostComposerProps = {
   record: RecordDTO;
@@ -15,7 +15,7 @@ export type PostComposerProps = {
 
 export type PostComposerResult = {
   status: string;
-  statusType: StatusType;
+  statusType: LegacyStatusType;
   comment: string;
   containsSpoiler: boolean;
   publishTwitter: boolean;
@@ -25,7 +25,7 @@ export class PostComposer extends React.Component<PostComposerProps> {
   private _submitting: boolean;
 
   state = {
-    statusType: this.props.record.status_type as StatusType,
+    statusType: this.props.record.status_type as LegacyStatusType,
     status: util.plusOne(this.props.record.status),
     comment: '',
     publishTwitter: false,

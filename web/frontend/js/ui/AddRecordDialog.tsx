@@ -9,7 +9,7 @@ import { StatusInput } from './StatusInput';
 import ModalStyles from './Modal.less';
 import Styles from './AddRecordDialog.less';
 import { getLastPublishTwitter, setLastPublishTwitter } from '../Prefs';
-import { CategoryDTO, RecordDTO, StatusType, UserDTO } from '../../../shared/types';
+import { CategoryDTO, RecordDTO, UserDTO, StatusType } from '../../../shared/types';
 
 type CategorySelectProps = {
   selectedId: string;
@@ -59,7 +59,7 @@ class AddRecord extends React.Component<AddRecordProps, AddRecordState> {
     super(props);
     this.state = {
       selectedCategoryId: '',
-      statusType: props.initialStatusType || 'watching',
+      statusType: props.initialStatusType || 'WATCHING',
       status: '',
       comment: '',
       publishTwitter: false,
@@ -99,13 +99,13 @@ class AddRecord extends React.Component<AddRecordProps, AddRecordState> {
                 value={this.state.statusType}
                 onChange={this._onStatusTypeChange}
               >
-                <SwitchItem value="interested">볼 예정</SwitchItem>
-                <SwitchItem value="watching">보는 중</SwitchItem>
-                <SwitchItem value="finished">완료</SwitchItem>
-                <SwitchItem value="suspended">중단</SwitchItem>
+                <SwitchItem value="INTERESTED">볼 예정</SwitchItem>
+                <SwitchItem value="WATCHING">보는 중</SwitchItem>
+                <SwitchItem value="FINISHED">완료</SwitchItem>
+                <SwitchItem value="SUSPENDED">중단</SwitchItem>
               </Switch>
             </div>
-            {this.state.statusType !== 'interested' && (
+            {this.state.statusType !== 'INTERESTED' && (
               <div className={Styles.field}>
                 <label>진행률 (선택 사항)</label>
                 <StatusInput
@@ -165,7 +165,7 @@ class AddRecord extends React.Component<AddRecordProps, AddRecordState> {
   };
 
   _onStatusTypeChange = (statusType: StatusType) => {
-    const status = statusType === 'interested' ? '' : this.state.status;
+    const status = statusType === 'INTERESTED' ? '' : this.state.status;
     this.setState({
       statusType,
       status,
