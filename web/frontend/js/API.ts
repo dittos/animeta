@@ -142,7 +142,7 @@ export function getRecordPosts(recordID: number): Promise<{posts: PostDTO[]}> {
 }
 
 export function updateRecordTitle(id: number, title: string, options: RecordFetchOptions): Promise<{ record: RecordDTO }> {
-  return postJSON('/api/v3/UpdateRecord', {
+  return postJSON('/api/v4/UpdateRecord', {
     id,
     title,
     options,
@@ -150,7 +150,7 @@ export function updateRecordTitle(id: number, title: string, options: RecordFetc
 }
 
 export function updateRecordCategoryID(id: number, categoryId: number | null, options: RecordFetchOptions): Promise<{ record: RecordDTO }> {
-  return postJSON('/api/v3/UpdateRecord', {
+  return postJSON('/api/v4/UpdateRecord', {
     id,
     categoryId,
     categoryIdIsSet: true,
