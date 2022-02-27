@@ -75,10 +75,12 @@ export class TestFactoryUtils {
   async newRecord({
     user,
     work,
+    category,
     comment,
   }: {
     user?: User,
     work?: Work,
+    category?: Category,
     comment?: string,
   } = {}): Promise<{ record: Record, history: History }> {
     if (!user) user = await this.newUser()
@@ -88,7 +90,7 @@ export class TestFactoryUtils {
       status: '1',
       statusType: StatusType.FINISHED,
       comment: comment ?? '',
-      categoryId: null,
+      categoryId: category?.id ?? null,
       rating: null,
     })
     // TODO: update WorkIndex

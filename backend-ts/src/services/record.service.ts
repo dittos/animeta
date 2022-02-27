@@ -23,7 +23,7 @@ export class RecordService {
   );
 
   constructor(
-    @InjectRepository(Record) private recordRepository: Repository<Record>,
+    @InjectRepository(Record) private recordRepository: Repository<Record>
   ) {}
 
   get(id: number): Promise<Record> {
@@ -122,5 +122,25 @@ export class RecordService {
     await em.save(record)
 
     return history
+  }
+
+  async updateRecordWorkAndTitle(em: EntityManager, record: Record, work: Work, title: string): Promise<void> {
+    record.work_id = work.id
+    record.title = title
+    await em.save(record)
+    await em.update(History, {record}, {work_id: work.id})
+  }
+
+  async updateCategory(record: Record, category: Category | null): Promise<void> {
+    record.category_id = category?.id ?? null
+    await this.recordRepository.save(record)
+  }
+
+  async updateRating(record: Record, rating: number | null): Promise<void> {
+    if (rating != null && ![1, 2, 3, 4, 5].includes(rating)) {
+      throw new ValidationError('별점은 1부터 5까지 입력할 수 있습니다.')
+    }
+    record.rating = rating
+    await this.recordRepository.save(record)
   }
 }
