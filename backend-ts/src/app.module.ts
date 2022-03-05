@@ -58,6 +58,8 @@ import { CreateRecordController } from './controllers/create_record.controller';
 import { CategoryService } from './services/category.service';
 import { UpdateRecordController } from './controllers/update_record.controller';
 import { DeleteRecordController } from './controllers/delete_record.controller';
+import { AuthService } from './services/auth.service';
+import { AuthenticateController } from './controllers/authenticate.controller';
 
 @Module({
   imports: [
@@ -92,6 +94,7 @@ import { DeleteRecordController } from './controllers/delete_record.controller';
     RecordService,
     WorkService,
     CategoryService,
+    AuthService,
   ],
   controllers: [
     AppController,
@@ -115,6 +118,7 @@ import { DeleteRecordController } from './controllers/delete_record.controller';
     CreateRecordController,
     UpdateRecordController,
     DeleteRecordController,
+    AuthenticateController,
   ],
   providers: [
     SearchService,
@@ -128,6 +132,7 @@ import { DeleteRecordController } from './controllers/delete_record.controller';
     TwitterService,
     TwitterApiService,
     CategoryService,
+    AuthService,
 
     UserResolver,
     RecordResolver,

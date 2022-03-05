@@ -19,6 +19,7 @@ describe('Signing', () => {
       const data = "{\"_auth_user_backend\":\"django.contrib.auth.backends.ModelBackend\",\"_auth_user_hash\":\"66b126a35d2f1ec7aa60891d9823fa126b155366\",\"_auth_user_id\":\"1\",\"_session_expiry\":0}"
       const signed = Signing.toString(data, "asdkfjlaskdfjklaf", "django.contrib.sessions.backends.signed_cookies", testSerializer, true)
       expect(data).toBe(Signing.loadString(signed, "asdkfjlaskdfjklaf", "django.contrib.sessions.backends.signed_cookies", testSerializer, null))
+      expect(signed).not.toContain('undefined')
     })
   })
 

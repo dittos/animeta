@@ -31,7 +31,7 @@ export class BaseConverter {
       while (x > 0) {
         const digit = x % this.digits.length
         res = this.digits[digit] + res
-        x /= this.digits.length
+        x = Math.floor(x / this.digits.length)
       }
     }
 

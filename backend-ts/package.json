@@ -33,6 +33,7 @@
     "@nestjs/typeorm": "^8.0.3",
     "@sentry/node": "^6.17.4",
     "apollo-server-express": "^3.5.0",
+    "base32-encode": "^1.2.0",
     "base64url": "^3.0.1",
     "cache-manager": "^3.6.0",
     "cookie-parser": "^1.4.6",

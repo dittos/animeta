@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { Signing } from "src/auth/django/signing";
 import { jsonSerializer } from "src/auth/serializer";
 import { User } from "src/entities/user.entity";
+import { AuthService } from "src/services/auth.service";
 import * as request from 'supertest';
 import { TestFactoryUtils } from "./factory";
 
@@ -13,6 +14,7 @@ export class TestUtils {
   constructor(
     private configService: ConfigService,
     public factory: TestFactoryUtils,
+    private authService: AuthService,
   ) {}
 
   generateAccessToken(user: User) {
@@ -20,14 +22,22 @@ export class TestUtils {
     return Signing.toString({ _auth_user_id: user.id }, secretKey, "django.contrib.sessions.backends.signed_cookies", jsonSerializer, true)
   }
 
+  async changePassword(user: User, password: string) {
+    await this.authService.changePassword(user, password)
+  }
+
   getHttpClient() {
     return request(this.app.getHttpServer())
   }
 
-  getHttpClientForUser(user: User) {
+  getHttpClientWithSessionKey(sessionKey: string) {
     const agent = request.agent(this.app.getHttpServer())
-    agent.set('x-animeta-session-key', this.generateAccessToken(user))
+    agent.set('x-animeta-session-key', sessionKey)
     return agent
+  }
+
+  getHttpClientForUser(user: User) {
+    return this.getHttpClientWithSessionKey(this.generateAccessToken(user))
   }
 
   async close(): Promise<void> {
