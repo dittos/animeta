@@ -159,7 +159,7 @@ export function updateRecordCategoryID(id: number, categoryId: number | null, op
 }
 
 export function deleteRecord(id: number): Promise<{ ok: boolean }> {
-  return postJSON('/api/v3/DeleteRecord', { id });
+  return postJSON('/api/v4/DeleteRecord', { id });
 }
 
 export type CreatePostParams = {
