@@ -1,5 +1,6 @@
 
-/** ------------------------------------------------------
+/*
+ * -------------------------------------------------------
  * THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
  * -------------------------------------------------------
  */
@@ -14,65 +15,65 @@ export enum StatusType {
 }
 
 export interface IQuery {
-    currentUser(): User | Promise<User>;
-    userByName(name?: string): User | Promise<User>;
-    timeline(beforeId?: string, count?: number): Post[] | Promise<Post[]>;
-    curatedLists(): CuratedList[] | Promise<CuratedList[]>;
-    curatedList(id?: string): CuratedList | Promise<CuratedList>;
-    searchWorks(query: string): SearchWorksResult | Promise<SearchWorksResult>;
+    currentUser(): Nullable<User> | Promise<Nullable<User>>;
+    userByName(name?: Nullable<string>): Nullable<User> | Promise<Nullable<User>>;
+    timeline(beforeId?: Nullable<string>, count?: Nullable<number>): Nullable<Nullable<Post>[]> | Promise<Nullable<Nullable<Post>[]>>;
+    curatedLists(): Nullable<Nullable<CuratedList>[]> | Promise<Nullable<Nullable<CuratedList>[]>>;
+    curatedList(id?: Nullable<string>): Nullable<CuratedList> | Promise<Nullable<CuratedList>>;
+    searchWorks(query: string): Nullable<SearchWorksResult> | Promise<Nullable<SearchWorksResult>>;
 }
 
 export interface User {
-    id?: string;
-    name?: string;
-    joinedAt?: GraphQLTimestamp;
-    isTwitterConnected?: boolean;
-    categories?: Category[];
-    recordCount?: number;
-    postCount?: number;
+    id?: Nullable<string>;
+    name?: Nullable<string>;
+    joinedAt?: Nullable<GraphQLTimestamp>;
+    isTwitterConnected?: Nullable<boolean>;
+    categories?: Nullable<Nullable<Category>[]>;
+    recordCount?: Nullable<number>;
+    postCount?: Nullable<number>;
 }
 
 export interface Category {
-    id?: string;
-    user?: User;
-    name?: string;
+    id?: Nullable<string>;
+    user?: Nullable<User>;
+    name?: Nullable<string>;
 }
 
 export interface Post {
-    id?: string;
-    record?: Record;
-    status?: string;
-    comment?: string;
-    user?: User;
+    id?: Nullable<string>;
+    record?: Nullable<Record>;
+    status?: Nullable<string>;
+    comment?: Nullable<string>;
+    user?: Nullable<User>;
 }
 
 export interface Record {
-    id?: string;
-    statusType?: StatusType;
-    status?: string;
+    id?: Nullable<string>;
+    statusType?: Nullable<StatusType>;
+    status?: Nullable<string>;
 }
 
 export interface CuratedList {
-    id?: string;
-    name?: string;
-    works?: CuratedListWorkConnection;
+    id?: Nullable<string>;
+    name?: Nullable<string>;
+    works?: Nullable<CuratedListWorkConnection>;
 }
 
 export interface CuratedListWorkConnection {
-    edges?: CuratedListWorkEdge[];
-    totalCount?: number;
+    edges?: Nullable<Nullable<CuratedListWorkEdge>[]>;
+    totalCount?: Nullable<number>;
 }
 
 export interface CuratedListWorkEdge {
-    node?: Work;
+    node?: Nullable<Work>;
 }
 
 export interface Work {
-    id?: string;
-    title?: string;
-    imageUrl?: string;
-    record?: Record;
-    recordCount?: number;
+    id?: Nullable<string>;
+    title?: Nullable<string>;
+    imageUrl?: Nullable<string>;
+    record?: Nullable<Record>;
+    recordCount?: Nullable<number>;
 }
 
 export interface SearchWorksResult {
@@ -81,7 +82,8 @@ export interface SearchWorksResult {
 
 export interface SearchWorksResultEdge {
     node: Work;
-    recordCount?: number;
+    recordCount?: Nullable<number>;
 }
 
 export type GraphQLTimestamp = any;
+type Nullable<T> = T | null;

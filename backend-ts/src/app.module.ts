@@ -57,6 +57,7 @@ import { ServiceExceptionInterceptor } from './controllers/service_exception.int
 import { CreateRecordController } from './controllers/create_record.controller';
 import { CategoryService } from './services/category.service';
 import { UpdateRecordController } from './controllers/update_record.controller';
+import { DeleteRecordController } from './controllers/delete_record.controller';
 
 @Module({
   imports: [
@@ -113,6 +114,7 @@ import { UpdateRecordController } from './controllers/update_record.controller';
     DeletePostController,
     CreateRecordController,
     UpdateRecordController,
+    DeleteRecordController,
   ],
   providers: [
     SearchService,

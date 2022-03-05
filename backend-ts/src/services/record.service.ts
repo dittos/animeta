@@ -143,4 +143,9 @@ export class RecordService {
     record.rating = rating
     await this.recordRepository.save(record)
   }
+
+  async delete(em: EntityManager, record: Record) {
+    await em.delete(History, {record})
+    await em.remove(record)
+  }
 }
