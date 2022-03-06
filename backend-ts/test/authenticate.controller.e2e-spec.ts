@@ -1,3 +1,4 @@
+import { HttpStatus } from '@nestjs/common';
 import * as cuid from 'cuid';
 import { UserDTO } from 'shared/types_generated';
 import { getTestUtils, TestUtils } from './utils';
@@ -67,5 +68,21 @@ describe('AuthenticateController', () => {
       expect(res.status).toBe(200)
       expect((res.body as UserDTO).id).toBe(user.id)
     }
+  });
+
+  it(`wrong password`, async () => {
+    const user = await utils.factory.newUser()
+    const password = cuid()
+    await utils.changePassword(user, password)
+
+    const params = {
+      username: user.username,
+      password: password + '.',
+      persistent: false,
+    }
+    const res = await utils.getHttpClient()
+      .post('/api/v4/Authenticate')
+      .send(params)
+    expect(res.status).toBe(HttpStatus.UNAUTHORIZED)
   });
 });

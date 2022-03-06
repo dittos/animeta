@@ -60,6 +60,7 @@ import { UpdateRecordController } from './controllers/update_record.controller';
 import { DeleteRecordController } from './controllers/delete_record.controller';
 import { AuthService } from './services/auth.service';
 import { AuthenticateController } from './controllers/authenticate.controller';
+import { ChangePasswordController } from './controllers/change_password.controller';
 
 @Module({
   imports: [
@@ -119,6 +120,7 @@ import { AuthenticateController } from './controllers/authenticate.controller';
     UpdateRecordController,
     DeleteRecordController,
     AuthenticateController,
+    ChangePasswordController,
   ],
   providers: [
     SearchService,
