@@ -8,7 +8,7 @@ type Params = {
   persistent: boolean;
 };
 
-type Result = {
+export type Result = {
   sessionKey: string;
   expiryMs: number | null;
 };

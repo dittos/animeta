@@ -34,8 +34,12 @@ export class AuthService {
     }
   }
 
-  async changePassword(user: User, newPassword: string) {
+  async setPassword(user: User, newPassword: string) {
     user.password = await makePassword(newPassword, null)
+  }
+
+  async changePassword(user: User, newPassword: string) {
+    await this.setPassword(user, newPassword)
     await this.userRepository.save(user)
   }
 
