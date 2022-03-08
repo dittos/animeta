@@ -38,7 +38,7 @@ export function hasSession() {
 }
 
 export async function login(username, password) {
-  const resp = await fetch('/api/v3/Authenticate', {
+  const resp = await fetch('/api/v4/Authenticate', {
     method: 'POST',
     body: JSON.stringify({
       username,

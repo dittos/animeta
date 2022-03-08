@@ -54,7 +54,7 @@ const typeaheadTemplates = {
       '<span class="title">' +
       escapeHTML(item.title) +
       '</span> <span class="count">' +
-      item.n +
+      item.recordCount +
       '명 기록</span>'
     );
   },
