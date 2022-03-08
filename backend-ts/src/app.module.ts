@@ -62,6 +62,7 @@ import { AuthService } from './services/auth.service';
 import { AuthenticateController } from './controllers/authenticate.controller';
 import { ChangePasswordController } from './controllers/change_password.controller';
 import { CreateAccountController } from './controllers/create_account.controller';
+import { AdminCachesController } from './controllers/admin/caches.controller';
 
 @Module({
   imports: [
@@ -100,6 +101,7 @@ import { CreateAccountController } from './controllers/create_account.controller
   ],
   controllers: [
     AppController,
+    
     SearchController,
     UserController,
     CurrentUserController,
@@ -123,6 +125,8 @@ import { CreateAccountController } from './controllers/create_account.controller
     AuthenticateController,
     ChangePasswordController,
     CreateAccountController,
+
+    AdminCachesController,
   ],
   providers: [
     SearchService,

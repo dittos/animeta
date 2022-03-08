@@ -114,7 +114,7 @@ export function searchWork(q, { minRecordCount = 2 }) {
 }
 
 export function clearCache() {
-  return fetchWithSession('/api/admin/caches', { method: 'DELETE' });
+  return fetchWithSession('/api/admin/v0/caches', { method: 'DELETE' });
 }
 
 export function listPerson(page = 1) {

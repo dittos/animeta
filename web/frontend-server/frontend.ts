@@ -143,29 +143,23 @@ export function createServer({ server = express(), appProvider, getAssets }: {
     res.writeHead(500, { 'content-type': 'text/plain' });
     res.end('API error');
   }
+  function configureProxy(pathPrefix: string, targetUrl: string) {
+    const proxy = httpProxy.createProxyServer({
+      target: targetUrl,
+      changeOrigin: config.backend.remote ? true : false,
+      cookieDomainRewrite: config.backend.remote ? '' : false,
+    });
+    proxy.on('proxyReq', onProxyReq);
+    proxy.on('error', onProxyError);
+    
+    server.use(pathPrefix, (req, res) => {
+      proxy.web(req, res);
+    });
+  }
 
-  const proxy = httpProxy.createProxyServer({
-    target: config.backend.baseUrl,
-    changeOrigin: config.backend.remote ? true : false,
-    cookieDomainRewrite: config.backend.remote ? '' : false,
-  });
-  proxy.on('proxyReq', onProxyReq);
-  proxy.on('error', onProxyError);
-
-  const v4Proxy = httpProxy.createProxyServer({
-    target: config.backend.v4BaseUrl,
-    changeOrigin: config.backend.remote ? true : false,
-    cookieDomainRewrite: config.backend.remote ? '' : false,
-  });
-  v4Proxy.on('proxyReq', onProxyReq);
-  v4Proxy.on('error', onProxyError);
-
-  server.use('/api/v4', (req, res) => {
-    v4Proxy.web(req, res);
-  });
-  server.use('/api', (req, res) => {
-    proxy.web(req, res);
-  });
+  configureProxy('/api/v4', config.backend.v4BaseUrl)
+  configureProxy('/api/admin/v0', config.backend.adminNewBaseUrl)
+  configureProxy('/api', config.backend.baseUrl)
 
   function renderDefault(res: express.Response, locals: any, content: string) {
     const context = {
