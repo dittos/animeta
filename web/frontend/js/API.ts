@@ -57,7 +57,7 @@ export function authenticate(params: {
   password: string;
   persistent: boolean;
 }): Promise<AuthResult> {
-  return postJSON('/api/v3/Authenticate', params);
+  return postJSON('/api/v4/Authenticate', params);
 }
 
 export function createFrontendSession(params: { authResult: AuthResult }) {
@@ -89,14 +89,14 @@ export function createAccount(params: {
   password1: string;
   password2: string;
 }, customErrorHandling = false): Promise<{ authResult: AuthResult }> {
-  return postJSON('/api/v3/CreateAccount', params, customErrorHandling);
+  return postJSON('/api/v4/CreateAccount', params, customErrorHandling);
 }
 
 export function changePassword(params: {
   oldPassword: string;
   newPassword: string;
 }) {
-  return postJSON('/api/v3/ChangePassword', params);
+  return postJSON('/api/v4/ChangePassword', params);
 }
 
 export function createBackup(): Promise<{ downloadUrl: string }> {
