@@ -14,7 +14,7 @@ export const CurrentUser = createParamDecorator(
     const user = request.user as User;
     if ((data?.required ?? true) && !user) {
       throw new ApiException("Login required.", HttpStatus.UNAUTHORIZED)
-    } else if ((data?.staffRequired ?? false) && user?.is_staff) {
+    } else if ((data?.staffRequired ?? false) && !user?.is_staff) {
       throw new ApiException("Staff permission required.", HttpStatus.UNAUTHORIZED)
     } else {
       return user
