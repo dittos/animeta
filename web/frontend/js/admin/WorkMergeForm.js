@@ -3,12 +3,14 @@ import { FormGroup, Button, Modal } from 'react-bootstrap';
 import * as API from './API';
 import TitleAutosuggest from './TitleAutosuggest';
 
+const initialState = {
+  workToMerge: null,
+  forceMerge: false,
+  conflicts: null,
+}
 class WorkMergeForm extends React.Component {
   titleSearch = React.createRef();
-  state = {
-    workToMerge: null,
-    forceMerge: false,
-  };
+  state = {...initialState};
 
   render() {
     return (
@@ -111,7 +113,7 @@ class WorkMergeForm extends React.Component {
   };
 
   _cancelMerge = () => {
-    this.setState({ workToMerge: null });
+    this.setState(initialState);
   };
 }
 
