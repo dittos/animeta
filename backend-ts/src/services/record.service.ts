@@ -82,7 +82,7 @@ export class RecordService {
     const history = new History()
     history.user_id = record.user_id
     history.work_id = record.work_id
-    history.record_id = record.id
+    history.record = record
     history.status = record.status
     history.status_type = record.status_type
     history.updated_at = record.updated_at
