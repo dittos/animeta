@@ -1,0 +1,21 @@
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Company } from "./company.entity";
+import { Person } from "./person.entity";
+
+@Entity({
+  name: 'work_company'
+})
+export class WorkCompany {
+  @PrimaryGeneratedColumn()
+  id!: number;
+
+  @Column()
+  work_id!: number;
+
+  @Column()
+  position!: number;
+
+  @ManyToOne(() => Company)
+  @JoinColumn({name: 'company_id'})
+  company!: Person;
+}

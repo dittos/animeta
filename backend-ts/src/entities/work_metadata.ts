@@ -7,6 +7,8 @@ export type SourceType =
   | 'VISUAL_NOVEL'
   | 'NOVEL'
 
+export const LATEST_WORK_METADATA_VERSION = 2
+
 export type WorkMetadata = {
   version: number;
   title?: string | null;

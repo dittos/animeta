@@ -2,12 +2,17 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as DataLoader from "dataloader";
 import { Episode } from "shared/types_generated";
+import { Company } from "src/entities/company.entity";
 import { History } from "src/entities/history.entity";
 import { TitleMapping } from "src/entities/title_mapping.entity";
 import { Work } from "src/entities/work.entity";
+import { WorkCompany } from "src/entities/work_company.entity";
 import { WorkIndex } from "src/entities/work_index.entity";
+import { WorkMetadata } from "src/entities/work_metadata";
+import { WorkPeriodIndex } from "src/entities/work_period_index.entity";
 import { objResults } from "src/utils/dataloader";
-import { Repository } from "typeorm";
+import { Period } from "src/utils/period";
+import { EntityManager, Repository } from "typeorm";
 import { ValidationError } from "./exceptions";
 
 @Injectable()
@@ -115,6 +120,50 @@ export class WorkService {
       key,
     })
     return work
+  }
+
+  async editMetadata(em: EntityManager, work: Work, rawMetadata: string) {
+    let metadata: WorkMetadata
+    try {
+      // TODO: validation
+      metadata = JSON.parse(rawMetadata || "{}")
+      if (metadata.version < 2) {
+        throw new Error(`${metadata.version} is outdated metadata version`)
+      }
+    } catch (e) {
+      throw new ValidationError(`Metadata parse failed: ${(e as any)?.message}`)
+    }
+    return this.applyMetadata(em, work, metadata)
+  }
+
+  async applyMetadata(em: EntityManager, work: Work, metadata: WorkMetadata) {
+    work.metadata = metadata
+    work.raw_metadata = JSON.stringify(metadata)
+    const periods = metadata.periods?.map(it => Period.parseOrThrow(it)) ?? []
+    await em.delete(WorkPeriodIndex, {work_id: work.id})
+    await em.save(periods.sort().map((period, index) => {
+      const wpi = new WorkPeriodIndex()
+      wpi.period = period.toString()
+      wpi.work_id = work.id
+      wpi.is_first_period = index === 0
+      return wpi
+    }))
+    const studios = await Promise.all(metadata.studios?.map(async it => {
+      let company = await em.findOne(Company, {name: it})
+      if (company) return company
+      company = new Company()
+      company.name = it
+      return em.save(company)
+    }) ?? [])
+    await em.delete(WorkCompany, {work_id: work.id})
+    await em.save(studios.map((company, index) => {
+      const wc = new WorkCompany()
+      wc.work_id = work.id
+      wc.position = index
+      wc.company = company
+      return wc
+    }))
+    await em.save(work)
   }
 }
 

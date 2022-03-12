@@ -1,5 +1,10 @@
 FROM node:14
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+		imagemagick \
+		jpegoptim \
+	&& rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app/backend-ts
 COPY backend-ts/package*.json ./
 COPY web/shared ../web/shared

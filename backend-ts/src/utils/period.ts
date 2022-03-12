@@ -50,6 +50,12 @@ export class Period {
     return new Period(Number(match[1]), Number(match[2]))
   }
 
+  static parseOrThrow(s: string): Period {
+    const result = this.parse(s)
+    if (!result) throw new Error(`invalid format: ${s}`)
+    return result
+  }
+
   static now(timeZone: Temporal.TimeZone | Temporal.TimeZoneProtocol): Period {
     const ym = Temporal.Now.plainDateISO(timeZone).toPlainYearMonth()
     return new Period(ym.year, ym.month / 4 + 1)

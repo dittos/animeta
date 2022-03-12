@@ -63,6 +63,15 @@ import { AuthenticateController } from './controllers/authenticate.controller';
 import { ChangePasswordController } from './controllers/change_password.controller';
 import { CreateAccountController } from './controllers/create_account.controller';
 import { AdminCachesController } from './controllers/admin/caches.controller';
+import { AdminWorksController } from './controllers/admin/works.controller';
+import { WorkCast } from './entities/work_cast.entity';
+import { WorkTitleIndex } from './entities/work_title_index.entity';
+import { WorkPeriodIndex } from './entities/work_period_index.entity';
+import { Company } from './entities/company.entity';
+import { WorkCompany } from './entities/work_company.entity';
+import { ImageService } from './services/admin/image.service';
+import { AnnService } from './services/admin/ann.service';
+import { CompanyAnnIds } from './entities/company_ann_ids.entity';
 
 @Module({
   imports: [
@@ -78,6 +87,12 @@ import { AdminCachesController } from './controllers/admin/caches.controller';
       TitleMapping,
       WorkStaff,
       Person,
+      WorkCast,
+      WorkTitleIndex,
+      WorkPeriodIndex,
+      Company,
+      WorkCompany,
+      CompanyAnnIds,
     ]),
     GraphQLModule.forRoot({
       driver: ApolloDriver,
@@ -127,6 +142,7 @@ import { AdminCachesController } from './controllers/admin/caches.controller';
     CreateAccountController,
 
     AdminCachesController,
+    AdminWorksController,
   ],
   providers: [
     SearchService,
@@ -141,6 +157,8 @@ import { AdminCachesController } from './controllers/admin/caches.controller';
     TwitterApiService,
     CategoryService,
     AuthService,
+    ImageService,
+    AnnService,
 
     UserResolver,
     RecordResolver,

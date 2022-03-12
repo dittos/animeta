@@ -20,6 +20,9 @@ export class Work {
   @Column()
   image_center_y!: number;
 
+  @Column('text')
+  raw_metadata!: string | null;
+
   @Column('jsonb')
   metadata!: WorkMetadata | null;
 

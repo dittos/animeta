@@ -213,7 +213,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
     private handleStudiosChange = (newOptions: any) => {
         this.props.onChange({
             ...this.props.metadata,
-            studios: newOptions.map((it: any) => it.value),
+            studios: newOptions.length > 0 ? newOptions.map((it: any) => it.value) : null,
         });
     };
 
