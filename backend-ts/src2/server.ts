@@ -51,7 +51,7 @@ registerEndpoints(server, path.join(__dirname, 'endpoints'), '/api')
 
 export async function bootstrap2() {
   await createConnection()
-  server.listen(8082, (err, address) => {
+  server.listen(8082, '0.0.0.0', (err, address) => {
     if (err) {
       console.error(err)
       process.exit(1)
