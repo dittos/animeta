@@ -1,0 +1,63 @@
+import fastify, { FastifyInstance } from 'fastify'
+import * as path from 'path'
+import * as fs from 'fs'
+import { createConnection } from 'typeorm'
+import { Endpoint } from './schema'
+
+// TODO: dotenv
+
+const server = fastify({
+  logger: {
+    // TODO: off in production
+    prettyPrint: true,
+  },
+})
+
+const middlewareFilename = '_middleware.js'
+
+function registerEndpoints(parent: FastifyInstance, endpointsDir: string, prefix: string) {
+  parent.register(async (child, opts) => {
+    const files = fs.readdirSync(endpointsDir, { withFileTypes: true })
+    for (const file of files) {
+      const fullpath = path.join(endpointsDir, file.name)
+      if (file.isDirectory()) {
+        registerEndpoints(child, fullpath, file.name)
+      } else if (file.name === middlewareFilename) {
+        const middleware = require(fullpath).default
+        child.addHook('preHandler', middleware)
+      } else if (path.extname(file.name) === '.js') {
+        const endpoint = require(fullpath).default as Endpoint
+        child.route({
+          method: 'POST',
+          url: '/' + file.name.replace(/\.js$/, ''),
+          schema: {
+            body: endpoint.Params,
+            response: {
+              200: endpoint.Result,
+            }
+          },
+          handler: async (request, reply) => {
+            return endpoint.handler(request.body)
+          }
+        })
+      }
+    }
+  }, {
+    prefix
+  })
+}
+
+registerEndpoints(server, path.join(__dirname, 'endpoints'), '/api')
+
+export async function bootstrap2() {
+  await createConnection()
+  server.listen(8082, (err, address) => {
+    if (err) {
+      console.error(err)
+      process.exit(1)
+    }
+    console.log(`Server listening at ${address}`)
+  })
+}
+
+// bootstrap2()

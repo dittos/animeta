@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/node';
 import { ConfigService } from '@nestjs/config';
 import * as cookieParser from 'cookie-parser';
 import { SentryInterceptor } from './sentry.interceptor';
+import { bootstrap2 } from 'src2/server';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppProdModule);
@@ -17,3 +18,4 @@ async function bootstrap() {
   await app.listen(8081);
 }
 bootstrap();
+bootstrap2();

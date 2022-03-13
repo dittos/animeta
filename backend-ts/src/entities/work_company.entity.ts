@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Company } from "./company.entity";
 import { Person } from "./person.entity";
+import { Work } from "./work.entity";
 
 @Entity({
   name: 'work_company'
@@ -11,6 +12,10 @@ export class WorkCompany {
 
   @Column()
   work_id!: number;
+
+  @ManyToOne(() => Work)
+  @JoinColumn({name: 'work_id'})
+  work!: Work;
 
   @Column()
   position!: number;

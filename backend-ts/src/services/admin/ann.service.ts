@@ -93,7 +93,6 @@ export class AnnService {
       .map((_, el) => $(el).find('company'))
       .filter((_, el) => el.length > 0)
       .toArray()
-    console.log(companyEls)
     if (!companyEls.length) return null
     return await Promise.all(companyEls.map(async it => {
       const annId = Number(it.attr('id'))

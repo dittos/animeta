@@ -16,6 +16,14 @@ function fetchWithSession(input, init = {}) {
   });
 }
 
+function call(path, params = {}) {
+  return fetchWithSession(path, {
+    method: 'POST',
+    body: JSON.stringify(params),
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
 function saveSession() {
   if (sessionKey) {
     window.localStorage.setItem(SESSION_KEY_STORAGE_KEY, sessionKey);
@@ -145,21 +153,21 @@ let _companies;
 
 export function getCompanies(cached = true) {
   if (!_companies || !cached) {
-    _companies = fetchWithSession('/api/admin/companies');
+    _companies = call('/api/admin/v1/list_company');
   }
   return _companies;
 }
 
 export function getCompany(id) {
-  return fetchWithSession(`/api/admin/companies/${id}`);
+  return call('/api/admin/v1/get_company', {id});
 }
 
 export function editCompany(id, request) {
-  return fetchWithSession(`/api/admin/companies/${id}`, {
-    method: 'POST',
-    body: JSON.stringify(request),
-    headers: { 'Content-Type': 'application/json' },
-  });
+  return call(`/api/admin/v1/edit_company`, {id, ...request});
+}
+
+export function mergeCompany(id, otherCompanyId) {
+  return call(`/api/admin/v1/merge_company`, {id, otherCompanyId});
 }
 
 export function getPeopleTransliterationCheck(period) {

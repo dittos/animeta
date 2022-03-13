@@ -137,34 +137,38 @@ export class WorkService {
   }
 
   async applyMetadata(em: EntityManager, work: Work, metadata: WorkMetadata) {
-    work.metadata = metadata
-    work.raw_metadata = JSON.stringify(metadata)
-    const periods = metadata.periods?.map(it => Period.parseOrThrow(it)) ?? []
-    await em.delete(WorkPeriodIndex, {work_id: work.id})
-    await em.save(periods.sort().map((period, index) => {
-      const wpi = new WorkPeriodIndex()
-      wpi.period = period.toString()
-      wpi.work_id = work.id
-      wpi.is_first_period = index === 0
-      return wpi
-    }))
-    const studios = await Promise.all(metadata.studios?.map(async it => {
-      let company = await em.findOne(Company, {name: it})
-      if (company) return company
-      company = new Company()
-      company.name = it
-      return em.save(company)
-    }) ?? [])
-    await em.delete(WorkCompany, {work_id: work.id})
-    await em.save(studios.map((company, index) => {
-      const wc = new WorkCompany()
-      wc.work_id = work.id
-      wc.position = index
-      wc.company = company
-      return wc
-    }))
-    await em.save(work)
+    return applyWorkMetadata(em, work, metadata)
   }
+}
+
+export async function applyWorkMetadata(em: EntityManager, work: Work, metadata: WorkMetadata) {
+  work.metadata = metadata
+  work.raw_metadata = JSON.stringify(metadata)
+  const periods = metadata.periods?.map(it => Period.parseOrThrow(it)) ?? []
+  await em.delete(WorkPeriodIndex, {work_id: work.id})
+  await em.save(periods.sort().map((period, index) => {
+    const wpi = new WorkPeriodIndex()
+    wpi.period = period.toString()
+    wpi.work_id = work.id
+    wpi.is_first_period = index === 0
+    return wpi
+  }))
+  const studios = await Promise.all(metadata.studios?.map(async it => {
+    let company = await em.findOne(Company, {name: it})
+    if (company) return company
+    company = new Company()
+    company.name = it
+    return em.save(company)
+  }) ?? [])
+  await em.delete(WorkCompany, {work_id: work.id})
+  await em.save(studios.map((company, index) => {
+    const wc = new WorkCompany()
+    wc.work_id = work.id
+    wc.position = index
+    wc.company = company
+    return wc
+  }))
+  await em.save(work)
 }
 
 const exceptionChars = ['!', '+']

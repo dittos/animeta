@@ -159,6 +159,7 @@ export function createServer({ server = express(), appProvider, getAssets }: {
 
   configureProxy('/api/v4', config.backend.v4BaseUrl)
   configureProxy('/api/admin/v0', config.backend.adminNewBaseUrl)
+  configureProxy('/api/admin/v1', config.backend.adminNewBaseUrl2)
   configureProxy('/api', config.backend.baseUrl)
 
   function renderDefault(res: express.Response, locals: any, content: string) {
