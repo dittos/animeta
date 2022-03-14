@@ -146,13 +146,15 @@ export async function applyWorkMetadata(em: EntityManager, work: Work, metadata:
   work.raw_metadata = JSON.stringify(metadata)
   const periods = metadata.periods?.map(it => Period.parseOrThrow(it)) ?? []
   await em.delete(WorkPeriodIndex, {work_id: work.id})
-  await em.save(periods.sort().map((period, index) => {
+  periods.sort()
+  await em.save(periods.map((period, index) => {
     const wpi = new WorkPeriodIndex()
     wpi.period = period.toString()
     wpi.work_id = work.id
     wpi.is_first_period = index === 0
     return wpi
   }))
+  work.first_period = periods[0]?.toString() ?? null
   const studios = await Promise.all(metadata.studios?.map(async it => {
     let company = await em.findOne(Company, {name: it})
     if (company) return company
