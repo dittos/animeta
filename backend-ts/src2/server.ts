@@ -29,7 +29,7 @@ function registerEndpoints(parent: FastifyInstance, endpointsDir: string, prefix
         const endpoint = require(fullpath).default as Endpoint
         child.route({
           method: 'POST',
-          url: '/' + file.name.replace(/\.js$/, ''),
+          url: file.name === 'index.js' ? '/' : '/' + file.name.replace(/\.js$/, ''),
           schema: {
             body: endpoint.Params,
             response: {

@@ -59,7 +59,10 @@ class CompanyMergeForm extends React.Component {
   };
 
   _merge = () => {
-    API.mergeCompany(this.props.company.id, this.state.companyToMerge.id).then(
+    API.call('/api/admin/v1/CompanyMergeForm/merge', {
+      id: this.props.company.id,
+      otherCompanyId: this.state.companyToMerge.id
+    }).then(
       () => {
         this.setState({
           companyToMerge: null,

@@ -29,7 +29,7 @@ class PersonList extends React.Component<{location: any}> {
 
       <ObjectList
         location={this.props.location}
-        loader={API.listPerson}
+        loader={page => API.call('/api/admin/v1/PersonList/', {page})}
         basePath="/people"
         renderItem={this._renderItem}
       />

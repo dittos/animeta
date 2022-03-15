@@ -20,7 +20,7 @@ class PersonDetail extends React.Component {
   }
 
   _reload = () => {
-    return API.getPerson(this.props.match.params.id)
+    return API.call('/api/admin/v1/PersonDetail/', {id: this.props.match.params.id})
       .then(person => this.setState({ person, editName: person.name }));
   };
 
@@ -91,7 +91,8 @@ class PersonDetail extends React.Component {
 
   _submitName = event => {
     event.preventDefault();
-    API.editPerson(this.state.person.id, {
+    API.call('/api/admin/v1/PersonDetail/rename', {
+      id: this.state.person.id,
       name: this.state.editName,
     }).then(this._reload);
   };

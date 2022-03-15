@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Person } from "./person.entity";
+import { Work } from "./work.entity";
 
 @Entity({
   name: 'work_cast'
@@ -10,6 +11,10 @@ export class WorkCast {
 
   @Column()
   work_id!: number;
+
+  @ManyToOne(() => Work)
+  @JoinColumn({name: 'work_id'})
+  work?: Work;
 
   @Column()
   role!: string;

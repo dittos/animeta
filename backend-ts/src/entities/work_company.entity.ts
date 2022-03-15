@@ -15,7 +15,7 @@ export class WorkCompany {
 
   @ManyToOne(() => Work)
   @JoinColumn({name: 'work_id'})
-  work!: Work;
+  work?: Work;
 
   @Column()
   position!: number;

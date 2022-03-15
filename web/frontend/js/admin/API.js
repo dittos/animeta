@@ -16,7 +16,7 @@ function fetchWithSession(input, init = {}) {
   });
 }
 
-function call(path, params = {}) {
+export function call(path, params = {}) {
   return fetchWithSession(path, {
     method: 'POST',
     body: JSON.stringify(params),
@@ -125,51 +125,11 @@ export function clearCache() {
   return fetchWithSession('/api/admin/v0/caches', { method: 'DELETE' });
 }
 
-export function listPerson(page = 1) {
-  return fetchWithSession(`/api/admin/people?page=${page}`);
-}
-
-export function getPerson(id) {
-  return fetchWithSession(`/api/admin/people/${id}`);
-}
-
-export function editPerson(id, request) {
-  return fetchWithSession(`/api/admin/people/${id}`, {
-    method: 'POST',
-    body: JSON.stringify(request),
-    headers: { 'Content-Type': 'application/json' },
-  });
-}
-
-export function bulkEditPerson(request) {
-  return fetchWithSession(`/api/admin/people`, {
-    method: 'POST',
-    body: JSON.stringify(request),
-    headers: { 'Content-Type': 'application/json' },
-  });
-}
-
 let _companies;
 
 export function getCompanies(cached = true) {
   if (!_companies || !cached) {
-    _companies = call('/api/admin/v1/list_company');
+    _companies = call('/api/admin/v1/getCompanies');
   }
   return _companies;
-}
-
-export function getCompany(id) {
-  return call('/api/admin/v1/get_company', {id});
-}
-
-export function editCompany(id, request) {
-  return call(`/api/admin/v1/edit_company`, {id, ...request});
-}
-
-export function mergeCompany(id, otherCompanyId) {
-  return call(`/api/admin/v1/merge_company`, {id, otherCompanyId});
-}
-
-export function getPeopleTransliterationCheck(period) {
-  return fetchWithSession(`/api/admin/people/transliterationCheck?period=${period}`);
 }

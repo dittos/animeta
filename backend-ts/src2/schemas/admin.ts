@@ -9,3 +9,18 @@ export const CompanyDto = Type.Object({
   })))
 })
 export type CompanyDto = Static<typeof CompanyDto>
+
+const PersonWorkDto = Type.Object({
+  workId: Type.String(),
+  workTitle: Type.String(),
+  roleOrTask: Type.String(),
+})
+
+export const PersonDto = Type.Object({
+  id: Type.String(),
+  name: Type.String(),
+  metadata: Type.Any(),
+  staffs: Type.Optional(Type.Array(PersonWorkDto)),
+  casts: Type.Optional(Type.Array(PersonWorkDto)),
+})
+export type PersonDto = Static<typeof PersonDto>

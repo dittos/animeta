@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Container, Form, Navbar, Table } from "react-bootstrap";
 import { useRouteMatch } from "react-router";
 import { Link } from "react-router-dom";
-import { bulkEditPerson, getPeopleTransliterationCheck } from "./API";
+import * as API from "./API";
 
 type TransliterationCheckItem = {
   personId: number;
@@ -59,7 +59,7 @@ function PersonListTransliterationCheck() {
   </div>;
 
   async function reload() {
-    setResult(await getPeopleTransliterationCheck(period))
+    setResult(await API.call('/api/admin/v1/PersonListTransliterationCheck/', {period}))
   }
 
   function updateName(personId: number, newName: string) {
@@ -68,7 +68,7 @@ function PersonListTransliterationCheck() {
 
   async function save() {
     try {
-      await bulkEditPerson(result.filter(it => it.newName).map(it => ({
+      await API.call('/api/admin/v1/PersonListTransliterationCheck/bulkRename', result.filter(it => it.newName).map(it => ({
         id: it.personId,
         name: it.newName
       })))

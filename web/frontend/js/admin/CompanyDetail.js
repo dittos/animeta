@@ -21,7 +21,7 @@ class CompanyDetail extends React.Component {
   }
 
   _reload = () => {
-    return API.getCompany(this.props.match.params.id)
+    return API.call('/api/admin/v1/CompanyDetail/', {id: this.props.match.params.id})
       .then(company => this.setState({ company, editName: company.name }));
   };
 
@@ -88,7 +88,8 @@ class CompanyDetail extends React.Component {
 
   _submitName = event => {
     event.preventDefault();
-    API.editCompany(this.state.company.id, {
+    API.call('/api/admin/v1/CompanyDetail/rename', {
+      id: this.state.company.id,
       name: this.state.editName,
     }).then(this._reload);
   };
