@@ -48,7 +48,7 @@ export class UserResolver {
 
   @ResolveField('categories')
   async categories(@Parent() user: User): Promise<Category[]> {
-    return this.categoryRepository.find({ where: { user } })
+    return this.categoryRepository.find({ where: { user }, order: { position: 'ASC' } })
   }
 
   @ResolveField('recordCount')

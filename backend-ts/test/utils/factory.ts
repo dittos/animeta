@@ -50,7 +50,7 @@ export class TestFactoryUtils {
     user: User;
     name?: string;
   }): Promise<Category> {
-    return this.categoryService.createCategory(user, {
+    return this.categoryService.createCategory(this.entityManager, user, {
       name: name ?? cuid()
     })
   }

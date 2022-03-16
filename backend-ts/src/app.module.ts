@@ -69,6 +69,10 @@ import { WorkPeriodIndex } from './entities/work_period_index.entity';
 import { Company } from './entities/company.entity';
 import { WorkCompany } from './entities/work_company.entity';
 import { CompanyAnnIds } from './entities/company_ann_ids.entity';
+import { CreateCategoryController } from './controllers/create_category.controller';
+import { UpdateCategoryOrderController } from './controllers/update_category_order.controller';
+import { DeleteCategoryController } from './controllers/delete_category.controller';
+import { UpdateCategoryController } from './controllers/update_category.controller';
 
 @Module({
   imports: [
@@ -137,6 +141,10 @@ import { CompanyAnnIds } from './entities/company_ann_ids.entity';
     AuthenticateController,
     ChangePasswordController,
     CreateAccountController,
+    CreateCategoryController,
+    UpdateCategoryController,
+    DeleteCategoryController,
+    UpdateCategoryOrderController,
 
     AdminCachesController,
   ],
