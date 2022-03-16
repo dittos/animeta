@@ -47,7 +47,7 @@ export class UserSerializer {
       name: user.username,
       date_joined: user.date_joined.getTime(),
       is_twitter_connected: isViewer && options.twitter ? (await this.twitterSettingRepository.findOne({ where: { user } })) != null : null,
-      categories: options.categories ? (await this.categoryRepository.find({ where: { user } })).map(it => this.categorySerializer.serialize(it)) : null,
+      categories: options.categories ? (await this.categoryRepository.find({ where: { user }, order: {position: 'ASC'} })).map(it => this.categorySerializer.serialize(it)) : null,
       record_count: options.stats ? await this.recordRepository.count({ where: { user } }) : null,
       history_count: options.stats ? await this.historyRepository.count({ where: { user } }) : null,
     };
