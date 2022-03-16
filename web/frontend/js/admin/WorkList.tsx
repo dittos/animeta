@@ -26,7 +26,10 @@ class WorkList extends React.Component<{location: any}> {
   )
 
   private _deleteWork = (id: any, context: ObjectListContext) => {
-    API.deleteWork(id).then(() => context.reload());
+    API.call('/api/admin/v1/WorkList/delete', {workId: id})
+      .then(() => context.reload(), e => {
+        alert(e.message);
+      });
   };
 }
 

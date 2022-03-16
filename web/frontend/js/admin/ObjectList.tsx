@@ -51,7 +51,7 @@ class ObjectList<T extends Entity> extends React.Component<ObjectListProps<T>, O
     const query = new URLSearchParams(this.props.location.search);
     const page = parseInt(query.get('page') || '1', 10);
     const listContext = {
-      reload: this._reload,
+      reload: () => this._reload(),
     };
     return (
       <div>

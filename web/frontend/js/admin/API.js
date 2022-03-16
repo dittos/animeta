@@ -73,24 +73,6 @@ export function createWork(title) {
   return call(`/api/admin/v1/createWork`, {title})
 }
 
-export function deleteWork(id) {
-  return fetchWithSession(`/api/admin/works/${id}`, { method: 'DELETE' });
-}
-
-export function addTitleMapping(workId, titleMapping) {
-  return fetchWithSession(`/api/admin/works/${workId}/title-mappings`, {
-    method: 'POST',
-    body: JSON.stringify(titleMapping),
-    headers: { 'Content-Type': 'application/json' },
-  });
-}
-
-export function deleteTitleMapping(id) {
-  return fetchWithSession(`/api/admin/title-mappings/${id}`, {
-    method: 'DELETE',
-  });
-}
-
 export function searchWork(q, { minRecordCount = 2 }) {
   const params = new URLSearchParams();
   params.append('q', q);

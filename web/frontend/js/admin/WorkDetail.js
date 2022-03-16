@@ -230,13 +230,16 @@ class WorkDetail extends React.Component {
     }).then(this._reload);
   };
 
-  _deleteTitleMapping = id => {
-    API.deleteTitleMapping(id).then(this._reload);
+  _deleteTitleMapping = titleMappingId => {
+    API.call('/api/admin/v1/WorkDetail/deleteTitleMapping', {
+      titleMappingId
+    }).then(this._reload);
   };
 
   _submitAddMapping = event => {
     event.preventDefault();
-    API.addTitleMapping(this.state.work.id, {
+    API.call('/api/admin/v1/WorkDetail/addTitleMapping', {
+      workId: this.state.work.id,
       title: this.titleToAddInput.current.value,
     }).then(this._reload);
   };
@@ -294,6 +297,8 @@ class WorkDetail extends React.Component {
       blacklisted: true,
     }).then(() => {
       this.props.history.push('/works');
+    }, e => {
+      alert(e.message);
     });
   };
 }
