@@ -5,8 +5,13 @@ import { WorkTitleIndex } from "src/entities/work_title_index.entity";
 import { makeKey } from "src/services/search.service";
 import { db } from "src2/database";
 import { createConnection } from "typeorm";
+import * as Sentry from '@sentry/node';
+
+Sentry.init()
 
 async function main() {
+  console.info('Starting indexer')
+  
   const conn = await createConnection()
   try {
     const recordCounts: {work_id: number; c: number}[] = await db.query(`
@@ -19,6 +24,7 @@ async function main() {
       recordCountsMap.set(work_id, c)
     }
     const works = await db.find(Work)
+    console.info(`[WorkIndex] creating ${works.length}`)
     await db.transaction(async () => {
       await db.delete(WorkIndex, {})
       let batch: WorkIndex[] = []
@@ -42,6 +48,7 @@ async function main() {
     })
 
     const titleMappings = await db.find(TitleMapping)
+    console.info(`[WorkTitleIndex] creating ${titleMappings.length}`)
     await db.transaction(async () => {
       await db.delete(WorkTitleIndex, {})
       let batch: WorkTitleIndex[] = []
@@ -59,9 +66,11 @@ async function main() {
         await db.save(batch)
       }
     })
+
+    console.info('Done')
   } finally {
     await conn.close()
   }
 }
 
-main()
+main().catch(e => Sentry.captureException(e))
