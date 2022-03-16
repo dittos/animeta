@@ -13,6 +13,12 @@ export class WorkIndex {
   @Column()
   record_count!: number;
 
+  /**
+   * @deprecated
+   */
+  @Column()
+  rank!: number;
+
   @Column()
   blacklisted!: boolean;
 
