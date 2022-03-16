@@ -28,7 +28,7 @@ class WorkDetail extends React.Component {
   }
 
   _reload = () => {
-    return API.getWork(this.props.match.params.id)
+    return API.call('/api/admin/v1/WorkDetail/', {id: this.props.match.params.id})
       .then(work => this.setState({ work }));
   };
 
@@ -224,7 +224,8 @@ class WorkDetail extends React.Component {
   };
 
   _setPrimaryTitleMapping = id => {
-    API.editWork(this.state.work.id, {
+    API.call('/api/admin/v1/WorkDetail/setPrimaryTitle', {
+      workId: this.state.work.id,
       primaryTitleMappingId: id,
     }).then(this._reload);
   };
@@ -242,7 +243,8 @@ class WorkDetail extends React.Component {
 
   _saveMetadata = () => {
     this.setState({ isSavingMetadata: true });
-    API.editWork(this.state.work.id, {
+    API.call('/api/admin/v1/WorkDetail/editMetadata', {
+      workId: this.state.work.id,
       rawMetadata: this.state.work.raw_metadata,
     }).then(() => {
       this._reload();
@@ -254,17 +256,21 @@ class WorkDetail extends React.Component {
   };
 
   _onAnnImport = (annId) => {
-    API.editWork(this.state.work.id, {
+    API.call('/api/admin/v1/WorkDetail/editMetadata', {
+      workId: this.state.work.id,
       rawMetadata: this.state.work.raw_metadata,
-      importAnnMetadata: annId,
-    }).then(this._reload, e => {
+    }).then(() => API.call('/api/admin/v1/WorkDetail/importAnnMetadata', {
+      workId: this.state.work.id,
+      annId,
+    })).then(this._reload, e => {
       alert(e.message);
     });
   };
 
   _uploadImage = (source, options) => {
-    API.editWork(this.state.work.id, {
-      crawlImage: {
+    API.call('/api/admin/v1/WorkDetail/crawlImage', {
+      workId: this.state.work.id,
+      options: {
         source,
         ...options,
       },
@@ -274,7 +280,8 @@ class WorkDetail extends React.Component {
   };
 
   _saveImageCenter = y => {
-    API.editWork(this.state.work.id, {
+    API.call('/api/admin/v1/WorkDetail/update', {
+      workId: this.state.work.id,
       imageCenterY: y,
     }).then(this._reload, e => {
       alert(e.message);
@@ -282,7 +289,8 @@ class WorkDetail extends React.Component {
   };
 
   _blacklist = () => {
-    API.editWork(this.state.work.id, {
+    API.call('/api/admin/v1/WorkDetail/update', {
+      workId: this.state.work.id,
       blacklisted: true,
     }).then(() => {
       this.props.history.push('/works');

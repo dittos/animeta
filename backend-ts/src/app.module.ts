@@ -63,14 +63,11 @@ import { AuthenticateController } from './controllers/authenticate.controller';
 import { ChangePasswordController } from './controllers/change_password.controller';
 import { CreateAccountController } from './controllers/create_account.controller';
 import { AdminCachesController } from './controllers/admin/caches.controller';
-import { AdminWorksController } from './controllers/admin/works.controller';
 import { WorkCast } from './entities/work_cast.entity';
 import { WorkTitleIndex } from './entities/work_title_index.entity';
 import { WorkPeriodIndex } from './entities/work_period_index.entity';
 import { Company } from './entities/company.entity';
 import { WorkCompany } from './entities/work_company.entity';
-import { ImageService } from './services/admin/image.service';
-import { AnnService } from './services/admin/ann.service';
 import { CompanyAnnIds } from './entities/company_ann_ids.entity';
 
 @Module({
@@ -142,7 +139,6 @@ import { CompanyAnnIds } from './entities/company_ann_ids.entity';
     CreateAccountController,
 
     AdminCachesController,
-    AdminWorksController,
   ],
   providers: [
     SearchService,
@@ -157,8 +153,6 @@ import { CompanyAnnIds } from './entities/company_ann_ids.entity';
     TwitterApiService,
     CategoryService,
     AuthService,
-    ImageService,
-    AnnService,
 
     UserResolver,
     RecordResolver,

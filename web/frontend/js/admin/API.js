@@ -69,31 +69,8 @@ export function getCurrentUser() {
   return fetchWithSession('/api/v4/me');
 }
 
-export function getWorks({ orphans = false, offset = 0 }) {
-  const params = new URLSearchParams();
-  params.append('offset', offset);
-  if (orphans) params.append('orphans', '1');
-  return fetchWithSession(`/api/admin/v0/works?${params}`);
-}
-
 export function createWork(title) {
-  return fetchWithSession(`/api/admin/v0/works`, {
-    method: 'POST',
-    body: JSON.stringify({ title }),
-    headers: { 'Content-Type': 'application/json' },
-  });
-}
-
-export function getWork(id) {
-  return fetchWithSession(`/api/admin/v0/works/${id}`);
-}
-
-export function editWork(id, request) {
-  return fetchWithSession(`/api/admin/v0/works/${id}`, {
-    method: 'POST',
-    body: JSON.stringify(request),
-    headers: { 'Content-Type': 'application/json' },
-  });
+  return call(`/api/admin/v1/createWork`, {title})
 }
 
 export function deleteWork(id) {

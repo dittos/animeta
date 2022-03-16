@@ -3,6 +3,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { createConnection } from 'typeorm'
 import { Endpoint } from './schema'
+import { HttpException } from '@nestjs/common'
 
 // TODO: dotenv
 
@@ -26,7 +27,8 @@ function registerEndpoints(parent: FastifyInstance, endpointsDir: string, prefix
         const middleware = require(fullpath).default
         child.addHook('preHandler', middleware)
       } else if (path.extname(file.name) === '.js') {
-        const endpoint = require(fullpath).default as Endpoint
+        const endpoint = require(fullpath).default as Endpoint | undefined
+        if (!endpoint) continue
         child.route({
           method: 'POST',
           url: file.name === 'index.js' ? '/' : '/' + file.name.replace(/\.js$/, ''),
@@ -37,7 +39,15 @@ function registerEndpoints(parent: FastifyInstance, endpointsDir: string, prefix
             }
           },
           handler: async (request, reply) => {
-            return endpoint.handler(request.body)
+            try {
+              return await endpoint.handler(request.body)
+            } catch (e) {
+              if (e instanceof HttpException) {
+                reply.status(e.getStatus()).send(e.getResponse())
+                return
+              }
+              throw e
+            }
           }
         })
       }

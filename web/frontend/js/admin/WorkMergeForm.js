@@ -88,8 +88,9 @@ class WorkMergeForm extends React.Component {
   };
 
   _merge = () => {
-    API.editWork(this.props.work.id, {
-      mergeWorkId: this.state.workToMerge.id,
+    API.call('/api/admin/v1/WorkMergeForm/merge', {
+      workId: this.props.work.id,
+      otherWorkId: this.state.workToMerge.id,
       forceMerge: this.state.conflicts && this.state.forceMerge,
     }).then(
       () => {

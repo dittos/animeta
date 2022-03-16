@@ -7,7 +7,7 @@ class WorkList extends React.Component<{location: any}> {
   render() {
     return <ObjectList
       location={this.props.location}
-      loader={(page) => API.getWorks({ offset: (page - 1) * 50 })}
+      loader={(page) => API.call('/api/admin/v1/WorkList/', { offset: (page - 1) * 50 })}
       basePath="/works"
       renderItem={this._renderItem}
     />;

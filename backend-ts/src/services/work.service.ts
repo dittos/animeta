@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
+import { InjectEntityManager, InjectRepository } from "@nestjs/typeorm";
 import * as DataLoader from "dataloader";
 import { Episode } from "shared/types_generated";
 import { Company } from "src/entities/company.entity";
@@ -31,6 +31,7 @@ export class WorkService {
     @InjectRepository(WorkIndex) private workIndexRepository: Repository<WorkIndex>,
     @InjectRepository(TitleMapping) private titleMappingRepository: Repository<TitleMapping>,
     @InjectRepository(History) private historyRepository: Repository<History>,
+    @InjectEntityManager() private entityManager: EntityManager,
   ) {}
 
   get(id: number): Promise<Work> {
@@ -86,59 +87,76 @@ export class WorkService {
   }
 
   getImageUrl(work: Work): string | null {
-    // TODO: config
-    return work.image_filename ? `https://storage.googleapis.com/animeta-static/media/${work.image_filename}` : null
+    return getWorkImageUrl(work)
   }
 
   async getOrCreate(title: string): Promise<Work> {
-    title = title.trim()
-    if (title === '')
-      throw new ValidationError('작품 제목을 입력하세요.')
-    
-    const mapping = await this.titleMappingRepository.findOne({ where: {title} })
-    if (mapping) {
-      return this.workRepository.findOneOrFail(mapping.work_id)
-    }
-    const key = normalizeTitle(title)
-    const similarMapping = await this.titleMappingRepository.findOne({ where: {key} })
-    if (similarMapping) {
-      await this.titleMappingRepository.save({
-        work_id: similarMapping.work_id,
-        title,
-        key
-      })
-      return this.workRepository.findOneOrFail(similarMapping.work_id)
-    }
-    const work = new Work()
-    work.title = title
-    work.image_center_y = 0.0
-    work.blacklisted = false
-    await this.workRepository.save(work)
-    await this.titleMappingRepository.save({
-      work_id: work.id,
-      title,
-      key,
-    })
-    return work
+    return getOrCreateWork(this.entityManager, title)
   }
 
   async editMetadata(em: EntityManager, work: Work, rawMetadata: string) {
-    let metadata: WorkMetadata
-    try {
-      // TODO: validation
-      metadata = JSON.parse(rawMetadata || "{}")
-      if (metadata.version < 2) {
-        throw new Error(`${metadata.version} is outdated metadata version`)
-      }
-    } catch (e) {
-      throw new ValidationError(`Metadata parse failed: ${(e as any)?.message}`)
-    }
-    return this.applyMetadata(em, work, metadata)
+    return applyWorkMetadataRaw(em, work, rawMetadata)
   }
 
   async applyMetadata(em: EntityManager, work: Work, metadata: WorkMetadata) {
     return applyWorkMetadata(em, work, metadata)
   }
+}
+
+export function getWorkImageUrl(work: Work): string | null {
+  // TODO: config
+  return work.image_filename ? `https://storage.googleapis.com/animeta-static/media/${work.image_filename}` : null
+}
+
+export async function getOrCreateWork(em: EntityManager, title: string): Promise<Work> {
+  title = title.trim()
+  if (title === '')
+    throw new ValidationError('작품 제목을 입력하세요.')
+  
+  const mapping = await em.findOne(TitleMapping, { where: {title} })
+  if (mapping) {
+    return em.findOneOrFail(Work, mapping.work_id)
+  }
+  const key = normalizeTitle(title)
+  const similarMapping = await em.findOne(TitleMapping, { where: {key} })
+  if (similarMapping) {
+    await em.save(TitleMapping, {
+      work_id: similarMapping.work_id,
+      title,
+      key
+    })
+    return em.findOneOrFail(Work, similarMapping.work_id)
+  }
+  const work = new Work()
+  work.title = title
+  work.image_filename = null
+  work.original_image_filename = null
+  work.image_center_y = 0.0
+  work.raw_metadata = null
+  work.metadata = null
+  work.blacklisted = false
+  work.first_period = null
+  await em.save(work)
+  await em.save(TitleMapping, {
+    work_id: work.id,
+    title,
+    key,
+  })
+  return work
+}
+
+export async function applyWorkMetadataRaw(em: EntityManager, work: Work, rawMetadata: string) {
+  let metadata: WorkMetadata
+  try {
+    // TODO: validation
+    metadata = JSON.parse(rawMetadata || "{}")
+    if (metadata.version < 2) {
+      throw new Error(`${metadata.version} is outdated metadata version`)
+    }
+  } catch (e) {
+    throw new ValidationError(`Metadata parse failed: ${(e as any)?.message}`)
+  }
+  return applyWorkMetadata(em, work, metadata)
 }
 
 export async function applyWorkMetadata(em: EntityManager, work: Work, metadata: WorkMetadata) {

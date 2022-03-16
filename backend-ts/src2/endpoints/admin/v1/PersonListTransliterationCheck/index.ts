@@ -1,8 +1,6 @@
 import { Type } from "@sinclair/typebox";
-import { Person } from "src/entities/person.entity";
 import { db } from "src2/database";
 import { createEndpoint } from "src2/schema";
-import { serializePerson } from "src2/serializers/person";
 import { sql, pgFormat } from '@databases/pg'
 
 const Params = Type.Object({
@@ -10,7 +8,7 @@ const Params = Type.Object({
 })
 
 const Result = Type.Array(Type.Object({
-  personId: Type.Number(),
+  personId: Type.String(),
   name: Type.String(),
   count: Type.Number(),
 }))
@@ -56,7 +54,7 @@ export default createEndpoint(Params, Result, async (params) => {
   `.format(pgFormat)
   const result: { id: number; name: string; count: number; }[] = await db.query(query.text, query.values)
   return result.map(it => ({
-    personId: it.id,
+    personId: it.id.toString(),
     name: it.name,
     count: it.count,
   }))
