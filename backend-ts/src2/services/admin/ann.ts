@@ -106,7 +106,7 @@ async function getOrCreatePerson(name: string, annId: number): Promise<Person> {
 }
 
 async function getOrCreateCompany(name: string, annId: number): Promise<Company> {
-  const existingByAnnId = await db.createQueryBuilder(Person, 'c')
+  const existingByAnnId = await db.createQueryBuilder(Company, 'c')
     .leftJoin(CompanyAnnIds, 'cai', 'cai.company_id = c.id')
     .where('cai.ann_ids = :annId', {annId})
     .getOne()
