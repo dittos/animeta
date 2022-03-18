@@ -1,6 +1,7 @@
 import request from 'request';
 import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
 import fetch from 'cross-fetch';
+import * as Sentry from '@sentry/node';
 
 export const HttpNotFound = {};
 
@@ -22,6 +23,7 @@ export default class {
   }
 
   async call(req: any, path: string, params?: any) {
+    Sentry.captureMessage(`${path} called from backend`)
     const { response, body } = await this._call(req, this.baseUrl, path, params);
     if (response.statusCode === 404) {
       throw HttpNotFound;

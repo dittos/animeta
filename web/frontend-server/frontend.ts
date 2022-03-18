@@ -143,7 +143,7 @@ export function createServer({ server = express(), appProvider, getAssets }: {
     res.writeHead(500, { 'content-type': 'text/plain' });
     res.end('API error');
   }
-  function configureProxy(pathPrefix: string, targetUrl: string) {
+  function configureProxy(pathPrefix: string, targetUrl: string, warn: boolean = false) {
     const proxy = httpProxy.createProxyServer({
       target: targetUrl,
       changeOrigin: config.backend.remote ? true : false,
@@ -153,6 +153,9 @@ export function createServer({ server = express(), appProvider, getAssets }: {
     proxy.on('error', onProxyError);
     
     server.use(pathPrefix, (req, res) => {
+      if (warn) {
+        Sentry.captureMessage(`${req.originalUrl} called`)
+      }
       proxy.web(req, res);
     });
   }
@@ -160,7 +163,7 @@ export function createServer({ server = express(), appProvider, getAssets }: {
   configureProxy('/api/v4', config.backend.v4BaseUrl)
   configureProxy('/api/admin/v0', config.backend.adminNewBaseUrl)
   configureProxy('/api/admin/v1', config.backend.adminNewBaseUrl2)
-  configureProxy('/api', config.backend.baseUrl)
+  configureProxy('/api', config.backend.baseUrl, true)
 
   function renderDefault(res: express.Response, locals: any, content: string) {
     const context = {
