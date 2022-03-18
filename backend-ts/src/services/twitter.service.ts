@@ -32,6 +32,11 @@ export class TwitterService {
     })
   }
 
+  async removeOAuthAuthorization(user: User) {
+    const setting = await this.twitterSettingRepository.findOne({ where: {user} })
+    if (setting) await this.twitterSettingRepository.remove(setting)
+  }
+
   async updateStatus(user: User, body: string): Promise<boolean> {
     const setting = await this.twitterSettingRepository.findOne({ where: {user} })
     if (!setting) return false

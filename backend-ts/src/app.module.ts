@@ -73,6 +73,7 @@ import { CreateCategoryController } from './controllers/create_category.controll
 import { UpdateCategoryOrderController } from './controllers/update_category_order.controller';
 import { DeleteCategoryController } from './controllers/delete_category.controller';
 import { UpdateCategoryController } from './controllers/update_category.controller';
+import { DisconnectTwitterController } from './controllers/disconnect_twitter.controller';
 
 @Module({
   imports: [
@@ -145,6 +146,7 @@ import { UpdateCategoryController } from './controllers/update_category.controll
     UpdateCategoryController,
     DeleteCategoryController,
     UpdateCategoryOrderController,
+    DisconnectTwitterController,
 
     AdminCachesController,
   ],

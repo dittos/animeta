@@ -106,7 +106,7 @@ export function createBackup(): Promise<{ downloadUrl: string }> {
 // External Services
 
 export function disconnectTwitter() {
-  return postJSON('/api/v3/DisconnectTwitter');
+  return postJSON('/api/v4/DisconnectTwitter');
 }
 
 // Record
