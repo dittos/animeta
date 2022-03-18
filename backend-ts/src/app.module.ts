@@ -74,6 +74,8 @@ import { UpdateCategoryOrderController } from './controllers/update_category_ord
 import { DeleteCategoryController } from './controllers/delete_category.controller';
 import { UpdateCategoryController } from './controllers/update_category.controller';
 import { DisconnectTwitterController } from './controllers/disconnect_twitter.controller';
+import { CreateBackupController } from './controllers/create_backup.controller';
+import { BackupService } from './services/backup.service';
 
 @Module({
   imports: [
@@ -147,6 +149,7 @@ import { DisconnectTwitterController } from './controllers/disconnect_twitter.co
     DeleteCategoryController,
     UpdateCategoryOrderController,
     DisconnectTwitterController,
+    CreateBackupController,
 
     AdminCachesController,
   ],
@@ -163,6 +166,7 @@ import { DisconnectTwitterController } from './controllers/disconnect_twitter.co
     TwitterApiService,
     CategoryService,
     AuthService,
+    BackupService,
 
     UserResolver,
     RecordResolver,

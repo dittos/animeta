@@ -1,4 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Category } from "./category.entity";
 import { StatusType } from "./status_type";
 import { User } from "./user.entity";
 
@@ -30,6 +31,10 @@ export class Record {
 
   @Column('integer')
   category_id!: number | null;
+  
+  @ManyToOne(() => Category)
+  @JoinColumn({ name: 'category_id' })
+  category!: Category;
 
   @Column('timestamp with time zone')
   updated_at!: Date | null;

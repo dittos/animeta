@@ -1,13 +1,10 @@
 import got from 'got'
 import * as fs from 'fs'
-import { pipeline } from 'stream';
-import { promisify } from "util";
+import { pipeline } from 'stream/promises';
 import { spawn } from "child_process";
 import { Storage } from '@google-cloud/storage';
 import { getAnnMetadata } from "./ann";
 import cheerio from 'cheerio';
-
-const pipelinePromise = promisify(pipeline)
 
 const storage = new Storage()
 const mediaStorageUrl = new URL(process.env.ANIMETA_MEDIA_STORAGE_URL!)
@@ -47,7 +44,7 @@ export async function downloadAnnPoster(annId: string, outFile: string) {
 }
 
 export async function download(url: string, dest: string) {
-  await pipelinePromise(
+  await pipeline(
     got.get(url, {isStream: true}),
     fs.createWriteStream(dest)
   )

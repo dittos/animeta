@@ -100,7 +100,7 @@ export function changePassword(params: {
 }
 
 export function createBackup(): Promise<{ downloadUrl: string }> {
-  return postJSON('/api/v3/CreateBackup');
+  return postJSON('/api/v4/CreateBackup');
 }
 
 // External Services
