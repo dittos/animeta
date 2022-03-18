@@ -9,8 +9,12 @@ import { HttpException } from '@nestjs/common'
 
 const server = fastify({
   logger: {
-    // TODO: off in production
-    prettyPrint: true,
+    prettyPrint: process.env.NODE_ENV !== 'production',
+  },
+  serializerOpts: {
+    ajv: {
+      coerceTypes: true,
+    },
   },
 })
 
