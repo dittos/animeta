@@ -2,12 +2,12 @@
 
 https://animeta.net/
 
-크게 백엔드 API 서버 (Kotlin, Spring Boot)와 프론트엔드 서버 (Node.js, Express) 및 프론트엔드 (React)로 구성되어 있습니다.
+크게 백엔드 API 서버 (Node.js)와 프론트엔드 서버 (Node.js, Express) 및 프론트엔드 (React)로 구성되어 있습니다.
 
 
 ## 백엔드 서버
 
-`backend` 디렉토리에서 작업합니다.
+`backend-ts` 디렉토리에서 작업합니다.
 
 ### DB 초기화
 
@@ -15,11 +15,11 @@ PostgreSQL DB에 `schema.sql`을 반영합니다.
 
 ### 설정
 
-`application.properties.sample`을 가지고 `application.properties`를 작성합니다.
+`.env.sample`, `ormconfig.json.sample`을 가지고 `.env`, `ormconfig.json`를 작성합니다.
 
 ### 개발 서버 실행
 
-    ./gradlew bootRun --args=--spring.config.location=../application.properties
+    npm run start:dev
 
 
 ## 프론트엔드 / 프론트엔드 서버
