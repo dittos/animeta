@@ -3,7 +3,11 @@ name: Backend (TS)
 on:
   push:
     branches: [ master ]
-    paths: ['backend-ts/**', 'tooling/**', '.github/workflows/backend-ts.yml']
+    paths:
+      - 'backend-ts/**'
+      - 'tooling/**'
+      - 'Dockerfile.backend-ts'
+      - '.github/workflows/backend-ts.yml'
   pull_request:
     paths: ['backend-ts/**', 'tooling/**']
 

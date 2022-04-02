@@ -1,5 +1,6 @@
 FROM node:16 AS builder
 
+WORKDIR /src
 COPY tooling/package*.json ./
 RUN npm install
 COPY tooling .
@@ -16,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app/backend-ts
 COPY backend-ts/package*.json ./
 COPY web/shared ../web/shared
-COPY --from=builder . ../tooling
+COPY --from=builder /src ../tooling
 RUN npm install
 
 COPY backend-ts .
