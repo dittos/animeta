@@ -4,14 +4,14 @@ import { collectRootTypes, RootType } from './root_type_collector'
 import { writeJsonSchema, writeJsonSchemaFor } from './json_schema_writer'
 import ts from 'typescript'
 
-export function main(program: ts.Program, context: ts.TransformationContext): ts.Transformer<any> {
+export function main(options: Record<string, any>, program: ts.Program, context: ts.TransformationContext): ts.Transformer<any> {
   const app: App = {
     endpoints: [],
     types: new Map(),
   }
 
-  const endpointsDir = './src2/endpoints'
-  const distDir = './dist/backend-ts'
+  const endpointsDir: string = options.endpointsDir
+  const distDir: string = options.distDir
   const basePath = path.join(program.getCurrentDirectory(), endpointsDir)
   const distPath = path.join(distDir, endpointsDir)
   
@@ -37,8 +37,6 @@ export function main(program: ts.Program, context: ts.TransformationContext): ts
     })
   })
   
-  const schemaDistDir = path.join(distDir, 'gen/schemas')
-  fs.mkdirSync(schemaDistDir, {recursive: true})
   const schema: any = {
     $id: 'common',
     definitions: {}
@@ -46,6 +44,8 @@ export function main(program: ts.Program, context: ts.TransformationContext): ts
   for (const [n,v] of writeJsonSchema(app.types, tc).entries()) {
     schema.definitions[n] = v
   }
+  const schemaDistDir = path.join(distDir, 'gen/schemas')
+  fs.mkdirSync(schemaDistDir, {recursive: true})
   fs.writeFileSync(path.join(schemaDistDir, 'common.json'), JSON.stringify(schema, null, 2))
   
   for (const endpoint of app.endpoints) {

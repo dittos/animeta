@@ -5,7 +5,11 @@
   "compilerOptions": {
     "plugins": [
       {
-        "name": "@animeta/tooling"
+        "name": "@animeta/tooling",
+        "options": {
+          "endpointsDir": "src2/endpoints",
+          "distDir": "dist/backend-ts"
+        }
       }
     ]
   }
