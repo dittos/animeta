@@ -1,5 +1,4 @@
 import { HttpStatus } from "@nestjs/common";
-import { Type } from "@sinclair/typebox";
 import { ApiException } from "src/controllers/exceptions";
 import { Record } from "src/entities/record.entity";
 import { TitleMapping } from "src/entities/title_mapping.entity";
@@ -11,15 +10,8 @@ import { WorkPeriodIndex } from "src/entities/work_period_index.entity";
 import { WorkStaff } from "src/entities/work_staff.entity";
 import { WorkTitleIndex } from "src/entities/work_title_index.entity";
 import { db } from "src2/database";
-import { createEndpoint } from "src2/schema";
 
-const Params = Type.Object({
-  workId: Type.String(),
-})
-
-const Result = Type.Boolean()
-
-export default createEndpoint(Params, Result, async (params) => {
+export default async function(params: {workId: string}): Promise<boolean> {
   return await db.transaction(async () => {
     const work = await db.findOneOrFail(Work, params.workId)
     if (await db.findOne(Record, {where: {work_id: work.id}})) {
@@ -35,4 +27,4 @@ export default createEndpoint(Params, Result, async (params) => {
     await db.remove(work)
     return true
   })
-})
+}

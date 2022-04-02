@@ -1,19 +1,11 @@
-import { Type } from "@sinclair/typebox";
 import { db } from "src2/database";
-import { createEndpoint } from "src2/schema";
 import { sql, pgFormat } from '@databases/pg'
 
-const Params = Type.Object({
-  period: Type.String(),
-})
-
-const Result = Type.Array(Type.Object({
-  personId: Type.String(),
-  name: Type.String(),
-  count: Type.Number(),
-}))
-
-export default createEndpoint(Params, Result, async (params) => {
+export default async function(params: {period: string}): Promise<{
+  personId: string;
+  name: string;
+  count: number;
+}[]> {
   const tasks = sql`(${sql.join([
     "chief director",
     "series director",
@@ -58,4 +50,4 @@ export default createEndpoint(Params, Result, async (params) => {
     name: it.name,
     count: it.count,
   }))
-})
+}

@@ -1,5 +1,4 @@
 import { HttpStatus } from "@nestjs/common";
-import { Type } from "@sinclair/typebox";
 import { ApiException } from "src/controllers/exceptions";
 import { Record } from "src/entities/record.entity";
 import { History } from "src/entities/history.entity";
@@ -8,19 +7,14 @@ import { Work } from "src/entities/work.entity";
 import { WorkIndex } from "src/entities/work_index.entity";
 import { WorkTitleIndex } from "src/entities/work_title_index.entity";
 import { db } from "src2/database";
-import { createEndpoint } from "src2/schema";
 import { AdminWorkDto } from "src2/schemas/admin";
 import { serializeAdminWork } from "src2/serializers/adminWork";
 
-const Params = Type.Object({
-  workId: Type.String(),
-  otherWorkId: Type.String(),
-  forceMerge: Type.Boolean(),
-})
-
-const Result = AdminWorkDto
-
-export default createEndpoint(Params, Result, async (params) => {
+export default async function(params: {
+  workId: string;
+  otherWorkId: string;
+  forceMerge: boolean;
+}): Promise<AdminWorkDto> {
   return await db.transaction(async () => {
     const work = await db.findOneOrFail(Work, params.workId)
     const other = await db.findOneOrFail(Work, params.otherWorkId)
@@ -56,4 +50,4 @@ export default createEndpoint(Params, Result, async (params) => {
     await db.remove(other)
     return serializeAdminWork(work)
   })
-})
+}

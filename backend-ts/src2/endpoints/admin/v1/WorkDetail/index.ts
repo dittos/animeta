@@ -1,6 +1,6 @@
 import { Work } from "src/entities/work.entity";
 import { db } from "src2/database";
-import { AdminWorkDto } from "src2/schemas/admin_raw";
+import { AdminWorkDto } from "src2/schemas/admin";
 import { serializeAdminWork } from "src2/serializers/adminWork";
 
 export default async function(params: {

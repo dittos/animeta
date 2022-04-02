@@ -2,7 +2,6 @@ import fastify, { FastifyInstance, FastifySchema } from 'fastify'
 import * as path from 'path'
 import * as fs from 'fs'
 import { createConnection } from 'typeorm'
-import { Endpoint } from './schema'
 import { HttpException } from '@nestjs/common'
 
 // TODO: dotenv
@@ -43,19 +42,9 @@ function registerEndpoints(parent: FastifyInstance, endpointsDir: string, prefix
         const middleware = require(fullpath).default
         child.addHook('preHandler', middleware)
       } else if (path.extname(file.name) === '.js') {
-        const endpoint = require(fullpath).default as Endpoint | undefined
-        if (!endpoint) continue
+        const handler = require(fullpath).default as ((params: any) => Promise<any> | any) | undefined
+        if (!handler) continue
         let schema = loadSchema(fullpath)
-        if (!schema && endpoint.Params && endpoint.Result) {
-          // typebox compatibility
-          schema = {
-            body: endpoint.Params,
-            response: {
-              200: endpoint.Result,
-            }
-          }
-        }
-        const handler = endpoint.handler ?? endpoint
         child.route({
           method: 'POST',
           url: file.name === 'index.js' ? '/' : '/' + file.name.replace(/\.js$/, ''),
