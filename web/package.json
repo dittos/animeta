@@ -20,7 +20,7 @@
     "express": "^4.13.4",
     "http-proxy": "^1.16.2",
     "jquery": "^2.1.4",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.21",
     "notistack": "^2.0.2",
     "nprogress": "^0.2.0",
     "nuri": "github:dittos/nuri-builds#17ee8779f68efd03212dac340d4000608c65b722",
