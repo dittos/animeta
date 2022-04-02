@@ -1,5 +1,12 @@
 {
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
-  "entryFile": "backend-ts/src/main.js"
+  "entryFile": "backend-ts/src/main.js",
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "@animeta/tooling"
+      }
+    ]
+  }
 }

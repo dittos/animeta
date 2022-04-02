@@ -1,19 +1,13 @@
-import { Type } from "@sinclair/typebox";
 import { Work } from "src/entities/work.entity";
 import { db } from "src2/database";
-import { createEndpoint } from "src2/schema";
-import { AdminWorkDto } from "src2/schemas/admin";
+import { AdminWorkDto } from "src2/schemas/admin_raw";
 import { serializeAdminWork } from "src2/serializers/adminWork";
 
-const Params = Type.Object({
-  workId: Type.String(),
-  blacklisted: Type.Optional(Type.Boolean()),
-  imageCenterY: Type.Optional(Type.Number()),
-})
-
-const Result = AdminWorkDto
-
-export default createEndpoint(Params, Result, async (params) => {
+export default async function(params: {
+  workId: string;
+  blacklisted?: boolean;
+  imageCenterY?: number;
+}): Promise<AdminWorkDto> {
   return await db.transaction(async () => {
     const work = await db.findOneOrFail(Work, params.workId)
     if (params.blacklisted != null) {
@@ -25,4 +19,4 @@ export default createEndpoint(Params, Result, async (params) => {
     await db.save(work)
     return serializeAdminWork(work)
   })
-})
+}
