@@ -1,10 +1,19 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, RouteComponentProps } from 'react-router-dom';
 import { Table, Form, FormGroup, FormControl, Button } from 'react-bootstrap';
-import * as API from './API';
+import { API } from './ApiClient';
+import { PersonDto } from '../../../shared/client';
 
-class PersonDetail extends React.Component {
-  state = {
+type RouteParams = {
+  id: string;
+}
+type State = {
+  person: PersonDto | null;
+  editName: string;
+}
+
+class PersonDetail extends React.Component<RouteComponentProps<RouteParams>, State> {
+  state: State = {
     person: null,
     editName: '',
   };
@@ -13,7 +22,7 @@ class PersonDetail extends React.Component {
     this._reload();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: RouteComponentProps<RouteParams>) {
     if (prevProps.match.params.id !== this.props.match.params.id) {
       this._reload();
     }
@@ -71,13 +80,13 @@ class PersonDetail extends React.Component {
         <h3>Works</h3>
         <Table>
           <tbody>
-          {person.staffs.map(it => (
+          {person.staffs!.map(it => (
             <tr>
               <th className="col-xs-2">{it.roleOrTask}</th>
               <td><Link to={`/works/${it.workId}`}>{it.workTitle}</Link></td>
             </tr>
           ))}
-          {person.casts.map(it => (
+          {person.casts!.map(it => (
             <tr>
               <th className="col-xs-2">{it.roleOrTask}</th>
               <td><Link to={`/works/${it.workId}`}>{it.workTitle}</Link></td>
@@ -89,10 +98,10 @@ class PersonDetail extends React.Component {
     );
   }
 
-  _submitName = event => {
+  _submitName = (event: React.FormEvent) => {
     event.preventDefault();
     API.call('/api/admin/v1/PersonDetail/rename', {
-      id: this.state.person.id,
+      id: this.state.person!.id,
       name: this.state.editName,
     }).then(this._reload);
   };

@@ -1,27 +1,37 @@
 import React from 'react';
-import { findDOMNode } from 'react-dom';
-import { Link } from 'react-router-dom';
+import { Link, RouteComponentProps } from 'react-router-dom';
 import { Table, Form, FormGroup, FormControl, Button, Navbar, Container } from 'react-bootstrap';
-import * as API from './API';
+import { API } from './ApiClient';
 import WorkMergeForm from './WorkMergeForm';
 import ImageUploadForm from './ImageUploadForm';
 import ImageCropper from './ImageCropper';
 import WorkMetadataEditor from './WorkMetadataEditor';
+import { AdminWorkDto, WorkMetadata } from '../../../shared/client';
 
-class WorkDetail extends React.Component {
-  state = {
+type RouteParams = {
+  id: string;
+}
+type State = {
+  work: AdminWorkDto | null;
+  editRawMetadata: boolean;
+  isSavingMetadata: boolean;
+  showMetadataSaved: boolean;
+}
+
+class WorkDetail extends React.Component<RouteComponentProps<RouteParams>, State> {
+  state: State = {
     work: null,
     editRawMetadata: false,
     isSavingMetadata: false,
     showMetadataSaved: false,
   };
-  titleToAddInput = React.createRef();
+  titleToAddInput = React.createRef<HTMLInputElement>();
 
   componentDidMount() {
     this._reload();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: RouteComponentProps<RouteParams>) {
     if (prevProps.match.params.id !== this.props.match.params.id) {
       this._reload();
     }
@@ -192,8 +202,8 @@ class WorkDetail extends React.Component {
     );
   }
 
-  _onMetadataChange = newMetadata => {
-    const work = this.state.work;
+  _onMetadataChange = (newMetadata: WorkMetadata) => {
+    const work = this.state.work!;
     newMetadata.version = 2;
     this.setState({
       work: {
@@ -208,14 +218,14 @@ class WorkDetail extends React.Component {
     if (this.state.editRawMetadata) {
       let metadata;
       try {
-        metadata = JSON.parse(this.state.work.raw_metadata);
+        metadata = JSON.parse(this.state.work!.raw_metadata);
       } catch (e) {
         alert('Raw metadata is not valid JSON: ' + e);
         return;
       }
       this.setState({
         work: {
-          ...this.state.work,
+          ...this.state.work!,
           metadata
         }
       });
@@ -223,32 +233,32 @@ class WorkDetail extends React.Component {
     this.setState({ editRawMetadata: !this.state.editRawMetadata });
   };
 
-  _setPrimaryTitleMapping = id => {
+  _setPrimaryTitleMapping = (id: string) => {
     API.call('/api/admin/v1/WorkDetail/setPrimaryTitle', {
-      workId: this.state.work.id,
+      workId: this.state.work!.id,
       primaryTitleMappingId: id,
     }).then(this._reload);
   };
 
-  _deleteTitleMapping = titleMappingId => {
+  _deleteTitleMapping = (titleMappingId: string) => {
     API.call('/api/admin/v1/WorkDetail/deleteTitleMapping', {
       titleMappingId
     }).then(this._reload);
   };
 
-  _submitAddMapping = event => {
+  _submitAddMapping = (event: React.FormEvent) => {
     event.preventDefault();
     API.call('/api/admin/v1/WorkDetail/addTitleMapping', {
-      workId: this.state.work.id,
-      title: this.titleToAddInput.current.value,
+      workId: this.state.work!.id,
+      title: this.titleToAddInput.current!.value,
     }).then(this._reload);
   };
 
   _saveMetadata = () => {
     this.setState({ isSavingMetadata: true });
     API.call('/api/admin/v1/WorkDetail/editMetadata', {
-      workId: this.state.work.id,
-      rawMetadata: this.state.work.raw_metadata,
+      workId: this.state.work!.id,
+      rawMetadata: this.state.work!.raw_metadata,
     }).then(() => {
       this._reload();
       this.setState({ isSavingMetadata: false, showMetadataSaved: true });
@@ -258,21 +268,21 @@ class WorkDetail extends React.Component {
     });
   };
 
-  _onAnnImport = (annId) => {
+  _onAnnImport = (annId: string) => {
     API.call('/api/admin/v1/WorkDetail/editMetadata', {
-      workId: this.state.work.id,
-      rawMetadata: this.state.work.raw_metadata,
+      workId: this.state.work!.id,
+      rawMetadata: this.state.work!.raw_metadata,
     }).then(() => API.call('/api/admin/v1/WorkDetail/importAnnMetadata', {
-      workId: this.state.work.id,
+      workId: this.state.work!.id,
       annId,
     })).then(this._reload, e => {
       alert(e.message);
     });
   };
 
-  _uploadImage = (source, options) => {
+  _uploadImage = (source: 'ann' | 'url', options: any) => {
     API.call('/api/admin/v1/WorkDetail/crawlImage', {
-      workId: this.state.work.id,
+      workId: this.state.work!.id,
       options: {
         source,
         ...options,
@@ -282,9 +292,9 @@ class WorkDetail extends React.Component {
     });
   };
 
-  _saveImageCenter = y => {
+  _saveImageCenter = (y: number) => {
     API.call('/api/admin/v1/WorkDetail/update', {
-      workId: this.state.work.id,
+      workId: this.state.work!.id,
       imageCenterY: y,
     }).then(this._reload, e => {
       alert(e.message);
@@ -293,7 +303,7 @@ class WorkDetail extends React.Component {
 
   _blacklist = () => {
     API.call('/api/admin/v1/WorkDetail/update', {
-      workId: this.state.work.id,
+      workId: this.state.work!.id,
       blacklisted: true,
     }).then(() => {
       this.props.history.push('/works');

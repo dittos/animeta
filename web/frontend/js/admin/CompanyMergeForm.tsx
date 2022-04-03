@@ -1,10 +1,19 @@
 import React from 'react';
 import { FormGroup, Button, Modal } from 'react-bootstrap';
 import AsyncSelect from 'react-select/lib/Async';
-import * as API from './API';
+import { CompanyDto } from '../../../shared/client';
+import { API, getCompanies } from './ApiClient';
 
-class CompanyMergeForm extends React.Component {
-  state = {
+type State = {
+  companyToMerge: CompanyDto | null;
+  forceMerge: boolean;
+}
+
+class CompanyMergeForm extends React.Component<{
+  company: CompanyDto;
+  onMerge: () => void;
+}, State> {
+  state: State = {
     companyToMerge: null,
     forceMerge: false,
   };
@@ -14,7 +23,7 @@ class CompanyMergeForm extends React.Component {
       <div>
         <FormGroup>
           <AsyncSelect
-            loadOptions={(q) => API.getCompanies()
+            loadOptions={(q) => getCompanies()
               .then((data) => data.filter((it) => it.name.toLowerCase().indexOf(q.toLowerCase()) == 0)
                 .map((it) => ({ label: it.name, value: it })))}
             defaultOptions
@@ -54,14 +63,14 @@ class CompanyMergeForm extends React.Component {
     );
   }
 
-  _onCompanyToMergeSelected = ({ value }) => {
+  _onCompanyToMergeSelected = ({ value }: { value: CompanyDto }) => {
     this.setState({ companyToMerge: value });
   };
 
   _merge = () => {
     API.call('/api/admin/v1/CompanyMergeForm/merge', {
       id: this.props.company.id,
-      otherCompanyId: this.state.companyToMerge.id
+      otherCompanyId: this.state.companyToMerge!.id
     }).then(
       () => {
         this.setState({

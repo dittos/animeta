@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import {
   Button,
   Form,
@@ -14,13 +14,19 @@ import Loading from './Loading';
 import Login from './Login';
 import TitleAutosuggest from './TitleAutosuggest';
 import * as API from './API';
+import { createWork } from './ApiClient';
 
-class App extends React.Component {
-  state = {
+type State = {
+  isLoading: boolean;
+  currentUser: { name: string } | null;
+}
+
+class App extends React.Component<RouteComponentProps, State> {
+  state: State = {
     isLoading: true,
     currentUser: null,
   };
-  titleSearch = React.createRef();
+  titleSearch = React.createRef<TitleAutosuggest>();
 
   componentDidMount() {
     API.loadSession();
@@ -97,14 +103,14 @@ class App extends React.Component {
     this.setState({ currentUser: null });
   };
 
-  _onTitleSelected = item => {
+  _onTitleSelected = (item: { id: number }) => {
     this.props.history.push(`/works/${item.id}`);
-    this.titleSearch.current.clear();
+    this.titleSearch.current!.clear();
   };
 
   _addWork = () => {
-    const title = this.titleSearch.current.getValue().trim();
-    API.createWork(title).then(work => {
+    const title = this.titleSearch.current!.getValue().trim();
+    createWork(title).then(work => {
       this.props.history.push(`/works/${work.id}`);
     });
   };

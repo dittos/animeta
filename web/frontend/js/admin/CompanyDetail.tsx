@@ -1,11 +1,20 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, RouteComponentProps } from 'react-router-dom';
 import { Table, Form, FormGroup, FormControl, Button } from 'react-bootstrap';
-import * as API from './API';
+import { API } from './ApiClient';
 import CompanyMergeForm from './CompanyMergeForm';
+import { CompanyDto } from '../../../shared/client';
 
-class CompanyDetail extends React.Component {
-  state = {
+type RouteParams = {
+  id: string;
+}
+type State = {
+  company: CompanyDto | null;
+  editName: string;
+}
+
+class CompanyDetail extends React.Component<RouteComponentProps<RouteParams>, State> {
+  state: State = {
     company: null,
     editName: '',
   };
@@ -14,7 +23,7 @@ class CompanyDetail extends React.Component {
     this._reload();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: RouteComponentProps<RouteParams>) {
     if (prevProps.match.params.id !== this.props.match.params.id) {
       this._reload();
     }
@@ -72,10 +81,10 @@ class CompanyDetail extends React.Component {
 
         <hr />
 
-        <h3>Works ({company.works.length})</h3>
+        <h3>Works ({company.works!.length})</h3>
         <Table>
           <tbody>
-          {company.works.map(it => (
+          {company.works!.map(it => (
             <tr>
               <td><Link to={`/works/${it.id}`}>{it.title}</Link></td>
             </tr>
@@ -86,10 +95,10 @@ class CompanyDetail extends React.Component {
     );
   }
 
-  _submitName = event => {
+  _submitName = (event: React.FormEvent) => {
     event.preventDefault();
     API.call('/api/admin/v1/CompanyDetail/rename', {
-      id: this.state.company.id,
+      id: this.state.company!.id,
       name: this.state.editName,
     }).then(this._reload);
   };

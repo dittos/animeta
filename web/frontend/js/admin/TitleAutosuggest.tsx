@@ -1,16 +1,19 @@
 import React from 'react';
-import { findDOMNode } from 'react-dom';
 import { FormControl } from 'react-bootstrap';
 import jQuery from 'jquery';
 import '../typeahead';
 import * as API from './API';
 import './TitleAutosuggest.css';
+import { SearchResultItem } from '../../../shared/types';
+import throttle from 'lodash/throttle';
 
-function cachingSource(source, maxSize) {
-  var cache = [];
+type TypeaheadSource = (q: string, cb: (result: SearchResultItem[]) => void) => void
+
+function cachingSource(source: TypeaheadSource, maxSize: number): TypeaheadSource {
+  var cache: [string, SearchResultItem[]][] = [];
   return function(q, cb) {
     for (var i = cache.length - 1; i >= 0; i--) {
-      if (cache[i][0] === q) {
+      if (cache[i][0] == q) {
         cb(cache[i][1]);
         return;
       }
@@ -25,23 +28,14 @@ function cachingSource(source, maxSize) {
   };
 }
 
-function debouncingSource(source, rate) {
-  var timer = null;
-  return function(q, cb) {
-    if (timer) clearTimeout(timer);
-    timer = setTimeout(function() {
-      source(q, cb);
-    }, rate);
-  };
-}
-
 const source = cachingSource(
-  debouncingSource((q, cb) => {
+  throttle((q, cb) => {
     API.searchWork(q, { minRecordCount: 0 }).then(cb);
-  })
+  }, 200),
+  20
 );
 
-function escapeHTML(html) {
+function escapeHTML(html: string): string {
   return html
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -49,7 +43,7 @@ function escapeHTML(html) {
 }
 
 const typeaheadTemplates = {
-  suggestion: function(item) {
+  suggestion: function(item: SearchResultItem) {
     return (
       '<span class="title">' +
       escapeHTML(item.title) +
@@ -60,11 +54,14 @@ const typeaheadTemplates = {
   },
 };
 
-class TitleAutosuggest extends React.Component {
-  input = React.createRef();
+class TitleAutosuggest extends React.Component<{
+  onSelected: (item: SearchResultItem) => void;
+}> {
+  input = React.createRef<HTMLInputElement>();
+  private _typeahead: any;
 
   componentDidMount() {
-    this._typeahead = jQuery(this.input.current)
+    this._typeahead = (jQuery(this.input.current!) as any)
       .typeahead(
         { hint: false },
         {
@@ -73,7 +70,7 @@ class TitleAutosuggest extends React.Component {
           templates: typeaheadTemplates,
         }
       )
-      .on('typeahead:selected', (event, item) => {
+      .on('typeahead:selected', (_: any, item: SearchResultItem) => {
         this.props.onSelected(item);
       });
   }

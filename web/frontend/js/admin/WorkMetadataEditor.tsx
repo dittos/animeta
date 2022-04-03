@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { FormGroup, FormLabel, FormCheck, FormControl } from 'react-bootstrap';
-import { getCompanies } from './API';
+import { getCompanies } from './ApiClient';
 import AsyncCreatableSelect from 'react-select/lib/AsyncCreatable';
 import { ScheduleEditor } from './ScheduleEditor';
 import { Schedule, WorkMetadata } from './WorkMetadata';

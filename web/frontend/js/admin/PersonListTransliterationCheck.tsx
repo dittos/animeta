@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Button, Container, Form, Navbar, Table } from "react-bootstrap";
 import { useRouteMatch } from "react-router";
 import { Link } from "react-router-dom";
-import * as API from "./API";
+import { API } from './ApiClient';
 
 type TransliterationCheckItem = {
-  personId: number;
+  personId: string;
   name: string;
   newName?: string;
   count: number;
@@ -62,7 +62,7 @@ function PersonListTransliterationCheck() {
     setResult(await API.call('/api/admin/v1/PersonListTransliterationCheck/', {period}))
   }
 
-  function updateName(personId: number, newName: string) {
+  function updateName(personId: string, newName: string) {
     setResult(result.map(it => it.personId === personId ? ({ ...it, newName }) : it))
   }
 
@@ -70,7 +70,7 @@ function PersonListTransliterationCheck() {
     try {
       await API.call('/api/admin/v1/PersonListTransliterationCheck/bulkRename', result.filter(it => it.newName).map(it => ({
         id: it.personId,
-        name: it.newName
+        name: it.newName!
       })))
       reload()
       alert('Saved')

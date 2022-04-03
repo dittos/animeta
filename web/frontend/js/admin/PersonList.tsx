@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import * as API from './API';
+import { API } from './ApiClient';
 import ObjectList from './ObjectList';
 
 function TransliterationCheckNavigatorForm() {

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { findDOMNode } from 'react-dom';
 import {
   FormGroup,
   FormLabel,
@@ -9,9 +8,11 @@ import {
 } from 'react-bootstrap';
 import * as API from './API';
 
-class Login extends React.Component {
-  usernameInput = React.createRef()
-  passwordInput = React.createRef()
+class Login extends React.Component<{
+  onLogin: () => void;
+}> {
+  usernameInput = React.createRef<HTMLInputElement>()
+  passwordInput = React.createRef<HTMLInputElement>()
 
   render() {
     return (
@@ -38,11 +39,11 @@ class Login extends React.Component {
     );
   }
 
-  _submit = event => {
+  _submit = (event: React.FormEvent) => {
     event.preventDefault();
     API.login(
-      this.usernameInput.current.value,
-      this.passwordInput.current.value
+      this.usernameInput.current!.value,
+      this.passwordInput.current!.value
     ).then(this.props.onLogin);
   };
 }

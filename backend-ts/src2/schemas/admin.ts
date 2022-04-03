@@ -1,12 +1,13 @@
 import { WorkMetadata } from "src/entities/work_metadata_raw";
 
 export type CompanyDto = {
-  id: string,
-  name: string,
+  id: string;
+  name: string;
   works?: {
     id: string,
     title: string,
-  }[],
+  }[];
+  metadata: any;
 }
 
 type PersonWorkDto = {

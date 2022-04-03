@@ -3,12 +3,25 @@ import { Button } from 'react-bootstrap';
 
 const defaultPosition = 0;
 
-function ImageCropper(props) {
+type Props = {
+  url: string;
+  position: number;
+  onSave: (position: number) => void;
+}
+
+function ImageCropper(props: Props) {
   return <ImageCropperInternal key={props.url} {...props} />
 }
 
-class ImageCropperInternal extends React.Component {
-  constructor(props) {
+class ImageCropperInternal extends React.Component<Props, {
+  position: number;
+  height: number;
+}> {
+  _el = React.createRef<HTMLDivElement>()
+  _startY: number
+  _startPosition: number
+
+  constructor(props: Props) {
     super(props);
     this.state = {
       position: props.position || defaultPosition,
@@ -21,7 +34,7 @@ class ImageCropperInternal extends React.Component {
     return (
       <div>
         <div
-          ref={el => (this._el = el)}
+          ref={this._el}
           style={{
             backgroundImage: `url("${this.props.url}")`,
             backgroundSize: 'cover',
@@ -46,32 +59,32 @@ class ImageCropperInternal extends React.Component {
     );
   }
 
-  getLocalY(event) {
-    const rect = this._el.getBoundingClientRect();
+  getLocalY(event: MouseEvent) {
+    const rect = this._el.current!.getBoundingClientRect();
     const localY = event.clientY - rect.top;
     return localY / rect.height;
   }
 
-  _beginMove = event => {
+  _beginMove = (event: React.MouseEvent) => {
     event.preventDefault(); // prevent text selection
 
-    this._startY = this.getLocalY(event);
+    this._startY = this.getLocalY(event.nativeEvent);
     this._startPosition = this.state.position;
     document.addEventListener('mouseup', this._endMove, false);
     document.addEventListener('mousemove', this._move, false);
   };
 
-  _move = event => {
+  _move = (event: MouseEvent) => {
     event.preventDefault(); // prevent text selection
 
     const dy = this.getLocalY(event) - this._startY;
     this.setState({ position: this._startPosition - dy });
   };
 
-  _endMove = event => {
+  _endMove = (event: MouseEvent) => {
     event.preventDefault(); // prevent text selection
 
-    document.removeEventListener('mouseup', this._beginMove);
+    document.removeEventListener('mouseup', this._endMove);
     document.removeEventListener('mousemove', this._move);
   };
 }

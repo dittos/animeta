@@ -2,13 +2,15 @@ import * as CSRF from '../CSRF';
 
 const SESSION_KEY_STORAGE_KEY = 'sessionKey';
 
-let sessionKey;
+let sessionKey: string | null = null;
 
-function fetchWithSession(input, init = {}) {
-  init.headers = init.headers || {};
-  init.headers['Accept'] = 'application/json';
-  init.headers['X-Animeta-Session-Key'] = sessionKey;
-  init.headers['X-CSRF-Token'] = CSRF.getToken();
+function fetchWithSession(input: RequestInfo, init: RequestInit = {}) {
+  init.headers = {
+    ...(init.headers || {}),
+    'Accept': 'application/json',
+    'X-CSRF-Token': CSRF.getToken(),
+    ...(sessionKey ? {'X-Animeta-Session-Key': sessionKey} : {}),
+  }
   init.credentials = 'same-origin'; // allow cookie
   return fetch(input, init).then(r => {
     if (!r.ok) return r.json().then(data => Promise.reject(data));
@@ -16,7 +18,7 @@ function fetchWithSession(input, init = {}) {
   });
 }
 
-export function call(path, params = {}) {
+export function call(path: string, params = {}) {
   return fetchWithSession(path, {
     method: 'POST',
     body: JSON.stringify(params),
@@ -45,7 +47,7 @@ export function hasSession() {
   return !!sessionKey;
 }
 
-export async function login(username, password) {
+export async function login(username: string, password: string) {
   const resp = await fetch('/api/v4/Authenticate', {
     method: 'POST',
     body: JSON.stringify({
@@ -69,26 +71,13 @@ export function getCurrentUser() {
   return fetchWithSession('/api/v4/me');
 }
 
-export function createWork(title) {
-  return call(`/api/admin/v1/createWork`, {title})
-}
-
-export function searchWork(q, { minRecordCount = 2 }) {
+export function searchWork(q: string, { minRecordCount = 2 }: { minRecordCount: number }) {
   const params = new URLSearchParams();
   params.append('q', q);
-  params.append('min_record_count', minRecordCount);
+  params.append('min_record_count', '' + minRecordCount);
   return fetchWithSession(`/api/v4/search?${params}`);
 }
 
 export function clearCache() {
   return fetchWithSession('/api/admin/v0/caches', { method: 'DELETE' });
-}
-
-let _companies;
-
-export function getCompanies(cached = true) {
-  if (!_companies || !cached) {
-    _companies = call('/api/admin/v1/getCompanies');
-  }
-  return _companies;
 }

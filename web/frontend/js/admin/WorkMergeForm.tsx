@@ -1,15 +1,28 @@
 import React from 'react';
 import { FormGroup, Button, Modal } from 'react-bootstrap';
-import * as API from './API';
+import { AdminWorkDto } from '../../../shared/client';
+import { SearchResultItem } from '../../../shared/types';
+import { API } from './ApiClient';
 import TitleAutosuggest from './TitleAutosuggest';
 
-const initialState = {
+const initialState: {
+  workToMerge: { id: string; title: string; } | null;
+  forceMerge: boolean;
+  conflicts: {
+    user_id: number;
+    username: string;
+    ids: string[];
+  }[] | null;
+} = {
   workToMerge: null,
   forceMerge: false,
   conflicts: null,
 }
-class WorkMergeForm extends React.Component {
-  titleSearch = React.createRef();
+class WorkMergeForm extends React.Component<{
+  work: AdminWorkDto;
+  onMerge: () => void;
+}, typeof initialState> {
+  titleSearch = React.createRef<TitleAutosuggest>();
   state = {...initialState};
 
   render() {
@@ -68,7 +81,7 @@ class WorkMergeForm extends React.Component {
               <Button
                 variant="danger"
                 onClick={this._merge}
-                disabled={this.state.conflicts && !this.state.forceMerge}
+                disabled={!!this.state.conflicts && !this.state.forceMerge}
               >
                 Merge
               </Button>
@@ -82,16 +95,16 @@ class WorkMergeForm extends React.Component {
     );
   }
 
-  _onWorkToMergeSelected = work => {
-    this.setState({ workToMerge: work });
-    this.titleSearch.current.clear();
+  _onWorkToMergeSelected = ({ id, title }: SearchResultItem) => {
+    this.setState({ workToMerge: { id: '' + id, title } });
+    this.titleSearch.current!.clear();
   };
 
   _merge = () => {
     API.call('/api/admin/v1/WorkMergeForm/merge', {
       workId: this.props.work.id,
-      otherWorkId: this.state.workToMerge.id,
-      forceMerge: this.state.conflicts && this.state.forceMerge,
+      otherWorkId: this.state.workToMerge!.id,
+      forceMerge: !!this.state.conflicts && this.state.forceMerge,
     }).then(
       () => {
         this.setState({

@@ -7,7 +7,7 @@ import { DatePrecision, isEmptySchedule, Schedule } from './WorkMetadata';
 
 interface ScheduleEditorProps {
   country: string;
-  value: Schedule | undefined;
+  value: Schedule | null | undefined;
   broadcastOptions: string[];
   onChange(country: string, newSchedule: Schedule | null): any;
 }

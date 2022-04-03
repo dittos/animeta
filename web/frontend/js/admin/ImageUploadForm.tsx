@@ -1,23 +1,32 @@
 import React from 'react';
 import { Button, Nav } from 'react-bootstrap';
+import { AdminWorkDto } from '../../../shared/client';
 
 const ImageSources = {
   ANN: 'ann',
   URL: 'url',
-};
+} as const;
 
-function ImageUploadForm(props) {
+type Props = {
+  work: AdminWorkDto;
+  onUpload: (source: string, options: any) => void;
+}
+
+function ImageUploadForm(props: Props) {
   const work = props.work;
   return <ImageUploadFormInternal key={`${work.id} ${work.metadata?.annId ?? ''}`} {...props} />;
 }
 
-class ImageUploadFormInternal extends React.Component {
-  constructor(props) {
+class ImageUploadFormInternal extends React.Component<Props, {
+  source: 'ann' | 'url';
+  options: any;
+}> {
+  constructor(props: Props) {
     super(props);
     this.state = this._buildState(props);
   }
 
-  _buildState({ work }) {
+  _buildState({ work }: Pick<Props, 'work'>) {
     const metadata = work.metadata;
     return {
       source: ImageSources.ANN,
@@ -74,13 +83,13 @@ class ImageUploadFormInternal extends React.Component {
     this.props.onUpload(this.state.source, this.state.options);
   };
 
-  _setSource = source => {
-    let options = {};
+  _setSource = (source: 'ann' | 'url') => {
+    let options: any = {};
     switch (source) {
-      case ImageSources.ANN:
+      case 'ann':
         options.annId = '';
         break;
-      case ImageSources.URL:
+      case 'url':
         options.url = '';
         break;
       default:

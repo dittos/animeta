@@ -11,5 +11,6 @@ export async function serializeCompany(company: Company, includeWorks: boolean =
       id: it.work!.id.toString(),
       title: it.work!.title,
     })) : undefined,
+    metadata: company.metadata,
   }
 }

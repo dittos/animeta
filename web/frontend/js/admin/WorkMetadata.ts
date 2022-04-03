@@ -1,12 +1,12 @@
 export interface WorkMetadata {
-  periods?: string[];
-  website?: string;
-  namuRef?: string;
-  annId?: string;
-  source?: string;
-  studios?: string[];
-  durationMinutes?: number;
-  schedules?: {[country: string]: Schedule};
+  periods?: string[] | null;
+  website?: string | null;
+  namuRef?: string | null;
+  annId?: string | null;
+  source?: string | null;
+  studios?: string[] | null;
+  durationMinutes?: number | null;
+  schedules?: {[country: string]: Schedule} | null;
   _comment?: string;
 }
 
