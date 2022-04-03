@@ -27,8 +27,10 @@ export function main(options: Record<string, any>, program: ts.Program, context:
         collectRootTypes(app.types, paramsType, tc)
         const resultType = unwrapPromise(node.type!)
         collectRootTypes(app.types, resultType, tc)
+        const relativePath = path.relative(endpointsDir, sf.fileName)
+        const fileName = path.basename(sf.fileName)
         app.endpoints.push({
-          path: path.relative(basePath, sf.fileName),
+          path: '/api/' + (fileName === 'index.ts' ? path.dirname(relativePath) + '/' : relativePath.replace(/\.ts$/, '')),
           file: sf,
           paramsType,
           resultType,
@@ -49,7 +51,7 @@ export function main(options: Record<string, any>, program: ts.Program, context:
   fs.writeFileSync(path.join(schemaDistDir, 'common.json'), JSON.stringify(schema, null, 2))
   
   for (const endpoint of app.endpoints) {
-    const schemaPath = path.resolve(distPath, endpoint.path.replace(/\.ts$/, '.schema.json'))
+    const schemaPath = path.resolve(distPath, path.relative(basePath, endpoint.file.fileName).replace(/\.ts$/, '.schema.json'))
     fs.mkdirSync(path.dirname(schemaPath), {recursive: true})
     fs.writeFileSync(
       schemaPath,
@@ -60,6 +62,22 @@ export function main(options: Record<string, any>, program: ts.Program, context:
         },
       }, null, 2)
     )
+  }
+
+  let client = ''
+  for (const rootType of app.types.values()) {
+    client += `${rootType.declaration.getText()}\n`
+  }
+  client += '\n\n'
+  client += 'export interface Client {\n'
+  for (const endpoint of app.endpoints) {
+    client += `  call(path: ${JSON.stringify(endpoint.path)}, params: ${endpoint.paramsType.getText()}): Promise<${endpoint.resultType.getText()}>\n`
+  }
+  client += '}'
+  {
+    const schemaPath = options.clientTypesOutput
+    fs.mkdirSync(path.dirname(schemaPath), {recursive: true})
+    fs.writeFileSync(schemaPath, client)
   }
   return (sf: ts.SourceFile) => sf
 }

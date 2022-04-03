@@ -24,7 +24,7 @@ export function collectRootTypes(roots: Map<string, RootType>, start: ts.TypeNod
       : symbol;
     const declarations = targetSymbol.getDeclarations() ?? [];
     const declaration = declarations[0]
-    if (!declaration) throw new Error('no declaration')
+    if (!declaration) throw new Error('no declaration: ' + type.getText())
     const location = declaration.getSourceFile().fileName
     const lineAndCharacter = ts.getLineAndCharacterOfPosition(declaration.getSourceFile(), declaration.pos)
     const typeName = symbol.getName();
