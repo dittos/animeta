@@ -26,7 +26,7 @@ export class CategoryService {
       order: {position: 'DESC'},
       take: 1,
     }))[0]?.position
-    const nextPosition = maxPosition != null ? maxPosition + 1 : 0
+    const nextPosition = maxPosition != null ? Number(maxPosition) + 1 : 0
     const category = new Category()
     category.user_id = user.id
     category.name = name
