@@ -3,7 +3,7 @@ import { ApiException } from "src/controllers/exceptions";
 import { Company } from "src/entities/company.entity";
 import { WorkCompany } from "src/entities/work_company.entity";
 import { LATEST_WORK_METADATA_VERSION } from "src/entities/work_metadata";
-import { applyWorkMetadata } from "src/services/work.service";
+import { applyWorkMetadata } from "src2/services/work";
 import { db } from "src2/database";
 import { CompanyDto } from "src2/schemas/admin";
 import { serializeCompany } from "src2/serializers/company";
@@ -26,7 +26,7 @@ export default async function(params: {
       for (const workCompany of await db.find(WorkCompany, {where: {company}, relations: ['work']})) {
         const work = workCompany.work!
         const metadata = work.metadata ?? {version: LATEST_WORK_METADATA_VERSION}
-        await applyWorkMetadata(db, work, {
+        await applyWorkMetadata(work, {
           ...metadata,
           studios: metadata.studios?.map(it => it === prevName ? company.name : it),
         })

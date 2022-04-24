@@ -8,7 +8,7 @@ import { CompanyAnnIds } from "src/entities/company_ann_ids.entity";
 import { WorkStaff } from "src/entities/work_staff.entity";
 import { WorkCast } from "src/entities/work_cast.entity";
 import { Person } from "src/entities/person.entity";
-import { applyWorkMetadata } from "src/services/work.service";
+import { applyWorkMetadata } from "src2/services/work";
 import { db } from "src2/database";
 
 export async function getAnnMetadata(annId: string): Promise<cheerio.Cheerio<cheerio.Element>> {
@@ -27,7 +27,7 @@ export async function importAnnMetadata(work: Work, anime: cheerio.Cheerio<cheer
       .map(el => $(el).attr('href') ?? '')
       .find(it => !it.includes('twitter.com')) ?? null
   const studios = metadata.studios ?? await getStudios(anime)
-  await applyWorkMetadata(db, work, {
+  await applyWorkMetadata(work, {
     ...metadata,
     durationMinutes,
     schedules,
