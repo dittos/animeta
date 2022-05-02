@@ -1,4 +1,5 @@
 import { RecordDTO } from 'shared/types_generated';
+import { StatusType } from 'src/entities/status_type';
 import { getTestUtils, TestUtils } from './utils';
 
 describe('UserRecordsController', () => {
@@ -24,5 +25,16 @@ describe('UserRecordsController', () => {
     const body = res.body as { data: RecordDTO[] }
     expect(body.data.length).toBe(1)
     expect(body.data[0].id).toBe(record.id)
+  });
+
+  it(`get finished`, async () => {
+    const user = await utils.factory.newUser()
+    const { record } = await utils.factory.newRecord({ user, statusType: StatusType.FINISHED })
+    await utils.factory.newRecord({ user, statusType: StatusType.INTERESTED })
+    const res = await utils.getHttpClient().get(`/api/v4/users/${user.username}/records?status_type=finished`)
+    expect(res.status).toBe(200)
+    const body = res.body as RecordDTO[]
+    expect(body.length).toBe(1)
+    expect(body[0].id).toBe(record.id)
   });
 });

@@ -50,7 +50,7 @@ export class UserRecordsController {
     const records = await this.recordRepository.find({
       where: {
         user,
-        ...statusType ? { status_type: statusType } : {},
+        ...statusType != null ? { status_type: statusType } : {},
         ...categoryIdParam != null ? {
           category_id: categoryIdParam !== 0 ? categoryIdParam : null
         } : {},

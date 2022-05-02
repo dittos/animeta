@@ -77,18 +77,20 @@ export class TestFactoryUtils {
     work,
     category,
     comment,
+    statusType,
   }: {
     user?: User,
     work?: Work,
     category?: Category,
     comment?: string,
+    statusType?: StatusType,
   } = {}): Promise<{ record: Record, history: History }> {
     if (!user) user = await this.newUser()
     if (!work) work = await this.newWork()
     const {record, history} = await this.recordService.createRecord(this.entityManager, user, work, {
       title: work.title,
       status: '1',
-      statusType: StatusType.FINISHED,
+      statusType: statusType ?? StatusType.FINISHED,
       comment: comment ?? '',
       categoryId: category?.id ?? null,
       rating: null,
