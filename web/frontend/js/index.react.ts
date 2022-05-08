@@ -9,7 +9,10 @@ import { trackPageView } from './Tracking';
 import { Loader } from '../../shared/loader';
 import '../less/nprogress.less';
 import '../less/base.less';
+import { config as faConfig } from '@fortawesome/fontawesome-svg-core';
+import '@fortawesome/fontawesome-svg-core/styles.css';
 import { ApolloClient, DocumentNode, InMemoryCache, HttpLink } from '@apollo/client';
+faConfig.autoAddCss = false
 
 if ((window as any).SENTRY_DSN) {
   Sentry.init({
