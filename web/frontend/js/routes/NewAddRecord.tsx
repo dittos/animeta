@@ -18,6 +18,8 @@ import { CuratedListQuery, CuratedListQuery_curatedList_works_edges_node } from 
 import { WorksSearchQuery, WorksSearchQuery_searchWorks_edges_node } from './__generated__/WorksSearchQuery';
 import { SearchItemWorkFragment } from './__generated__/SearchItemWorkFragment';
 import { StatusType } from '../__generated__/globalTypes';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faPlus, faSearch, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 type AddRecordRouteData = StackablePropsData & {
   currentUser: UserDTO;
@@ -31,7 +33,7 @@ function ImageLoader({ src }: { src: string }) {
 
 function Loading() {
   return <div className={Styles.spinnerContainer}>
-    <i className="fa fa-spinner fa-spin fa-3x" aria-hidden="true" />
+    <FontAwesomeIcon icon={faSpinner} spin size="3x" aria-hidden="true" />
   </div>;
 }
 
@@ -104,9 +106,9 @@ function GqlSearchResult({ query, onSelect }: {
             </div>
             <div className={Styles.searchItemActions}>
               {node.record ? (
-                <div className={Styles.searchItemMetaStatus}><i className="fa fa-check" />추가함</div>
+                <div className={Styles.searchItemMetaStatus}><FontAwesomeIcon icon={faCheck} />추가함</div>
               ) : (
-                <div className={Styles.searchItemMetaStatusNotAdded} onClick={() => onSelect(node)}><i className="fa fa-plus" />추가</div>
+                <div className={Styles.searchItemMetaStatusNotAdded} onClick={() => onSelect(node)}><FontAwesomeIcon icon={faPlus} />추가</div>
               )}
             </div>
           </div>
@@ -211,9 +213,9 @@ function CuratedList({ curatedListId, onSelect }: {
             </div>
             <div className={Styles.searchItemActions}>
               {item.record ? (
-                <div className={Styles.searchItemMetaStatus}><i className="fa fa-check" />추가함</div>
+                <div className={Styles.searchItemMetaStatus}><FontAwesomeIcon icon={faCheck} />추가함</div>
               ) : (
-                <div className={Styles.searchItemMetaStatusNotAdded} onClick={() => onSelect(item)}><i className="fa fa-plus" />추가</div>
+                <div className={Styles.searchItemMetaStatusNotAdded} onClick={() => onSelect(item)}><FontAwesomeIcon icon={faPlus} />추가</div>
               )}
             </div>
           </div>
@@ -264,7 +266,9 @@ class AddRecordInternal extends React.Component<RouteComponentProps<AddRecordRou
 
           <div className={Styles.search}>
             <div className={Styles.searchInput}>
-              <i className="fa fa-search" />
+              <div className={Styles.searchInputIcon}>
+                <FontAwesomeIcon icon={faSearch} />
+              </div>
               <input
                 autoFocus
                 value={this.state.query}

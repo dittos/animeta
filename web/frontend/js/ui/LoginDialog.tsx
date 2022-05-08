@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import { Modal } from 'react-overlays';
 import ModalStyles from './Modal.less';
 import LoginForm from './LoginForm';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
 type Props = {
   onClose?(): any;
@@ -44,7 +46,7 @@ class LoginDialog extends React.Component<Props> {
               className={ModalStyles.closeButton}
               onClick={this.props.onClose}
             >
-              <i className="fa fa-lg fa-times-circle" />
+              <FontAwesomeIcon icon={faTimesCircle} size="lg" />
             </button>
             <h2 className={ModalStyles.title}>로그인</h2>
           </div>

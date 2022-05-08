@@ -4,6 +4,8 @@ import * as util from '../util';
 import Styles from './WorkStatusButton.less';
 import LoginDialog from './LoginDialog';
 import { RecordDTO, UserDTO, WorkDTO } from '../../../shared/types_generated';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPencil, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 function WorkStatusButton({ work, record, currentUser }: {
   work: WorkDTO;
@@ -13,7 +15,7 @@ function WorkStatusButton({ work, record, currentUser }: {
   if (record) {
     return (
       <Link className={Styles.editButton} to={`/records/${record.id}/`}>
-        <i className="fa fa-pencil" />
+        <FontAwesomeIcon icon={faPencil} />
         {util.STATUS_TYPE_TEXT[record.status_type as keyof typeof util.STATUS_TYPE_TEXT]}
         {record.status && (
           <span className={Styles.editButtonSubtext}>
@@ -31,7 +33,7 @@ function WorkStatusButton({ work, record, currentUser }: {
         stacked
         onClick={currentUser ? undefined : (event: React.MouseEvent) => { event.preventDefault(); LoginDialog.open() }}
       >
-        <i className="fa fa-plus" />
+        <FontAwesomeIcon icon={faPlus} />
         작품 추가
       </Link>
     );

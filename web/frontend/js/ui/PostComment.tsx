@@ -1,3 +1,5 @@
+import { faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import Styles from './PostComment.less';
 
@@ -26,7 +28,7 @@ export default function PostComment(props: Props) {
       !showSpoiler &&
       !props.showSpoiler ? (
         <span className={Styles.spoilerAlert}>
-          <i className="fa fa-microphone-slash" />
+          <FontAwesomeIcon icon={faMicrophoneSlash} />
           내용 누설 가림
           <span
             className={Styles.revealLink}

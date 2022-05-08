@@ -5,6 +5,8 @@ import { TimeAgo } from './TimeAgo';
 import PostComment from './PostComment';
 import Styles from './Post.module.less';
 import { PostDTO } from '../../../shared/types_generated';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretRight } from '@fortawesome/free-solid-svg-icons'
 
 export function Post({
   post,
@@ -29,7 +31,7 @@ export function Post({
         )}
         {showUser &&
           (showTitle || post.status) && (
-            <i className={`fa fa-caret-right ${Styles.metaSeparator}`} />
+            <FontAwesomeIcon icon={faCaretRight} className={Styles.metaSeparator} />
           )}
         {showTitle && (
           <Link to={util.getWorkURL(post.record!.title)} className={Styles.work}>

@@ -3,6 +3,8 @@ import { Link } from 'nuri';
 import Styles from './UserLayout.less';
 import * as Grid from './Grid';
 import { UserDTO } from '../../../shared/types_generated';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCog } from '@fortawesome/free-solid-svg-icons';
 
 export interface UserLayoutProps {
   data: UserLayoutPropsData;
@@ -47,7 +49,7 @@ export default function UserLayout(props: UserLayoutProps) {
             <div style={{ flex: 1 }} />
             {isCurrentUser && (
               <Link to={`/settings/`} className={Styles.settingsNavItem}>
-                <i className="fa fa-cog" />
+                <FontAwesomeIcon icon={faCog} />
                 설정
               </Link>
             )}

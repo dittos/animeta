@@ -6,6 +6,8 @@ import { trackEvent } from '../Tracking';
 import * as util from '../util';
 import { CreditType, RecordDTO, LegacyStatusType, WorkDTO, WorkSchedule } from '../../../shared/types';
 import { Recommendation$ByCredit } from '../../../shared/types_generated';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faPencil, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -39,7 +41,7 @@ class StatusButton extends React.Component<StatusButtonProps> {
           className={Styles.favoriteButtonActive}
           to={`/records/${record.id}/`}
         >
-          <i className="fa fa-pencil" />
+          <FontAwesomeIcon icon={faPencil} />
           {util.STATUS_TYPE_TEXT[record.status_type as LegacyStatusType]}
           {record.status && (
             <span className={Styles.favoriteButtonSubtext}>@ {util.getStatusDisplay(record)}</span>
@@ -53,7 +55,7 @@ class StatusButton extends React.Component<StatusButtonProps> {
           to={'/records/add/' + encodeURIComponent(this.props.item.title) + '/'}
           onClick={this._showAddModal}
         >
-          <i className="fa fa-plus" />
+          <FontAwesomeIcon icon={faPlus} />
           작품 추가
         </Link>
         {this.state.showAddModal && (
@@ -93,7 +95,7 @@ function Poster({ item }: { item: WorkDTO }) {
     <div className={Styles.poster}>
       <img src={item.image_url!} className={Styles.posterImage} />
       <div className={Styles.posterOverlay}>
-        <i className="fa fa-check" /> {item.record_count}
+      <FontAwesomeIcon icon={faCheck} /> {item.record_count}
       </div>
     </div>
   );

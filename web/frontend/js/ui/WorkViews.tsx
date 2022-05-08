@@ -14,6 +14,8 @@ import Styles from './WorkViews.less';
 import * as Mutations from '../Mutations';
 import { PostDTO, RecordDTO, UserDTO, WorkDTO } from '../../../shared/types_generated';
 import { Subscription } from 'rxjs';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalendarAlt, faComment, faExternalLink, faUser } from '@fortawesome/free-solid-svg-icons';
 
 function Sidebar({ work, chart, episode }: {
   work: WorkDTO;
@@ -38,14 +40,14 @@ function Sidebar({ work, chart, episode }: {
             </p>
             {metadata.schedule?.jp?.date && (
               <p>
-                <i className="fa fa-calendar" /> 첫 방영:{' '}
+                <FontAwesomeIcon icon={faCalendarAlt} /> 첫 방영:{' '}
                 {dateFnsFormat(metadata.schedule.jp.date, 'YYYY-MM-DD')}
               </p>
             )}
             <div className={Styles.metadataLinks}>
               {metadata.links.website && (
                 <p>
-                  <i className="fa fa-globe" />{' '}
+                  <FontAwesomeIcon icon={faExternalLink} /> {' '}
                   <a href={metadata.links.website} target="_blank">
                     공식 사이트
                   </a>
@@ -53,7 +55,7 @@ function Sidebar({ work, chart, episode }: {
               )}
               {metadata.links.namu && (
                 <p>
-                  <i className="fa fa-globe" />{' '}
+                  <FontAwesomeIcon icon={faExternalLink} /> {' '}
                   <a href={metadata.links.namu} target="_blank">
                     나무위키
                   </a>
@@ -61,7 +63,7 @@ function Sidebar({ work, chart, episode }: {
               )}
               {metadata.links.ann && (
                 <p>
-                  <i className="fa fa-globe" />{' '}
+                  <FontAwesomeIcon icon={faExternalLink} /> {' '}
                   <a href={metadata.links.ann} target="_blank">
                     AnimeNewsNetwork (영문)
                   </a>
@@ -151,7 +153,7 @@ export class Work extends React.Component<{
           <h1 className={Styles.title}>{work.title}</h1>
           <div className={Styles.stats}>
             <span className={Styles.userStat}>
-              <i className="fa fa-user" />
+              <FontAwesomeIcon icon={faUser} />
               {work.record_count}명이 기록 남김
             </span>
           </div>
@@ -242,11 +244,11 @@ export function Episodes({ work, activeEpisodeNumber, userCount, suspendedUserCo
         <h2 className={Styles.sectionTitle}>{activeEpisodeNumber}화</h2>
         <div className={Styles.episodeStats}>
           <span>
-            <i className="fa fa-comment" />
+            <FontAwesomeIcon icon={faComment} />
             감상평 {activeEpisode ? activeEpisode.post_count : 0}개
           </span>
           <span>
-            <i className="fa fa-user" />
+            <FontAwesomeIcon icon={faUser} />
             {userCount}명 기록 {suspendedUserCount > 0 && ` (${suspendedUserCount}명 중단)`}
           </span>
         </div>

@@ -74,8 +74,8 @@ export function createServer({ server = express(), appProvider, getAssets }: {
   // graphql route should go before csurf middlware (FIXME when start using mutations)
   const graphqlProxy = httpProxy.createProxyServer({
     target: config.backend.graphqlUrl,
-    changeOrigin: false,
-    cookieDomainRewrite: false,
+    changeOrigin: config.backend.remote ? true : false,
+    cookieDomainRewrite: config.backend.remote ? '' : false,
   });
   graphqlProxy.on('proxyReq', onProxyReq);
   graphqlProxy.on('error', onProxyError);

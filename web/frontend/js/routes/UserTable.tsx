@@ -10,6 +10,8 @@ import { formatPeriod } from '../util';
 import { Link } from 'nuri';
 import { UserLayoutPropsData } from '../ui/UserLayout';
 import { isRecommendationEnabled } from './Table';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 type UserTableRouteData = UserLayoutPropsData & {
   period: string;
@@ -50,7 +52,7 @@ class UserTable extends React.Component<RouteComponentProps<UserTableRouteData>>
             <div className={Styles.userPageTitle}>
               {formatPeriod(period)} 신작
             </div>
-            <Link to={`/table/${period}/`} className={Styles.fullTableLink}>전체 작품 보기 <i className="fa fa-chevron-right" /></Link>
+            <Link to={`/table/${period}/`} className={Styles.fullTableLink}>전체 작품 보기 <FontAwesomeIcon icon={faChevronRight} /></Link>
           </div>
         </Layout.CenteredFullWidth>
         {items.length > 0 ? (
@@ -68,7 +70,7 @@ class UserTable extends React.Component<RouteComponentProps<UserTableRouteData>>
           <Grid.Row className={Styles.itemsEmpty}>
             <p>추가한 작품이 없습니다.</p>
 
-            <p><Link to={`/table/${period}/`} className={Styles.fullTableLink}>전체 작품 보기 <i className="fa fa-chevron-right" /></Link></p>
+            <p><Link to={`/table/${period}/`} className={Styles.fullTableLink}>전체 작품 보기 <FontAwesomeIcon icon={faChevronRight} /></Link></p>
           </Grid.Row>
         )}
       </div>

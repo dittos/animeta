@@ -3,6 +3,8 @@ import { Link } from 'nuri';
 import { getWorkURL } from '../util';
 import Styles from './WeeklyChart.less';
 import { ChartItem, ChartItemWork } from '../../../shared/types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 
 export type WeeklyChartItem = ChartItem<ChartItemWork>;
 
@@ -17,13 +19,13 @@ function WeeklyChart({ data }: {
           if (item.sign === -1) {
             diff = (
               <span className={Styles.down}>
-                <i className="fa fa-arrow-down" /> {item.diff}
+                <FontAwesomeIcon icon={faArrowDown} /> {item.diff}
               </span>
             );
           } else if (item.sign === +1) {
             diff = (
               <span className={Styles.up}>
-                <i className="fa fa-arrow-up" /> {item.diff}
+                <FontAwesomeIcon icon={faArrowUp} /> {item.diff}
               </span>
             );
           }

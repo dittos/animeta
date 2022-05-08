@@ -13,6 +13,8 @@ import AddRecordDialog from './AddRecordDialog';
 import { trackEvent } from '../Tracking';
 import { CategoryDTO, RecordDTO, LegacyStatusType, UserDTO } from '../../../shared/types';
 import { LinkProps } from 'nuri/components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretDown, faCaretUp, faCog, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 const ENABLE_NEW_ADD_RECORD = false;
 
@@ -202,7 +204,7 @@ class LibraryFilter extends React.Component<LibraryFilterProps> {
               to="/records/category/"
               className={Styles.manageCategoryButton}
             >
-              <i className="fa fa-cog" /> 분류 관리
+              <FontAwesomeIcon icon={faCog} /> 분류 관리
             </Link>
           )}
         </div>
@@ -262,7 +264,7 @@ class Library extends React.Component<LibraryProps> {
               className={Styles.addRecordButton}
               onClick={this._showAddModal}
             >
-              <i className="fa fa-plus" /> 작품 추가
+              <FontAwesomeIcon icon={faPlus} /> 작품 추가
             </Link>
           )}
           {this.state.showAddModal && (
@@ -278,11 +280,11 @@ class Library extends React.Component<LibraryProps> {
             onClick={this._toggleMobileFilter}
           >
             {count !== filteredCount ? '필터 (사용중)' : '필터'}{' '}
-            <i
-              className={
+            <FontAwesomeIcon
+              icon={
                 this.state.mobileFilterVisible
-                  ? 'fa fa-caret-up'
-                  : 'fa fa-caret-down'
+                  ? faCaretUp
+                  : faCaretDown
               }
             />
           </div>

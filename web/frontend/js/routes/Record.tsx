@@ -26,6 +26,8 @@ import { setLastPublishTwitter } from '../Prefs';
 import { RouteComponentProps, RouteHandler } from '../routes';
 import { CategoryDTO, PostDTO, RecordDTO, UserDTO } from '../../../shared/types_generated';
 import { RecordFetchOptions } from '../../../shared/types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretDown, faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
 
 type RecordRouteData = {
   currentUser: UserDTO | null;
@@ -96,7 +98,7 @@ class CategoryEditView extends React.Component<CategoryEditViewProps> {
     return (
       <span className={Styles.categoryForm}>
         <label>분류: </label>
-        {name} <i className="fa fa-caret-down" />
+        {name} <FontAwesomeIcon icon={faCaretDown} />
         <select value={String(this.props.selectedId)} onChange={this._onChange}>
           <option value="">지정 안함</option>
           {this.props.categoryList.map(category => (
@@ -209,7 +211,7 @@ function PostView({ post, canEdit, canDelete, onDelete }: {
       <div className={Styles.postMeta}>
         {post.contains_spoiler && (
           <span className={Styles.spoilerMark}>
-            <i className="fa fa-microphone-slash" />
+            <FontAwesomeIcon icon={faMicrophoneSlash} size="sm" />
           </span>
         )}
         <Link to={util.getPostURL(post)} className={Styles.postTime}>

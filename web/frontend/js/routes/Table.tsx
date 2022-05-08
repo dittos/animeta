@@ -17,6 +17,8 @@ import { TableShareDialog } from '../ui/TableShareDialog';
 import { TableItem } from '../ui/TableItem';
 import { formatPeriod } from '../util';
 import { UserDTO } from '../../../shared/types_generated';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretDown, faShareSquare } from '@fortawesome/free-solid-svg-icons';
 
 export function isRecommendationEnabled(period: string): boolean {
   return period === Periods.current || period === Periods.upcoming;
@@ -33,7 +35,7 @@ function PageTitle(props: { period: string }) {
       renderTrigger={({ toggle }) => (
         <a href="#" className={Styles.pageTitle} onClick={toggle}>
           {formatPeriod(activePeriod)} 신작
-          <i className="fa fa-caret-down" />
+          <FontAwesomeIcon icon={faCaretDown} size="sm" />
         </a>
       )}
     >
@@ -88,7 +90,7 @@ class ShareButton extends React.Component<{
   render() {
     return <div className={Styles.shareButtonContainer}>
       <a href="#share" className={Styles.shareButton} onClick={this.open}>
-        <i className="fa fa-share-square-o" />
+        <FontAwesomeIcon icon={faShareSquare} />
         공유
       </a>
       {this.props.showPopoverOnce && !this.state.hidePopover && (

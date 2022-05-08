@@ -8,6 +8,8 @@ import { Dropdown } from './Dropdown';
 import Styles from './GlobalHeader.less';
 import { getStatusDisplay } from '../util';
 import { RecordDTO, UserDTO } from '../../../shared/types_generated';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretDown, faHome, faSearch, faUser } from '@fortawesome/free-solid-svg-icons';
 
 class DropdownUserMenu extends React.Component<{
   user: UserDTO;
@@ -102,7 +104,7 @@ export class GlobalHeader extends React.Component<GlobalHeaderProps> {
                 }
               >
                 <span>
-                  <i className="fa fa-home" />
+                  <FontAwesomeIcon icon={faHome} size="sm" />
                 </span>
                 <span className={Styles.globalMenuItemText}>홈</span>
               </Link>
@@ -116,13 +118,7 @@ export class GlobalHeader extends React.Component<GlobalHeaderProps> {
                 onClick={this._saveNoticeClicked}
               >
                 <span>
-                  <i
-                    className="fa fa-search"
-                    style={{
-                      fontSize: '0.8em',
-                      verticalAlign: '10%',
-                    }}
-                  />
+                  <FontAwesomeIcon icon={faSearch} size="sm" />
                 </span>
                 <span className={Styles.globalMenuItemText}>작품 찾기</span>
                 {showNotice && (
@@ -145,13 +141,7 @@ export class GlobalHeader extends React.Component<GlobalHeaderProps> {
                 onClick={this._openLoginIfNeeded}
               >
                 <span>
-                  <i
-                    className="fa fa-user"
-                    style={{
-                      fontSize: '0.85em',
-                      verticalAlign: '5%',
-                    }}
-                  />
+                  <FontAwesomeIcon icon={faUser} size="sm" />
                 </span>
                 <span className={Styles.globalMenuItemText}>내 기록</span>
               </Link>
@@ -173,9 +163,9 @@ export class GlobalHeader extends React.Component<GlobalHeaderProps> {
                     className={Styles.userButton}
                     onClick={toggle}
                   >
-                    <i className="fa fa-user" />
+                    <FontAwesomeIcon icon={faUser} />
                     {user.name}
-                    <i className="fa fa-caret-down" />
+                    <FontAwesomeIcon icon={faCaretDown} />
                   </Link>
                 )}
               >

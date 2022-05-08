@@ -10,6 +10,8 @@ import ModalStyles from './Modal.less';
 import Styles from './AddRecordDialog.less';
 import { getLastPublishTwitter, setLastPublishTwitter } from '../Prefs';
 import { CategoryDTO, RecordDTO, UserDTO, StatusType } from '../../../shared/types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
 type CategorySelectProps = {
   selectedId: string;
@@ -83,7 +85,7 @@ class AddRecord extends React.Component<AddRecordProps, AddRecordState> {
         <div className={ModalStyles.dialog} style={{ overflow: 'visible' }}>
           <div className={ModalStyles.header}>
             <button className={ModalStyles.closeButton} onClick={onCancel}>
-              <i className="fa fa-lg fa-times-circle" />
+              <FontAwesomeIcon icon={faTimesCircle} size="lg" />
             </button>
             <h2 className={ModalStyles.title}>작품 추가</h2>
           </div>
