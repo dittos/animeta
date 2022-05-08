@@ -3,6 +3,7 @@ var webpack = require('webpack');
 var AssetsPlugin = require('assets-webpack-plugin');
 var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 var ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+var TerserPlugin = require('terser-webpack-plugin');
 
 function styleLoader(env, loaders) {
   if (env.server) {
@@ -135,6 +136,9 @@ module.exports = env => {
     });
   } else {
     config.optimization = {
+      minimizer: [
+        new TerserPlugin(),
+      ],
       runtimeChunk: 'single',
       splitChunks: {
         name: 'common',

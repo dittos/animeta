@@ -11,7 +11,7 @@ import { CenteredFullWidth } from '../ui/Layout';
 import Styles from './NewAddRecord.module.less';
 import { of, timer } from 'rxjs';
 import { distinctUntilChanged, map, switchMap, tap } from 'rxjs/operators';
-import { chunk } from 'lodash';
+import chunk from 'lodash/chunk';
 import { SnackbarProvider, withSnackbar, ProviderContext as SnackbarProviderContext } from 'notistack';
 import { CuratedListsQuery } from './__generated__/CuratedListsQuery';
 import { CuratedListQuery, CuratedListQuery_curatedList_works_edges_node } from './__generated__/CuratedListQuery';
