@@ -4,7 +4,7 @@ import * as CSRF from './CSRF';
 import { CategoryDTO, UserDTO } from '../../shared/types';
 import isString from 'lodash/isString';
 
-export function serializeParams(params: any) {
+function serializeParams(params: any) {
   if (!params) {
     return params;
   }
@@ -16,16 +16,16 @@ export function serializeParams(params: any) {
   return result;
 }
 
-export function toPromise<T>(jqXHR: JQueryXHR): Promise<T> {
+function toPromise<T>(jqXHR: JQueryXHR): Promise<T> {
   return new Promise((resolve, reject) => {
     jqXHR.then(data => resolve(data), err => reject(err))
   })
 }
 
-function get<T>(url: string, data: any = {}, customErrorHandling: boolean = false): Promise<T> {
+export function get<T>(url: string, data: any = {}, customErrorHandling: boolean = false): Promise<T> {
   return toPromise($.get({
     url,
-    data,
+    data: serializeParams(data),
     __silent__: customErrorHandling,
   }))
 }
@@ -71,11 +71,8 @@ export function deleteFrontendSession() {
 export async function getCurrentUser(params?: {
   options?: UserFetchOptions
 }): Promise<UserDTO | null> {
-  const data = params?.options ? {
-    options: JSON.stringify(params.options)
-  } : {}
   try {
-    return await get('/api/v4/me', data, true);
+    return await get('/api/v4/me', params, true);
   } catch (e) {
     if (e.statusCode) return null;
     else throw e;
@@ -137,7 +134,7 @@ export function createRecord(
 
 export function getRecordPosts(recordID: number): Promise<{posts: PostDTO[]}> {
   return get(`/api/v4/records/${recordID}/posts`, {
-    options: JSON.stringify({}),
+    options: {},
   });
 }
 
@@ -220,8 +217,8 @@ export function getUserPosts(userName: string, count: number, beforeID?: number)
   return get(`/api/v4/users/${userName}/posts`, {
     count,
     before_id: beforeID,
-    options: JSON.stringify({
+    options: {
       record: {},
-    }),
+    },
   });
 }

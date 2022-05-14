@@ -4,7 +4,8 @@ import fetch from 'cross-fetch';
 import { bootstrap } from 'nuri/client';
 import nprogress from 'nprogress';
 import app from './routes';
-import { getCurrentUser, serializeParams, toPromise } from './API';
+import { getCurrentUser, get } from './API';
+import * as CSRF from './CSRF';
 import { trackPageView } from './Tracking';
 import { Loader } from '../../shared/loader';
 import '../less/nprogress.less';
@@ -31,10 +32,10 @@ const apolloClient = new ApolloClient({
 
 const loader: Loader = {
   call(path: string, params?: any) {
-    return toPromise($.get('/api/v2' + path, serializeParams(params)));
+    return get('/api/v2' + path, params)
   },
   callV4(path: string, params?: any) {
-    return toPromise($.get('/api/v4' + path, serializeParams(params)));
+    return get('/api/v4' + path, params)
   },
 
   getCurrentUser,
@@ -49,6 +50,18 @@ const loader: Loader = {
 
   apolloClient,
 };
+
+function csrfSafeMethod(method: string) {
+  // these HTTP methods do not require CSRF protection
+  return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+}
+$.ajaxSetup({
+  beforeSend: function(xhr, settings) {
+    if (!csrfSafeMethod(settings.type ?? 'GET') && !this.crossDomain) {
+      xhr.setRequestHeader('X-CSRF-Token', CSRF.getToken());
+    }
+  },
+});
 
 $(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) => {
   if (ajaxSettings.__silent__) return;
