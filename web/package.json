@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "@swc/core": "^1.2.50",
+    "@types/chai": "^4.3.1",
     "@types/cookie": "^0.4.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/csurf": "^1.11.0",
@@ -50,6 +51,7 @@
     "@types/jquery": "^2.0.56",
     "@types/lodash": "^4.14.165",
     "@types/memory-fs": "^0.3.2",
+    "@types/mocha": "^9.1.1",
     "@types/node": "^9.6.61",
     "@types/react": "^16.14.2",
     "@types/react-router-dom": "^5.1.6",
@@ -60,6 +62,7 @@
     "apollo": "^2.32.5",
     "assets-webpack-plugin": "^3.9.7",
     "autoprefixer": "^9.5.0",
+    "chai": "^4.3.6",
     "cross-env": "^7.0.2",
     "css-loader": "^2.1.1",
     "file-loader": "^2.0.0",
@@ -67,7 +70,8 @@
     "less": "^3.0.2",
     "less-loader": "^4.1.0",
     "mini-css-extract-plugin": "^0.4.4",
-    "mocha": "^5.0.1",
+    "mocha": "^10.0.0",
+    "msw": "^0.40.0",
     "postcss-loader": "^3.0.0",
     "style-loader": "^0.23.1",
     "swc-loader": "^0.1.12",
@@ -94,5 +98,8 @@
     "build-dist": "tsc --build frontend-server",
     "graphql-codegen": "apollo client:codegen --target typescript --watch --globalTypesFile frontend/js/__generated__/globalTypes.ts",
     "test": "cd frontend; mocha --require ts-node/register test"
+  },
+  "msw": {
+    "workerDirectory": "static"
   }
 }

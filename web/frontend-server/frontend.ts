@@ -6,6 +6,7 @@ import httpProxy from 'http-proxy';
 import serializeJS from 'serialize-javascript';
 import isString from 'lodash/isString';
 import * as Sentry from '@sentry/node';
+import { resolve } from 'path';
 import Backend, { HttpNotFound } from './backend';
 import renderFeed from './renderFeed';
 import { render, ServerRequest } from 'nuri/server';
@@ -69,6 +70,7 @@ export function createServer({ server = express(), appProvider, getAssets }: {
   } else {
     server.use('/static', express.static('static'));
   }
+  server.get('/mockServiceWorker.js', (req, res) => res.sendFile(resolve(__dirname, '../static/mockServiceWorker.js')))
   server.use(cookieParser());
 
   // graphql route should go before csurf middlware (FIXME when start using mutations)
