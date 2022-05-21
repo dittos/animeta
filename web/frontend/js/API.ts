@@ -1,4 +1,6 @@
 import $ from 'jquery';
+import * as Sentry from '@sentry/react';
+import fetch from 'cross-fetch';
 import { PostDTO, PostFetchOptions, RecordDTO, RecordFetchOptions, LegacyStatusType, UserFetchOptions, StatusType } from '../../shared/types';
 import * as CSRF from './CSRF';
 import { CategoryDTO, UserDTO } from '../../shared/types';
@@ -11,7 +13,9 @@ function serializeParams(params: any) {
   const result: {[key: string]: string} = {};
   for (var k in params) {
     const v = params[k];
-    result[k] = isString(v) ? v : JSON.stringify(v);
+    if (typeof v !== 'undefined') {
+      result[k] = isString(v) ? v : JSON.stringify(v);
+    }
   }
   return result;
 }
@@ -22,12 +26,75 @@ function toPromise<T>(jqXHR: JQueryXHR): Promise<T> {
   })
 }
 
-export function get<T>(url: string, data: any = {}, customErrorHandling: boolean = false): Promise<T> {
-  return toPromise($.get({
-    url,
-    data: serializeParams(data),
-    __silent__: customErrorHandling,
-  }))
+async function handleError(
+  request: ApiRequest,
+  response: Response | null,
+  thrownError: any,
+  customErrorHandling: boolean
+) {
+  if (customErrorHandling) return;
+
+  try {
+    const responseText = await response?.text()
+    Sentry.captureMessage(thrownError?.message || response?.statusText, {
+      extra: {
+        method: request.method,
+        url: request.url,
+        data: request.data,
+        status: response?.status,
+        error: thrownError || response?.statusText,
+        response: responseText && responseText.substring(0, 100),
+      },
+    });
+  } catch (e) {
+    try {
+      Sentry.captureException(e);
+    } catch (e2) {
+      // ignore
+    }
+  }
+
+  if (thrownError instanceof ApiError) {
+    alert(thrownError.message)
+  } else {
+    alert('서버 오류로 요청에 실패했습니다.')
+  }
+}
+
+export class ApiError extends Error {
+  constructor(public readonly status: number, public readonly payload: any) {
+    super(payload.message)
+
+    // https://www.dannyguo.com/blog/how-to-fix-instanceof-not-working-for-custom-errors-in-typescript/
+    Object.setPrototypeOf(this, ApiError.prototype)
+  }
+}
+
+type ApiRequest = {
+  method: string
+  url: string
+  data: any
+}
+
+export async function get<T>(url: string, data: any = {}, customErrorHandling: boolean = false): Promise<T> {
+  const qs = new URLSearchParams(serializeParams(data) ?? {}).toString()
+  let response: Response | null = null
+  try {
+    response = await fetch(qs ? url + '?' + qs : url)
+    const body = await response.json()
+    if (response.ok) {
+      return body
+    } else {
+      throw new ApiError(response.status, body)
+    }
+  } catch (e) {
+    await handleError({
+      method: 'GET',
+      url,
+      data,
+    }, response, e, customErrorHandling)
+    throw e
+  }
 }
 
 function postJSON<T>(url: string, data: any = {}, customErrorHandling: boolean = false): Promise<T> {
