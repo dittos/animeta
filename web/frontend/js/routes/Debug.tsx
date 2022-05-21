@@ -29,6 +29,7 @@ async function runTests() {
         await API.get('/api/standardError')
         assert.fail()
       } catch (e) {
+        assert.equal(e.status, 400)
       }
     })
     assert.equal(alertText, 'message')
@@ -39,6 +40,7 @@ async function runTests() {
         await API.get('/api/standardError', undefined, true)
         assert.fail()
       } catch (e) {
+        assert.equal(e.status, 400)
       }
     })
     assert.isNull(alertText)
@@ -69,6 +71,7 @@ async function runTests() {
         await API.get('/api/networkError')
         assert.fail()
       } catch (e) {
+        assert.isFalse(Boolean(e.status))
       }
     })
     assert.equal(alertText, '서버 오류로 요청에 실패했습니다.')
@@ -79,6 +82,7 @@ async function runTests() {
         await API.get('/api/networkError', undefined, true)
         assert.fail()
       } catch (e) {
+        assert.isFalse(Boolean(e.status))
       }
     })
     assert.isNull(alertText)
