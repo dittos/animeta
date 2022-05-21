@@ -74,7 +74,7 @@ export async function getCurrentUser(params?: {
   try {
     return await get('/api/v4/me', params, true);
   } catch (e) {
-    if (e.statusCode) return null;
+    if (e.status && 400 <= e.status && e.status < 500) return null;
     else throw e;
   }
 }
