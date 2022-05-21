@@ -1,11 +1,9 @@
-import $ from 'jquery';
 import * as Sentry from '@sentry/react';
 import fetch from 'cross-fetch';
 import { bootstrap } from 'nuri/client';
 import nprogress from 'nprogress';
 import app from './routes';
 import { getCurrentUser, get } from './API';
-import * as CSRF from './CSRF';
 import { trackPageView } from './Tracking';
 import { Loader } from '../../shared/loader';
 import '../less/nprogress.less';
@@ -55,51 +53,6 @@ const loader: Loader = {
 
   apolloClient,
 };
-
-function csrfSafeMethod(method: string) {
-  // these HTTP methods do not require CSRF protection
-  return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
-}
-$.ajaxSetup({
-  beforeSend: function(xhr, settings) {
-    if (!csrfSafeMethod(settings.type ?? 'GET') && !this.crossDomain) {
-      xhr.setRequestHeader('X-CSRF-Token', CSRF.getToken());
-    }
-  },
-});
-
-$(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) => {
-  if (ajaxSettings.__silent__) return;
-
-  try {
-    Sentry.captureMessage(thrownError || jqXHR.statusText, {
-      extra: {
-        type: ajaxSettings.type,
-        url: ajaxSettings.url,
-        data: ajaxSettings.data,
-        status: jqXHR.status,
-        error: thrownError || jqXHR.statusText,
-        response: jqXHR.responseText && jqXHR.responseText.substring(0, 100),
-      },
-    });
-  } catch (e) {
-    try {
-      Sentry.captureException(e);
-    } catch (e2) {
-      // ignore
-    }
-  }
-  if (jqXHR.responseText) {
-    try {
-      var err = $.parseJSON(jqXHR.responseText);
-      alert(err.message);
-      return;
-    } catch (e) {
-      // ignore
-    }
-  }
-  alert('서버 오류로 요청에 실패했습니다.');
-});
 
 bootstrap(app, loader, controller => {
   nprogress.configure({

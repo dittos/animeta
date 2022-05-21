@@ -10,9 +10,9 @@ class SearchInput extends React.Component<{
   private $: any;
   private input = React.createRef<HTMLInputElement>();
 
-  componentDidMount() {
+  async componentDidMount() {
     const onSelect = this._onSelect;
-    this.$ = Typeahead.init(
+    this.$ = (await Typeahead.init(
       this.input.current!,
       { highlight: true, hint: false },
       {
@@ -20,7 +20,7 @@ class SearchInput extends React.Component<{
         displayKey: 'title',
         templates: Typeahead.templates,
       }
-    )
+    ))
       .on('typeahead:selected', function(_: any, item: SearchResultItem) {
         onSelect(item.title);
       })
@@ -43,7 +43,8 @@ class SearchInput extends React.Component<{
   }
 
   componentWillUnmount() {
-    this.$.typeahead('destroy');
+    if (this.$)
+      this.$.typeahead('destroy');
   }
 
   render() {

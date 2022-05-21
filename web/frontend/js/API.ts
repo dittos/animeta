@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import * as Sentry from '@sentry/react';
 import fetch from 'cross-fetch';
 import { PostDTO, PostFetchOptions, RecordDTO, RecordFetchOptions, LegacyStatusType, UserFetchOptions, StatusType } from '../../shared/types';
@@ -20,12 +19,6 @@ function serializeParams(params: any) {
   return result;
 }
 
-function toPromise<T>(jqXHR: JQueryXHR): Promise<T> {
-  return new Promise((resolve, reject) => {
-    jqXHR.then(data => resolve(data), err => reject(err))
-  })
-}
-
 async function handleError(
   request: ApiRequest,
   response: Response | null,
@@ -40,7 +33,7 @@ async function handleError(
       extra: {
         method: request.method,
         url: request.url,
-        data: request.data,
+        params: request.params,
         status: response?.status,
         error: thrownError || response?.statusText,
         response: responseText && responseText.substring(0, 100),
@@ -73,14 +66,49 @@ export class ApiError extends Error {
 type ApiRequest = {
   method: string
   url: string
-  data: any
+  params: any
 }
 
-export async function get<T>(url: string, data: any = {}, customErrorHandling: boolean = false): Promise<T> {
-  const qs = new URLSearchParams(serializeParams(data) ?? {}).toString()
+async function _fetch<T>(
+  method: 'GET' | 'POST' | 'DELETE',
+  url: string,
+  params: any,
+  customErrorHandling: boolean
+): Promise<T> {
+  const originalUrl = url
+  if (method === 'GET') {
+    const qs = new URLSearchParams(serializeParams(params) ?? {}).toString()
+    if (qs) url += '?' + qs
+  }
   let response: Response | null = null
   try {
-    response = await fetch(qs ? url + '?' + qs : url)
+    const init: RequestInit = {
+      method,
+      headers: {
+        'Accept': 'application/json',
+      },
+      // 'same-origin' does not work on Firefox private browsing
+      credentials: 'include',
+    }
+    if (method !== 'GET') {
+      // try to refresh CSRF token if not exists
+      try {
+        await CSRF.refresh()
+      } catch (e) {
+        Sentry.captureException(e)
+        // ignore
+      }
+
+      if (typeof params !== 'undefined') {
+        init.body = JSON.stringify(params)
+      }
+      init.headers = {
+        ...init.headers,
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': CSRF.getToken(),
+      }
+    }
+    response = await fetch(url, init)
     const body = await response.json()
     if (response.ok) {
       return body
@@ -89,25 +117,24 @@ export async function get<T>(url: string, data: any = {}, customErrorHandling: b
     }
   } catch (e) {
     await handleError({
-      method: 'GET',
-      url,
-      data,
+      method,
+      url: originalUrl,
+      params,
     }, response, e, customErrorHandling)
     throw e
   }
 }
 
-function postJSON<T>(url: string, data: any = {}, customErrorHandling: boolean = false): Promise<T> {
-  return CSRF.refresh().then(() => toPromise($.post({
-    url,
-    data: JSON.stringify(data),
-    contentType: 'application/json',
-    __silent__: customErrorHandling,
-  })));
+export async function get<T>(url: string, params: any = {}, customErrorHandling: boolean = false): Promise<T> {
+  return _fetch('GET', url, params, customErrorHandling)
+}
+
+export function postJSON<T>(url: string, params: any = {}, customErrorHandling: boolean = false): Promise<T> {
+  return _fetch('POST', url, params, customErrorHandling)
 }
 
 export function doDelete(url: string) {
-  return CSRF.refresh().then(() => toPromise($.ajax({ type: 'DELETE', url })));
+  return _fetch('DELETE', url, undefined, false)
 }
 
 //////////////////////////
@@ -276,6 +303,12 @@ export function addCategory(name: string): Promise<{ category: CategoryDTO }> {
 
 export function updateCategoryOrder(categoryIds: number[]): Promise<{ categories: CategoryDTO[] }> {
   return postJSON('/api/v4/UpdateCategoryOrder', { categoryIds });
+}
+
+// User Records
+
+export function getUserRecords(username: string, params: {}): Promise<RecordDTO[]> {
+  return get(`/api/v4/users/${username}/records`, params);
 }
 
 // User Posts

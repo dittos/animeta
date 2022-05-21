@@ -50,8 +50,8 @@ type TitleEditViewProps = {
 class TitleEditView extends React.Component<TitleEditViewProps> {
   titleInput = React.createRef<HTMLInputElement>();
 
-  componentDidMount() {
-    var typeahead = Typeahead.initSuggest(this.titleInput.current!);
+  async componentDidMount() {
+    var typeahead = await Typeahead.initSuggest(this.titleInput.current!);
     typeahead.on('keypress', (event: KeyboardEvent) => {
       if (event.keyCode == 13) {
         this._onSave();

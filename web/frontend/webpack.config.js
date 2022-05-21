@@ -17,7 +17,7 @@ function styleLoader(env, loaders) {
 
 function hot(env, entry) {
   if (!env.prod && !env.server) {
-    return ['webpack-hot-middleware/client?reload=true', entry];
+    return ['webpack-hot-middleware/client?reload=true', ...(Array.isArray(entry) ? entry : [entry])];
   }
   return entry;
 }
@@ -52,9 +52,8 @@ module.exports = env => {
     entry: env.server
       ? './js/routes.tsx'
       : {
-          index: hot(env, './js/index.react.ts'),
+          index: hot(env, ['babel-polyfill', './js/index.react.ts']),
           admin: hot(env, './js/admin.react.js'),
-          common: hot(env, './js/common.js'),
         },
     output: env.server
       ? {
@@ -139,10 +138,6 @@ module.exports = env => {
       minimizer: [
         new TerserPlugin(),
       ],
-      runtimeChunk: 'single',
-      splitChunks: {
-        name: 'common',
-      },
     };
     config.plugins.push(
       new AssetsPlugin({

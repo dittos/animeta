@@ -134,6 +134,9 @@ export function createServer({ server = express(), appProvider, getAssets }: {
     res.clearCookie('sessionid', cookieOptions);
     res.json({ ok: true });
   });
+  server.get('/api/fe/csrf-token', (req, res) => {
+    res.json({ ok: true });
+  });
 
   function onProxyReq(proxyReq: any, req: express.Request, res: express.Response, options: any) {
     if (req.cookies.sessionid && !req.headers['x-animeta-session-key']) {
@@ -244,7 +247,7 @@ Disallow: /
       {
         title: `Admin`,
         preloadData: {},
-        assetEntries: ['runtime', 'common', 'admin'],
+        assetEntries: ['admin'],
       },
       ''
     );
@@ -286,7 +289,7 @@ Disallow: /
             preloadData,
             title,
             meta,
-            assetEntries: ['runtime', 'common', 'index'],
+            assetEntries: ['index'],
           },
           getHTML()
         );

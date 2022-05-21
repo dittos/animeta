@@ -1,19 +1,17 @@
-import cookie from 'cookie';
-import { getCurrentUser } from './API';
+import cookie from 'cookie'
 
 export function getToken() {
-  return cookie.parse(document.cookie).crumb;
+  return cookie.parse(document.cookie).crumb
 }
 
 export async function refresh() {
-  const cookies = cookie.parse(document.cookie);
+  const cookies = cookie.parse(document.cookie)
   if (cookies.crumb && cookies._csrf) {
-    return null
+    return
   }
   try {
-    await getCurrentUser()
+    await fetch('/api/fe/csrf-token')
   } catch (e) {
     // ignore
   }
-  return null;
 }

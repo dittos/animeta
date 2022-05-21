@@ -12,6 +12,4 @@ declare module "nprogress" {
 // TODO
 declare var __nuri: any;
 
-declare interface JQueryAjaxSettings {
-  __silent__?: boolean;
-}
+declare module "typeahead.js";

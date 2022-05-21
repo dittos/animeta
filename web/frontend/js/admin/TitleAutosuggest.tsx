@@ -1,7 +1,6 @@
 import React from 'react';
 import { FormControl } from 'react-bootstrap';
-import jQuery from 'jquery';
-import '../typeahead';
+import { loadTypeahead } from '../typeahead';
 import * as API from './API';
 import './TitleAutosuggest.css';
 import { SearchResultItem } from '../../../shared/types';
@@ -60,8 +59,9 @@ class TitleAutosuggest extends React.Component<{
   input = React.createRef<HTMLInputElement>();
   private _typeahead: any;
 
-  componentDidMount() {
-    this._typeahead = (jQuery(this.input.current!) as any)
+  async componentDidMount() {
+    const $ = await loadTypeahead()
+    this._typeahead = ($(this.input.current!) as any)
       .typeahead(
         { hint: false },
         {

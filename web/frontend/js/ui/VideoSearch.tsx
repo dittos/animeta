@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import fetch from 'cross-fetch';
 import React from 'react';
 import { LoadMore } from './LoadMore';
 import Styles from './VideoSearch.less';
@@ -41,18 +41,17 @@ class VideoSearchInternal extends React.Component<Props> {
   _loadMore = () => {
     var page = this.state.page + 1;
     this.setState({ isLoading: true });
-    $.ajax({
-      url: 'https://dapi.kakao.com/v2/search/vclip',
+    const qs = new URLSearchParams({
+      query: this.props.query,
+      size: '10',
+      page: '' + page,
+    })
+    fetch('https://dapi.kakao.com/v2/search/vclip?' + qs, {
       headers: {
         'Authorization': `KakaoAK ${window.__nuri.preloadData.kakaoApiKey}`,
-      },
-      data: {
-        query: this.props.query,
-        size: 10,
-        page: page,
-      },
-      __silent__: true,
-    }).then(data => {
+        'Content-Type': 'application/json',
+      }
+    }).then(r => r.json()).then(data => {
       var result = this.state.result.concat(data.documents);
       this.setState({
         hasMore: result.length < data.meta.pageable_count,

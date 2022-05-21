@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import * as React from 'react';
 import { Link } from 'nuri';
 import * as Layout from './Layout';
@@ -10,6 +9,7 @@ import { getStatusDisplay } from '../util';
 import { RecordDTO, UserDTO } from '../../../shared/types_generated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faHome, faSearch, faUser } from '@fortawesome/free-solid-svg-icons';
+import { getUserRecords } from '../API';
 
 class DropdownUserMenu extends React.Component<{
   user: UserDTO;
@@ -19,7 +19,7 @@ class DropdownUserMenu extends React.Component<{
   };
 
   componentDidMount() {
-    $.get(`/api/v4/users/${this.props.user.name}/records`, {
+    getUserRecords(this.props.user.name, {
       sort: 'date',
       status_type: 'watching',
       limit: 10,
