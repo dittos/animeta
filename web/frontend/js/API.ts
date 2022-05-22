@@ -108,12 +108,13 @@ async function _fetch<T>(
         'X-CSRF-Token': CSRF.getToken(),
       }
     }
-    response = await fetch(url, init)
-    const body = await response.json()
-    if (response.ok) {
+    const r = await fetch(url, init)
+    response = r.clone() // store cloned response for double body consume in handleError
+    const body = await r.json()
+    if (r.ok) {
       return body
     } else {
-      throw new ApiError(response.status, body)
+      throw new ApiError(r.status, body)
     }
   } catch (e) {
     await handleError({
