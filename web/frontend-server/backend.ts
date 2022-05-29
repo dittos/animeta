@@ -1,18 +1,13 @@
 import request from 'request';
 import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
 import fetch from 'cross-fetch';
-import * as Sentry from '@sentry/node';
 
 export const HttpNotFound = {};
 
 export default class {
-  private baseUrl: string;
-  private v4BaseUrl: string;
   public apollo: ApolloClient<any>;
 
-  constructor(baseUrl: string, v4BaseUrl: string, graphqlUrl: string) {
-    this.baseUrl = baseUrl + '/v2';
-    this.v4BaseUrl = v4BaseUrl;
+  constructor(private v4BaseUrl: string, private v5BaseUrl: string, graphqlUrl: string) {
     this.apollo = new ApolloClient({
       link: new HttpLink({
         uri: graphqlUrl,
@@ -20,15 +15,6 @@ export default class {
       }),
       cache: new InMemoryCache(),
     });
-  }
-
-  async call(req: any, path: string, params?: any) {
-    Sentry.captureMessage(`${path} called from backend`)
-    const { response, body } = await this._call(req, this.baseUrl, path, params);
-    if (response.statusCode === 404) {
-      throw HttpNotFound;
-    }
-    return JSON.parse(body);
   }
 
   async callV4(req: any, path: string, params?: any) {
@@ -39,12 +25,28 @@ export default class {
     return JSON.parse(body);
   }
 
+  async callV5(req: any, path: string, params?: any) {
+    const { response, body } = await this._callV5(req, this.v5BaseUrl, path, params);
+    if (response.statusCode === 404) {
+      throw HttpNotFound;
+    }
+    return body;
+  }
+
   async getCurrentUser(req: any, params?: any) {
     const { response, body } = await this._call(req, this.v4BaseUrl, '/me', params);
     if (response.statusCode !== 200) {
       return null;
     }
     return JSON.parse(body);
+  }
+
+  async getCurrentUserV5(req: any, params?: any) {
+    const { response, body } = await this._callV5(req, this.v5BaseUrl, '/api/v5/getCurrentUser', params);
+    if (response.statusCode !== 200) {
+      return null;
+    }
+    return body;
   }
 
   async graphql(req: any, doc: any, variables: any) {
@@ -67,6 +69,30 @@ export default class {
         {
           url: baseUrl + path,
           qs: params,
+          forever: true,
+          headers: {
+            'x-animeta-session-key': req.cookies?.sessionid,
+          },
+        },
+        (err, response, body) => {
+          if (!err) {
+            resolve({ response, body });
+          } else {
+            reject(err);
+          }
+        }
+      );
+    });
+  }
+
+  _callV5(req: any, baseUrl: string, path: string, params?: any): Promise<{ response: request.Response, body: any }> {
+    return new Promise((resolve, reject) => {
+      request(
+        {
+          method: 'POST',
+          url: baseUrl + path,
+          json: true,
+          body: params,
           forever: true,
           headers: {
             'x-animeta-session-key': req.cookies?.sessionid,

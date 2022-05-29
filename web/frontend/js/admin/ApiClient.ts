@@ -21,5 +21,5 @@ export function getCompanies(cached = true) {
 }
 
 export function createWork(title: string) {
-  return API.call(`/api/admin/v1/createWork`, {title})
+  return API.call('/api/admin/v1/createWork', {title})
 }

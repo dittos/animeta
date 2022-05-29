@@ -95,32 +95,32 @@ export type UserDto = {
 }
 
 
-export interface Client {
-  call(path: "/api/admin/v1/createWork", params: {title: string}): Promise<AdminWorkDto>
-  call(path: "/api/admin/v1/getCompanies", params: {}): Promise<CompanyDto[]>
-  call(path: "/api/admin/v1/CompanyDetail/", params: {id: string}): Promise<CompanyDto>
+export interface Client<TOptions = any> {
+  call(path: "/api/admin/v1/createWork", params: {title: string}, options?: TOptions): Promise<AdminWorkDto>
+  call(path: "/api/admin/v1/getCompanies", params: {}, options?: TOptions): Promise<CompanyDto[]>
+  call(path: "/api/admin/v1/CompanyDetail/", params: {id: string}, options?: TOptions): Promise<CompanyDto>
   call(path: "/api/admin/v1/CompanyDetail/rename", params: {
   id: string;
   name: string;
-}): Promise<CompanyDto>
-  call(path: "/api/admin/v1/CompanyList/", params: {}): Promise<CompanyDto[]>
+}, options?: TOptions): Promise<CompanyDto>
+  call(path: "/api/admin/v1/CompanyList/", params: {}, options?: TOptions): Promise<CompanyDto[]>
   call(path: "/api/admin/v1/CompanyMergeForm/merge", params: {
   id: string;
   otherCompanyId: string;
-}): Promise<CompanyDto>
-  call(path: "/api/admin/v1/PersonDetail/", params: {id: string}): Promise<PersonDto>
+}, options?: TOptions): Promise<CompanyDto>
+  call(path: "/api/admin/v1/PersonDetail/", params: {id: string}, options?: TOptions): Promise<PersonDto>
   call(path: "/api/admin/v1/PersonDetail/rename", params: {
   id: string;
   name: string;
-}): Promise<PersonDto>
+}, options?: TOptions): Promise<PersonDto>
   call(path: "/api/admin/v1/PersonList/", params: {
   page?: number;
-}): Promise<PersonDto[]>
+}, options?: TOptions): Promise<PersonDto[]>
   call(path: "/api/admin/v1/PersonListTransliterationCheck/bulkRename", params: {
   id: string;
   name: string;
-}[]): Promise<boolean>
-  call(path: "/api/admin/v1/PersonListTransliterationCheck/", params: {period: string}): Promise<{
+}[], options?: TOptions): Promise<boolean>
+  call(path: "/api/admin/v1/PersonListTransliterationCheck/", params: {period: string}, options?: TOptions): Promise<{
   personId: string;
   name: string;
   count: number;
@@ -128,7 +128,7 @@ export interface Client {
   call(path: "/api/admin/v1/WorkDetail/addTitleMapping", params: {
   workId: string;
   title: string;
-}): Promise<AdminWorkDto>
+}, options?: TOptions): Promise<AdminWorkDto>
   call(path: "/api/admin/v1/WorkDetail/crawlImage", params: {
   workId: string;
   options: {
@@ -138,33 +138,33 @@ export interface Client {
     source: 'url';
     url: string;
   };
-}): Promise<AdminWorkDto>
-  call(path: "/api/admin/v1/WorkDetail/deleteTitleMapping", params: {titleMappingId: string}): Promise<boolean>
+}, options?: TOptions): Promise<AdminWorkDto>
+  call(path: "/api/admin/v1/WorkDetail/deleteTitleMapping", params: {titleMappingId: string}, options?: TOptions): Promise<boolean>
   call(path: "/api/admin/v1/WorkDetail/editMetadata", params: {
   workId: string;
   rawMetadata: string;
-}): Promise<AdminWorkDto>
+}, options?: TOptions): Promise<AdminWorkDto>
   call(path: "/api/admin/v1/WorkDetail/importAnnMetadata", params: {
   workId: string;
   annId: string;
-}): Promise<AdminWorkDto>
+}, options?: TOptions): Promise<AdminWorkDto>
   call(path: "/api/admin/v1/WorkDetail/", params: {
   id: string;
-}): Promise<AdminWorkDto>
+}, options?: TOptions): Promise<AdminWorkDto>
   call(path: "/api/admin/v1/WorkDetail/setPrimaryTitle", params: {
   workId: string;
   primaryTitleMappingId: string;
-}): Promise<AdminWorkDto>
+}, options?: TOptions): Promise<AdminWorkDto>
   call(path: "/api/admin/v1/WorkDetail/update", params: {
   workId: string;
   blacklisted?: boolean;
   imageCenterY?: number;
-}): Promise<AdminWorkDto>
-  call(path: "/api/admin/v1/WorkList/delete", params: {workId: string}): Promise<boolean>
+}, options?: TOptions): Promise<AdminWorkDto>
+  call(path: "/api/admin/v1/WorkList/delete", params: {workId: string}, options?: TOptions): Promise<boolean>
   call(path: "/api/admin/v1/WorkList/", params: {
   orphans?: boolean;
   offset?: number;
-}): Promise<{
+}, options?: TOptions): Promise<{
   id: string;
   title: string;
   record_count: number;
@@ -173,8 +173,8 @@ export interface Client {
   workId: string;
   otherWorkId: string;
   forceMerge: boolean;
-}): Promise<AdminWorkDto>
+}, options?: TOptions): Promise<AdminWorkDto>
   call(path: "/api/v5/getCurrentUser", params: {
   options?: UserSerializerOptions,
-}): Promise<UserDto>
+}, options?: TOptions): Promise<UserDto>
 }

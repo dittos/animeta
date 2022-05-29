@@ -17,7 +17,7 @@ const config = require(process.env.ANIMETA_CONFIG_PATH || './config.json');
 const DEBUG = process.env.NODE_ENV !== 'production';
 const MAINTENANCE = process.env.MAINTENANCE;
 
-const backend = new Backend(config.backend.baseUrl, config.backend.v4BaseUrl, config.backend.graphqlUrl);
+const backend = new Backend(config.backend.v4BaseUrl, config.backend.v5BaseUrl, config.backend.graphqlUrl);
 if (config.sentryDsnNew) {
   Sentry.init({ dsn: config.sentryDsnNew });
 }
@@ -36,11 +36,13 @@ function serializeParams(params: any) {
 
 function loaderFactory(serverRequest: ServerRequest): Loader {
   return {
-    call(path, params) {
-      return backend.call(serverRequest, path, serializeParams(params));
-    },
     callV4(path, params) {
       return backend.callV4(serverRequest, path, serializeParams(params));
+    },
+    v5: {
+      call(path: string, params: any, options: any) {
+        return backend.callV5(serverRequest, path, params);
+      }
     },
     getCurrentUser(params) {
       return backend.getCurrentUser(serverRequest, serializeParams(params));
@@ -148,11 +150,12 @@ export function createServer({ server = express(), appProvider, getAssets }: {
     res.writeHead(500, { 'content-type': 'text/plain' });
     res.end('API error');
   }
-  function configureProxy(pathPrefix: string, targetUrl: string, warn: boolean = false) {
+  function configureProxy(pathPrefix: string, targetUrl: string, warn: boolean = false, options?: Partial<httpProxy.ServerOptions>) {
     const proxy = httpProxy.createProxyServer({
       target: targetUrl,
       changeOrigin: config.backend.remote ? true : false,
       cookieDomainRewrite: config.backend.remote ? '' : false,
+      ...options,
     });
     proxy.on('proxyReq', onProxyReq);
     proxy.on('error', onProxyError);
@@ -166,6 +169,7 @@ export function createServer({ server = express(), appProvider, getAssets }: {
   }
 
   configureProxy('/api/v4', config.backend.v4BaseUrl)
+  configureProxy('/api/v5', config.backend.v5BaseUrl, false, {prependPath: true})
   configureProxy('/api/admin/v0', config.backend.adminNewBaseUrl)
   configureProxy('/api/admin/v1', config.backend.adminNewBaseUrl2)
   configureProxy('/api', config.backend.baseUrl, true)

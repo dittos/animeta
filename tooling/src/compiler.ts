@@ -69,9 +69,9 @@ export function main(options: Record<string, any>, program: ts.Program, context:
     client += `${rootType.declaration.getText()}\n`
   }
   client += '\n\n'
-  client += 'export interface Client {\n'
+  client += 'export interface Client<TOptions = any> {\n'
   for (const endpoint of app.endpoints) {
-    client += `  call(path: ${JSON.stringify(endpoint.path)}, params: ${endpoint.paramsType.getText()}): Promise<${endpoint.resultType.getText()}>\n`
+    client += `  call(path: ${JSON.stringify(endpoint.path)}, params: ${endpoint.paramsType.getText()}, options?: TOptions): Promise<${endpoint.resultType.getText()}>\n`
   }
   client += '}'
   {

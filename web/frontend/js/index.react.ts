@@ -11,6 +11,7 @@ import '../less/base.less';
 import { config as faConfig } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { ApolloClient, DocumentNode, InMemoryCache, HttpLink } from '@apollo/client';
+import { API } from './ApiClient';
 faConfig.autoAddCss = false
 
 if ((window as any).SENTRY_DSN) {
@@ -34,12 +35,11 @@ const apolloClient = new ApolloClient({
 });
 
 const loader: Loader = {
-  call(path: string, params?: any) {
-    return get('/api/v2' + path, params)
-  },
   callV4(path: string, params?: any) {
     return get('/api/v4' + path, params)
   },
+
+  v5: API,
 
   getCurrentUser,
 

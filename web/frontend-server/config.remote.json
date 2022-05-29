@@ -2,6 +2,7 @@
     "backend": {
         "baseUrl": "https://animeta.net/api",
         "v4BaseUrl": "https://animeta.net/api/v4",
+        "v5BaseUrl": "https://animeta.net",
         "adminNewBaseUrl": "https://animeta.net/api/admin/v0",
         "adminNewBaseUrl2": "https://animeta.net/api/admin/v1",
         "graphqlUrl": "https://animeta.net/api/graphql",
