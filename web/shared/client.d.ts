@@ -75,6 +75,24 @@ export type PersonDto = {
   staffs?: PersonWorkDto[],
   casts?: PersonWorkDto[],
 }
+export type UserSerializerOptions = {
+  categories?: boolean;
+  stats?: boolean;
+  twitter?: boolean;
+};
+export type CategoryDto = {
+  id: string;
+  name: string;
+}
+export type UserDto = {
+  id: string;
+  name: string;
+  dateJoined: number; // TODO: Date
+  categories: CategoryDto[] | null;
+  recordCount: number | null;
+  historyCount: number | null;
+  isTwitterConnected: boolean | null;
+}
 
 
 export interface Client {
@@ -156,4 +174,7 @@ export interface Client {
   otherWorkId: string;
   forceMerge: boolean;
 }): Promise<AdminWorkDto>
+  call(path: "/api/v5/getCurrentUser", params: {
+  options?: UserSerializerOptions,
+}): Promise<UserDto>
 }

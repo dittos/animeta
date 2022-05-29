@@ -1,4 +1,4 @@
-import fastify, { FastifyInstance, FastifySchema } from 'fastify'
+import fastify, { FastifyInstance, FastifyRequest, FastifySchema } from 'fastify'
 import * as path from 'path'
 import * as fs from 'fs'
 import { createConnection } from 'typeorm'
@@ -31,6 +31,8 @@ function loadSchema(endpointPath: string): FastifySchema | null {
   }
 }
 
+type Handler = (params: any, request?: FastifyRequest) => Promise<any> | any
+
 function registerEndpoints(parent: FastifyInstance, endpointsDir: string, prefix: string) {
   parent.register(async (child, opts) => {
     const files = fs.readdirSync(endpointsDir, { withFileTypes: true })
@@ -42,7 +44,7 @@ function registerEndpoints(parent: FastifyInstance, endpointsDir: string, prefix
         const middleware = require(fullpath).default
         child.addHook('preHandler', middleware)
       } else if (path.extname(file.name) === '.js') {
-        const handler = require(fullpath).default as ((params: any) => Promise<any> | any) | undefined
+        const handler = require(fullpath).default as Handler | undefined
         if (!handler) continue
         let schema = loadSchema(fullpath)
         child.route({
@@ -51,7 +53,7 @@ function registerEndpoints(parent: FastifyInstance, endpointsDir: string, prefix
           schema: schema ?? undefined,
           handler: async (request, reply) => {
             try {
-              return await handler(request.body)
+              return await handler(request.body, request)
             } catch (e) {
               if (e instanceof HttpException) {
                 reply.status(e.getStatus()).send(e.getResponse())
