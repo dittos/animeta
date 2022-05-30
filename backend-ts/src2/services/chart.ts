@@ -16,7 +16,7 @@ export type WorkChartItem = {
     imageUrl: string | null;
   };
   diff?: number;
-  sign?: -1 | 0 | 1;
+  sign?: number;
 };
 
 interface ChartRange {
