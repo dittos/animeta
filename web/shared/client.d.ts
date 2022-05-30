@@ -93,6 +93,16 @@ export type UserDto = {
   historyCount: number | null;
   isTwitterConnected: boolean | null;
 }
+export type WeeklyChartItem = {
+  rank: number;
+  work: {
+    id: string;
+    title: string;
+    imageUrl: string | null;
+  };
+  diff?: number;
+  sign?: number;
+};
 
 
 export interface Client<TOptions = any> {
@@ -177,4 +187,5 @@ export interface Client<TOptions = any> {
   call(path: "/api/v5/getCurrentUser", params: {
   options?: UserSerializerOptions,
 }, options?: TOptions): Promise<UserDto>
+  call(path: "/api/v5/WeeklyChart/", params: {}, options?: TOptions): Promise<WeeklyChartItem[]>
 }

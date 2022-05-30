@@ -13,6 +13,17 @@ import { Record } from "src/entities/record.entity";
 import { History } from "src/entities/history.entity";
 import { WorkTitleIndex } from "src/entities/work_title_index.entity";
 import { WorkIndex } from "src/entities/work_index.entity";
+import * as DataLoader from "dataloader";
+import { objResults } from "src/utils/dataloader";
+
+const dataLoader = new DataLoader<number, Work>(
+  objResults(ids => db.findByIds(Work, Array.from(ids)), k => `${k}`, v => `${v.id}`),
+  { cache: false }
+);
+
+export async function getWork(id: number): Promise<Work> {
+  return dataLoader.load(id)
+}
 
 export async function applyWorkMetadataRaw(work: Work, rawMetadata: string) {
   let metadata: WorkMetadata
