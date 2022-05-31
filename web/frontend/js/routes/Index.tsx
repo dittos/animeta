@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { App } from '../layouts';
 import * as Grid from '../ui/Grid';
 import WeeklyChart, { WeeklyChartItem } from '../ui/WeeklyChart';
@@ -14,52 +14,46 @@ type IndexRouteData = {
   chart: WeeklyChartItem[];
 };
 
-class Index extends React.Component<RouteComponentProps<IndexRouteData>> {
-  state = {
-    isLoading: false,
-  };
+const Index: React.FC<RouteComponentProps<IndexRouteData>> = ({ data, writeData, loader }) => {
+  const [isLoading, setIsLoading] = useState(false)
 
-  render() {
-    return (
-      <Grid.Row>
-        <Grid.Column size={8} pull="left">
-          {this._renderTimeline(this.props.data.posts)}
-        </Grid.Column>
-        <Grid.Column size={4} pull="right" className={Styles.sidebar}>
-          <h2 className={Styles.sectionTitle}>주간 인기 작품</h2>
-          <WeeklyChart data={this.props.data.chart} />
-        </Grid.Column>
-      </Grid.Row>
-    );
-  }
+  return (
+    <Grid.Row>
+      <Grid.Column size={8} pull="left">
+        {_renderTimeline(data.posts)}
+      </Grid.Column>
+      <Grid.Column size={4} pull="right" className={Styles.sidebar}>
+        <h2 className={Styles.sectionTitle}>주간 인기 작품</h2>
+        <WeeklyChart data={data.chart} />
+      </Grid.Column>
+    </Grid.Row>
+  );
 
-  _renderTimeline(posts: PostDTO[]) {
+  function _renderTimeline(posts: PostDTO[]) {
     return (
       <div className={Styles.timeline}>
         <h2 className={Styles.sectionTitle}>최근 감상평</h2>
         {posts.map(post => <Post key={post.id} post={post} />)}
-        <LoadMore onClick={this._loadMore} isLoading={this.state.isLoading} />
+        <LoadMore onClick={_loadMore} isLoading={isLoading} />
       </div>
     );
   }
 
-  _loadMore = async () => {
-    this.setState({ isLoading: true });
-    const result = await this.props.loader.callV4('/posts', {
-      before_id: this.props.data.posts[this.props.data.posts.length - 1].id,
+  async function _loadMore() {
+    setIsLoading(true)
+    const result = await loader.callV4('/posts', {
+      before_id: data.posts[data.posts.length - 1].id,
       min_record_count: 2,
       options: {
         user: {},
         record: {},
       },
     });
-    this.setState({
-      isLoading: false,
-    });
-    this.props.writeData(data => {
+    setIsLoading(false)
+    writeData(data => {
       data.posts = data.posts.concat(result);
     });
-  };
+  }
 }
 
 const routeHandler: RouteHandler<IndexRouteData> = {
