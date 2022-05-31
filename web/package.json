@@ -26,7 +26,7 @@
     "lodash": "^4.17.11",
     "notistack": "^2.0.2",
     "nprogress": "^0.2.0",
-    "nuri": "github:dittos/nuri-builds#17ee8779f68efd03212dac340d4000608c65b722",
+    "nuri": "github:dittos/nuri-builds#e85ac8aa60a4f0f290a7e817e46c69c0144a66ce",
     "react": "^16.14.0",
     "react-bootstrap": "^1.4.0",
     "react-dom": "^16.14.0",
