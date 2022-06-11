@@ -20,9 +20,17 @@ const dataLoader = new DataLoader<number, Work>(
   objResults(ids => db.findByIds(Work, Array.from(ids)), k => `${k}`, v => `${v.id}`),
   { cache: false }
 );
+const indexDataLoader = new DataLoader<number, WorkIndex>(
+  objResults(ids => db.findByIds(WorkIndex, Array.from(ids)), k => `${k}`, v => `${v.work_id}`),
+  { cache: false }
+);
 
 export async function getWork(id: number): Promise<Work> {
   return dataLoader.load(id)
+}
+
+export async function getWorkIndex(id: number): Promise<WorkIndex> {
+  return indexDataLoader.load(id)
 }
 
 export async function applyWorkMetadataRaw(work: Work, rawMetadata: string) {

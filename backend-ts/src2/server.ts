@@ -1,8 +1,10 @@
 import fastify, { FastifyInstance, FastifyRequest, FastifySchema } from 'fastify'
+import mercurius, { IResolvers } from 'mercurius'
 import * as path from 'path'
 import * as fs from 'fs'
 import { createConnection } from 'typeorm'
 import { HttpException } from '@nestjs/common'
+import { resolvers } from './resolvers'
 
 // TODO: dotenv
 
@@ -15,6 +17,11 @@ const server = fastify({
       coerceTypes: true,
     },
   },
+})
+
+server.register(mercurius, {
+  schema: fs.readFileSync('src/schema.graphql', {encoding: 'utf-8'}),
+  resolvers: resolvers as IResolvers,
 })
 
 const middlewareFilename = '_middleware.js'

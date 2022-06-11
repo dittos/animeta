@@ -26,11 +26,14 @@ type Category {
 }
 
 type Post {
-  id: ID
+  id: ID!
   record: Record
+  statusType: StatusType
   status: String
   comment: String
+  containsSpoiler: Boolean
   user: User
+  updatedAt: GraphQLTimestamp
 }
 
 enum StatusType {
@@ -42,6 +45,7 @@ enum StatusType {
 
 type Record {
   id: ID
+  title: String
   statusType: StatusType
   status: String
 }

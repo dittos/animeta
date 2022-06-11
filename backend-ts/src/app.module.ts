@@ -1,8 +1,6 @@
 import { CacheModule, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver } from '@nestjs/apollo';
 import { AuthMiddleware } from './auth/auth.middleware';
 import { SearchController } from './controllers/search.controller';
 import { Category } from './entities/category.entity';
@@ -11,13 +9,8 @@ import { Record } from './entities/record.entity';
 import { TwitterSetting } from './entities/twitter_setting.entity';
 import { User } from './entities/user.entity';
 import { SearchService } from './services/search.service';
-import * as path from 'path';
-import { UserResolver } from './resolvers/user.resolver';
-import { CuratedListResolver } from './resolvers/curated_list.resolver';
 import { CuratedListService } from './services/curated_list.service';
 import { Work } from './entities/work.entity';
-import { WorkResolver } from './resolvers/work.resolver';
-import { RecordResolver } from './resolvers/record.resolver';
 import { WorkIndex } from './entities/work_index.entity';
 import { RecordService } from './services/record.service';
 import { WorkService } from './services/work.service';
@@ -98,16 +91,6 @@ import { BackupService } from './services/backup.service';
       WorkCompany,
       CompanyAnnIds,
     ]),
-    GraphQLModule.forRoot({
-      driver: ApolloDriver,
-      path: '/api/graphql',
-      typePaths: ['./**/*.graphql'],
-      // Generating definitions is slow, so disable in the test
-      definitions: process.env.NODE_ENV !== 'test' ? {
-        path: path.join(process.cwd(), 'src/graphql.ts'),
-      } : undefined,
-      // debug: true,
-    }),
     CacheModule.register(),
   ],
   exports: [
@@ -167,11 +150,6 @@ import { BackupService } from './services/backup.service';
     CategoryService,
     AuthService,
     BackupService,
-
-    UserResolver,
-    RecordResolver,
-    WorkResolver,
-    CuratedListResolver,
 
     UserSerializer,
     CategorySerializer,

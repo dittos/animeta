@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	&& rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app/backend-ts
+COPY backend-ts/patches ./patches
 COPY backend-ts/package*.json ./
 COPY web/shared ../web/shared
 COPY --from=builder /src ../tooling

@@ -45,9 +45,9 @@ export class CuratedListService {
     return this.getAllLists().find(it => it.id === id) ?? null
   }
 
-  async getWorks(metadata: CuratedListMetadata, currentUser: User): Promise<{ notAddedWorks: Work[]; totalCount: number; }> {
+  async getWorks(metadata: CuratedListMetadata, currentUser: User | null): Promise<{ notAddedWorks: Work[]; totalCount: number; }> {
     const allWorks = await this.getAllWorks(metadata);
-    const records = await Promise.all(allWorks.map(work => this.recordService.findByUserAndWork(currentUser, work)));
+    const records = currentUser ? await Promise.all(allWorks.map(work => this.recordService.findByUserAndWork(currentUser, work))) : [];
     const notAddedWorks = allWorks.filter((work, index) => !records[index]);
     return {
       notAddedWorks,
