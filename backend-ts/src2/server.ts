@@ -1,5 +1,5 @@
 import fastify, { FastifyInstance, FastifyRequest, FastifySchema } from 'fastify'
-import mercurius, { IResolvers } from 'mercurius'
+import mercurius from 'mercurius'
 import * as path from 'path'
 import * as fs from 'fs'
 import { createConnection } from 'typeorm'
@@ -21,7 +21,7 @@ const server = fastify({
 
 server.register(mercurius, {
   schema: fs.readFileSync('src/schema.graphql', {encoding: 'utf-8'}),
-  resolvers: resolvers as IResolvers,
+  resolvers: resolvers as any,
 })
 
 const middlewareFilename = '_middleware.js'

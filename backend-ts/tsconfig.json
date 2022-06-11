@@ -12,7 +12,7 @@
     "baseUrl": "./",
     "incremental": true,
     "strict": true,
-    "skipLibCheck": true,
+    "skipLibCheck": false,
     "paths": {
       "shared/*": ["../web/shared/*"]
     }

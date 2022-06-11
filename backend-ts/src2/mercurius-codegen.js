@@ -3,7 +3,7 @@ const {buildSchema} = require('graphql')
 
 async function codegen(schema) {
   const targetPath = './src/graphql/generated.ts'
-  const code = await generateCode(
+  let code = await generateCode(
     buildSchema(schema.join('\n')),
     {
       mapperTypeSuffix: 'Model',
@@ -17,6 +17,8 @@ async function codegen(schema) {
     undefined, // silent
     undefined, // operationsGlob
   )
+  // Remove "declare module 'mercurius' { ... }" to keep using skipLibCheck: false
+  code = code.substring(0, code.indexOf("declare module 'mercurius'"))
   const absoluteTargetPath = await writeGeneratedCode({
     code,
     targetPath,

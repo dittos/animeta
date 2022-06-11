@@ -668,8 +668,3 @@ export interface Loaders<
     >;
   };
 }
-declare module 'mercurius' {
-  interface IResolvers
-    extends Resolvers<import('mercurius').MercuriusContext> {}
-  interface MercuriusLoaders extends Loaders {}
-}
