@@ -1,14 +1,13 @@
-import { gql } from '@apollo/client';
 import { faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import Styles from './PostComment.less';
-import { PostComment_post } from './__generated__/PostComment_post';
+import { PostComment_PostFragment } from './__generated__/GqlPostComment.graphql';
 
 type Props = {
   className: string;
   showSpoiler?: boolean;
-  post: PostComment_post;
+  post: PostComment_PostFragment;
 };
 
 export default function GqlPostComment(props: Props) {
@@ -40,14 +39,4 @@ export default function GqlPostComment(props: Props) {
       )}
     </div>
   );
-}
-
-GqlPostComment.fragments = {
-  post: gql`
-    fragment PostComment_post on Post {
-      id
-      comment
-      containsSpoiler
-    }
-  `
 }

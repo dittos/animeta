@@ -1,11 +1,9 @@
 import vm from 'vm';
 import fs from 'fs';
 import { App } from 'nuri/app';
-import { InMemoryCacheConfig } from '@apollo/client';
 
 export interface AppModule {
   default: App<any>;
-  apolloCacheConfig: InMemoryCacheConfig;
 }
 
 export interface AppProvider {

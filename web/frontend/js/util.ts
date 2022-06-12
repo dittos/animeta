@@ -7,8 +7,8 @@ interface HasStatus {
 }
 
 interface GqlHasStatus {
-  statusType: StatusType | null
-  status: string | null
+  statusType?: StatusType | null
+  status?: string | null
 }
 
 export function zerofill(n: number): string {

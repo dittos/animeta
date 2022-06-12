@@ -1,0 +1,5 @@
+fragment PostComment_post on Post {
+      id
+      comment
+      containsSpoiler
+    }

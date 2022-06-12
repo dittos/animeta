@@ -1,0 +1,15 @@
+schema: ../backend-ts/src/schema.graphql
+documents: 'frontend/js/**/*.graphql'
+generates:
+  ./frontend/js/__generated__/globalTypes.ts:
+    plugins:
+      - typescript
+  ./frontend/js:
+    preset: near-operation-file
+    presetConfig:
+      folder: __generated__
+      extension: .graphql.ts
+      baseTypesPath: __generated__/globalTypes.ts
+    plugins:
+      - typescript-operations
+      - typed-document-node

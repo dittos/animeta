@@ -6,8 +6,7 @@ import GqlPostComment from './GqlPostComment';
 import Styles from './Post.module.less';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretRight } from '@fortawesome/free-solid-svg-icons'
-import { gql } from '@apollo/client';
-import { Post_post } from './__generated__/Post_post';
+import { Post_PostFragment } from './__generated__/GqlPost.graphql';
 
 export function GqlPost({
   post,
@@ -16,7 +15,7 @@ export function GqlPost({
   showStatusType = false,
   highlighted = false,
 }: {
-  post: Post_post;
+  post: Post_PostFragment;
   showUser?: boolean;
   showTitle?: boolean;
   showStatusType?: boolean;
@@ -53,24 +52,4 @@ export function GqlPost({
       <GqlPostComment post={post} className={Styles.comment} />
     </div>
   );
-}
-
-GqlPost.fragments = {
-  post: gql`
-    ${GqlPostComment.fragments.post}
-    fragment Post_post on Post {
-      id
-      user {
-        name
-      }
-      record {
-        title
-      }
-      statusType
-      status
-      comment
-      updatedAt
-      ...PostComment_post
-    }
-  `
 }

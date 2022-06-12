@@ -1,0 +1,6 @@
+query IndexRoute($timelineBeforeId: ID, $count: Int) {
+  timeline(beforeId: $timelineBeforeId, count: $count) {
+    id
+    ...Post_post
+  }
+}

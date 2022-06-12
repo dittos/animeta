@@ -5,7 +5,6 @@ import { GlobalHeader, GlobalHeaderProps } from './ui/GlobalHeader';
 import UserLayout, { UserLayoutProps, UserLayoutPropsData } from './ui/UserLayout';
 import * as Sentry from '@sentry/react';
 import { Loader } from '../../shared/loader';
-import { ApolloProvider } from '@apollo/client';
 
 function ErrorFallback() {
   return <>
@@ -24,13 +23,11 @@ export function App<Props extends { data: { currentUser: UserDTO | null }, loade
 ) {
   return (props: Props) => (
     <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
-      <ApolloProvider client={props.loader.apolloClient}>
-        <GlobalHeader
-          currentUser={props.data.currentUser}
-          {...globalHeaderProps}
-        />
-        <Component {...props} />
-      </ApolloProvider>
+      <GlobalHeader
+        currentUser={props.data.currentUser}
+        {...globalHeaderProps}
+      />
+      <Component {...props} />
     </Sentry.ErrorBoundary>
   );
 }
@@ -42,21 +39,19 @@ export function User<Data extends UserLayoutPropsData>(
 ) {
   return (props: RouteComponentProps<Data>) => (
     <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
-      <ApolloProvider client={props.loader.apolloClient}>
-        <GlobalHeader
-          currentUser={props.data.currentUser}
-          activeMenu={
-            props.data.currentUser &&
-            props.data.currentUser.id === props.data.user.id
-              ? 'user'
-              : null
-          }
-          {...globalHeaderProps}
-        />
-        <UserLayout {...props} {...layoutProps}>
-          <Component {...props} />
-        </UserLayout>
-      </ApolloProvider>
+      <GlobalHeader
+        currentUser={props.data.currentUser}
+        activeMenu={
+          props.data.currentUser &&
+          props.data.currentUser.id === props.data.user.id
+            ? 'user'
+            : null
+        }
+        {...globalHeaderProps}
+      />
+      <UserLayout {...props} {...layoutProps}>
+        <Component {...props} />
+      </UserLayout>
     </Sentry.ErrorBoundary>
   );
 }

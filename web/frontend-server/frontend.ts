@@ -12,8 +12,7 @@ import renderFeed from './renderFeed';
 import { render, ServerRequest } from 'nuri/server';
 import { AppProvider } from './lib/core/AppProvider';
 import { Loader } from '../shared/loader';
-import { ApolloClient, HttpLink, InMemoryCache, InMemoryCacheConfig } from '@apollo/client';
-import fetch from 'cross-fetch';
+import { request } from 'graphql-request';
 
 const config = require(process.env.ANIMETA_CONFIG_PATH || './config.json');
 const DEBUG = process.env.NODE_ENV !== 'production';
@@ -36,18 +35,7 @@ function serializeParams(params: any) {
   return result;
 }
 
-function loaderFactory(serverRequest: ServerRequest, apolloCacheConfig: InMemoryCacheConfig): Loader {
-  const apolloClient = new ApolloClient({
-    ssrMode: true,
-    link: new HttpLink({
-      uri: config.backend.graphqlUrl,
-      fetch,
-      headers: {
-        'x-animeta-session-key': (serverRequest as express.Request).cookies?.sessionid,
-      }
-    }),
-    cache: new InMemoryCache(apolloCacheConfig),
-  })
+function loaderFactory(serverRequest: ServerRequest): Loader {
   return {
     callV4(path, params) {
       return backend.callV4(serverRequest, path, serializeParams(params));
@@ -61,13 +49,10 @@ function loaderFactory(serverRequest: ServerRequest, apolloCacheConfig: InMemory
       return backend.getCurrentUser(serverRequest, serializeParams(params));
     },
     async graphql(doc, variables) {
-      const result = await apolloClient.query({
-        query: doc,
-        variables,
+      return request(config.backend.graphqlUrl, doc, variables, {
+        'x-animeta-session-key': (serverRequest as express.Request).cookies?.sessionid,
       })
-      return result.data
     },
-    apolloClient,
   };
 }
 
@@ -283,7 +268,7 @@ Disallow: /
 
     // TODO: remove type assertion
     const appModule = appProvider.get()
-    const loader = loaderFactory(req as ServerRequest, appModule.apolloCacheConfig)
+    const loader = loaderFactory(req as ServerRequest)
     render(appModule.default, req as ServerRequest, loader)
       .then(result => {
         const {
@@ -307,7 +292,6 @@ Disallow: /
         if (errorStatus) res.status(errorStatus);
 
         preloadData.kakaoApiKey = config.kakaoApiKey; // XXX
-        preloadData.__APOLLO_STATE__ = loader.apolloClient.extract()
         renderDefault(
           res,
           {

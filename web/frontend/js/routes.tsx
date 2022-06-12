@@ -15,10 +15,9 @@ import UserHistoryRoute from './routes/UserHistory';
 import UserTableRoute from './routes/UserTable';
 import RecordRoute from './routes/Record';
 import AddRecordRoute from './routes/AddRecord';
-import NewAddRecordRoute from './routes/NewAddRecord';
+// import NewAddRecordRoute from './routes/NewAddRecord';
 import ManageCategoryRoute from './routes/ManageCategory';
 import { Loader } from '../../shared/loader';
-import { InMemoryCacheConfig } from '@apollo/client';
 
 export type RouteHandler<D> = NuriApp.RouteHandler<D, Loader>;
 export type RouteComponent<D> = NuriApp.RouteComponent<D, Loader>;
@@ -47,7 +46,7 @@ app.route('/settings/', SettingsRoute);
 app.route('/users/:username/', UserRoute);
 app.route('/users/:username/history/', UserHistoryRoute);
 app.route('/users/:username/table/:period/', UserTableRoute);
-app.route('/records/add-new/', NewAddRecordRoute);
+// app.route('/records/add-new/', NewAddRecordRoute);
 app.route('/records/add/', AddRecordRoute);
 app.route('/records/add/:title+/', AddRecordRoute);
 app.route('/records/category/', ManageCategoryRoute);
@@ -57,18 +56,3 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 export default app;
-
-export const apolloCacheConfig: InMemoryCacheConfig = {
-  typePolicies: {
-    Query: {
-      fields: {
-        timeline: {
-          keyArgs: false,
-          merge(existing = [], incoming) {
-            return [...existing, ...incoming];
-          }
-        }
-      }
-    }
-  }
-}
