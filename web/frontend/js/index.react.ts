@@ -49,7 +49,7 @@ onPreloadDataReady(preloadData => {
 
     graphql<T>(doc: DocumentNode, variables?: any): Promise<T> {
       return apolloClient.query<T>({
-        fetchPolicy: 'no-cache',
+        fetchPolicy: 'network-only',
         query: doc,
         variables,
       }).then(result => result.data)
