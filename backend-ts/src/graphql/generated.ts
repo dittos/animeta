@@ -50,7 +50,7 @@ export type Query = {
   curatedLists?: Maybe<Array<Maybe<CuratedList>>>;
   curatedList?: Maybe<CuratedList>;
   searchWorks?: Maybe<SearchWorksResult>;
-  weeklyWorksChart?: Maybe<Array<Maybe<WorksChartItem>>>;
+  weeklyWorksChart: Array<WorksChartItem>;
 };
 
 export type QueryuserByNameArgs = {
@@ -379,7 +379,7 @@ export type QueryResolvers<
     RequireFields<QuerysearchWorksArgs, 'query'>
   >;
   weeklyWorksChart?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes['WorksChartItem']>>>,
+    Array<ResolversTypes['WorksChartItem']>,
     ParentType,
     ContextType,
     RequireFields<QueryweeklyWorksChartArgs, 'limit'>
