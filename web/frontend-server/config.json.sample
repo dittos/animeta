@@ -5,7 +5,7 @@
         "v5BaseUrl": "http://localhost:8082",
         "adminNewBaseUrl": "http://localhost:8081/api/admin/v0",
         "adminNewBaseUrl2": "http://localhost:8082/api/admin/v1",
-        "graphqlUrl": "http://localhost:8081/api/graphql",
+        "graphqlUrl": "http://localhost:8082/graphql",
         "remote": false
     },
     "sentryDsn": "",

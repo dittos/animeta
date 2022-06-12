@@ -80,6 +80,7 @@ export function createServer({ server = express(), appProvider, getAssets }: {
     target: config.backend.graphqlUrl,
     changeOrigin: config.backend.remote ? true : false,
     cookieDomainRewrite: config.backend.remote ? '' : false,
+    ignorePath: true,
   });
   graphqlProxy.on('proxyReq', onProxyReq);
   graphqlProxy.on('error', onProxyError);
