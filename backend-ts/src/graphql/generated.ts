@@ -6,6 +6,7 @@ import type {
 import type { History as HistoryModel } from 'src/entities/history.entity';
 import type { User as UserModel } from 'src/entities/user.entity';
 import type { Record as RecordModel } from 'src/entities/record.entity';
+import type { Work as WorkModel } from 'src/entities/work.entity';
 import type { MercuriusContext } from 'mercurius';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -49,6 +50,7 @@ export type Query = {
   curatedLists?: Maybe<Array<Maybe<CuratedList>>>;
   curatedList?: Maybe<CuratedList>;
   searchWorks?: Maybe<SearchWorksResult>;
+  weeklyWorksChart?: Maybe<Array<Maybe<WorksChartItem>>>;
 };
 
 export type QueryuserByNameArgs = {
@@ -66,6 +68,10 @@ export type QuerycuratedListArgs = {
 
 export type QuerysearchWorksArgs = {
   query: Scalars['String'];
+};
+
+export type QueryweeklyWorksChartArgs = {
+  limit: Scalars['Int'];
 };
 
 export type User = {
@@ -149,6 +155,14 @@ export type SearchWorksResultEdge = {
   __typename?: 'SearchWorksResultEdge';
   node: Work;
   recordCount?: Maybe<Scalars['Int']>;
+};
+
+export type WorksChartItem = {
+  __typename?: 'WorksChartItem';
+  rank: Scalars['Int'];
+  work: Work;
+  diff?: Maybe<Scalars['Int']>;
+  sign?: Maybe<Scalars['Int']>;
 };
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -277,9 +291,7 @@ export type ResolversTypes = {
   CuratedListWorkEdge: ResolverTypeWrapper<
     Omit<CuratedListWorkEdge, 'node'> & { node?: Maybe<ResolversTypes['Work']> }
   >;
-  Work: ResolverTypeWrapper<
-    Omit<Work, 'record'> & { record?: Maybe<ResolversTypes['Record']> }
-  >;
+  Work: ResolverTypeWrapper<WorkModel>;
   SearchWorksResult: ResolverTypeWrapper<
     Omit<SearchWorksResult, 'edges'> & {
       edges: Array<ResolversTypes['SearchWorksResultEdge']>;
@@ -287,6 +299,9 @@ export type ResolversTypes = {
   >;
   SearchWorksResultEdge: ResolverTypeWrapper<
     Omit<SearchWorksResultEdge, 'node'> & { node: ResolversTypes['Work'] }
+  >;
+  WorksChartItem: ResolverTypeWrapper<
+    Omit<WorksChartItem, 'work'> & { work: ResolversTypes['Work'] }
   >;
 };
 
@@ -313,14 +328,15 @@ export type ResolversParentTypes = {
   CuratedListWorkEdge: Omit<CuratedListWorkEdge, 'node'> & {
     node?: Maybe<ResolversParentTypes['Work']>;
   };
-  Work: Omit<Work, 'record'> & {
-    record?: Maybe<ResolversParentTypes['Record']>;
-  };
+  Work: WorkModel;
   SearchWorksResult: Omit<SearchWorksResult, 'edges'> & {
     edges: Array<ResolversParentTypes['SearchWorksResultEdge']>;
   };
   SearchWorksResultEdge: Omit<SearchWorksResultEdge, 'node'> & {
     node: ResolversParentTypes['Work'];
+  };
+  WorksChartItem: Omit<WorksChartItem, 'work'> & {
+    work: ResolversParentTypes['Work'];
   };
 };
 
@@ -361,6 +377,12 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     RequireFields<QuerysearchWorksArgs, 'query'>
+  >;
+  weeklyWorksChart?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes['WorksChartItem']>>>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryweeklyWorksChartArgs, 'limit'>
   >;
 };
 
@@ -515,6 +537,17 @@ export type SearchWorksResultEdgeResolvers<
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type WorksChartItemResolvers<
+  ContextType = MercuriusContext,
+  ParentType extends ResolversParentTypes['WorksChartItem'] = ResolversParentTypes['WorksChartItem'],
+> = {
+  rank?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  work?: Resolver<ResolversTypes['Work'], ParentType, ContextType>;
+  diff?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  sign?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = MercuriusContext> = {
   Query?: QueryResolvers<ContextType>;
   GraphQLTimestamp?: GraphQLScalarType;
@@ -528,6 +561,7 @@ export type Resolvers<ContextType = MercuriusContext> = {
   Work?: WorkResolvers<ContextType>;
   SearchWorksResult?: SearchWorksResultResolvers<ContextType>;
   SearchWorksResultEdge?: SearchWorksResultEdgeResolvers<ContextType>;
+  WorksChartItem?: WorksChartItemResolvers<ContextType>;
 };
 
 export type Loader<TReturn, TObj, TParams, TContext> = (
@@ -666,5 +700,12 @@ export interface Loaders<
       {},
       TContext
     >;
+  };
+
+  WorksChartItem?: {
+    rank?: LoaderResolver<Scalars['Int'], WorksChartItem, {}, TContext>;
+    work?: LoaderResolver<Work, WorksChartItem, {}, TContext>;
+    diff?: LoaderResolver<Maybe<Scalars['Int']>, WorksChartItem, {}, TContext>;
+    sign?: LoaderResolver<Maybe<Scalars['Int']>, WorksChartItem, {}, TContext>;
   };
 }

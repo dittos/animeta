@@ -5,6 +5,7 @@ type Query {
   curatedLists: [CuratedList]
   curatedList(id: ID): CuratedList
   searchWorks(query: String!): SearchWorksResult
+  weeklyWorksChart(limit: Int!): [WorksChartItem]
 }
 
 scalar GraphQLTimestamp
@@ -80,4 +81,11 @@ type SearchWorksResult {
 type SearchWorksResultEdge {
   node: Work!
   recordCount: Int
+}
+
+type WorksChartItem {
+  rank: Int!
+  work: Work!
+  diff: Int
+  sign: Int
 }

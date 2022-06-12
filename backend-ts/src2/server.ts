@@ -22,6 +22,7 @@ const server = fastify({
 server.register(mercurius, {
   schema: fs.readFileSync('src/schema.graphql', {encoding: 'utf-8'}),
   resolvers: resolvers as any,
+  graphiql: process.env.NODE_ENV !== 'production',
 })
 
 const middlewareFilename = '_middleware.js'

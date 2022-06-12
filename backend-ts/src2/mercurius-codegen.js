@@ -11,6 +11,7 @@ async function codegen(schema) {
         'Post': 'src/entities/history.entity#History',
         'User': 'src/entities/user.entity#User',
         'Record': 'src/entities/record.entity#Record',
+        'Work': 'src/entities/work.entity#Work',
       }
     },
     undefined, // preImportCode
