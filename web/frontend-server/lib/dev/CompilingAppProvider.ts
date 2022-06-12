@@ -1,13 +1,12 @@
 import webpack from 'webpack';
 import MemoryFileSystem from 'memory-fs';
-import { evalCode, AppProvider } from '../core/AppProvider';
-import { App } from 'nuri/app';
+import { evalCode, AppProvider, AppModule } from '../core/AppProvider';
 
 export class CompilingAppProvider implements AppProvider {
   private compiler: webpack.Compiler;
   private vfs: MemoryFileSystem;
   private bundleFilename: string;
-  private app: App<any>;
+  private app: AppModule;
 
   constructor(webpackConfig: webpack.Configuration) {
     this.compiler = webpack(webpackConfig);

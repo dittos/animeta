@@ -12,12 +12,14 @@ import renderFeed from './renderFeed';
 import { render, ServerRequest } from 'nuri/server';
 import { AppProvider } from './lib/core/AppProvider';
 import { Loader } from '../shared/loader';
+import { ApolloClient, HttpLink, InMemoryCache, InMemoryCacheConfig } from '@apollo/client';
+import fetch from 'cross-fetch';
 
 const config = require(process.env.ANIMETA_CONFIG_PATH || './config.json');
 const DEBUG = process.env.NODE_ENV !== 'production';
 const MAINTENANCE = process.env.MAINTENANCE;
 
-const backend = new Backend(config.backend.v4BaseUrl, config.backend.v5BaseUrl, config.backend.graphqlUrl);
+const backend = new Backend(config.backend.v4BaseUrl, config.backend.v5BaseUrl);
 if (config.sentryDsnNew) {
   Sentry.init({ dsn: config.sentryDsnNew });
 }
@@ -34,7 +36,18 @@ function serializeParams(params: any) {
   return result;
 }
 
-function loaderFactory(serverRequest: ServerRequest): Loader {
+function loaderFactory(serverRequest: ServerRequest, apolloCacheConfig: InMemoryCacheConfig): Loader {
+  const apolloClient = new ApolloClient({
+    ssrMode: true,
+    link: new HttpLink({
+      uri: config.backend.graphqlUrl,
+      fetch,
+      headers: {
+        'x-animeta-session-key': (serverRequest as express.Request).cookies?.sessionid,
+      }
+    }),
+    cache: new InMemoryCache(apolloCacheConfig),
+  })
   return {
     callV4(path, params) {
       return backend.callV4(serverRequest, path, serializeParams(params));
@@ -47,10 +60,14 @@ function loaderFactory(serverRequest: ServerRequest): Loader {
     getCurrentUser(params) {
       return backend.getCurrentUser(serverRequest, serializeParams(params));
     },
-    graphql(doc, variables) {
-      return backend.graphql(serverRequest, doc, variables);
+    async graphql(doc, variables) {
+      const result = await apolloClient.query({
+        query: doc,
+        variables,
+      })
+      return result.data
     },
-    apolloClient: backend.apollo,
+    apolloClient,
   };
 }
 
@@ -265,7 +282,9 @@ Disallow: /
     }
 
     // TODO: remove type assertion
-    render(appProvider.get(), req as ServerRequest, loaderFactory(req as ServerRequest))
+    const appModule = appProvider.get()
+    const loader = loaderFactory(req as ServerRequest, appModule.apolloCacheConfig)
+    render(appModule.default, req as ServerRequest, loader)
       .then(result => {
         const {
           preloadData,
@@ -288,6 +307,7 @@ Disallow: /
         if (errorStatus) res.status(errorStatus);
 
         preloadData.kakaoApiKey = config.kakaoApiKey; // XXX
+        preloadData.__APOLLO_STATE__ = loader.apolloClient.extract()
         renderDefault(
           res,
           {

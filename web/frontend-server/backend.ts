@@ -1,20 +1,9 @@
 import request from 'request';
-import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
-import fetch from 'cross-fetch';
 
 export const HttpNotFound = {};
 
 export default class {
-  public apollo: ApolloClient<any>;
-
-  constructor(private v4BaseUrl: string, private v5BaseUrl: string, graphqlUrl: string) {
-    this.apollo = new ApolloClient({
-      link: new HttpLink({
-        uri: graphqlUrl,
-        fetch,
-      }),
-      cache: new InMemoryCache(),
-    });
+  constructor(private v4BaseUrl: string, private v5BaseUrl: string) {
   }
 
   async callV4(req: any, path: string, params?: any) {
@@ -47,20 +36,6 @@ export default class {
       return null;
     }
     return body;
-  }
-
-  async graphql(req: any, doc: any, variables: any) {
-    const result = await this.apollo.query({
-      query: doc,
-      variables,
-      context: {
-        headers: {
-          'x-animeta-session-key': req.cookies?.sessionid,
-        },
-      },
-      fetchPolicy: 'no-cache',
-    })
-    return result.data
   }
 
   _call(req: any, baseUrl: string, path: string, params?: any): Promise<{ response: request.Response, body: any }> {

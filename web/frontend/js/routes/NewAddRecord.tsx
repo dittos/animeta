@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useObservable } from 'rxjs-hooks';
-import { ApolloClient, ApolloProvider, gql, useLazyQuery, useQuery } from '@apollo/client';
+import { ApolloClient, gql, useLazyQuery, useQuery } from '@apollo/client';
 import { User, Stackable, StackablePropsData } from '../layouts';
 import AddRecordDialog from '../ui/AddRecordDialog';
 import { trackEvent } from '../Tracking';
@@ -283,21 +283,13 @@ class AddRecordInternal extends React.Component<RouteComponentProps<AddRecordRou
             )}
           </div>
 
-          {this.props.loader.apolloClient && (
-            <ApolloProvider client={this.props.loader.apolloClient}>
-              {this.state.query !== '' && <GqlSearchResult
-                query={this.state.query}
-                onSelect={item => this._openDialog({ initialTitle: item.title! })}
-              />}
-            </ApolloProvider>
-          )}
+          {this.state.query !== '' && <GqlSearchResult
+            query={this.state.query}
+            onSelect={item => this._openDialog({ initialTitle: item.title! })}
+          />}
         </div>
 
-        {this.props.loader.apolloClient && (
-          <ApolloProvider client={this.props.loader.apolloClient}>
-            <CuratedLists onSelect={item => this._openDialog({ initialTitle: item.title! })} />
-          </ApolloProvider>
-        )}
+        <CuratedLists onSelect={item => this._openDialog({ initialTitle: item.title! })} />
 
         {this.state.dialogProps && (
           <AddRecordDialog
@@ -333,20 +325,18 @@ class AddRecordInternal extends React.Component<RouteComponentProps<AddRecordRou
     });
 
     const apollo = this.props.loader.apolloClient as ApolloClient<any>;
-    if (apollo) {
-      apollo.writeFragment<SearchItemWorkFragment>({
-        fragment: SEARCH_ITEM_WORK_FRAGMENT,
-        data: {
-          __typename: 'Work',
-          id: `${result.record.work_id}`,
-          record: {
-            __typename: 'Record',
-            id: `${result.record.id}`,
-            statusType: result.record.status_type.toUpperCase() as StatusType,
-          },
-        }
-      });
-    }
+    apollo.writeFragment<SearchItemWorkFragment>({
+      fragment: SEARCH_ITEM_WORK_FRAGMENT,
+      data: {
+        __typename: 'Work',
+        id: `${result.record.work_id}`,
+        record: {
+          __typename: 'Record',
+          id: `${result.record.id}`,
+          statusType: result.record.status_type.toUpperCase() as StatusType,
+        },
+      }
+    });
   };
 }
 
@@ -361,6 +351,10 @@ const routeHandler: RouteHandler<AddRecordRouteData> = {
         stats: true,
       },
     });
+    const { data } = await loader.graphql(CURATED_LISTS_QUERY)
+    const curatedListId = data?.curatedLists?.[0]?.id ?? ''
+    if (curatedListId)
+      await loader.graphql(CURATED_LIST_QUERY, { variables: { id: curatedListId } })
     // TODO: redirect to login page
     if (!currentUser) {
       throw new Error('Login required.');

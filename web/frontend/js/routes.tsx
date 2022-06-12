@@ -18,6 +18,7 @@ import AddRecordRoute from './routes/AddRecord';
 import NewAddRecordRoute from './routes/NewAddRecord';
 import ManageCategoryRoute from './routes/ManageCategory';
 import { Loader } from '../../shared/loader';
+import { InMemoryCacheConfig } from '@apollo/client';
 
 export type RouteHandler<D> = NuriApp.RouteHandler<D, Loader>;
 export type RouteComponent<D> = NuriApp.RouteComponent<D, Loader>;
@@ -56,3 +57,18 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 export default app;
+
+export const apolloCacheConfig: InMemoryCacheConfig = {
+  typePolicies: {
+    Query: {
+      fields: {
+        timeline: {
+          keyArgs: false,
+          merge(existing = [], incoming) {
+            return [...existing, ...incoming];
+          }
+        }
+      }
+    }
+  }
+}

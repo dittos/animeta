@@ -1,13 +1,19 @@
 import vm from 'vm';
 import fs from 'fs';
 import { App } from 'nuri/app';
+import { InMemoryCacheConfig } from '@apollo/client';
+
+export interface AppModule {
+  default: App<any>;
+  apolloCacheConfig: InMemoryCacheConfig;
+}
 
 export interface AppProvider {
-  get(): App<any>;
+  get(): AppModule;
 }
 
 export class DefaultAppProvider implements AppProvider {
-  private app: App<any>;
+  private app: AppModule;
 
   constructor(bundlePath: string) {
     const code = fs.readFileSync(bundlePath).toString('utf8');
@@ -19,7 +25,7 @@ export class DefaultAppProvider implements AppProvider {
   }
 }
 
-export function evalCode(code: string): App<any> {
+export function evalCode(code: string): AppModule {
   const sandbox = {
     require,
     module: { exports: <any>{} }
@@ -27,6 +33,5 @@ export function evalCode(code: string): App<any> {
   const context = vm.createContext(sandbox);
   const script = new vm.Script(code);
   script.runInContext(context);
-  const appModule = sandbox.module.exports;
-  return appModule.default || appModule;
+  return sandbox.module.exports;
 }
