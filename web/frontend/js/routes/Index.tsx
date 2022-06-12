@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { App } from '../layouts';
 import * as Grid from '../ui/Grid';
-import WeeklyChart, { WeeklyChartItem } from '../ui/WeeklyChart';
 import { LoadMore } from '../ui/LoadMore';
 import Styles from './Index.module.less';
 import { RouteComponentProps, RouteHandler } from '../routes';
 import { UserDTO } from '../../../shared/types_generated';
 import { GqlPost } from '../ui/GqlPost';
-import { IndexRouteDocument, IndexRouteQuery } from './__generated__/Index.graphql';
+import { IndexRouteDocument, IndexRouteQuery, IndexRoute_MoreTimelineDocument } from './__generated__/Index.graphql';
+import { GqlWeeklyChart } from '../ui/GqlWeeklyChart';
 
 type IndexRouteData = IndexRouteQuery & {
   currentUser: UserDTO | null;
-  chart: WeeklyChartItem[];
 };
 
 const Index: React.FC<RouteComponentProps<IndexRouteData>> = ({ data, writeData, loader }) => {
@@ -24,7 +23,7 @@ const Index: React.FC<RouteComponentProps<IndexRouteData>> = ({ data, writeData,
       </Grid.Column>
       <Grid.Column size={4} pull="right" className={Styles.sidebar}>
         <h2 className={Styles.sectionTitle}>주간 인기 작품</h2>
-        <WeeklyChart data={data.chart} />
+        <GqlWeeklyChart data={data} />
       </Grid.Column>
     </Grid.Row>
   );
@@ -41,7 +40,7 @@ const Index: React.FC<RouteComponentProps<IndexRouteData>> = ({ data, writeData,
 
   async function _loadMore() {
     setIsLoading(true)
-    const result = await loader.graphql(IndexRouteDocument, {
+    const result = await loader.graphql(IndexRoute_MoreTimelineDocument, {
       timelineBeforeId: data?.timeline?.length ? data.timeline[data.timeline.length - 1]?.id : null,
       count: 32,
     })
@@ -56,17 +55,15 @@ const routeHandler: RouteHandler<IndexRouteData> = {
   component: App(Index, { activeMenu: 'home' }),
 
   async load({ loader }) {
-    const [currentUser, data, chart] = await Promise.all([
+    const [currentUser, data] = await Promise.all([
       loader.getCurrentUser({
         options: {},
       }),
       loader.graphql(IndexRouteDocument, { count: 10 }),
-      loader.callV4('/charts/works/weekly', { limit: 5 }),
     ]);
     return {
       ...data,
       currentUser,
-      chart,
     };
   },
 };

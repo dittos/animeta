@@ -1,0 +1,12 @@
+fragment WeeklyChart on Query {
+  weeklyWorksChart(limit: 5) {
+    rank
+    work {
+      id
+      title
+      imageUrl
+    }
+    diff
+    sign
+  }
+}

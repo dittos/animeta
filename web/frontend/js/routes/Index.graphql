@@ -1,6 +1,17 @@
-query IndexRoute($timelineBeforeId: ID, $count: Int) {
-  timeline(beforeId: $timelineBeforeId, count: $count) {
-    id
-    ...Post_post
+query IndexRoute($count: Int) {
+  timeline(count: $count) {
+    ...IndexRoute_timelinePost
   }
+  ...WeeklyChart
+}
+
+query IndexRoute_moreTimeline($timelineBeforeId: ID, $count: Int) {
+  timeline(beforeId: $timelineBeforeId, count: $count) {
+    ...IndexRoute_timelinePost
+  }
+}
+
+fragment IndexRoute_timelinePost on Post {
+  id
+  ...Post_post
 }

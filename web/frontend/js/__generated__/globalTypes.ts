@@ -58,6 +58,7 @@ export type Query = {
   searchWorks?: Maybe<SearchWorksResult>;
   timeline?: Maybe<Array<Maybe<Post>>>;
   userByName?: Maybe<User>;
+  weeklyWorksChart: Array<WorksChartItem>;
 };
 
 
@@ -79,6 +80,11 @@ export type QueryTimelineArgs = {
 
 export type QueryUserByNameArgs = {
   name?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryWeeklyWorksChartArgs = {
+  limit: Scalars['Int'];
 };
 
 export type Record = {
@@ -125,4 +131,12 @@ export type Work = {
   record?: Maybe<Record>;
   recordCount?: Maybe<Scalars['Int']>;
   title?: Maybe<Scalars['String']>;
+};
+
+export type WorksChartItem = {
+  __typename?: 'WorksChartItem';
+  diff?: Maybe<Scalars['Int']>;
+  rank: Scalars['Int'];
+  sign?: Maybe<Scalars['Int']>;
+  work: Work;
 };
