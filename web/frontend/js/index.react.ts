@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/react';
-import fetch from 'cross-fetch';
 import { bootstrap } from 'nuri/client';
 import nprogress from 'nprogress';
 import app from './routes';
@@ -10,8 +9,8 @@ import '../less/nprogress.less';
 import '../less/base.less';
 import { config as faConfig } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';
-import { ApolloClient, DocumentNode, InMemoryCache, HttpLink } from '@apollo/client';
 import { API } from './ApiClient';
+import request from 'graphql-request';
 faConfig.autoAddCss = false
 
 if ((window as any).SENTRY_DSN) {
@@ -26,14 +25,6 @@ if (process.env.NODE_ENV === 'development') {
   worker.start()
 }
 
-const apolloClient = new ApolloClient({
-  cache: new InMemoryCache(),
-  link: new HttpLink({
-    uri: '/api/graphql',
-    fetch,
-  }),
-});
-
 const loader: Loader = {
   callV4(path: string, params?: any) {
     return get('/api/v4' + path, params)
@@ -43,15 +34,9 @@ const loader: Loader = {
 
   getCurrentUser,
 
-  graphql<T>(doc: DocumentNode, variables?: any): Promise<T> {
-    return apolloClient.query<T>({
-      fetchPolicy: 'no-cache',
-      query: doc,
-      variables,
-    }).then(result => result.data)
+  graphql(doc, variables) {
+    return request('/api/graphql', doc, variables)
   },
-
-  apolloClient,
 };
 
 bootstrap(app, loader, controller => {

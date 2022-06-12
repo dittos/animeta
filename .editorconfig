@@ -4,7 +4,7 @@ root = true
 indent_style = space
 indent_size = 4
 
-[web/{frontend,shared}/**.{js,ts,tsx}]
+[web/{frontend,shared}/**.{js,ts,tsx,graphql}]
 indent_size = 2
 
 [backend-ts/**.{js,ts,tsx,json}]

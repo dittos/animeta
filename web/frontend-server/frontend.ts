@@ -50,7 +50,6 @@ function loaderFactory(serverRequest: ServerRequest): Loader {
     graphql(doc, variables) {
       return backend.graphql(serverRequest, doc, variables);
     },
-    apolloClient: backend.apollo,
   };
 }
 

@@ -1,8 +1,14 @@
 import { PostDTO, RecordDTO, WorkMetadata$SourceType, LegacyStatusType } from "../../shared/types";
+import { StatusType } from "./__generated__/globalTypes";
 
 interface HasStatus {
   status_type: string;
   status: string | null;
+}
+
+interface GqlHasStatus {
+  statusType?: StatusType | null
+  status?: string | null
 }
 
 export function zerofill(n: number): string {
@@ -47,11 +53,22 @@ export function getStatusDisplay(record: HasStatus): string {
   return (record.status ?? '').trim().replace(/([0-9]+)$/, '$1화');
 }
 
+export function getStatusDisplayGql(record: GqlHasStatus): string {
+  return (record.status ?? '').trim().replace(/([0-9]+)$/, '$1화');
+}
+
 export const STATUS_TYPE_TEXT = {
   watching: '보는 중',
   finished: '완료',
   interested: '볼 예정',
   suspended: '중단',
+};
+
+export const GQL_STATUS_TYPE_TEXT: {[K in StatusType]: string} = {
+  WATCHING: '보는 중',
+  FINISHED: '완료',
+  INTERESTED: '볼 예정',
+  SUSPENDED: '중단',
 };
 
 export function getStatusText(record: HasStatus): string {
@@ -67,11 +84,28 @@ export function getStatusText(record: HasStatus): string {
   return status;
 }
 
+export function getStatusTextGql(record: GqlHasStatus): string {
+  var status = getStatusDisplayGql(record);
+  if (record.statusType !== 'WATCHING' || status === '') {
+    var statusTypeText = GQL_STATUS_TYPE_TEXT[record.statusType!];
+    if (status !== '') {
+      status += ' (' + statusTypeText + ')';
+    } else {
+      status = statusTypeText;
+    }
+  }
+  return status;
+}
+
 export function getWorkURL(title: string): string {
   return '/works/' + encodeURIComponent(title) + '/';
 }
 
 export function getPostURL(post: PostDTO): string {
+  return '/-' + post.id;
+}
+
+export function getPostURLGql(post: { id: string }): string {
   return '/-' + post.id;
 }
 

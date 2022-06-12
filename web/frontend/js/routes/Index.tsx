@@ -3,14 +3,14 @@ import { App } from '../layouts';
 import * as Grid from '../ui/Grid';
 import WeeklyChart, { WeeklyChartItem } from '../ui/WeeklyChart';
 import { LoadMore } from '../ui/LoadMore';
-import { Post } from '../ui/Post';
 import Styles from './Index.module.less';
 import { RouteComponentProps, RouteHandler } from '../routes';
-import { PostDTO, UserDTO } from '../../../shared/types_generated';
+import { UserDTO } from '../../../shared/types_generated';
+import { GqlPost } from '../ui/GqlPost';
+import { IndexRouteDocument, IndexRouteQuery } from './__generated__/Index.graphql';
 
-type IndexRouteData = {
+type IndexRouteData = IndexRouteQuery & {
   currentUser: UserDTO | null;
-  posts: PostDTO[];
   chart: WeeklyChartItem[];
 };
 
@@ -20,7 +20,7 @@ const Index: React.FC<RouteComponentProps<IndexRouteData>> = ({ data, writeData,
   return (
     <Grid.Row>
       <Grid.Column size={8} pull="left">
-        {_renderTimeline(data.posts)}
+        {_renderTimeline(data.timeline!)}
       </Grid.Column>
       <Grid.Column size={4} pull="right" className={Styles.sidebar}>
         <h2 className={Styles.sectionTitle}>주간 인기 작품</h2>
@@ -29,11 +29,11 @@ const Index: React.FC<RouteComponentProps<IndexRouteData>> = ({ data, writeData,
     </Grid.Row>
   );
 
-  function _renderTimeline(posts: PostDTO[]) {
+  function _renderTimeline(timeline: NonNullable<IndexRouteQuery['timeline']>) {
     return (
       <div className={Styles.timeline}>
         <h2 className={Styles.sectionTitle}>최근 감상평</h2>
-        {posts.map(post => <Post key={post.id} post={post} />)}
+        {timeline.map(post => <GqlPost key={post!.id} post={post!} />)}
         <LoadMore onClick={_loadMore} isLoading={isLoading} />
       </div>
     );
@@ -41,18 +41,14 @@ const Index: React.FC<RouteComponentProps<IndexRouteData>> = ({ data, writeData,
 
   async function _loadMore() {
     setIsLoading(true)
-    const result = await loader.callV4('/posts', {
-      before_id: data.posts[data.posts.length - 1].id,
-      min_record_count: 2,
-      options: {
-        user: {},
-        record: {},
-      },
-    });
-    setIsLoading(false)
+    const result = await loader.graphql(IndexRouteDocument, {
+      timelineBeforeId: data?.timeline?.length ? data.timeline[data.timeline.length - 1]?.id : null,
+      count: 32,
+    })
     writeData(data => {
-      data.posts = data.posts.concat(result);
-    });
+      data.timeline = data.timeline!.concat(result.timeline!)
+    })
+    setIsLoading(false)
   }
 }
 
@@ -60,23 +56,16 @@ const routeHandler: RouteHandler<IndexRouteData> = {
   component: App(Index, { activeMenu: 'home' }),
 
   async load({ loader }) {
-    const [currentUser, posts, chart] = await Promise.all([
+    const [currentUser, data, chart] = await Promise.all([
       loader.getCurrentUser({
         options: {},
       }),
-      loader.callV4('/posts', {
-        min_record_count: 2,
-        count: 10,
-        options: {
-          user: {},
-          record: {},
-        },
-      }),
+      loader.graphql(IndexRouteDocument, { count: 10 }),
       loader.callV4('/charts/works/weekly', { limit: 5 }),
     ]);
     return {
+      ...data,
       currentUser,
-      posts,
       chart,
     };
   },

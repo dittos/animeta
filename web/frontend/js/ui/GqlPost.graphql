@@ -1,0 +1,14 @@
+fragment Post_post on Post {
+  id
+  user {
+    name
+  }
+  record {
+    title
+  }
+  statusType
+  status
+  comment
+  updatedAt
+  ...PostComment_post
+}
