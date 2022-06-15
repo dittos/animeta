@@ -3,7 +3,6 @@ import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import {
   Button,
   Form,
-  FormGroup,
   Navbar,
   Nav,
   NavDropdown,
@@ -12,9 +11,8 @@ import {
 import { LinkContainer } from 'react-router-bootstrap';
 import Loading from './Loading';
 import Login from './Login';
-import TitleAutosuggest from './TitleAutosuggest';
 import * as API from './API';
-import { createWork } from './ApiClient';
+import { WorkAddForm } from './WorkAddForm';
 
 type State = {
   isLoading: boolean;
@@ -26,7 +24,6 @@ class App extends React.Component<RouteComponentProps, State> {
     isLoading: true,
     currentUser: null,
   };
-  titleSearch = React.createRef<TitleAutosuggest>();
 
   componentDidMount() {
     API.loadSession();
@@ -67,15 +64,7 @@ class App extends React.Component<RouteComponentProps, State> {
             <Form inline className="mr-sm-3">
               <Button onClick={this._clearCache}>Clear cache</Button>
             </Form>
-            <Form inline className="mr-sm-3">
-              <FormGroup className="mr-sm-2">
-                <TitleAutosuggest
-                  onSelected={this._onTitleSelected}
-                  ref={this.titleSearch}
-                />
-              </FormGroup>{' '}
-              <Button onClick={this._addWork}>Add work</Button>
-            </Form>
+            <WorkAddForm />
             <Nav>
               <NavDropdown
                 id="navbar-user-dropdown"
@@ -101,18 +90,6 @@ class App extends React.Component<RouteComponentProps, State> {
   _logout = () => {
     API.clearSession();
     this.setState({ currentUser: null });
-  };
-
-  _onTitleSelected = (item: { id: number }) => {
-    this.props.history.push(`/works/${item.id}`);
-    this.titleSearch.current!.clear();
-  };
-
-  _addWork = () => {
-    const title = this.titleSearch.current!.getValue().trim();
-    createWork(title).then(work => {
-      this.props.history.push(`/works/${work.id}`);
-    });
   };
 
   _clearCache = () => {

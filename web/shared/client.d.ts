@@ -1,3 +1,24 @@
+export type CompanyDto = {
+  id: string;
+  name: string;
+  works?: {
+    id: string,
+    title: string,
+  }[];
+  metadata: any;
+}
+type PersonWorkDto = {
+  workId: string,
+  workTitle: string,
+  roleOrTask: string,
+}
+export type PersonDto = {
+  id: string,
+  name: string,
+  metadata: any,
+  staffs?: PersonWorkDto[],
+  casts?: PersonWorkDto[],
+}
 export type SourceType =
   | 'MANGA'
   | 'ORIGINAL'
@@ -54,27 +75,6 @@ export type AdminWorkDto = {
     metadata: any | null,
   }[],
 }
-export type CompanyDto = {
-  id: string;
-  name: string;
-  works?: {
-    id: string,
-    title: string,
-  }[];
-  metadata: any;
-}
-type PersonWorkDto = {
-  workId: string,
-  workTitle: string,
-  roleOrTask: string,
-}
-export type PersonDto = {
-  id: string,
-  name: string,
-  metadata: any,
-  staffs?: PersonWorkDto[],
-  casts?: PersonWorkDto[],
-}
 export type UserSerializerOptions = {
   categories?: boolean;
   stats?: boolean;
@@ -106,7 +106,6 @@ export type WeeklyChartItem = {
 
 
 export interface Client<TOptions = any> {
-  call(path: "/api/admin/v1/createWork", params: {title: string}, options?: TOptions): Promise<AdminWorkDto>
   call(path: "/api/admin/v1/getCompanies", params: {}, options?: TOptions): Promise<CompanyDto[]>
   call(path: "/api/admin/v1/CompanyDetail/", params: {id: string}, options?: TOptions): Promise<CompanyDto>
   call(path: "/api/admin/v1/CompanyDetail/rename", params: {
@@ -135,6 +134,10 @@ export interface Client<TOptions = any> {
   name: string;
   count: number;
 }[]>
+  call(path: "/api/admin/v1/WorkAddForm/createWork", params: {
+  title: string,
+  namuRef: string | null,
+}, options?: TOptions): Promise<AdminWorkDto>
   call(path: "/api/admin/v1/WorkDetail/addTitleMapping", params: {
   workId: string;
   title: string;

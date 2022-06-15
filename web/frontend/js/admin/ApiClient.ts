@@ -19,7 +19,3 @@ export function getCompanies(cached = true) {
   }
   return _companies;
 }
-
-export function createWork(title: string) {
-  return API.call('/api/admin/v1/createWork', {title})
-}

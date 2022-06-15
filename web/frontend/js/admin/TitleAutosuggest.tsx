@@ -55,6 +55,7 @@ const typeaheadTemplates = {
 
 class TitleAutosuggest extends React.Component<{
   onSelected: (item: SearchResultItem) => void;
+  onValueChange?: (value: string) => void;
 }> {
   input = React.createRef<HTMLInputElement>();
   private _typeahead: any;
@@ -76,15 +77,24 @@ class TitleAutosuggest extends React.Component<{
   }
 
   render() {
-    return <FormControl ref={this.input} />;
+    return <FormControl ref={this.input} onChange={this._onValueChange} />;
   }
 
   clear() {
     this._typeahead.typeahead('val', '');
   }
 
+  setValue(value: string) {
+    this._typeahead.typeahead('val', value);
+  }
+
   getValue() {
     return this._typeahead.typeahead('val');
+  }
+
+  private _onValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (this.props.onValueChange)
+      this.props.onValueChange(event.target.value);
   }
 }
 
