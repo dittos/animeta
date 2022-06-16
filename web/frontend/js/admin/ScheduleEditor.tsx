@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { FormGroup, FormControl, FormText } from 'react-bootstrap';
-import CreatableSelect from 'react-select/lib/Creatable';
+import CreatableSelect from 'react-select/creatable';
 import dateFormat from 'date-fns/format';
 import dateAddDays from 'date-fns/add_days';
 import { DatePrecision, isEmptySchedule, Schedule } from './WorkMetadata';

@@ -8,12 +8,11 @@ export class Sortable extends React.Component<{
   children: React.ReactElement[];
 }> {
   render() {
-    var i = 0;
-    var items = React.Children.map(this.props.children, child => (
+    var items = React.Children.map(this.props.children, (child, i) => (
       <SortableItem
         component={child}
-        key={child.key}
-        order={i++}
+        key={typeof child === 'object' && child && 'key' in child ? child.key : i}
+        order={i}
         onMoveUp={this._onMoveUp}
         onMoveDown={this._onMoveDown}
         onDrop={this.props.onDrop}

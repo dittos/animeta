@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormGroup, Button, Modal } from 'react-bootstrap';
-import AsyncSelect from 'react-select/lib/Async';
+import AsyncSelect from 'react-select/async';
 import { CompanyDto } from '../../../shared/client';
 import { API, getCompanies } from './ApiClient';
 
