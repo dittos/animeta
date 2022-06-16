@@ -132,6 +132,7 @@ export interface Client<TOptions = any> {
   call(path: "/api/admin/v1/PersonListTransliterationCheck/", params: {period: string}, options?: TOptions): Promise<{
   personId: string;
   name: string;
+  recommendedTransliteration: string | null;
   count: number;
 }[]>
   call(path: "/api/admin/v1/WorkAddForm/createWork", params: {

@@ -8,6 +8,7 @@ type TransliterationCheckItem = {
   personId: string;
   name: string;
   newName?: string;
+  recommendedTransliteration: string | null;
   count: number;
 };
 
@@ -38,7 +39,14 @@ function PersonListTransliterationCheck() {
           <tr key={it.personId} style={/[A-Za-z]/.test(it.name) ? {} : {opacity: 0.5}}>
             <td>{it.personId}</td>
             <td><Link to={`/people/${it.personId}`} tabIndex={-1}>{it.name}</Link></td>
-            <td><input type="text" value={it.newName ?? ''} onChange={e => updateName(it.personId, e.target.value)} /></td>
+            <td>
+              <input type="text" value={it.newName ?? ''} onChange={e => updateName(it.personId, e.target.value)} />
+              {it.recommendedTransliteration && it.newName !== it.recommendedTransliteration && (
+                <button style={{marginLeft: '10px'}} onClick={() => updateName(it.personId, it.recommendedTransliteration!)}>
+                  {it.recommendedTransliteration}
+                </button>
+              )}
+            </td>
             <td>{it.count}</td>
           </tr>
         ))}
