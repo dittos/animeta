@@ -6,12 +6,18 @@ type Query {
   curatedList(id: ID): CuratedList
   searchWorks(query: String!): SearchWorksResult
   weeklyWorksChart(limit: Int!): [WorksChartItem!]!
+  work(id: ID!): Work
+  workByTitle(title: String!): Work
+}
+
+interface Node {
+  id: ID!
 }
 
 scalar GraphQLTimestamp
 
-type User {
-  id: ID
+type User implements Node {
+  id: ID!
   name: String
   joinedAt: GraphQLTimestamp
   isTwitterConnected: Boolean
@@ -20,13 +26,13 @@ type User {
   postCount: Int
 }
 
-type Category {
-  id: ID
+type Category implements Node {
+  id: ID!
   user: User
   name: String
 }
 
-type Post {
+type Post implements Node {
   id: ID!
   record: Record
   statusType: StatusType
@@ -44,8 +50,8 @@ enum StatusType {
   INTERESTED,
 }
 
-type Record {
-  id: ID
+type Record implements Node {
+  id: ID!
   title: String
   statusType: StatusType
   status: String
@@ -66,12 +72,62 @@ type CuratedListWorkEdge {
   node: Work
 }
 
-type Work {
-  id: ID
+type Work implements Node {
+  id: ID!
   title: String
   imageUrl: String
   record: Record
   recordCount: Int
+  metadata: WorkMetadata
+  episodes: [Episode!]
+  episode(episode: Int!): Episode
+  posts(beforeId: ID, count: Int, episode: Int): PostConnection!
+}
+
+type PostConnection {
+  nodes: [Post!]!
+  hasMore: Boolean!
+}
+
+type Episode {
+  number: Int!
+  postCount: Int
+  userCount: Int
+  suspendedUserCount: Int
+}
+
+type WorkMetadata {
+  periods: [String!]
+  studioNames: [String!]
+  source: SourceType
+  websiteUrl: String
+  namuwikiUrl: String
+  annUrl: String
+  durationMinutes: Int
+  schedules: [WorkSchedule!]
+}
+
+enum SourceType {
+  MANGA,
+  ORIGINAL,
+  LIGHT_NOVEL,
+  GAME,
+  FOUR_KOMA,
+  VISUAL_NOVEL,
+  NOVEL,
+}
+
+type WorkSchedule {
+  country: String!
+  date: GraphQLTimestamp
+  datePrecision: DatePrecision
+  broadcasts: [String!]
+}
+
+enum DatePrecision {
+  YEAR_MONTH,
+  DATE,
+  DATE_TIME,
 }
 
 type SearchWorksResult {

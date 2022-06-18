@@ -14,14 +14,15 @@ import { History } from "src/entities/history.entity";
 import { WorkTitleIndex } from "src/entities/work_title_index.entity";
 import { WorkIndex } from "src/entities/work_index.entity";
 import * as DataLoader from "dataloader";
-import { objResults } from "src/utils/dataloader";
+import { objResults, objResultsNullable } from "src/utils/dataloader";
+import { Episode } from "src/entities/episode.entity";
 
 const dataLoader = new DataLoader<number, Work>(
   objResults(ids => db.findByIds(Work, Array.from(ids)), k => `${k}`, v => `${v.id}`),
   { cache: false }
 );
-const indexDataLoader = new DataLoader<number, WorkIndex>(
-  objResults(ids => db.findByIds(WorkIndex, Array.from(ids)), k => `${k}`, v => `${v.work_id}`),
+const indexDataLoader = new DataLoader<number, WorkIndex | undefined>(
+  objResultsNullable(ids => db.findByIds(WorkIndex, Array.from(ids)), k => `${k}`, v => `${v.work_id}`),
   { cache: false }
 );
 
@@ -29,7 +30,13 @@ export async function getWork(id: number): Promise<Work> {
   return dataLoader.load(id)
 }
 
-export async function getWorkIndex(id: number): Promise<WorkIndex> {
+export async function getWorkByTitle(title: string): Promise<Work | undefined> {
+  const titleMapping = await db.findOne(TitleMapping, { where: {title} })
+  if (!titleMapping) return undefined
+  return await getWork(titleMapping.work_id)
+}
+
+export async function getWorkIndex(id: number): Promise<WorkIndex | undefined> {
   return indexDataLoader.load(id)
 }
 
@@ -134,4 +141,72 @@ export async function mergeWork(work: Work, other: Work, forceMerge: boolean = f
   await db.delete(WorkTitleIndex, {work_id: other.id})
   await db.delete(WorkIndex, {work_id: other.id})
   await db.remove(other)
+}
+
+export async function getWorkEpisodes(work: Work): Promise<Episode[]> {
+  const result = await db.createQueryBuilder()
+    .from(History, 'h')
+    .select('status')
+    .addSelect('COUNT(*)', 'count')
+    .where('work_id = :workId AND comment <> :commentNot', { workId: work.id, commentNot: '' })
+    .groupBy('status')
+    .getRawMany()
+  const result2 = await db.createQueryBuilder()
+    .from(History, 'h')
+    .select('status')
+    .addSelect('COUNT(*)', 'count')
+    .where('work_id = :workId AND comment = :comment', { workId: work.id, comment: '' })
+    .groupBy('status')
+    .getRawMany()
+  const episodeMap = new Map<number, Episode>()
+  for (const { status, count } of result) {
+    if (!/^[0-9]+$/.test(status)) continue
+    const statusNumber = Number(status)
+    episodeMap.set(statusNumber, {
+      workId: work.id,
+      number: statusNumber,
+      postCount: Number(count),
+    })
+  }
+  for (const { status, count } of result2) {
+    if (!/^[0-9]+$/.test(status)) continue
+    const statusNumber = Number(status)
+    const countNumber = Number(count)
+    if (!episodeMap.has(statusNumber) && countNumber > 1) {
+      episodeMap.set(statusNumber, {
+        workId: work.id,
+        number: statusNumber,
+        postCount: null,
+      })
+    }
+  }
+  return Array.from(episodeMap.values()).sort((a, b) => a.number - b.number)
+}
+
+export async function getWorkEpisode(work: Work, number: number): Promise<Episode | null> {
+  const postCount = await db.count(History, {
+    where: {
+      work_id: work.id,
+      status: number,
+      comment: Not(''),
+    }
+  })
+  if (postCount === 0) {
+    const historyWithoutCommentCount = await db.count(History, {
+      where: {
+        work_id: work.id,
+        status: number,
+        comment: '',
+      }
+    })
+    // status is not counted as episode if no or only one person left
+    if (historyWithoutCommentCount < 2) {
+      return null
+    }
+  }
+  return {
+    workId: work.id,
+    number,
+    postCount,
+  }
 }

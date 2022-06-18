@@ -7,6 +7,7 @@ import type { History as HistoryModel } from 'src/entities/history.entity';
 import type { User as UserModel } from 'src/entities/user.entity';
 import type { Record as RecordModel } from 'src/entities/record.entity';
 import type { Work as WorkModel } from 'src/entities/work.entity';
+import type { Episode as EpisodeModel } from 'src/entities/episode.entity';
 import type { MercuriusContext } from 'mercurius';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -51,6 +52,8 @@ export type Query = {
   curatedList?: Maybe<CuratedList>;
   searchWorks?: Maybe<SearchWorksResult>;
   weeklyWorksChart: Array<WorksChartItem>;
+  work?: Maybe<Work>;
+  workByTitle?: Maybe<Work>;
 };
 
 export type QueryuserByNameArgs = {
@@ -74,9 +77,21 @@ export type QueryweeklyWorksChartArgs = {
   limit: Scalars['Int'];
 };
 
-export type User = {
+export type QueryworkArgs = {
+  id: Scalars['ID'];
+};
+
+export type QueryworkByTitleArgs = {
+  title: Scalars['String'];
+};
+
+export type Node = {
+  id: Scalars['ID'];
+};
+
+export type User = Node & {
   __typename?: 'User';
-  id?: Maybe<Scalars['ID']>;
+  id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
   joinedAt?: Maybe<Scalars['GraphQLTimestamp']>;
   isTwitterConnected?: Maybe<Scalars['Boolean']>;
@@ -85,14 +100,14 @@ export type User = {
   postCount?: Maybe<Scalars['Int']>;
 };
 
-export type Category = {
+export type Category = Node & {
   __typename?: 'Category';
-  id?: Maybe<Scalars['ID']>;
+  id: Scalars['ID'];
   user?: Maybe<User>;
   name?: Maybe<Scalars['String']>;
 };
 
-export type Post = {
+export type Post = Node & {
   __typename?: 'Post';
   id: Scalars['ID'];
   record?: Maybe<Record>;
@@ -104,16 +119,11 @@ export type Post = {
   updatedAt?: Maybe<Scalars['GraphQLTimestamp']>;
 };
 
-export enum StatusType {
-  FINISHED = 'FINISHED',
-  WATCHING = 'WATCHING',
-  SUSPENDED = 'SUSPENDED',
-  INTERESTED = 'INTERESTED',
-}
+export type StatusType = 'FINISHED' | 'WATCHING' | 'SUSPENDED' | 'INTERESTED';
 
-export type Record = {
+export type Record = Node & {
   __typename?: 'Record';
-  id?: Maybe<Scalars['ID']>;
+  id: Scalars['ID'];
   title?: Maybe<Scalars['String']>;
   statusType?: Maybe<StatusType>;
   status?: Maybe<Scalars['String']>;
@@ -137,14 +147,73 @@ export type CuratedListWorkEdge = {
   node?: Maybe<Work>;
 };
 
-export type Work = {
+export type Work = Node & {
   __typename?: 'Work';
-  id?: Maybe<Scalars['ID']>;
+  id: Scalars['ID'];
   title?: Maybe<Scalars['String']>;
   imageUrl?: Maybe<Scalars['String']>;
   record?: Maybe<Record>;
   recordCount?: Maybe<Scalars['Int']>;
+  metadata?: Maybe<WorkMetadata>;
+  episodes?: Maybe<Array<Episode>>;
+  episode?: Maybe<Episode>;
+  posts: PostConnection;
 };
+
+export type WorkepisodeArgs = {
+  episode: Scalars['Int'];
+};
+
+export type WorkpostsArgs = {
+  beforeId?: InputMaybe<Scalars['ID']>;
+  count?: InputMaybe<Scalars['Int']>;
+  episode?: InputMaybe<Scalars['Int']>;
+};
+
+export type PostConnection = {
+  __typename?: 'PostConnection';
+  nodes: Array<Post>;
+  hasMore: Scalars['Boolean'];
+};
+
+export type Episode = {
+  __typename?: 'Episode';
+  number: Scalars['Int'];
+  postCount?: Maybe<Scalars['Int']>;
+  userCount?: Maybe<Scalars['Int']>;
+  suspendedUserCount?: Maybe<Scalars['Int']>;
+};
+
+export type WorkMetadata = {
+  __typename?: 'WorkMetadata';
+  periods?: Maybe<Array<Scalars['String']>>;
+  studioNames?: Maybe<Array<Scalars['String']>>;
+  source?: Maybe<SourceType>;
+  websiteUrl?: Maybe<Scalars['String']>;
+  namuwikiUrl?: Maybe<Scalars['String']>;
+  annUrl?: Maybe<Scalars['String']>;
+  durationMinutes?: Maybe<Scalars['Int']>;
+  schedules?: Maybe<Array<WorkSchedule>>;
+};
+
+export type SourceType =
+  | 'MANGA'
+  | 'ORIGINAL'
+  | 'LIGHT_NOVEL'
+  | 'GAME'
+  | 'FOUR_KOMA'
+  | 'VISUAL_NOVEL'
+  | 'NOVEL';
+
+export type WorkSchedule = {
+  __typename?: 'WorkSchedule';
+  country: Scalars['String'];
+  date?: Maybe<Scalars['GraphQLTimestamp']>;
+  datePrecision?: Maybe<DatePrecision>;
+  broadcasts?: Maybe<Array<Scalars['String']>>;
+};
+
+export type DatePrecision = 'YEAR_MONTH' | 'DATE' | 'DATE_TIME';
 
 export type SearchWorksResult = {
   __typename?: 'SearchWorksResult';
@@ -269,6 +338,12 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  Node:
+    | ResolversTypes['User']
+    | ResolversTypes['Category']
+    | ResolversTypes['Post']
+    | ResolversTypes['Record']
+    | ResolversTypes['Work'];
   GraphQLTimestamp: ResolverTypeWrapper<Scalars['GraphQLTimestamp']>;
   User: ResolverTypeWrapper<UserModel>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
@@ -292,6 +367,14 @@ export type ResolversTypes = {
     Omit<CuratedListWorkEdge, 'node'> & { node?: Maybe<ResolversTypes['Work']> }
   >;
   Work: ResolverTypeWrapper<WorkModel>;
+  PostConnection: ResolverTypeWrapper<
+    Omit<PostConnection, 'nodes'> & { nodes: Array<ResolversTypes['Post']> }
+  >;
+  Episode: ResolverTypeWrapper<EpisodeModel>;
+  WorkMetadata: ResolverTypeWrapper<WorkMetadata>;
+  SourceType: SourceType;
+  WorkSchedule: ResolverTypeWrapper<WorkSchedule>;
+  DatePrecision: DatePrecision;
   SearchWorksResult: ResolverTypeWrapper<
     Omit<SearchWorksResult, 'edges'> & {
       edges: Array<ResolversTypes['SearchWorksResultEdge']>;
@@ -311,6 +394,12 @@ export type ResolversParentTypes = {
   String: Scalars['String'];
   ID: Scalars['ID'];
   Int: Scalars['Int'];
+  Node:
+    | ResolversParentTypes['User']
+    | ResolversParentTypes['Category']
+    | ResolversParentTypes['Post']
+    | ResolversParentTypes['Record']
+    | ResolversParentTypes['Work'];
   GraphQLTimestamp: Scalars['GraphQLTimestamp'];
   User: UserModel;
   Boolean: Scalars['Boolean'];
@@ -329,6 +418,12 @@ export type ResolversParentTypes = {
     node?: Maybe<ResolversParentTypes['Work']>;
   };
   Work: WorkModel;
+  PostConnection: Omit<PostConnection, 'nodes'> & {
+    nodes: Array<ResolversParentTypes['Post']>;
+  };
+  Episode: EpisodeModel;
+  WorkMetadata: WorkMetadata;
+  WorkSchedule: WorkSchedule;
   SearchWorksResult: Omit<SearchWorksResult, 'edges'> & {
     edges: Array<ResolversParentTypes['SearchWorksResultEdge']>;
   };
@@ -384,6 +479,30 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryweeklyWorksChartArgs, 'limit'>
   >;
+  work?: Resolver<
+    Maybe<ResolversTypes['Work']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryworkArgs, 'id'>
+  >;
+  workByTitle?: Resolver<
+    Maybe<ResolversTypes['Work']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryworkByTitleArgs, 'title'>
+  >;
+};
+
+export type NodeResolvers<
+  ContextType = MercuriusContext,
+  ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node'],
+> = {
+  resolveType: TypeResolveFn<
+    'User' | 'Category' | 'Post' | 'Record' | 'Work',
+    ParentType,
+    ContextType
+  >;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
 export interface GraphQLTimestampScalarConfig
@@ -395,7 +514,7 @@ export type UserResolvers<
   ContextType = MercuriusContext,
   ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User'],
 > = {
-  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   joinedAt?: Resolver<
     Maybe<ResolversTypes['GraphQLTimestamp']>,
@@ -421,7 +540,7 @@ export type CategoryResolvers<
   ContextType = MercuriusContext,
   ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category'],
 > = {
-  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -458,7 +577,7 @@ export type RecordResolvers<
   ContextType = MercuriusContext,
   ParentType extends ResolversParentTypes['Record'] = ResolversParentTypes['Record'],
 > = {
-  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   statusType?: Resolver<
     Maybe<ResolversTypes['StatusType']>,
@@ -508,11 +627,123 @@ export type WorkResolvers<
   ContextType = MercuriusContext,
   ParentType extends ResolversParentTypes['Work'] = ResolversParentTypes['Work'],
 > = {
-  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   imageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   record?: Resolver<Maybe<ResolversTypes['Record']>, ParentType, ContextType>;
   recordCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  metadata?: Resolver<
+    Maybe<ResolversTypes['WorkMetadata']>,
+    ParentType,
+    ContextType
+  >;
+  episodes?: Resolver<
+    Maybe<Array<ResolversTypes['Episode']>>,
+    ParentType,
+    ContextType
+  >;
+  episode?: Resolver<
+    Maybe<ResolversTypes['Episode']>,
+    ParentType,
+    ContextType,
+    RequireFields<WorkepisodeArgs, 'episode'>
+  >;
+  posts?: Resolver<
+    ResolversTypes['PostConnection'],
+    ParentType,
+    ContextType,
+    Partial<WorkpostsArgs>
+  >;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PostConnectionResolvers<
+  ContextType = MercuriusContext,
+  ParentType extends ResolversParentTypes['PostConnection'] = ResolversParentTypes['PostConnection'],
+> = {
+  nodes?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType>;
+  hasMore?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type EpisodeResolvers<
+  ContextType = MercuriusContext,
+  ParentType extends ResolversParentTypes['Episode'] = ResolversParentTypes['Episode'],
+> = {
+  number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  postCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  userCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  suspendedUserCount?: Resolver<
+    Maybe<ResolversTypes['Int']>,
+    ParentType,
+    ContextType
+  >;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type WorkMetadataResolvers<
+  ContextType = MercuriusContext,
+  ParentType extends ResolversParentTypes['WorkMetadata'] = ResolversParentTypes['WorkMetadata'],
+> = {
+  periods?: Resolver<
+    Maybe<Array<ResolversTypes['String']>>,
+    ParentType,
+    ContextType
+  >;
+  studioNames?: Resolver<
+    Maybe<Array<ResolversTypes['String']>>,
+    ParentType,
+    ContextType
+  >;
+  source?: Resolver<
+    Maybe<ResolversTypes['SourceType']>,
+    ParentType,
+    ContextType
+  >;
+  websiteUrl?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  namuwikiUrl?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  annUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  durationMinutes?: Resolver<
+    Maybe<ResolversTypes['Int']>,
+    ParentType,
+    ContextType
+  >;
+  schedules?: Resolver<
+    Maybe<Array<ResolversTypes['WorkSchedule']>>,
+    ParentType,
+    ContextType
+  >;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type WorkScheduleResolvers<
+  ContextType = MercuriusContext,
+  ParentType extends ResolversParentTypes['WorkSchedule'] = ResolversParentTypes['WorkSchedule'],
+> = {
+  country?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  date?: Resolver<
+    Maybe<ResolversTypes['GraphQLTimestamp']>,
+    ParentType,
+    ContextType
+  >;
+  datePrecision?: Resolver<
+    Maybe<ResolversTypes['DatePrecision']>,
+    ParentType,
+    ContextType
+  >;
+  broadcasts?: Resolver<
+    Maybe<Array<ResolversTypes['String']>>,
+    ParentType,
+    ContextType
+  >;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -550,6 +781,7 @@ export type WorksChartItemResolvers<
 
 export type Resolvers<ContextType = MercuriusContext> = {
   Query?: QueryResolvers<ContextType>;
+  Node?: NodeResolvers<ContextType>;
   GraphQLTimestamp?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
   Category?: CategoryResolvers<ContextType>;
@@ -559,6 +791,10 @@ export type Resolvers<ContextType = MercuriusContext> = {
   CuratedListWorkConnection?: CuratedListWorkConnectionResolvers<ContextType>;
   CuratedListWorkEdge?: CuratedListWorkEdgeResolvers<ContextType>;
   Work?: WorkResolvers<ContextType>;
+  PostConnection?: PostConnectionResolvers<ContextType>;
+  Episode?: EpisodeResolvers<ContextType>;
+  WorkMetadata?: WorkMetadataResolvers<ContextType>;
+  WorkSchedule?: WorkScheduleResolvers<ContextType>;
   SearchWorksResult?: SearchWorksResultResolvers<ContextType>;
   SearchWorksResultEdge?: SearchWorksResultEdgeResolvers<ContextType>;
   WorksChartItem?: WorksChartItemResolvers<ContextType>;
@@ -587,7 +823,7 @@ export interface Loaders<
   },
 > {
   User?: {
-    id?: LoaderResolver<Maybe<Scalars['ID']>, User, {}, TContext>;
+    id?: LoaderResolver<Scalars['ID'], User, {}, TContext>;
     name?: LoaderResolver<Maybe<Scalars['String']>, User, {}, TContext>;
     joinedAt?: LoaderResolver<
       Maybe<Scalars['GraphQLTimestamp']>,
@@ -612,7 +848,7 @@ export interface Loaders<
   };
 
   Category?: {
-    id?: LoaderResolver<Maybe<Scalars['ID']>, Category, {}, TContext>;
+    id?: LoaderResolver<Scalars['ID'], Category, {}, TContext>;
     user?: LoaderResolver<Maybe<User>, Category, {}, TContext>;
     name?: LoaderResolver<Maybe<Scalars['String']>, Category, {}, TContext>;
   };
@@ -639,7 +875,7 @@ export interface Loaders<
   };
 
   Record?: {
-    id?: LoaderResolver<Maybe<Scalars['ID']>, Record, {}, TContext>;
+    id?: LoaderResolver<Scalars['ID'], Record, {}, TContext>;
     title?: LoaderResolver<Maybe<Scalars['String']>, Record, {}, TContext>;
     statusType?: LoaderResolver<Maybe<StatusType>, Record, {}, TContext>;
     status?: LoaderResolver<Maybe<Scalars['String']>, Record, {}, TContext>;
@@ -676,11 +912,100 @@ export interface Loaders<
   };
 
   Work?: {
-    id?: LoaderResolver<Maybe<Scalars['ID']>, Work, {}, TContext>;
+    id?: LoaderResolver<Scalars['ID'], Work, {}, TContext>;
     title?: LoaderResolver<Maybe<Scalars['String']>, Work, {}, TContext>;
     imageUrl?: LoaderResolver<Maybe<Scalars['String']>, Work, {}, TContext>;
     record?: LoaderResolver<Maybe<Record>, Work, {}, TContext>;
     recordCount?: LoaderResolver<Maybe<Scalars['Int']>, Work, {}, TContext>;
+    metadata?: LoaderResolver<Maybe<WorkMetadata>, Work, {}, TContext>;
+    episodes?: LoaderResolver<Maybe<Array<Episode>>, Work, {}, TContext>;
+    episode?: LoaderResolver<Maybe<Episode>, Work, WorkepisodeArgs, TContext>;
+    posts?: LoaderResolver<PostConnection, Work, WorkpostsArgs, TContext>;
+  };
+
+  PostConnection?: {
+    nodes?: LoaderResolver<Array<Post>, PostConnection, {}, TContext>;
+    hasMore?: LoaderResolver<Scalars['Boolean'], PostConnection, {}, TContext>;
+  };
+
+  Episode?: {
+    number?: LoaderResolver<Scalars['Int'], Episode, {}, TContext>;
+    postCount?: LoaderResolver<Maybe<Scalars['Int']>, Episode, {}, TContext>;
+    userCount?: LoaderResolver<Maybe<Scalars['Int']>, Episode, {}, TContext>;
+    suspendedUserCount?: LoaderResolver<
+      Maybe<Scalars['Int']>,
+      Episode,
+      {},
+      TContext
+    >;
+  };
+
+  WorkMetadata?: {
+    periods?: LoaderResolver<
+      Maybe<Array<Scalars['String']>>,
+      WorkMetadata,
+      {},
+      TContext
+    >;
+    studioNames?: LoaderResolver<
+      Maybe<Array<Scalars['String']>>,
+      WorkMetadata,
+      {},
+      TContext
+    >;
+    source?: LoaderResolver<Maybe<SourceType>, WorkMetadata, {}, TContext>;
+    websiteUrl?: LoaderResolver<
+      Maybe<Scalars['String']>,
+      WorkMetadata,
+      {},
+      TContext
+    >;
+    namuwikiUrl?: LoaderResolver<
+      Maybe<Scalars['String']>,
+      WorkMetadata,
+      {},
+      TContext
+    >;
+    annUrl?: LoaderResolver<
+      Maybe<Scalars['String']>,
+      WorkMetadata,
+      {},
+      TContext
+    >;
+    durationMinutes?: LoaderResolver<
+      Maybe<Scalars['Int']>,
+      WorkMetadata,
+      {},
+      TContext
+    >;
+    schedules?: LoaderResolver<
+      Maybe<Array<WorkSchedule>>,
+      WorkMetadata,
+      {},
+      TContext
+    >;
+  };
+
+  WorkSchedule?: {
+    country?: LoaderResolver<Scalars['String'], WorkSchedule, {}, TContext>;
+    date?: LoaderResolver<
+      Maybe<Scalars['GraphQLTimestamp']>,
+      WorkSchedule,
+      {},
+      TContext
+    >;
+    datePrecision?: LoaderResolver<
+      Maybe<DatePrecision>,
+      WorkSchedule,
+      {},
+      TContext
+    >;
+    broadcasts?: LoaderResolver<
+      Maybe<Array<Scalars['String']>>,
+      WorkSchedule,
+      {},
+      TContext
+    >;
   };
 
   SearchWorksResult?: {

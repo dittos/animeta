@@ -12,7 +12,9 @@ async function codegen(schema) {
         'User': 'src/entities/user.entity#User',
         'Record': 'src/entities/record.entity#Record',
         'Work': 'src/entities/work.entity#Work',
-      }
+        'Episode': 'src/entities/episode.entity#Episode',
+      },
+      enumsAsTypes: true,
     },
     undefined, // preImportCode
     undefined, // silent

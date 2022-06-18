@@ -1,10 +1,11 @@
-import fastify, { FastifyInstance, FastifyRequest, FastifySchema } from 'fastify'
+import fastify, { FastifyInstance, FastifyReply, FastifyRequest, FastifySchema } from 'fastify'
 import mercurius from 'mercurius'
 import * as path from 'path'
 import * as fs from 'fs'
 import { createConnection } from 'typeorm'
 import { HttpException } from '@nestjs/common'
 import { resolvers } from './resolvers'
+import { getCurrentUser } from './auth'
 
 // TODO: dotenv
 
@@ -19,9 +20,22 @@ const server = fastify({
   },
 })
 
+async function buildContext(req: FastifyRequest, _reply: FastifyReply) {
+  return {
+    currentUser: await getCurrentUser(req),
+  }
+}
+
+type PromiseType<T> = T extends PromiseLike<infer U> ? U : T
+
+declare module 'mercurius' {
+  interface MercuriusContext extends PromiseType<ReturnType<typeof buildContext>> {}
+}
+
 server.register(mercurius, {
   schema: fs.readFileSync('src/schema.graphql', {encoding: 'utf-8'}),
   resolvers: resolvers as any,
+  context: buildContext,
   graphiql: process.env.NODE_ENV !== 'production',
 })
 
