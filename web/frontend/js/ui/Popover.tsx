@@ -53,6 +53,7 @@ export class Popover extends React.Component<PopoverProps, PopoverState> {
 
   _toggle = (event: React.MouseEvent) => {
     event.preventDefault();
+    event.stopPropagation(); // prevent PopoverContent click handler trigger
     this.setState({ show: !this.state.show });
   };
 
