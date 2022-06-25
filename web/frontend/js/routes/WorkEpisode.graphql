@@ -1,0 +1,22 @@
+query WorkEpisodeRoute($title: String!, $episode: Int!) {
+  work: workByTitle(title: $title) {
+    ...GqlWorkViews
+    episode(episode: $episode) {
+      number
+      ...GqlWorkViews_episode
+    }
+  }
+  ...WeeklyChart
+}
+
+query WorkEpisodeRoute_morePosts($workId: ID!, $beforeId: ID, $episode: Int!) {
+  work(id: $workId) {
+    ...GqlWorkViews_morePosts
+  }
+}
+
+query WorkEpisodeRoute_refetch($id: ID!, $episode: Int) {
+  work(id: $id) {
+    ...GqlWorkViews
+  }
+}

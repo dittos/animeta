@@ -3,22 +3,27 @@ import * as WorkViews from '../ui/GqlWorkViews';
 import { App } from '../layouts';
 import { UserDTO } from '../../../shared/types_generated';
 import { RouteComponentProps, RouteHandler } from '../routes';
-import { WorkRouteDocument, WorkRouteQuery, WorkRoute_MorePostsDocument, WorkRoute_RefetchDocument } from './__generated__/Work.graphql';
+import { WorkEpisodeRouteDocument, WorkEpisodeRouteQuery, WorkEpisodeRoute_MorePostsDocument, WorkEpisodeRoute_RefetchDocument } from './__generated__/WorkEpisode.graphql';
 
-type WorkRouteData = WorkRouteQuery & {
+type WorkEpisodeRouteData = WorkEpisodeRouteQuery & {
   currentUser: UserDTO | null;
 };
 
-function Work({ data, writeData, loader }: RouteComponentProps<WorkRouteData>) {
+function Work({ data, writeData, loader }: RouteComponentProps<WorkEpisodeRouteData>) {
   const { work, currentUser } = data;
+  const episode = work?.episode;
+
+  if (!episode) return null; // TODO: 404
+
   const postConnection = work?.posts;
   const posts = postConnection?.nodes;
   const hasMorePosts = postConnection?.hasMore ?? false;
 
   async function loadMorePosts() {
-    const result = await loader.graphql(WorkRoute_MorePostsDocument, {
+    const result = await loader.graphql(WorkEpisodeRoute_MorePostsDocument, {
       workId: work!.id,
       beforeId: posts?.length ? posts[posts.length - 1]?.id : null,
+      episode: episode!.number,
     })
     writeData(data => {
       data.work!.posts.nodes = data.work!.posts.nodes.concat(result.work!.posts!.nodes);
@@ -27,7 +32,7 @@ function Work({ data, writeData, loader }: RouteComponentProps<WorkRouteData>) {
   }
 
   async function reload() {
-    const newData = await loader.graphql(WorkRoute_RefetchDocument, { id: work!.id })
+    const newData = await loader.graphql(WorkEpisodeRoute_RefetchDocument, { id: work!.id })
     writeData(data => {
       Object.assign(data, newData)
     });
@@ -35,14 +40,16 @@ function Work({ data, writeData, loader }: RouteComponentProps<WorkRouteData>) {
 
   return (
     <WorkViews.Work
-      work={work!}
+      work={work}
       chart={data}
       currentUser={currentUser}
       onRecordChange={reload}
     >
       <WorkViews.Episodes
-        work={work!}
+        work={work}
+        activeEpisodeNumber={episode.number}
       />
+      <WorkViews.EpisodeHeader episode={episode} />
       <WorkViews.WorkIndex
         posts={posts}
         hasMorePosts={hasMorePosts}
@@ -52,16 +59,17 @@ function Work({ data, writeData, loader }: RouteComponentProps<WorkRouteData>) {
   );
 }
 
-const routeHandler: RouteHandler<WorkRouteData> = {
+const routeHandler: RouteHandler<WorkEpisodeRouteData> = {
   component: App(Work),
 
   async load({ params, loader }) {
-    const { title } = params;
+    const { title, episode: _episode } = params;
+    const episode = Number(_episode)
     const [currentUser, data] = await Promise.all([
       loader.getCurrentUser({
         options: {},
       }),
-      loader.graphql(WorkRouteDocument, { title }),
+      loader.graphql(WorkEpisodeRouteDocument, { title, episode }),
     ]);
     return {
       ...data,
@@ -70,7 +78,7 @@ const routeHandler: RouteHandler<WorkRouteData> = {
   },
 
   renderTitle({ work }) {
-    return work!.title!;
+    return `${work!.title} ${work!.episode!.number}화`;
   },
 
   renderMeta({ work }) {

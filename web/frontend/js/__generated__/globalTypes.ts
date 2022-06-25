@@ -13,9 +13,9 @@ export type Scalars = {
   GraphQLTimestamp: any;
 };
 
-export type Category = {
+export type Category = Node & {
   __typename?: 'Category';
-  id?: Maybe<Scalars['ID']>;
+  id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
   user?: Maybe<User>;
 };
@@ -38,7 +38,25 @@ export type CuratedListWorkEdge = {
   node?: Maybe<Work>;
 };
 
-export type Post = {
+export const enum DatePrecision {
+  Date = 'DATE',
+  DateTime = 'DATE_TIME',
+  YearMonth = 'YEAR_MONTH'
+};
+
+export type Episode = {
+  __typename?: 'Episode';
+  number: Scalars['Int'];
+  postCount?: Maybe<Scalars['Int']>;
+  suspendedUserCount?: Maybe<Scalars['Int']>;
+  userCount?: Maybe<Scalars['Int']>;
+};
+
+export type Node = {
+  id: Scalars['ID'];
+};
+
+export type Post = Node & {
   __typename?: 'Post';
   comment?: Maybe<Scalars['String']>;
   containsSpoiler?: Maybe<Scalars['Boolean']>;
@@ -50,6 +68,12 @@ export type Post = {
   user?: Maybe<User>;
 };
 
+export type PostConnection = {
+  __typename?: 'PostConnection';
+  hasMore: Scalars['Boolean'];
+  nodes: Array<Post>;
+};
+
 export type Query = {
   __typename?: 'Query';
   curatedList?: Maybe<CuratedList>;
@@ -59,6 +83,8 @@ export type Query = {
   timeline?: Maybe<Array<Maybe<Post>>>;
   userByName?: Maybe<User>;
   weeklyWorksChart: Array<WorksChartItem>;
+  work?: Maybe<Work>;
+  workByTitle?: Maybe<Work>;
 };
 
 
@@ -87,9 +113,19 @@ export type QueryWeeklyWorksChartArgs = {
   limit: Scalars['Int'];
 };
 
-export type Record = {
+
+export type QueryWorkArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryWorkByTitleArgs = {
+  title: Scalars['String'];
+};
+
+export type Record = Node & {
   __typename?: 'Record';
-  id?: Maybe<Scalars['ID']>;
+  id: Scalars['ID'];
   status?: Maybe<Scalars['String']>;
   statusType?: Maybe<StatusType>;
   title?: Maybe<Scalars['String']>;
@@ -106,17 +142,27 @@ export type SearchWorksResultEdge = {
   recordCount?: Maybe<Scalars['Int']>;
 };
 
-export enum StatusType {
+export const enum SourceType {
+  FourKoma = 'FOUR_KOMA',
+  Game = 'GAME',
+  LightNovel = 'LIGHT_NOVEL',
+  Manga = 'MANGA',
+  Novel = 'NOVEL',
+  Original = 'ORIGINAL',
+  VisualNovel = 'VISUAL_NOVEL'
+};
+
+export const enum StatusType {
   Finished = 'FINISHED',
   Interested = 'INTERESTED',
   Suspended = 'SUSPENDED',
   Watching = 'WATCHING'
-}
+};
 
-export type User = {
+export type User = Node & {
   __typename?: 'User';
   categories?: Maybe<Array<Maybe<Category>>>;
-  id?: Maybe<Scalars['ID']>;
+  id: Scalars['ID'];
   isTwitterConnected?: Maybe<Scalars['Boolean']>;
   joinedAt?: Maybe<Scalars['GraphQLTimestamp']>;
   name?: Maybe<Scalars['String']>;
@@ -124,13 +170,49 @@ export type User = {
   recordCount?: Maybe<Scalars['Int']>;
 };
 
-export type Work = {
+export type Work = Node & {
   __typename?: 'Work';
-  id?: Maybe<Scalars['ID']>;
+  episode?: Maybe<Episode>;
+  episodes?: Maybe<Array<Episode>>;
+  id: Scalars['ID'];
   imageUrl?: Maybe<Scalars['String']>;
+  metadata?: Maybe<WorkMetadata>;
+  posts: PostConnection;
   record?: Maybe<Record>;
   recordCount?: Maybe<Scalars['Int']>;
   title?: Maybe<Scalars['String']>;
+};
+
+
+export type WorkEpisodeArgs = {
+  episode: Scalars['Int'];
+};
+
+
+export type WorkPostsArgs = {
+  beforeId?: InputMaybe<Scalars['ID']>;
+  count?: InputMaybe<Scalars['Int']>;
+  episode?: InputMaybe<Scalars['Int']>;
+};
+
+export type WorkMetadata = {
+  __typename?: 'WorkMetadata';
+  annUrl?: Maybe<Scalars['String']>;
+  durationMinutes?: Maybe<Scalars['Int']>;
+  namuwikiUrl?: Maybe<Scalars['String']>;
+  periods?: Maybe<Array<Scalars['String']>>;
+  schedules?: Maybe<Array<WorkSchedule>>;
+  source?: Maybe<SourceType>;
+  studioNames?: Maybe<Array<Scalars['String']>>;
+  websiteUrl?: Maybe<Scalars['String']>;
+};
+
+export type WorkSchedule = {
+  __typename?: 'WorkSchedule';
+  broadcasts?: Maybe<Array<Scalars['String']>>;
+  country: Scalars['String'];
+  date?: Maybe<Scalars['GraphQLTimestamp']>;
+  datePrecision?: Maybe<DatePrecision>;
 };
 
 export type WorksChartItem = {

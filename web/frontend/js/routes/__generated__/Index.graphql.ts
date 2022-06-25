@@ -8,7 +8,7 @@ export type IndexRouteQueryVariables = Types.Exact<{
 }>;
 
 
-export type IndexRouteQuery = { __typename?: 'Query', timeline?: Array<{ __typename?: 'Post', id: string, statusType?: Types.StatusType | null, status?: string | null, comment?: string | null, updatedAt?: any | null, containsSpoiler?: boolean | null, user?: { __typename?: 'User', name?: string | null } | null, record?: { __typename?: 'Record', title?: string | null } | null } | null> | null, weeklyWorksChart: Array<{ __typename?: 'WorksChartItem', rank: number, diff?: number | null, sign?: number | null, work: { __typename?: 'Work', id?: string | null, title?: string | null, imageUrl?: string | null } }> };
+export type IndexRouteQuery = { __typename?: 'Query', timeline?: Array<{ __typename?: 'Post', id: string, statusType?: Types.StatusType | null, status?: string | null, comment?: string | null, updatedAt?: any | null, containsSpoiler?: boolean | null, user?: { __typename?: 'User', name?: string | null } | null, record?: { __typename?: 'Record', title?: string | null } | null } | null> | null, weeklyWorksChart: Array<{ __typename?: 'WorksChartItem', rank: number, diff?: number | null, sign?: number | null, work: { __typename?: 'Work', id: string, title?: string | null, imageUrl?: string | null } }> };
 
 export type IndexRoute_MoreTimelineQueryVariables = Types.Exact<{
   timelineBeforeId?: Types.InputMaybe<Types.Scalars['ID']>;

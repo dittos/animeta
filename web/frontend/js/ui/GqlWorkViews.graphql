@@ -1,0 +1,53 @@
+fragment GqlWorkViews on Work {
+  id
+  title
+  imageUrl
+  ...GqlWorkStatusButton_work
+  record {
+    ...GqlWorkStatusButton_record
+  }
+  recordCount
+  episodes {
+    number
+    postCount
+  }
+  metadata {
+    studioNames
+    source
+    websiteUrl
+    namuwikiUrl
+    annUrl
+    schedules {
+      country
+      date
+      datePrecision
+    }
+  }
+  posts(count: 10, episode: $episode) {
+    nodes {
+      ...GqlWorkViews_post
+    }
+    hasMore
+  }
+}
+
+fragment GqlWorkViews_post on Post {
+  id
+  ...Post_post
+}
+
+fragment GqlWorkViews_morePosts on Work {
+  posts(beforeId: $beforeId, count: 10, episode: $episode) {
+    nodes {
+      ...GqlWorkViews_post
+    }
+    hasMore
+  }
+}
+
+fragment GqlWorkViews_episode on Episode {
+  number
+  postCount
+  userCount
+  suspendedUserCount
+}

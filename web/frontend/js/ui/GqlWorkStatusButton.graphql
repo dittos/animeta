@@ -1,0 +1,9 @@
+fragment GqlWorkStatusButton_work on Work {
+  title
+}
+
+fragment GqlWorkStatusButton_record on Record {
+  id
+  statusType
+  status
+}

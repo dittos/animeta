@@ -8,6 +8,7 @@ import IndexRoute from './routes/Index';
 import SignupRoute from './routes/Signup';
 import PostRoute from './routes/Post';
 import WorkRoute from './routes/Work';
+import WorkEpisodeRoute from './routes/WorkEpisode';
 import TableRoute from './routes/Table';
 import SettingsRoute from './routes/Settings';
 import UserRoute from './routes/User';
@@ -36,7 +37,7 @@ app.route('/login/', {
 });
 app.route('/signup/', SignupRoute);
 app.route('/-:id', PostRoute);
-app.route('/works/:title+/ep/:episode/', WorkRoute);
+app.route('/works/:title+/ep/:episode/', WorkEpisodeRoute);
 app.route('/works/:title+/', WorkRoute);
 app.route('/table/', {
   load: ({ redirect }) => redirect(`/table/${Periods.current}/`),

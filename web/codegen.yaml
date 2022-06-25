@@ -4,6 +4,8 @@ generates:
   ./frontend/js/__generated__/globalTypes.ts:
     plugins:
       - typescript
+    config:
+      constEnums: true
   ./frontend/js:
     preset: near-operation-file
     presetConfig:
