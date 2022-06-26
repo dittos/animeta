@@ -9,7 +9,7 @@ type WorkEpisodeRouteData = WorkEpisodeRouteQuery & {
   currentUser: UserDTO | null;
 };
 
-function Work({ data, writeData, loader }: RouteComponentProps<WorkEpisodeRouteData>) {
+function WorkEpisode({ data, writeData, loader }: RouteComponentProps<WorkEpisodeRouteData>) {
   const { work, currentUser } = data;
   const episode = work?.episode;
 
@@ -17,7 +17,6 @@ function Work({ data, writeData, loader }: RouteComponentProps<WorkEpisodeRouteD
 
   const postConnection = work?.posts;
   const posts = postConnection?.nodes;
-  const hasMorePosts = postConnection?.hasMore ?? false;
 
   async function loadMorePosts() {
     const result = await loader.graphql(WorkEpisodeRoute_MorePostsDocument, {
@@ -40,19 +39,18 @@ function Work({ data, writeData, loader }: RouteComponentProps<WorkEpisodeRouteD
 
   return (
     <WorkViews.Work
-      work={work}
+      work={work!}
       chart={data}
       currentUser={currentUser}
       onRecordChange={reload}
     >
       <WorkViews.Episodes
-        work={work}
+        work={work!}
         activeEpisodeNumber={episode.number}
       />
       <WorkViews.EpisodeHeader episode={episode} />
       <WorkViews.WorkIndex
-        posts={posts}
-        hasMorePosts={hasMorePosts}
+        postConnection={postConnection}
         loadMorePosts={loadMorePosts}
       />
     </WorkViews.Work>
@@ -60,7 +58,7 @@ function Work({ data, writeData, loader }: RouteComponentProps<WorkEpisodeRouteD
 }
 
 const routeHandler: RouteHandler<WorkEpisodeRouteData> = {
-  component: App(Work),
+  component: App(WorkEpisode),
 
   async load({ params, loader }) {
     const { title, episode: _episode } = params;

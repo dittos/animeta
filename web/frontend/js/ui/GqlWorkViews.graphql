@@ -23,26 +23,14 @@ fragment GqlWorkViews on Work {
       datePrecision
     }
   }
-  posts(count: 10, episode: $episode) {
-    nodes {
-      ...GqlWorkViews_post
-    }
-    hasMore
-  }
 }
 
-fragment GqlWorkViews_post on Post {
-  id
-  ...Post_post
-}
-
-fragment GqlWorkViews_morePosts on Work {
-  posts(beforeId: $beforeId, count: 10, episode: $episode) {
-    nodes {
-      ...GqlWorkViews_post
-    }
-    hasMore
+fragment GqlWorkViews_postConnection on PostConnection {
+  nodes {
+    id
+    ...Post_post
   }
+  hasMore
 }
 
 fragment GqlWorkViews_episode on Episode {

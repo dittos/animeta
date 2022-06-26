@@ -14,7 +14,7 @@ import { UserDTO } from '../../../shared/types_generated';
 import { Subscription } from 'rxjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt, faComment, faExternalLink, faUser } from '@fortawesome/free-solid-svg-icons';
-import { GqlWorkViewsFragment, GqlWorkViews_EpisodeFragment, GqlWorkViews_PostFragment } from './__generated__/GqlWorkViews.graphql';
+import { GqlWorkViewsFragment, GqlWorkViews_EpisodeFragment, GqlWorkViews_PostConnectionFragment } from './__generated__/GqlWorkViews.graphql';
 import { GqlWeeklyChart } from './GqlWeeklyChart';
 import { WeeklyChartFragment } from './__generated__/GqlWeeklyChart.graphql';
 import { GqlPost } from './GqlPost';
@@ -172,8 +172,7 @@ export class Work extends React.Component<{
 }
 
 export class WorkIndex extends React.Component<{
-  posts?: GqlWorkViews_PostFragment[];
-  hasMorePosts: boolean;
+  postConnection?: GqlWorkViews_PostConnectionFragment;
   excludePostID?: string;
   loadMorePosts(): Promise<void>;
 }> {
@@ -182,7 +181,10 @@ export class WorkIndex extends React.Component<{
   };
 
   render() {
-    let { posts, hasMorePosts, excludePostID } = this.props;
+    const { postConnection, excludePostID } = this.props;
+
+    let posts = postConnection?.nodes;
+    const hasMorePosts = postConnection?.hasMore;
 
     if (posts && excludePostID) {
       posts = posts.filter(post => post.id !== excludePostID);

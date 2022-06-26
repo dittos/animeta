@@ -1,6 +1,9 @@
 query WorkEpisodeRoute($title: String!, $episode: Int!) {
   work: workByTitle(title: $title) {
     ...GqlWorkViews
+    posts(count: 10, episode: $episode) {
+      ...GqlWorkViews_postConnection
+    }
     episode(episode: $episode) {
       number
       ...GqlWorkViews_episode
@@ -11,12 +14,17 @@ query WorkEpisodeRoute($title: String!, $episode: Int!) {
 
 query WorkEpisodeRoute_morePosts($workId: ID!, $beforeId: ID, $episode: Int!) {
   work(id: $workId) {
-    ...GqlWorkViews_morePosts
+    posts(beforeId: $beforeId, count: 10, episode: $episode) {
+      ...GqlWorkViews_postConnection
+    }
   }
 }
 
 query WorkEpisodeRoute_refetch($id: ID!, $episode: Int) {
   work(id: $id) {
     ...GqlWorkViews
+    posts(count: 10, episode: $episode) {
+      ...GqlWorkViews_postConnection
+    }
   }
 }

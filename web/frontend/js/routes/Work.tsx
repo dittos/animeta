@@ -13,7 +13,6 @@ function Work({ data, writeData, loader }: RouteComponentProps<WorkRouteData>) {
   const { work, currentUser } = data;
   const postConnection = work?.posts;
   const posts = postConnection?.nodes;
-  const hasMorePosts = postConnection?.hasMore ?? false;
 
   async function loadMorePosts() {
     const result = await loader.graphql(WorkRoute_MorePostsDocument, {
@@ -44,8 +43,7 @@ function Work({ data, writeData, loader }: RouteComponentProps<WorkRouteData>) {
         work={work!}
       />
       <WorkViews.WorkIndex
-        posts={posts}
-        hasMorePosts={hasMorePosts}
+        postConnection={postConnection}
         loadMorePosts={loadMorePosts}
       />
     </WorkViews.Work>
