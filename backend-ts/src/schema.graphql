@@ -8,6 +8,7 @@ type Query {
   weeklyWorksChart(limit: Int!): [WorksChartItem!]!
   work(id: ID!): Work
   workByTitle(title: String!): Work
+  post(id: ID!): Post
 }
 
 interface Node {
@@ -41,6 +42,9 @@ type Post implements Node {
   containsSpoiler: Boolean
   user: User
   updatedAt: GraphQLTimestamp
+
+  work: Work
+  episode: Episode
 }
 
 enum StatusType {
@@ -94,6 +98,7 @@ type Episode {
   postCount: Int
   userCount: Int
   suspendedUserCount: Int
+  posts(beforeId: ID, count: Int): PostConnection!
 }
 
 type WorkMetadata {

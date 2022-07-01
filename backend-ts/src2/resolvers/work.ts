@@ -7,8 +7,7 @@ import { getWorkEpisode, getWorkEpisodes, getWorkIndex } from "src2/services/wor
 import { db } from "src2/database"
 import { Record } from "src/entities/record.entity"
 import { getRecordByUserAndWork } from "src2/services/record"
-import { History } from "src/entities/history.entity"
-import { LessThan, Not } from "typeorm"
+import { getWorkPosts } from "src2/services/post"
 
 export const Work: WorkResolvers = {
   imageUrl: (work) => getWorkImageUrl(work),
@@ -20,23 +19,12 @@ export const Work: WorkResolvers = {
   metadata: (work) => serializeMetadata(work),
   episodes: (work) => getWorkEpisodes(work),
   episode: (work, { episode }) => getWorkEpisode(work, episode),
-  async posts(work, { beforeId, count, episode }) {
-    count = Math.min(count ?? 32, 128)
-    const nodes = await db.find(History, {
-      where: {
-        work_id: work.id,
-        comment: Not(''),
-        ...beforeId ? { id: LessThan(beforeId) } : {},
-        ...episode ? { status: episode } : {},
-      },
-      order: { id: 'DESC' },
-      take: count + 1,
+  posts: (work, { beforeId, count, episode }) =>
+    getWorkPosts(work, {
+      beforeId: beforeId != null ? Number(beforeId) : null,
+      count,
+      episode,
     })
-    return {
-      nodes: nodes.slice(0, count),
-      hasMore: nodes.length > count,
-    }
-  }
 }
 
 function serializeMetadata(work: WorkEntity): WorkMetadata | null {

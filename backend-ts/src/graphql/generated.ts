@@ -54,6 +54,7 @@ export type Query = {
   weeklyWorksChart: Array<WorksChartItem>;
   work?: Maybe<Work>;
   workByTitle?: Maybe<Work>;
+  post?: Maybe<Post>;
 };
 
 export type QueryuserByNameArgs = {
@@ -83,6 +84,10 @@ export type QueryworkArgs = {
 
 export type QueryworkByTitleArgs = {
   title: Scalars['String'];
+};
+
+export type QuerypostArgs = {
+  id: Scalars['ID'];
 };
 
 export type Node = {
@@ -117,6 +122,8 @@ export type Post = Node & {
   containsSpoiler?: Maybe<Scalars['Boolean']>;
   user?: Maybe<User>;
   updatedAt?: Maybe<Scalars['GraphQLTimestamp']>;
+  work?: Maybe<Work>;
+  episode?: Maybe<Episode>;
 };
 
 export type StatusType = 'FINISHED' | 'WATCHING' | 'SUSPENDED' | 'INTERESTED';
@@ -182,6 +189,12 @@ export type Episode = {
   postCount?: Maybe<Scalars['Int']>;
   userCount?: Maybe<Scalars['Int']>;
   suspendedUserCount?: Maybe<Scalars['Int']>;
+  posts: PostConnection;
+};
+
+export type EpisodepostsArgs = {
+  beforeId?: InputMaybe<Scalars['ID']>;
+  count?: InputMaybe<Scalars['Int']>;
 };
 
 export type WorkMetadata = {
@@ -491,6 +504,12 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryworkByTitleArgs, 'title'>
   >;
+  post?: Resolver<
+    Maybe<ResolversTypes['Post']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerypostArgs, 'id'>
+  >;
 };
 
 export type NodeResolvers<
@@ -570,6 +589,8 @@ export type PostResolvers<
     ParentType,
     ContextType
   >;
+  work?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType>;
+  episode?: Resolver<Maybe<ResolversTypes['Episode']>, ParentType, ContextType>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -677,6 +698,12 @@ export type EpisodeResolvers<
     Maybe<ResolversTypes['Int']>,
     ParentType,
     ContextType
+  >;
+  posts?: Resolver<
+    ResolversTypes['PostConnection'],
+    ParentType,
+    ContextType,
+    Partial<EpisodepostsArgs>
   >;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -872,6 +899,8 @@ export interface Loaders<
       {},
       TContext
     >;
+    work?: LoaderResolver<Maybe<Work>, Post, {}, TContext>;
+    episode?: LoaderResolver<Maybe<Episode>, Post, {}, TContext>;
   };
 
   Record?: {
@@ -938,6 +967,7 @@ export interface Loaders<
       {},
       TContext
     >;
+    posts?: LoaderResolver<PostConnection, Episode, EpisodepostsArgs, TContext>;
   };
 
   WorkMetadata?: {
