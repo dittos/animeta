@@ -50,11 +50,15 @@ export function plusOne(val: string): string {
 }
 
 export function getStatusDisplay(record: HasStatus): string {
-  return (record.status ?? '').trim().replace(/([0-9]+)$/, '$1화');
+  return formatStatus(record.status ?? '')
 }
 
 export function getStatusDisplayGql(record: GqlHasStatus): string {
-  return (record.status ?? '').trim().replace(/([0-9]+)$/, '$1화');
+  return formatStatus(record.status ?? '');
+}
+
+export function formatStatus(status: string | number): string {
+  return `${status}`.trim().replace(/([0-9]+)$/, '$1화');
 }
 
 export const STATUS_TYPE_TEXT = {

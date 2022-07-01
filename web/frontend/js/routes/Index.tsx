@@ -41,7 +41,7 @@ const Index: React.FC<RouteComponentProps<IndexRouteData>> = ({ data, writeData,
   async function _loadMore() {
     setIsLoading(true)
     const result = await loader.graphql(IndexRoute_MoreTimelineDocument, {
-      timelineBeforeId: data?.timeline?.length ? data.timeline[data.timeline.length - 1]?.id : null,
+      timelineBeforeId: data?.timeline?.length ? data.timeline[data.timeline.length - 1]!.id : null,
       count: 32,
     })
     writeData(data => {

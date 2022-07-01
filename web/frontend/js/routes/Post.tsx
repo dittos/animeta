@@ -1,108 +1,86 @@
-import React from 'react';
-import * as WorkViews from '../ui/WorkViews';
-import { getStatusDisplay } from '../util';
+import React, { useEffect } from 'react';
+import * as WorkViews from '../ui/GqlWorkViews';
+import { getStatusDisplayGql } from '../util';
 import { App } from '../layouts';
-import { Post as PostComponent } from '../ui/Post';
+import { GqlPost as PostComponent } from '../ui/GqlPost';
 import { RouteComponentProps, RouteHandler } from '../routes';
-import { PostDTO, RecordDTO, UserDTO, WorkDTO } from '../../../shared/types_generated';
-import { WeeklyChartItem } from '../ui/WeeklyChart';
-import { PostFetchOptions } from '../../../shared/types';
+import { UserDTO } from '../../../shared/types_generated';
+import { PostRouteDocument, PostRouteQuery, PostRoute_PostsDocument, PostRoute_PostsQuery, PostRoute_RefetchDocument } from './__generated__/Post.graphql';
+import Styles from './Post.module.less';
 
-type PostRouteData = {
+type PostRouteData = PostRouteQuery & {
   currentUser: UserDTO | null;
-  post: PostDTO;
-  chart: WeeklyChartItem[];
-  work: WorkDTO;
-  posts?: PostDTO[];
-  hasMorePosts?: boolean;
-  userCount?: number;
-  suspendedUserCount?: number;
+  postsData?: PostRoute_PostsQuery;
 };
 
-type PostsParams = {
-  count: number;
-  options: PostFetchOptions;
-  before_id?: number;
-  episode?: string;
-  withCounts?: boolean;
-};
+function Post({ data, writeData, loader }: RouteComponentProps<PostRouteData>) {
+  const { post, currentUser, postsData } = data;
 
-const POSTS_PER_PAGE = 10;
+  if (!post) return null; // TODO: 404
 
-class Post extends React.Component<RouteComponentProps<PostRouteData>> {
-  componentDidMount() {
-    // lazy load
-    this._loadMorePosts();
-  }
+  const { work, episode } = post;
+  
+  const postConnection = postsData?.work?.posts;
+  const posts = postConnection?.nodes;
 
-  componentDidUpdate() {
-    if (!this.props.data.posts) {
-      this._loadMorePosts();
-    }
-  }
+  useEffect(() => {
+    loadMorePosts()
+  }, [post.id])
 
-  render() {
-    const { work, chart, posts, hasMorePosts, currentUser, post, userCount, suspendedUserCount } = this.props.data;
-    const episode = post.status;
-    return (
-      <WorkViews.Work
-        work={work}
-        chart={chart}
-        currentUser={currentUser}
-        episode={episode}
-        onRecordChange={this._applyRecord}
-      >
-        <WorkViews.Episodes
-          work={work}
-          activeEpisodeNumber={episode}
-          userCount={userCount ?? 0}
-          suspendedUserCount={suspendedUserCount ?? 0}
-        />
-        <PostComponent post={post} showTitle={false} highlighted={true} />
-        <WorkViews.WorkIndex
-          posts={posts}
-          hasMorePosts={hasMorePosts ?? false}
-          loadMorePosts={this._loadMorePosts}
-          excludePostID={post.id}
-        />
-      </WorkViews.Work>
-    );
-  }
-
-  _loadMorePosts = async () => {
-    const { work, posts, post } = this.props.data;
-    var params: PostsParams = {
-      count: POSTS_PER_PAGE + 1,
-      episode: post.status,
-      options: {
-        user: {},
-      },
-    };
-    if (posts && posts.length > 0)
-      params.before_id = posts[posts.length - 1].id;
-    else
-      params.withCounts = true;
-    const result = await this.props.loader.callV4(
-      `/works/${work.id}/posts`,
-      params
-    );
-    const posts2 = params.withCounts ? result.data : result;
-    this.props.writeData(data => {
-      if (!data.posts) data.posts = [];
-      data.posts = data.posts.concat(posts2.slice(0, POSTS_PER_PAGE));
-      data.hasMorePosts = posts2.length > POSTS_PER_PAGE;
-      if (params.withCounts) {
-        data.userCount = result.userCount;
-        data.suspendedUserCount = result.suspendedUserCount;
+  async function loadMorePosts() {
+    const result = await loader.graphql(PostRoute_PostsDocument, {
+      workId: work!.id,
+      beforeId: posts?.length ? posts[posts.length - 1]?.id : null,
+      episode: episode?.number ?? null,
+    })
+    writeData(data => {
+      if (data.postsData) {
+        data.postsData!.work!.posts.nodes = data.postsData!.work!.posts.nodes.concat(result.work!.posts!.nodes);
+        data.postsData!.work!.posts.hasMore = result.work!.posts!.hasMore
+      } else {
+        data.postsData = result
       }
     });
-  };
+  }
 
-  _applyRecord = (record: RecordDTO) => {
-    this.props.writeData(data => {
-      data.work.record = record;
+  async function reload() {
+    const newData = await loader.graphql(PostRoute_RefetchDocument, { postId: post!.id })
+    writeData(data => {
+      Object.assign(data, newData)
     });
-  };
+  }
+  
+  return (
+    <WorkViews.Work
+      work={work!}
+      chart={data}
+      currentUser={currentUser}
+      onRecordChange={reload}
+    >
+      {episode ? <>
+        <WorkViews.Episodes
+          work={work!}
+          activeEpisodeNumber={episode?.number}
+        />
+        <WorkViews.EpisodeHeader episode={episode} />
+        <PostComponent post={post} showTitle={false} highlighted={true} />
+        <WorkViews.WorkIndex
+          postConnection={postConnection}
+          loadMorePosts={loadMorePosts}
+          excludePostID={post.id}
+        />
+      </> : <>
+        <div className={Styles.postOnly}>
+          <PostComponent post={post} showTitle={false} highlighted={true} />
+        </div>
+        <WorkViews.Episodes work={work!} />
+        <WorkViews.WorkIndex
+          postConnection={postConnection}
+          loadMorePosts={loadMorePosts}
+        />
+      </>}
+    </WorkViews.Work>
+  );
 }
 
 const routeHandler: RouteHandler<PostRouteData> = {
@@ -110,38 +88,33 @@ const routeHandler: RouteHandler<PostRouteData> = {
 
   async load({ params, loader }) {
     const { id } = params;
-    const [currentUser, post, chart] = await Promise.all([
+    const [currentUser, data] = await Promise.all([
       loader.getCurrentUser({
         options: {},
       }),
-      loader.callV4(`/posts/${id}`, {
-        options: {
-          user: {},
-          record: {},
-        },
-      }),
-      loader.callV4('/charts/works/weekly', { limit: 5 }),
+      loader.graphql(PostRouteDocument, {postId: id}),
     ]);
-    const work = await loader.callV4(`/works/${post.record.work_id}`);
     return {
+      ...data,
       currentUser,
-      post,
-      chart,
-      work,
     };
   },
 
-  renderTitle({ post, work }) {
-    return `${post.user!.name} 사용자 > ${work.title} ${getStatusDisplay(post)}`;
+  renderTitle({ post }) {
+    if (!post) return '';
+    const { work } = post
+    return `${post.user!.name} 사용자 > ${work!.title} ${getStatusDisplayGql(post)}`;
   },
 
-  renderMeta({ post, work }) {
+  renderMeta({ post }) {
+    if (!post) return {};
+    const { work } = post
     return {
       og_url: `/-${post.id}`,
       og_type: 'article',
-      og_image: work.image_url,
+      og_image: work?.imageUrl,
       tw_url: `/-${post.id}`,
-      tw_image: work.image_url,
+      tw_image: work?.imageUrl,
     };
   },
 };

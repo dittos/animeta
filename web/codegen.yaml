@@ -6,12 +6,16 @@ generates:
       - typescript
     config:
       constEnums: true
+      avoidOptionals: true
   ./frontend/js:
     preset: near-operation-file
     presetConfig:
       folder: __generated__
       extension: .graphql.ts
       baseTypesPath: __generated__/globalTypes.ts
+    config:
+      dedupeFragments: true
+      avoidOptionals: true
     plugins:
       - typescript-operations
       - typed-document-node

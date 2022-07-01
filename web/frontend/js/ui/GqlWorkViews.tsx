@@ -249,7 +249,7 @@ export function EpisodeHeader({ episode }: {
 }) {
   return (
     <div className={Styles.episodeHeader}>
-      <h2 className={Styles.sectionTitle}>{episode.number}화</h2>
+      <h2 className={Styles.sectionTitle}>{util.formatStatus(episode.number)}</h2>
       <div className={Styles.episodeStats}>
         <span>
           <FontAwesomeIcon icon={faComment} />
