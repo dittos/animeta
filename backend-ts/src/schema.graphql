@@ -1,6 +1,7 @@
 type Query {
   currentUser: User
-  userByName(name: String): User
+  user(id: ID!): User
+  userByName(name: String!): User
   timeline(beforeId: ID, count: Int): [Post]
   curatedLists: [CuratedList]
   curatedList(id: ID): CuratedList
@@ -25,6 +26,7 @@ type User implements Node {
   categories: [Category]
   recordCount: Int
   postCount: Int
+  posts(beforeId: ID, count: Int): PostConnection!
 }
 
 type Category implements Node {

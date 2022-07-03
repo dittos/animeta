@@ -11,3 +11,7 @@ const dataLoader = new DataLoader<number, User>(
 export function getUser(id: number): Promise<User> {
   return dataLoader.load(id)
 }
+
+export function getUserByName(name: string): Promise<User | undefined> {
+  return db.findOne(User, { where: { username: name } })
+}

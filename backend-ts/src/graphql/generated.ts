@@ -46,6 +46,7 @@ export type Scalars = {
 export type Query = {
   __typename?: 'Query';
   currentUser?: Maybe<User>;
+  user?: Maybe<User>;
   userByName?: Maybe<User>;
   timeline?: Maybe<Array<Maybe<Post>>>;
   curatedLists?: Maybe<Array<Maybe<CuratedList>>>;
@@ -57,8 +58,12 @@ export type Query = {
   post?: Maybe<Post>;
 };
 
+export type QueryuserArgs = {
+  id: Scalars['ID'];
+};
+
 export type QueryuserByNameArgs = {
-  name?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
 };
 
 export type QuerytimelineArgs = {
@@ -103,6 +108,12 @@ export type User = Node & {
   categories?: Maybe<Array<Maybe<Category>>>;
   recordCount?: Maybe<Scalars['Int']>;
   postCount?: Maybe<Scalars['Int']>;
+  posts: PostConnection;
+};
+
+export type UserpostsArgs = {
+  beforeId?: InputMaybe<Scalars['ID']>;
+  count?: InputMaybe<Scalars['Int']>;
 };
 
 export type Category = Node & {
@@ -348,8 +359,8 @@ export type DirectiveResolverFn<
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
-  String: ResolverTypeWrapper<Scalars['String']>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
+  String: ResolverTypeWrapper<Scalars['String']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Node:
     | ResolversTypes['User']
@@ -404,8 +415,8 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Query: {};
-  String: Scalars['String'];
   ID: Scalars['ID'];
+  String: Scalars['String'];
   Int: Scalars['Int'];
   Node:
     | ResolversParentTypes['User']
@@ -457,11 +468,17 @@ export type QueryResolvers<
     ParentType,
     ContextType
   >;
+  user?: Resolver<
+    Maybe<ResolversTypes['User']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryuserArgs, 'id'>
+  >;
   userByName?: Resolver<
     Maybe<ResolversTypes['User']>,
     ParentType,
     ContextType,
-    Partial<QueryuserByNameArgs>
+    RequireFields<QueryuserByNameArgs, 'name'>
   >;
   timeline?: Resolver<
     Maybe<Array<Maybe<ResolversTypes['Post']>>>,
@@ -552,6 +569,12 @@ export type UserResolvers<
   >;
   recordCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   postCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  posts?: Resolver<
+    ResolversTypes['PostConnection'],
+    ParentType,
+    ContextType,
+    Partial<UserpostsArgs>
+  >;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -872,6 +895,7 @@ export interface Loaders<
     >;
     recordCount?: LoaderResolver<Maybe<Scalars['Int']>, User, {}, TContext>;
     postCount?: LoaderResolver<Maybe<Scalars['Int']>, User, {}, TContext>;
+    posts?: LoaderResolver<PostConnection, User, UserpostsArgs, TContext>;
   };
 
   Category?: {
