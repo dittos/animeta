@@ -1,10 +1,10 @@
-fragment GqlWorkViews on Work {
+fragment WorkViews on Work {
   id
   title
   imageUrl
-  ...GqlWorkStatusButton_work
+  ...WorkStatusButton_work
   record {
-    ...GqlWorkStatusButton_record
+    ...WorkStatusButton_record
   }
   recordCount
   episodes {
@@ -25,7 +25,7 @@ fragment GqlWorkViews on Work {
   }
 }
 
-fragment GqlWorkViews_postConnection on PostConnection {
+fragment WorkViews_postConnection on PostConnection {
   nodes {
     id
     ...Post_post
@@ -33,7 +33,7 @@ fragment GqlWorkViews_postConnection on PostConnection {
   hasMore
 }
 
-fragment GqlWorkViews_episode on Episode {
+fragment WorkViews_episode on Episode {
   number
   postCount
   userCount

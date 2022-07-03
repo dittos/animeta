@@ -3,23 +3,24 @@ import { Link } from 'nuri';
 import * as util from '../util';
 import Styles from './WorkStatusButton.less';
 import LoginDialog from './LoginDialog';
-import { RecordDTO, UserDTO, WorkDTO } from '../../../shared/types_generated';
+import { UserDTO } from '../../../shared/types_generated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { WorkStatusButton_RecordFragment, WorkStatusButton_WorkFragment } from './__generated__/WorkStatusButton.graphql';
 
-function WorkStatusButton({ work, record, currentUser }: {
-  work: WorkDTO;
-  record: RecordDTO | null;
+export function WorkStatusButton({ work, record, currentUser }: {
+  work: WorkStatusButton_WorkFragment;
+  record?: WorkStatusButton_RecordFragment | null;
   currentUser: UserDTO | null;
 }) {
   if (record) {
     return (
       <Link className={Styles.editButton} to={`/records/${record.id}/`}>
         <FontAwesomeIcon icon={faPencil} />
-        {util.STATUS_TYPE_TEXT[record.status_type as keyof typeof util.STATUS_TYPE_TEXT]}
+        {record.statusType && util.GQL_STATUS_TYPE_TEXT[record.statusType]}
         {record.status && (
           <span className={Styles.editButtonSubtext}>
-            @ {util.getStatusDisplay(record)}
+            @ {util.getStatusDisplayGql(record)}
           </span>
         )}
       </Link>
@@ -28,7 +29,7 @@ function WorkStatusButton({ work, record, currentUser }: {
     return (
       <Link
         className={Styles.addButton}
-        to={'/records/add/' + encodeURIComponent(work.title) + '/'}
+        to={'/records/add/' + encodeURIComponent(work.title!) + '/'}
         queryParams={{ref: 'Work'}}
         stacked
         onClick={currentUser ? undefined : (event: React.MouseEvent) => { event.preventDefault(); LoginDialog.open() }}
@@ -39,5 +40,3 @@ function WorkStatusButton({ work, record, currentUser }: {
     );
   }
 }
-
-export default WorkStatusButton;

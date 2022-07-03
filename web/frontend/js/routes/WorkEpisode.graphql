@@ -1,12 +1,12 @@
 query WorkEpisodeRoute($title: String!, $episode: Int!) {
   work: workByTitle(title: $title) {
-    ...GqlWorkViews
+    ...WorkViews
     posts(count: 10, episode: $episode) {
-      ...GqlWorkViews_postConnection
+      ...WorkViews_postConnection
     }
     episode(episode: $episode) {
       number
-      ...GqlWorkViews_episode
+      ...WorkViews_episode
     }
   }
   ...WeeklyChart
@@ -15,16 +15,16 @@ query WorkEpisodeRoute($title: String!, $episode: Int!) {
 query WorkEpisodeRoute_morePosts($workId: ID!, $beforeId: ID, $episode: Int!) {
   work(id: $workId) {
     posts(beforeId: $beforeId, count: 10, episode: $episode) {
-      ...GqlWorkViews_postConnection
+      ...WorkViews_postConnection
     }
   }
 }
 
 query WorkEpisodeRoute_refetch($id: ID!, $episode: Int) {
   work(id: $id) {
-    ...GqlWorkViews
+    ...WorkViews
     posts(count: 10, episode: $episode) {
-      ...GqlWorkViews_postConnection
+      ...WorkViews_postConnection
     }
   }
 }

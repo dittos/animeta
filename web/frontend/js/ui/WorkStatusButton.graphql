@@ -1,0 +1,9 @@
+fragment WorkStatusButton_work on Work {
+  title
+}
+
+fragment WorkStatusButton_record on Record {
+  id
+  statusType
+  status
+}

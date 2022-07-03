@@ -2,11 +2,11 @@ query PostRoute($postId: ID!) {
   post(id: $postId) {
     ...Post_post
     work {
-      ...GqlWorkViews
+      ...WorkViews
     }
     episode {
       number
-      ...GqlWorkViews_episode
+      ...WorkViews_episode
     }
   }
   ...WeeklyChart
@@ -15,7 +15,7 @@ query PostRoute($postId: ID!) {
 query PostRoute_posts($workId: ID!, $beforeId: ID, $episode: Int) {
   work(id: $workId) {
     posts(beforeId: $beforeId, count: 10, episode: $episode) {
-      ...GqlWorkViews_postConnection
+      ...WorkViews_postConnection
     }
   }
 }
@@ -24,11 +24,11 @@ query PostRoute_refetch($postId: ID!) {
   post(id: $postId) {
     ...Post_post
     work {
-      ...GqlWorkViews
+      ...WorkViews
     }
     episode {
       number
-      ...GqlWorkViews_episode
+      ...WorkViews_episode
     }
   }
 }

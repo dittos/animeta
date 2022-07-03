@@ -5,15 +5,16 @@ import Styles from './WeeklyChart.less';
 import { ChartItem, ChartItemWork } from '../../../shared/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { WeeklyChartFragment } from './__generated__/WeeklyChart.graphql';
 
 export type WeeklyChartItem = ChartItem<ChartItemWork>;
 
-function WeeklyChart({ data }: {
-  data: WeeklyChartItem[]
+export function WeeklyChart({ data }: {
+  data: WeeklyChartFragment,
 }) {
   return (
     <div>
-      {data.map(item => {
+      {data.weeklyWorksChart!.map(item => {
         var diff;
         if (item.diff) {
           if (item.sign === -1) {
@@ -30,12 +31,12 @@ function WeeklyChart({ data }: {
             );
           }
         }
-        var work = item.object;
+        var work = item.work;
         return (
-          <Link key={work.id} to={getWorkURL(work.title)} className={Styles.item}>
-            {work.image_url && (
+          <Link key={work.id} to={getWorkURL(work.title!)} className={Styles.item}>
+            {work.imageUrl && (
               <div className={Styles.poster}>
-                <img src={work.image_url} className={Styles.posterImage} />
+                <img src={work.imageUrl} className={Styles.posterImage} />
               </div>
             )}
             <div className={Styles.content}>
@@ -56,5 +57,3 @@ function WeeklyChart({ data }: {
     </div>
   );
 }
-
-export default WeeklyChart;

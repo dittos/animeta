@@ -1,5 +1,5 @@
 import React from 'react';
-import * as WorkViews from '../ui/GqlWorkViews';
+import * as WorkViews from '../ui/WorkViews';
 import { App } from '../layouts';
 import { UserDTO } from '../../../shared/types_generated';
 import { RouteComponentProps, RouteHandler } from '../routes';

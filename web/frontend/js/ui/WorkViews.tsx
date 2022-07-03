@@ -6,27 +6,30 @@ import { filter } from 'rxjs/operators';
 import * as Grid from './Grid';
 import * as util from '../util';
 import { LoadMore } from './LoadMore';
-import WorkStatusButton from './WorkStatusButton';
+import { WorkStatusButton } from './WorkStatusButton';
 import VideoSearch from './VideoSearch';
-import WeeklyChart, { WeeklyChartItem } from './WeeklyChart';
-import { Post } from './Post';
 import Styles from './WorkViews.less';
 import * as Mutations from '../Mutations';
-import { PostDTO, RecordDTO, UserDTO, WorkDTO } from '../../../shared/types_generated';
+import { UserDTO } from '../../../shared/types_generated';
 import { Subscription } from 'rxjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt, faComment, faExternalLink, faUser } from '@fortawesome/free-solid-svg-icons';
+import { WorkViewsFragment, WorkViews_EpisodeFragment, WorkViews_PostConnectionFragment } from './__generated__/WorkViews.graphql';
+import { WeeklyChart } from './WeeklyChart';
+import { WeeklyChartFragment } from './__generated__/WeeklyChart.graphql';
+import { GqlPost } from './GqlPost';
 
 function Sidebar({ work, chart, episode }: {
-  work: WorkDTO;
-  chart: WeeklyChartItem[];
+  work: WorkViewsFragment;
+  chart: WeeklyChartFragment;
   episode?: string;
 }) {
   const metadata = work.metadata;
-  var videoQuery = work.title;
+  var videoQuery = work.title!;
   if (episode) {
     videoQuery += ' ' + episode + '화';
   }
+  const jpSchedule = metadata?.schedules?.find(it => it.country === 'jp')
   return (
     <div className={Styles.sidebar}>
       {metadata && (
@@ -34,37 +37,37 @@ function Sidebar({ work, chart, episode }: {
           <h2 className={Styles.sectionTitle}>작품 정보</h2>
           <div className={Styles.metadata}>
             <p>
-              {metadata.studios && <b>{metadata.studios.join(', ')}</b>}
-              {metadata.studios && ' 제작'}
-              {metadata.source && ' / ' + util.SOURCE_TYPE_MAP[metadata.source]}
+              {metadata.studioNames && <b>{metadata.studioNames.join(', ')}</b>}
+              {metadata.studioNames && ' 제작'}
+              {metadata.source && (' / ' + util.SOURCE_TYPE_MAP[metadata.source])}
             </p>
-            {metadata.schedule?.jp?.date && (
+            {jpSchedule?.date && (
               <p>
                 <FontAwesomeIcon icon={faCalendarAlt} /> 첫 방영:{' '}
-                {dateFnsFormat(metadata.schedule.jp.date, 'YYYY-MM-DD')}
+                {dateFnsFormat(jpSchedule.date, 'YYYY-MM-DD')}
               </p>
             )}
             <div className={Styles.metadataLinks}>
-              {metadata.links.website && (
+              {metadata.websiteUrl && (
                 <p>
                   <FontAwesomeIcon icon={faExternalLink} /> {' '}
-                  <a href={metadata.links.website} target="_blank">
+                  <a href={metadata.websiteUrl} target="_blank">
                     공식 사이트
                   </a>
                 </p>
               )}
-              {metadata.links.namu && (
+              {metadata.namuwikiUrl && (
                 <p>
                   <FontAwesomeIcon icon={faExternalLink} /> {' '}
-                  <a href={metadata.links.namu} target="_blank">
+                  <a href={metadata.namuwikiUrl} target="_blank">
                     나무위키
                   </a>
                 </p>
               )}
-              {metadata.links.ann && (
+              {metadata.annUrl && (
                 <p>
                   <FontAwesomeIcon icon={faExternalLink} /> {' '}
-                  <a href={metadata.links.ann} target="_blank">
+                  <a href={metadata.annUrl} target="_blank">
                     AnimeNewsNetwork (영문)
                   </a>
                 </p>
@@ -87,10 +90,10 @@ function Sidebar({ work, chart, episode }: {
 
 export class Work extends React.Component<{
   currentUser: UserDTO | null;
-  work: WorkDTO;
+  work: WorkViewsFragment;
   episode?: string;
-  chart: WeeklyChartItem[];
-  onRecordChange(record: RecordDTO): void;
+  chart: WeeklyChartFragment;
+  onRecordChange(recordId: number): void;
 }> {
   private _subscription: Subscription;
 
@@ -98,9 +101,9 @@ export class Work extends React.Component<{
     // TODO: move subscription up to route
     if (this.props.currentUser) {
       this._subscription = Mutations.records
-        .pipe(filter(it => it.work_id === this.props.work.id && it.user_id === this.props.currentUser?.id))
+        .pipe(filter(it => it.work_id.toString() === this.props.work.id && it.user_id === this.props.currentUser?.id))
         .subscribe(it => {
-          this.props.onRecordChange(it);
+          this.props.onRecordChange(it.id);
         });
     }
   }
@@ -138,14 +141,14 @@ export class Work extends React.Component<{
     const work = this.props.work;
     return (
       <div className={Styles.header}>
-        {work.image_url && (
+        {work.imageUrl && (
           <div className={Styles.poster}>
-            <img className={Styles.posterImage} src={work.image_url} />
+            <img className={Styles.posterImage} src={work.imageUrl} />
           </div>
         )}
         <div
           className={
-            work.image_url
+            work.imageUrl
               ? Styles.headerContentWithPoster
               : Styles.headerContent
           }
@@ -154,7 +157,7 @@ export class Work extends React.Component<{
           <div className={Styles.stats}>
             <span className={Styles.userStat}>
               <FontAwesomeIcon icon={faUser} />
-              {work.record_count}명이 기록 남김
+              {work.recordCount}명이 기록 남김
             </span>
           </div>
           <WorkStatusButton
@@ -169,9 +172,8 @@ export class Work extends React.Component<{
 }
 
 export class WorkIndex extends React.Component<{
-  posts?: PostDTO[];
-  hasMorePosts: boolean;
-  excludePostID?: number;
+  postConnection?: WorkViews_PostConnectionFragment;
+  excludePostID?: string;
   loadMorePosts(): Promise<void>;
 }> {
   state = {
@@ -179,7 +181,10 @@ export class WorkIndex extends React.Component<{
   };
 
   render() {
-    let { posts, hasMorePosts, excludePostID } = this.props;
+    const { postConnection, excludePostID } = this.props;
+
+    let posts = postConnection?.nodes;
+    const hasMorePosts = postConnection?.hasMore;
 
     if (posts && excludePostID) {
       posts = posts.filter(post => post.id !== excludePostID);
@@ -187,7 +192,7 @@ export class WorkIndex extends React.Component<{
     return posts && posts.length > 0 ? (
       <div className={Styles.postsSection}>
         {posts.map(post => (
-          <Post key={post.id} post={post} showTitle={false} />
+          <GqlPost key={post.id} post={post} showTitle={false} />
         ))}
         {hasMorePosts && (
           <LoadMore
@@ -207,15 +212,12 @@ export class WorkIndex extends React.Component<{
   };
 }
 
-export function Episodes({ work, activeEpisodeNumber, userCount, suspendedUserCount }: {
-  work: WorkDTO;
-  activeEpisodeNumber: string;
-  userCount: number;
-  suspendedUserCount: number;
+export function Episodes({ work, activeEpisodeNumber }: {
+  work: WorkViewsFragment;
+  activeEpisodeNumber?: number | null;
 }) {
-  const title = encodeURIComponent(work.title);
-  const activeEpisode = activeEpisodeNumber && work.episodes!.filter(it => String(it.number) === activeEpisodeNumber)[0];
-  return <>
+  const title = encodeURIComponent(work.title!);
+  return (
     <div className={Styles.episodes}>
       <Link
         to={`/works/${title}/`}
@@ -230,8 +232,8 @@ export function Episodes({ work, activeEpisodeNumber, userCount, suspendedUserCo
         <Link
           to={`/works/${title}/ep/${ep.number}/`}
           className={cx({
-            'has-post': (ep.post_count ?? 0) > 0,
-            active: String(ep.number) === activeEpisodeNumber,
+            'has-post': (ep.postCount ?? 0) > 0,
+            active: ep.number === activeEpisodeNumber,
           })}
           key={ep.number}
         >
@@ -239,20 +241,25 @@ export function Episodes({ work, activeEpisodeNumber, userCount, suspendedUserCo
         </Link>
       ))}
     </div>
-    {activeEpisodeNumber && (
-      <div className={Styles.episodeHeader}>
-        <h2 className={Styles.sectionTitle}>{activeEpisodeNumber}화</h2>
-        <div className={Styles.episodeStats}>
-          <span>
-            <FontAwesomeIcon icon={faComment} />
-            감상평 {activeEpisode ? activeEpisode.post_count : 0}개
-          </span>
-          <span>
-            <FontAwesomeIcon icon={faUser} />
-            {userCount}명 기록 {suspendedUserCount > 0 && ` (${suspendedUserCount}명 중단)`}
-          </span>
-        </div>
+  );
+}
+
+export function EpisodeHeader({ episode }: {
+  episode: WorkViews_EpisodeFragment;
+}) {
+  return (
+    <div className={Styles.episodeHeader}>
+      <h2 className={Styles.sectionTitle}>{util.formatStatus(episode.number)}</h2>
+      <div className={Styles.episodeStats}>
+        <span>
+          <FontAwesomeIcon icon={faComment} />
+          감상평 {episode.postCount ?? 0}개
+        </span>
+        <span>
+          <FontAwesomeIcon icon={faUser} />
+          {episode.userCount}명 기록 {episode.suspendedUserCount != null && episode.suspendedUserCount > 0 && ` (${episode.suspendedUserCount}명 중단)`}
+        </span>
       </div>
-    )}
-  </>;
+    </div>
+  );
 }

@@ -1,7 +1,7 @@
 import * as Types from '../../__generated__/globalTypes';
 
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
-import { WeeklyChartFragmentDoc } from '../../ui/__generated__/GqlWeeklyChart.graphql';
+import { WeeklyChartFragmentDoc } from '../../ui/__generated__/WeeklyChart.graphql';
 import { Post_PostFragmentDoc } from '../../ui/__generated__/GqlPost.graphql';
 import { PostComment_PostFragmentDoc } from '../../ui/__generated__/GqlPostComment.graphql';
 export type IndexRouteQueryVariables = Types.Exact<{

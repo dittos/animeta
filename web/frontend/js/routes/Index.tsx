@@ -7,7 +7,7 @@ import { RouteComponentProps, RouteHandler } from '../routes';
 import { UserDTO } from '../../../shared/types_generated';
 import { GqlPost } from '../ui/GqlPost';
 import { IndexRouteDocument, IndexRouteQuery, IndexRoute_MoreTimelineDocument } from './__generated__/Index.graphql';
-import { GqlWeeklyChart } from '../ui/GqlWeeklyChart';
+import { WeeklyChart } from '../ui/WeeklyChart';
 
 type IndexRouteData = IndexRouteQuery & {
   currentUser: UserDTO | null;
@@ -23,7 +23,7 @@ const Index: React.FC<RouteComponentProps<IndexRouteData>> = ({ data, writeData,
       </Grid.Column>
       <Grid.Column size={4} pull="right" className={Styles.sidebar}>
         <h2 className={Styles.sectionTitle}>주간 인기 작품</h2>
-        <GqlWeeklyChart data={data} />
+        <WeeklyChart data={data} />
       </Grid.Column>
     </Grid.Row>
   );

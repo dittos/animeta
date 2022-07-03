@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import * as WorkViews from '../ui/GqlWorkViews';
+import * as WorkViews from '../ui/WorkViews';
 import { getStatusDisplayGql } from '../util';
 import { App } from '../layouts';
 import { GqlPost as PostComponent } from '../ui/GqlPost';
