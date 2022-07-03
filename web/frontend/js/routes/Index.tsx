@@ -5,7 +5,7 @@ import { LoadMore } from '../ui/LoadMore';
 import Styles from './Index.module.less';
 import { RouteComponentProps, RouteHandler } from '../routes';
 import { UserDTO } from '../../../shared/types_generated';
-import { GqlPost } from '../ui/GqlPost';
+import { Post } from '../ui/Post';
 import { IndexRouteDocument, IndexRouteQuery, IndexRoute_MoreTimelineDocument } from './__generated__/Index.graphql';
 import { WeeklyChart } from '../ui/WeeklyChart';
 
@@ -32,7 +32,7 @@ const Index: React.FC<RouteComponentProps<IndexRouteData>> = ({ data, writeData,
     return (
       <div className={Styles.timeline}>
         <h2 className={Styles.sectionTitle}>최근 감상평</h2>
-        {timeline.map(post => <GqlPost key={post!.id} post={post!} />)}
+        {timeline.map(post => <Post key={post!.id} post={post!} />)}
         <LoadMore onClick={_loadMore} isLoading={isLoading} />
       </div>
     );

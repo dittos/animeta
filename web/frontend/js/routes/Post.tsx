@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import * as WorkViews from '../ui/WorkViews';
 import { getStatusDisplayGql } from '../util';
 import { App } from '../layouts';
-import { GqlPost as PostComponent } from '../ui/GqlPost';
+import { Post as PostComponent } from '../ui/Post';
 import { RouteComponentProps, RouteHandler } from '../routes';
 import { UserDTO } from '../../../shared/types_generated';
 import { PostRouteDocument, PostRouteQuery, PostRoute_PostsDocument, PostRoute_PostsQuery, PostRoute_RefetchDocument } from './__generated__/Post.graphql';

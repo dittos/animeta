@@ -91,6 +91,7 @@ export type Query = {
   post: Maybe<Post>;
   searchWorks: Maybe<SearchWorksResult>;
   timeline: Maybe<Array<Maybe<Post>>>;
+  user: Maybe<User>;
   userByName: Maybe<User>;
   weeklyWorksChart: Array<WorksChartItem>;
   work: Maybe<Work>;
@@ -119,8 +120,13 @@ export type QueryTimelineArgs = {
 };
 
 
+export type QueryUserArgs = {
+  id: Scalars['ID'];
+};
+
+
 export type QueryUserByNameArgs = {
-  name: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
 };
 
 
@@ -182,7 +188,14 @@ export type User = Node & {
   joinedAt: Maybe<Scalars['GraphQLTimestamp']>;
   name: Maybe<Scalars['String']>;
   postCount: Maybe<Scalars['Int']>;
+  posts: PostConnection;
   recordCount: Maybe<Scalars['Int']>;
+};
+
+
+export type UserPostsArgs = {
+  beforeId: InputMaybe<Scalars['ID']>;
+  count: InputMaybe<Scalars['Int']>;
 };
 
 export type Work = Node & {

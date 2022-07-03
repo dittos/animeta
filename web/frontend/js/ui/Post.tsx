@@ -2,11 +2,11 @@ import * as React from 'react';
 import { Link } from 'nuri';
 import * as util from '../util';
 import { TimeAgo } from './TimeAgo';
-import PostComment from './PostComment';
+import GqlPostComment from './GqlPostComment';
 import Styles from './Post.module.less';
-import { PostDTO } from '../../../shared/types_generated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretRight } from '@fortawesome/free-solid-svg-icons'
+import { Post_PostFragment } from './__generated__/Post.graphql';
 
 export function Post({
   post,
@@ -15,7 +15,7 @@ export function Post({
   showStatusType = false,
   highlighted = false,
 }: {
-  post: PostDTO;
+  post: Post_PostFragment;
   showUser?: boolean;
   showTitle?: boolean;
   showStatusType?: boolean;
@@ -34,22 +34,22 @@ export function Post({
             <FontAwesomeIcon icon={faCaretRight} className={Styles.metaSeparator} />
           )}
         {showTitle && (
-          <Link to={util.getWorkURL(post.record!.title)} className={Styles.work}>
+          <Link to={util.getWorkURL(post.record!.title!)} className={Styles.work}>
             {post.record!.title}
           </Link>
         )}
         {(showStatusType || post.status) && (
           <span className={showTitle ? '' : Styles.episodeWithoutTitle}>
             {showStatusType
-              ? util.getStatusText(post)
-              : util.getStatusDisplay(post)}
+              ? util.getStatusTextGql(post)
+              : util.getStatusDisplayGql(post)}
           </span>
         )}
-        <Link to={util.getPostURL(post)} className={Styles.time}>
-          {post.updated_at ? <TimeAgo time={new Date(post.updated_at)} /> : '#'}
+        <Link to={util.getPostURLGql(post)} className={Styles.time}>
+          {post.updatedAt ? <TimeAgo time={new Date(post.updatedAt)} /> : '#'}
         </Link>
       </div>
-      <PostComment post={post} className={Styles.comment} />
+      <GqlPostComment post={post} className={Styles.comment} />
     </div>
   );
 }

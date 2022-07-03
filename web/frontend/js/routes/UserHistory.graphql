@@ -1,0 +1,22 @@
+query UserHistoryRoute($username: String!) {
+  gqlUser: userByName(name: $username) {
+    posts(count: 32) {
+      ...UserHistoryRoute_postConnection
+    }
+  }
+}
+
+query UserHistoryRoute_morePosts($userId: ID!, $beforeId: ID) {
+  user(id: $userId) {
+    posts(beforeId: $beforeId, count: 32) {
+      ...UserHistoryRoute_postConnection
+    }
+  }
+}
+
+fragment UserHistoryRoute_postConnection on PostConnection {
+  nodes {
+    ...Post_post
+  }
+  hasMore
+}

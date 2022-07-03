@@ -1,90 +1,80 @@
 import { RouteComponentProps, RouteHandler } from '../routes';
-import React from 'react';
-import { getUserPosts } from '../API';
+import React, { useState } from 'react';
 import { User } from '../layouts';
-import { PostDTO, UserDTO } from '../../../shared/types_generated';
+import { UserDTO } from '../../../shared/types_generated';
 import * as Layout from '../ui/Layout';
 import { LoadMore } from '../ui/LoadMore';
 import { Post } from '../ui/Post';
 import Styles from './UserHistory.less';
 import { UserLayoutPropsData } from '../ui/UserLayout';
+import { UserHistoryRouteDocument, UserHistoryRouteQuery, UserHistoryRoute_MorePostsDocument } from './__generated__/UserHistory.graphql';
+import { Post_PostFragment } from '../ui/__generated__/Post.graphql';
 
-type UserHistoryRouteData = UserLayoutPropsData & {
+type UserHistoryRouteData = UserLayoutPropsData & UserHistoryRouteQuery & {
   user: UserDTO;
 };
 
-function getDateHeader(post: PostDTO) {
-  if (!post.updated_at) {
+function getDateHeader(post: Post_PostFragment) {
+  if (!post.updatedAt) {
     return '';
   }
-  var date = new Date(post.updated_at);
+  var date = new Date(post.updatedAt);
   return date.getFullYear() + '/' + (date.getMonth() + 1);
 }
 
-class UserHistory extends React.Component<RouteComponentProps<UserHistoryRouteData>> {
-  pageSize = 32;
-  state: {
-    isLoading: boolean;
-    hasMore: boolean;
-    posts: PostDTO[];
-  } = { isLoading: true, hasMore: true, posts: [] };
+function UserHistory({ data, writeData, loader }: RouteComponentProps<UserHistoryRouteData>) {
+  const [isLoading, setIsLoading] = useState(false)
 
-  componentDidMount() {
-    this._loadMore();
-  }
+  const postConnection = data.gqlUser!.posts
+  const posts = postConnection.nodes
 
-  render() {
-    var groups: { key: string; items: PostDTO[]; }[] = [];
-    var unknownGroup: PostDTO[] = [];
-    var lastKey: string = '', group: PostDTO[] | null = null;
-    for (let post of this.state.posts) {
-      if (!post.updated_at) {
-        unknownGroup.push(post);
-      } else {
-        var key = getDateHeader(post);
-        if (key != lastKey) {
-          if (group) groups.push({ key: lastKey, items: group });
-          lastKey = key;
-          group = [];
-        }
-        if (group) group.push(post);
+  var groups: { key: string; items: Post_PostFragment[]; }[] = [];
+  var unknownGroup: Post_PostFragment[] = [];
+  var lastKey: string = '', group: Post_PostFragment[] | null = null;
+  for (let post of posts) {
+    if (!post.updatedAt) {
+      unknownGroup.push(post);
+    } else {
+      var key = getDateHeader(post);
+      if (key != lastKey) {
+        if (group) groups.push({ key: lastKey, items: group });
+        lastKey = key;
+        group = [];
       }
+      if (group) group.push(post);
     }
-    if (group && group.length > 0) groups.push({ key: lastKey, items: group });
-    if (unknownGroup.length) groups.push({ key: '?', items: unknownGroup });
+  }
+  if (group && group.length > 0) groups.push({ key: lastKey, items: group });
+  if (unknownGroup.length) groups.push({ key: '?', items: unknownGroup });
 
-    return (
-      <Layout.CenteredFullWidth>
-        {groups.map(group => (
-          <div className={Styles.group}>
-            <div className={Styles.groupTitle}>{group.key}</div>
-            {group.items.map(post => (
-              <Post post={post} showUser={false} showStatusType={true} />
-            ))}
-          </div>
-        ))}
-        {this.state.hasMore && (
-          <LoadMore isLoading={this.state.isLoading} onClick={this._loadMore} />
-        )}
-      </Layout.CenteredFullWidth>
-    );
+  async function _loadMore() {
+    setIsLoading(true)
+    const result = await loader.graphql(UserHistoryRoute_MorePostsDocument, {
+      userId: '' + data.user.id,
+      beforeId: posts?.length ? posts[posts.length - 1]?.id : null,
+    })
+    writeData(data => {
+      data.gqlUser!.posts.nodes = data.gqlUser!.posts.nodes.concat(result.user!.posts!.nodes);
+      data.gqlUser!.posts.hasMore = result.user!.posts!.hasMore
+    });
+    setIsLoading(false)
   }
 
-  _loadMore = () => {
-    this.setState({ isLoading: true });
-    var beforeID;
-    if (this.state.posts.length > 0)
-      beforeID = this.state.posts[this.state.posts.length - 1].id;
-    getUserPosts(this.props.data.user.name, this.pageSize, beforeID).then(
-      data => {
-        this.setState({
-          hasMore: data.length >= this.pageSize,
-          isLoading: false,
-          posts: this.state.posts.concat(data),
-        });
-      }
-    );
-  };
+  return (
+    <Layout.CenteredFullWidth>
+      {groups.map(group => (
+        <div className={Styles.group}>
+          <div className={Styles.groupTitle}>{group.key}</div>
+          {group.items.map(post => (
+            <Post post={post} showUser={false} showStatusType={true} />
+          ))}
+        </div>
+      ))}
+      {postConnection.hasMore && (
+        <LoadMore isLoading={isLoading} onClick={_loadMore} />
+      )}
+    </Layout.CenteredFullWidth>
+  );
 }
 
 const routeHandler: RouteHandler<UserHistoryRouteData> = {
@@ -92,7 +82,7 @@ const routeHandler: RouteHandler<UserHistoryRouteData> = {
 
   async load({ loader, params }) {
     const { username } = params;
-    const [currentUser, user] = await Promise.all([
+    const [currentUser, user, data] = await Promise.all([
       loader.getCurrentUser({
         options: {},
       }),
@@ -101,8 +91,10 @@ const routeHandler: RouteHandler<UserHistoryRouteData> = {
           stats: true,
         },
       }),
+      loader.graphql(UserHistoryRouteDocument, {username}),
     ]);
     return {
+      ...data,
       currentUser,
       user,
     };

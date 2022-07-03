@@ -2,7 +2,7 @@ import * as Types from '../../__generated__/globalTypes';
 
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 import { WorkStatusButton_WorkFragmentDoc, WorkStatusButton_RecordFragmentDoc } from './WorkStatusButton.graphql';
-import { Post_PostFragmentDoc } from './GqlPost.graphql';
+import { Post_PostFragmentDoc } from './Post.graphql';
 import { PostComment_PostFragmentDoc } from './GqlPostComment.graphql';
 export type WorkViewsFragment = { __typename?: 'Work', id: string, title: string | null, imageUrl: string | null, recordCount: number | null, record: { __typename?: 'Record', id: string, statusType: Types.StatusType | null, status: string | null } | null, episodes: Array<{ __typename?: 'Episode', number: number, postCount: number | null }> | null, metadata: { __typename?: 'WorkMetadata', studioNames: Array<string> | null, source: Types.SourceType | null, websiteUrl: string | null, namuwikiUrl: string | null, annUrl: string | null, schedules: Array<{ __typename?: 'WorkSchedule', country: string, date: any | null, datePrecision: Types.DatePrecision | null }> | null } | null };
 

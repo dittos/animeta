@@ -17,7 +17,7 @@ import { faCalendarAlt, faComment, faExternalLink, faUser } from '@fortawesome/f
 import { WorkViewsFragment, WorkViews_EpisodeFragment, WorkViews_PostConnectionFragment } from './__generated__/WorkViews.graphql';
 import { WeeklyChart } from './WeeklyChart';
 import { WeeklyChartFragment } from './__generated__/WeeklyChart.graphql';
-import { GqlPost } from './GqlPost';
+import { Post } from './Post';
 
 function Sidebar({ work, chart, episode }: {
   work: WorkViewsFragment;
@@ -192,7 +192,7 @@ export class WorkIndex extends React.Component<{
     return posts && posts.length > 0 ? (
       <div className={Styles.postsSection}>
         {posts.map(post => (
-          <GqlPost key={post.id} post={post} showTitle={false} />
+          <Post key={post.id} post={post} showTitle={false} />
         ))}
         {hasMorePosts && (
           <LoadMore
