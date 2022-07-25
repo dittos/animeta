@@ -1,0 +1,12 @@
+diff --git a/node_modules/mercurius-codegen/dist/code.d.ts b/node_modules/mercurius-codegen/dist/code.d.ts
+index 544e8b4..d99b085 100644
+--- a/node_modules/mercurius-codegen/dist/code.d.ts
++++ b/node_modules/mercurius-codegen/dist/code.d.ts
+@@ -1,6 +1,6 @@
+ import type { GraphQLSchema } from 'graphql';
+ import type { TypeScriptPluginConfig } from '@graphql-codegen/typescript';
+-import type { TypeScriptResolversPluginConfig } from '@graphql-codegen/typescript-resolvers/config';
++import type { TypeScriptResolversPluginConfig } from '@graphql-codegen/typescript-resolvers';
+ import type { MercuriusLoadersPluginConfig } from './mercuriusLoaders';
+ declare type MidCodegenPluginsConfig = TypeScriptPluginConfig & TypeScriptResolversPluginConfig & MercuriusLoadersPluginConfig;
+ export interface CodegenPluginsConfig extends MidCodegenPluginsConfig {
