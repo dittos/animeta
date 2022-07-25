@@ -1,0 +1,37 @@
+schema: ./src/schema.graphql
+documents:
+  - ./test2/fragments.graphql
+config:
+  sort: false
+generates:
+  ./test2/fragments.generated.ts:
+    config:
+      dedupeFragments: true
+      avoidOptionals: true
+      documentMode: graphQLTag
+    plugins:
+      - typescript
+      - typescript-operations
+      - typed-document-node
+  ./src/graphql/generated.ts:
+    plugins:
+      - typescript
+      - typescript-resolvers
+      # - mercurius-loader
+    config:
+      federation: true
+      contextType: mercurius#MercuriusContext
+      useTypeImports: true
+      customResolverFn: '(parent: TParent, args: TArgs, context: TContext, info: GraphQLResolveInfo) => Promise<import("mercurius-codegen").DeepPartial<TResult>> | import("mercurius-codegen").DeepPartial<TResult>'
+      internalResolversPrefix: ''
+      # custom
+      mapperTypeSuffix: Model
+      mappers:
+        Post: src/entities/history.entity#History
+        User: src/entities/user.entity#User
+        Record: src/entities/record.entity#Record
+        Work: src/entities/work.entity#Work
+        Episode: src/entities/episode.entity#Episode
+      enumsAsTypes: true
+      # end custom
+      namingConvention: keep

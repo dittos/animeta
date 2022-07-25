@@ -1,0 +1,24 @@
+fragment WorkDTO on Work {
+  id
+  title
+  imageUrl
+  recordCount
+  record {
+    id
+  }
+  metadata {
+    periods
+    studioNames
+    source
+    websiteUrl
+    namuwikiUrl
+    annUrl
+    durationMinutes
+    schedules {
+      country
+      date
+      datePrecision
+      broadcasts
+    }
+  }
+}

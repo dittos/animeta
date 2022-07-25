@@ -1,0 +1,283 @@
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+import gql from 'graphql-tag';
+export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+/** All built-in and custom scalars, mapped to their actual values */
+export type Scalars = {
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+  GraphQLTimestamp: any;
+};
+
+export type Query = {
+  __typename?: 'Query';
+  currentUser: Maybe<User>;
+  user: Maybe<User>;
+  userByName: Maybe<User>;
+  timeline: Maybe<Array<Maybe<Post>>>;
+  curatedLists: Maybe<Array<Maybe<CuratedList>>>;
+  curatedList: Maybe<CuratedList>;
+  searchWorks: Maybe<SearchWorksResult>;
+  weeklyWorksChart: Array<WorksChartItem>;
+  work: Maybe<Work>;
+  workByTitle: Maybe<Work>;
+  post: Maybe<Post>;
+};
+
+
+export type QueryUserArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryUserByNameArgs = {
+  name: Scalars['String'];
+};
+
+
+export type QueryTimelineArgs = {
+  beforeId: InputMaybe<Scalars['ID']>;
+  count: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryCuratedListArgs = {
+  id: InputMaybe<Scalars['ID']>;
+};
+
+
+export type QuerySearchWorksArgs = {
+  query: Scalars['String'];
+};
+
+
+export type QueryWeeklyWorksChartArgs = {
+  limit: Scalars['Int'];
+};
+
+
+export type QueryWorkArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryWorkByTitleArgs = {
+  title: Scalars['String'];
+};
+
+
+export type QueryPostArgs = {
+  id: Scalars['ID'];
+};
+
+export type Node = {
+  id: Scalars['ID'];
+};
+
+export type User = Node & {
+  __typename?: 'User';
+  id: Scalars['ID'];
+  name: Maybe<Scalars['String']>;
+  joinedAt: Maybe<Scalars['GraphQLTimestamp']>;
+  isTwitterConnected: Maybe<Scalars['Boolean']>;
+  categories: Maybe<Array<Maybe<Category>>>;
+  recordCount: Maybe<Scalars['Int']>;
+  postCount: Maybe<Scalars['Int']>;
+  posts: PostConnection;
+};
+
+
+export type UserPostsArgs = {
+  beforeId: InputMaybe<Scalars['ID']>;
+  count: InputMaybe<Scalars['Int']>;
+};
+
+export type Category = Node & {
+  __typename?: 'Category';
+  id: Scalars['ID'];
+  user: Maybe<User>;
+  name: Maybe<Scalars['String']>;
+};
+
+export type Post = Node & {
+  __typename?: 'Post';
+  id: Scalars['ID'];
+  record: Maybe<Record>;
+  statusType: Maybe<StatusType>;
+  status: Maybe<Scalars['String']>;
+  comment: Maybe<Scalars['String']>;
+  containsSpoiler: Maybe<Scalars['Boolean']>;
+  user: Maybe<User>;
+  updatedAt: Maybe<Scalars['GraphQLTimestamp']>;
+  work: Maybe<Work>;
+  episode: Maybe<Episode>;
+};
+
+export enum StatusType {
+  Finished = 'FINISHED',
+  Watching = 'WATCHING',
+  Suspended = 'SUSPENDED',
+  Interested = 'INTERESTED'
+}
+
+export type Record = Node & {
+  __typename?: 'Record';
+  id: Scalars['ID'];
+  title: Maybe<Scalars['String']>;
+  statusType: Maybe<StatusType>;
+  status: Maybe<Scalars['String']>;
+};
+
+export type CuratedList = {
+  __typename?: 'CuratedList';
+  id: Maybe<Scalars['ID']>;
+  name: Maybe<Scalars['String']>;
+  works: Maybe<CuratedListWorkConnection>;
+};
+
+export type CuratedListWorkConnection = {
+  __typename?: 'CuratedListWorkConnection';
+  edges: Maybe<Array<Maybe<CuratedListWorkEdge>>>;
+  totalCount: Maybe<Scalars['Int']>;
+};
+
+export type CuratedListWorkEdge = {
+  __typename?: 'CuratedListWorkEdge';
+  node: Maybe<Work>;
+};
+
+export type Work = Node & {
+  __typename?: 'Work';
+  id: Scalars['ID'];
+  title: Maybe<Scalars['String']>;
+  imageUrl: Maybe<Scalars['String']>;
+  record: Maybe<Record>;
+  recordCount: Maybe<Scalars['Int']>;
+  metadata: Maybe<WorkMetadata>;
+  episodes: Maybe<Array<Episode>>;
+  episode: Maybe<Episode>;
+  posts: PostConnection;
+};
+
+
+export type WorkEpisodeArgs = {
+  episode: Scalars['Int'];
+};
+
+
+export type WorkPostsArgs = {
+  beforeId: InputMaybe<Scalars['ID']>;
+  count: InputMaybe<Scalars['Int']>;
+  episode: InputMaybe<Scalars['Int']>;
+};
+
+export type PostConnection = {
+  __typename?: 'PostConnection';
+  nodes: Array<Post>;
+  hasMore: Scalars['Boolean'];
+};
+
+export type Episode = {
+  __typename?: 'Episode';
+  number: Scalars['Int'];
+  postCount: Maybe<Scalars['Int']>;
+  userCount: Maybe<Scalars['Int']>;
+  suspendedUserCount: Maybe<Scalars['Int']>;
+  posts: PostConnection;
+};
+
+
+export type EpisodePostsArgs = {
+  beforeId: InputMaybe<Scalars['ID']>;
+  count: InputMaybe<Scalars['Int']>;
+};
+
+export type WorkMetadata = {
+  __typename?: 'WorkMetadata';
+  periods: Maybe<Array<Scalars['String']>>;
+  studioNames: Maybe<Array<Scalars['String']>>;
+  source: Maybe<SourceType>;
+  websiteUrl: Maybe<Scalars['String']>;
+  namuwikiUrl: Maybe<Scalars['String']>;
+  annUrl: Maybe<Scalars['String']>;
+  durationMinutes: Maybe<Scalars['Int']>;
+  schedules: Maybe<Array<WorkSchedule>>;
+};
+
+export enum SourceType {
+  Manga = 'MANGA',
+  Original = 'ORIGINAL',
+  LightNovel = 'LIGHT_NOVEL',
+  Game = 'GAME',
+  FourKoma = 'FOUR_KOMA',
+  VisualNovel = 'VISUAL_NOVEL',
+  Novel = 'NOVEL'
+}
+
+export type WorkSchedule = {
+  __typename?: 'WorkSchedule';
+  country: Scalars['String'];
+  date: Maybe<Scalars['GraphQLTimestamp']>;
+  datePrecision: Maybe<DatePrecision>;
+  broadcasts: Maybe<Array<Scalars['String']>>;
+};
+
+export enum DatePrecision {
+  YearMonth = 'YEAR_MONTH',
+  Date = 'DATE',
+  DateTime = 'DATE_TIME'
+}
+
+export type SearchWorksResult = {
+  __typename?: 'SearchWorksResult';
+  edges: Array<SearchWorksResultEdge>;
+};
+
+export type SearchWorksResultEdge = {
+  __typename?: 'SearchWorksResultEdge';
+  node: Work;
+  recordCount: Maybe<Scalars['Int']>;
+};
+
+export type WorksChartItem = {
+  __typename?: 'WorksChartItem';
+  rank: Scalars['Int'];
+  work: Work;
+  diff: Maybe<Scalars['Int']>;
+  sign: Maybe<Scalars['Int']>;
+};
+
+export type WorkDtoFragment = { __typename?: 'Work', id: string, title: string | null, imageUrl: string | null, recordCount: number | null, record: { __typename?: 'Record', id: string } | null, metadata: { __typename?: 'WorkMetadata', periods: Array<string> | null, studioNames: Array<string> | null, source: SourceType | null, websiteUrl: string | null, namuwikiUrl: string | null, annUrl: string | null, durationMinutes: number | null, schedules: Array<{ __typename?: 'WorkSchedule', country: string, date: any | null, datePrecision: DatePrecision | null, broadcasts: Array<string> | null }> | null } | null };
+
+export const WorkDtoFragmentDoc = gql`
+    fragment WorkDTO on Work {
+  id
+  title
+  imageUrl
+  recordCount
+  record {
+    id
+  }
+  metadata {
+    periods
+    studioNames
+    source
+    websiteUrl
+    namuwikiUrl
+    annUrl
+    durationMinutes
+    schedules {
+      country
+      date
+      datePrecision
+      broadcasts
+    }
+  }
+}
+    ` as unknown as DocumentNode<WorkDtoFragment, unknown>;

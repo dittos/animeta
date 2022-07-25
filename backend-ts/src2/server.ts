@@ -9,7 +9,7 @@ import { getCurrentUser } from './auth'
 
 // TODO: dotenv
 
-const server = fastify({
+export const server = fastify({
   logger: {
     prettyPrint: process.env.NODE_ENV !== 'production',
   },
