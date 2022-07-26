@@ -22,3 +22,20 @@ fragment WorkDTO on Work {
     }
   }
 }
+
+fragment UserDTO on User {
+  id
+  name
+  joinedAt
+}
+
+fragment PostDTO on Post {
+  id
+  record { id }
+  statusType
+  status
+  comment
+  containsSpoiler
+  user { ...UserDTO }
+  updatedAt
+}

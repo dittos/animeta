@@ -9,4 +9,4 @@ export async function getTestUtils(): Promise<TestUtils> {
   return utils;
 }
 
-export { gql } from 'graphql-tag';
+export { gql } from "./graphql";

@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify";
-import { createMercuriusTestClient } from "mercurius-integration-testing";
 import { Signing } from "src/auth/django/signing";
 import { jsonSerializer } from "src/auth/serializer";
 import { User } from "src/entities/user.entity";
 import { TestFactoryUtils } from "./factory";
+import { GraphQLTestClient } from "./graphql";
 
 export class TestUtils {
   public readonly factory = new TestFactoryUtils()
@@ -25,11 +25,11 @@ export class TestUtils {
   }
 
   getHttpClient() {
-    return createMercuriusTestClient(this.app)
+    return new GraphQLTestClient(this.app)
   }
 
   getHttpClientWithSessionKey(sessionKey: string) {
-    return createMercuriusTestClient(this.app, {
+    return new GraphQLTestClient(this.app, {
       headers: {
         'x-animeta-session-key': sessionKey,
       }

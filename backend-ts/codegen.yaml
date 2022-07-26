@@ -6,9 +6,7 @@ config:
 generates:
   ./test2/fragments.generated.ts:
     config:
-      dedupeFragments: true
       avoidOptionals: true
-      documentMode: graphQLTag
     plugins:
       - typescript
       - typescript-operations
