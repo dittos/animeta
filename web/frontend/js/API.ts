@@ -311,15 +311,3 @@ export function updateCategoryOrder(categoryIds: number[]): Promise<{ categories
 export function getUserRecords(username: string, params: {}): Promise<RecordDTO[]> {
   return get(`/api/v4/users/${username}/records`, params);
 }
-
-// User Posts
-
-export function getUserPosts(userName: string, count: number, beforeID?: number): Promise<PostDTO[]> {
-  return get(`/api/v4/users/${userName}/posts`, {
-    count,
-    before_id: beforeID,
-    options: {
-      record: {},
-    },
-  });
-}

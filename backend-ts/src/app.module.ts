@@ -18,24 +18,17 @@ import { UserSerializer } from './serializers/user.serializer';
 import { CategorySerializer } from './serializers/category.serializer';
 import { UserController } from './controllers/user.controller';
 import { CurrentUserController } from './controllers/current_user.controller';
-import { ChartController } from './controllers/chart.controller';
-import { ChartService } from './services/chart.service';
 import { AppController } from './app.controller';
-import { PostsController } from './controllers/posts.controller';
 import { PostSerializer } from './serializers/post.serializer';
 import { RecordSerializer } from './serializers/record.serializer';
 import { UserService } from './services/user.service';
-import { PostController } from './controllers/post.controller';
 import { RecordController } from './controllers/record.controller';
 import { RecordPostsController } from './controllers/record_posts.controller';
 import { UserPostsController } from './controllers/user_posts.controller';
 import { UserRecordsService } from './services/user_records.service';
 import { UserRecordsController } from './controllers/user_records.controller';
-import { WorkPostsController } from './controllers/work_posts.controller';
-import { WorkController } from './controllers/work.controller';
 import { WorkSerializer } from './serializers/work.serializer';
 import { TitleMapping } from './entities/title_mapping.entity';
-import { WorkByTitleController } from './controllers/work_by_title.controller';
 import { TablePeriodController } from './controllers/table_period.controller';
 import { RecommendationService } from './services/recommendation.service';
 import { WorkStaff } from './entities/work_staff.entity';
@@ -107,16 +100,10 @@ import { BackupService } from './services/backup.service';
     SearchController,
     UserController,
     CurrentUserController,
-    ChartController,
-    PostsController,
-    PostController,
     RecordController,
     RecordPostsController,
     UserPostsController,
     UserRecordsController,
-    WorkPostsController,
-    WorkController,
-    WorkByTitleController,
     TablePeriodController,
     ExternalServicesController,
     CreatePostController,
@@ -141,7 +128,6 @@ import { BackupService } from './services/backup.service';
     CuratedListService,
     RecordService,
     WorkService,
-    ChartService,
     UserService,
     UserRecordsService,
     RecommendationService,

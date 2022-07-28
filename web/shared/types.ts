@@ -24,18 +24,3 @@ export type SearchResultItem = {
   title: string;
   recordCount: number;
 };
-
-export type ChartItem<T> = {
-  rank: number;
-  object: T;
-  factor: number;
-  factor_percent: number;
-  diff?: number;
-  sign?: number;
-};
-
-export type ChartItemWork = {
-  id: number;
-  title: string;
-  image_url: string | null;
-};

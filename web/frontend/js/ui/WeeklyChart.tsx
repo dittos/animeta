@@ -2,12 +2,9 @@ import React from 'react';
 import { Link } from 'nuri';
 import { getWorkURL } from '../util';
 import Styles from './WeeklyChart.less';
-import { ChartItem, ChartItemWork } from '../../../shared/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { WeeklyChartFragment } from './__generated__/WeeklyChart.graphql';
-
-export type WeeklyChartItem = ChartItem<ChartItemWork>;
 
 export function WeeklyChart({ data }: {
   data: WeeklyChartFragment,

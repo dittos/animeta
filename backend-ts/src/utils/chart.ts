@@ -1,4 +1,11 @@
-import { ChartItem } from "shared/types";
+export type ChartItem<T> = {
+  rank: number;
+  object: T;
+  factor: number;
+  factor_percent: number;
+  diff?: number;
+  sign?: number;
+};
 
 export function ranked<T>(seq: Array<[T, number]>): Array<ChartItem<T>> {
   let rank = 0

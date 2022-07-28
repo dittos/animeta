@@ -39,3 +39,10 @@ fragment PostDTO on Post {
   user { ...UserDTO }
   updatedAt
 }
+
+fragment EpisodeDTO on Episode {
+  number
+  postCount
+  userCount
+  suspendedUserCount
+}
