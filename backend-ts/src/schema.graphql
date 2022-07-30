@@ -100,7 +100,6 @@ type Episode {
   postCount: Int
   userCount: Int
   suspendedUserCount: Int
-  posts(beforeId: ID, count: Int): PostConnection!
 }
 
 type WorkMetadata {

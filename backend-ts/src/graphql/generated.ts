@@ -197,13 +197,6 @@ export type Episode = {
   postCount?: Maybe<Scalars['Int']>;
   userCount?: Maybe<Scalars['Int']>;
   suspendedUserCount?: Maybe<Scalars['Int']>;
-  posts: PostConnection;
-};
-
-
-export type EpisodepostsArgs = {
-  beforeId?: InputMaybe<Scalars['ID']>;
-  count?: InputMaybe<Scalars['Int']>;
 };
 
 export type WorkMetadata = {
@@ -480,7 +473,6 @@ export type EpisodeResolvers<ContextType = MercuriusContext, ParentType extends 
   postCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   userCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   suspendedUserCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  posts?: Resolver<ResolversTypes['PostConnection'], ParentType, ContextType, Partial<EpisodepostsArgs>>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

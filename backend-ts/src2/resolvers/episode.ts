@@ -2,8 +2,6 @@ import { History } from "src/entities/history.entity";
 import { StatusType } from "src/entities/status_type";
 import { EpisodeResolvers } from "src/graphql/generated";
 import { db } from "src2/database";
-import { getWorkPosts } from "src2/services/post";
-import { getWork } from "src2/services/work";
 
 export const Episode: EpisodeResolvers = {
   userCount: async (episode) => {
@@ -23,12 +21,4 @@ export const Episode: EpisodeResolvers = {
       .getRawOne()
     return Number(result.count)
   },
-  posts: async (episode, { beforeId, count }) => {
-    const work = await getWork(episode.workId)
-    return getWorkPosts(work, {
-      beforeId: beforeId != null ? Number(beforeId) : null,
-      count,
-      episode: episode.number,
-    })
-  }
 }

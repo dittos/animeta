@@ -188,13 +188,6 @@ export type Episode = {
   postCount: Maybe<Scalars['Int']>;
   userCount: Maybe<Scalars['Int']>;
   suspendedUserCount: Maybe<Scalars['Int']>;
-  posts: PostConnection;
-};
-
-
-export type EpisodePostsArgs = {
-  beforeId: InputMaybe<Scalars['ID']>;
-  count: InputMaybe<Scalars['Int']>;
 };
 
 export type WorkMetadata = {

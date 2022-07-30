@@ -48,15 +48,8 @@ export type Episode = {
   __typename?: 'Episode';
   number: Scalars['Int'];
   postCount: Maybe<Scalars['Int']>;
-  posts: PostConnection;
   suspendedUserCount: Maybe<Scalars['Int']>;
   userCount: Maybe<Scalars['Int']>;
-};
-
-
-export type EpisodePostsArgs = {
-  beforeId: InputMaybe<Scalars['ID']>;
-  count: InputMaybe<Scalars['Int']>;
 };
 
 export type Node = {
