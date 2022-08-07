@@ -46,3 +46,10 @@ fragment EpisodeDTO on Episode {
   userCount
   suspendedUserCount
 }
+
+fragment RecordDTO on Record {
+  id
+  title
+  statusType
+  status
+}

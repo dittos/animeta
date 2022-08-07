@@ -14,6 +14,7 @@ import { RecordService } from "src/services/record.service";
 import { RecordSerializer } from "src/serializers/record.serializer";
 import { RecommendationService } from "src/services/recommendation.service";
 
+// deprecated
 @Controller('/api/v4/table/periods/:period([0-9]{4}Q[1-4])')
 export class TablePeriodController {
   private defaultTimeZone = Temporal.TimeZone.from('Asia/Seoul')

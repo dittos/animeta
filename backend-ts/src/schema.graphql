@@ -10,6 +10,12 @@ type Query {
   work(id: ID!): Work
   workByTitle(title: String!): Work
   post(id: ID!): Post
+  tablePeriod(
+    period: String!,
+    onlyAdded: Boolean = false,
+    username: String,
+    withRecommendations: Boolean = false
+  ): [TablePeriodItem!]!
 }
 
 interface Node {
@@ -150,4 +156,42 @@ type WorksChartItem {
   work: Work!
   diff: Int
   sign: Int
+}
+
+type TablePeriodItem {
+  title: String!
+  work: Work!
+  record: Record
+  recommendations: [Recommendation!]
+  recommendationScore: Int
+}
+
+union Recommendation = RecommendationByCredit
+
+type RecommendationByCredit {
+  credit: Credit
+  related: [WorkCredit!]
+  score: Int
+}
+
+type Credit {
+  type: CreditType
+  name: String
+  personId: ID!
+}
+
+type WorkCredit {
+  workId: ID!
+  workTitle: String!
+  type: CreditType
+}
+
+enum CreditType {
+  ORIGINAL_WORK
+  CHIEF_DIRECTOR
+  SERIES_DIRECTOR
+  DIRECTOR
+  SERIES_COMPOSITION
+  CHARACTER_DESIGN
+  MUSIC
 }

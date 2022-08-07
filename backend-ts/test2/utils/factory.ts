@@ -6,6 +6,7 @@ import { StatusType } from "src/entities/status_type";
 import { TitleMapping } from "src/entities/title_mapping.entity";
 import { User } from "src/entities/user.entity";
 import { Work } from "src/entities/work.entity";
+import { WorkIndex } from "src/entities/work_index.entity";
 import { createCategory } from "src/services/category.service";
 import { addRecordHistory, createRecord } from "src/services/record.service";
 import { getOrCreateWork } from "src/services/work.service";
@@ -117,6 +118,7 @@ export class TestFactoryUtils {
   async deleteAllWorks() {
     await this.deleteAllRecords() // hmm...
     await db.delete(TitleMapping, {})
+    await db.delete(WorkIndex, {})
     await db.delete(Work, {})
   }
 }

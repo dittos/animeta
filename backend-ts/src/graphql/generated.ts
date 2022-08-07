@@ -37,6 +37,7 @@ export type Query = {
   work?: Maybe<Work>;
   workByTitle?: Maybe<Work>;
   post?: Maybe<Post>;
+  tablePeriod: Array<TablePeriodItem>;
 };
 
 
@@ -83,6 +84,14 @@ export type QueryworkByTitleArgs = {
 
 export type QuerypostArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QuerytablePeriodArgs = {
+  period: Scalars['String'];
+  onlyAdded?: InputMaybe<Scalars['Boolean']>;
+  username?: InputMaybe<Scalars['String']>;
+  withRecommendations?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type Node = {
@@ -252,6 +261,47 @@ export type WorksChartItem = {
   sign?: Maybe<Scalars['Int']>;
 };
 
+export type TablePeriodItem = {
+  __typename?: 'TablePeriodItem';
+  title: Scalars['String'];
+  work: Work;
+  record?: Maybe<Record>;
+  recommendations?: Maybe<Array<Recommendation>>;
+  recommendationScore?: Maybe<Scalars['Int']>;
+};
+
+export type Recommendation = RecommendationByCredit;
+
+export type RecommendationByCredit = {
+  __typename?: 'RecommendationByCredit';
+  credit?: Maybe<Credit>;
+  related?: Maybe<Array<WorkCredit>>;
+  score?: Maybe<Scalars['Int']>;
+};
+
+export type Credit = {
+  __typename?: 'Credit';
+  type?: Maybe<CreditType>;
+  name?: Maybe<Scalars['String']>;
+  personId: Scalars['ID'];
+};
+
+export type WorkCredit = {
+  __typename?: 'WorkCredit';
+  workId: Scalars['ID'];
+  workTitle: Scalars['String'];
+  type?: Maybe<CreditType>;
+};
+
+export type CreditType =
+  | 'ORIGINAL_WORK'
+  | 'CHIEF_DIRECTOR'
+  | 'SERIES_DIRECTOR'
+  | 'DIRECTOR'
+  | 'SERIES_COMPOSITION'
+  | 'CHARACTER_DESIGN'
+  | 'MUSIC';
+
 
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -318,10 +368,10 @@ export type ResolversTypes = {
   ID: ResolverTypeWrapper<Scalars['ID']>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Node: ResolversTypes['User'] | ResolversTypes['Category'] | ResolversTypes['Post'] | ResolversTypes['Record'] | ResolversTypes['Work'];
   GraphQLTimestamp: ResolverTypeWrapper<Scalars['GraphQLTimestamp']>;
   User: ResolverTypeWrapper<UserModel>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Category: ResolverTypeWrapper<Omit<Category, 'user'> & { user?: Maybe<ResolversTypes['User']> }>;
   Post: ResolverTypeWrapper<HistoryModel>;
   StatusType: StatusType;
@@ -339,6 +389,12 @@ export type ResolversTypes = {
   SearchWorksResult: ResolverTypeWrapper<Omit<SearchWorksResult, 'edges'> & { edges: Array<ResolversTypes['SearchWorksResultEdge']> }>;
   SearchWorksResultEdge: ResolverTypeWrapper<Omit<SearchWorksResultEdge, 'node'> & { node: ResolversTypes['Work'] }>;
   WorksChartItem: ResolverTypeWrapper<Omit<WorksChartItem, 'work'> & { work: ResolversTypes['Work'] }>;
+  TablePeriodItem: ResolverTypeWrapper<Omit<TablePeriodItem, 'work' | 'record' | 'recommendations'> & { work: ResolversTypes['Work'], record?: Maybe<ResolversTypes['Record']>, recommendations?: Maybe<Array<ResolversTypes['Recommendation']>> }>;
+  Recommendation: ResolversTypes['RecommendationByCredit'];
+  RecommendationByCredit: ResolverTypeWrapper<RecommendationByCredit>;
+  Credit: ResolverTypeWrapper<Credit>;
+  WorkCredit: ResolverTypeWrapper<WorkCredit>;
+  CreditType: CreditType;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -347,10 +403,10 @@ export type ResolversParentTypes = {
   ID: Scalars['ID'];
   String: Scalars['String'];
   Int: Scalars['Int'];
+  Boolean: Scalars['Boolean'];
   Node: ResolversParentTypes['User'] | ResolversParentTypes['Category'] | ResolversParentTypes['Post'] | ResolversParentTypes['Record'] | ResolversParentTypes['Work'];
   GraphQLTimestamp: Scalars['GraphQLTimestamp'];
   User: UserModel;
-  Boolean: Scalars['Boolean'];
   Category: Omit<Category, 'user'> & { user?: Maybe<ResolversParentTypes['User']> };
   Post: HistoryModel;
   Record: RecordModel;
@@ -365,6 +421,11 @@ export type ResolversParentTypes = {
   SearchWorksResult: Omit<SearchWorksResult, 'edges'> & { edges: Array<ResolversParentTypes['SearchWorksResultEdge']> };
   SearchWorksResultEdge: Omit<SearchWorksResultEdge, 'node'> & { node: ResolversParentTypes['Work'] };
   WorksChartItem: Omit<WorksChartItem, 'work'> & { work: ResolversParentTypes['Work'] };
+  TablePeriodItem: Omit<TablePeriodItem, 'work' | 'record' | 'recommendations'> & { work: ResolversParentTypes['Work'], record?: Maybe<ResolversParentTypes['Record']>, recommendations?: Maybe<Array<ResolversParentTypes['Recommendation']>> };
+  Recommendation: ResolversParentTypes['RecommendationByCredit'];
+  RecommendationByCredit: RecommendationByCredit;
+  Credit: Credit;
+  WorkCredit: WorkCredit;
 };
 
 export type QueryResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -379,6 +440,7 @@ export type QueryResolvers<ContextType = MercuriusContext, ParentType extends Re
   work?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType, RequireFields<QueryworkArgs, 'id'>>;
   workByTitle?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType, RequireFields<QueryworkByTitleArgs, 'title'>>;
   post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QuerypostArgs, 'id'>>;
+  tablePeriod?: Resolver<Array<ResolversTypes['TablePeriodItem']>, ParentType, ContextType, RequireFields<QuerytablePeriodArgs, 'period' | 'onlyAdded' | 'withRecommendations'>>;
 };
 
 export type NodeResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = {
@@ -515,6 +577,40 @@ export type WorksChartItemResolvers<ContextType = MercuriusContext, ParentType e
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type TablePeriodItemResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['TablePeriodItem'] = ResolversParentTypes['TablePeriodItem']> = {
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  work?: Resolver<ResolversTypes['Work'], ParentType, ContextType>;
+  record?: Resolver<Maybe<ResolversTypes['Record']>, ParentType, ContextType>;
+  recommendations?: Resolver<Maybe<Array<ResolversTypes['Recommendation']>>, ParentType, ContextType>;
+  recommendationScore?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type RecommendationResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Recommendation'] = ResolversParentTypes['Recommendation']> = {
+  resolveType: TypeResolveFn<'RecommendationByCredit', ParentType, ContextType>;
+};
+
+export type RecommendationByCreditResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['RecommendationByCredit'] = ResolversParentTypes['RecommendationByCredit']> = {
+  credit?: Resolver<Maybe<ResolversTypes['Credit']>, ParentType, ContextType>;
+  related?: Resolver<Maybe<Array<ResolversTypes['WorkCredit']>>, ParentType, ContextType>;
+  score?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CreditResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Credit'] = ResolversParentTypes['Credit']> = {
+  type?: Resolver<Maybe<ResolversTypes['CreditType']>, ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  personId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type WorkCreditResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['WorkCredit'] = ResolversParentTypes['WorkCredit']> = {
+  workId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  workTitle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  type?: Resolver<Maybe<ResolversTypes['CreditType']>, ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = MercuriusContext> = {
   Query?: QueryResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
@@ -534,5 +630,10 @@ export type Resolvers<ContextType = MercuriusContext> = {
   SearchWorksResult?: SearchWorksResultResolvers<ContextType>;
   SearchWorksResultEdge?: SearchWorksResultEdgeResolvers<ContextType>;
   WorksChartItem?: WorksChartItemResolvers<ContextType>;
+  TablePeriodItem?: TablePeriodItemResolvers<ContextType>;
+  Recommendation?: RecommendationResolvers<ContextType>;
+  RecommendationByCredit?: RecommendationByCreditResolvers<ContextType>;
+  Credit?: CreditResolvers<ContextType>;
+  WorkCredit?: WorkCreditResolvers<ContextType>;
 };
 
