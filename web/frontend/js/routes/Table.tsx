@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import sortBy from 'lodash/sortBy';
 import some from 'lodash/some';
 import { Link } from 'nuri';
@@ -20,6 +20,7 @@ import { UserDTO } from '../../../shared/types_generated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faShareSquare } from '@fortawesome/free-solid-svg-icons';
 import { TableRouteDocument, TableRouteQuery } from './__generated__/Table.graphql';
+import useIntersectionObserver from '../ui/useIntersectionObserver'
 
 export function isRecommendationEnabled(period: string): boolean {
   return period === Periods.current || period === Periods.upcoming;
@@ -222,107 +223,96 @@ type TableRouteData = TableRouteQuery & {
   filter: TableFilter;
 };
 
-class Table extends React.Component<RouteComponentProps<TableRouteData>> {
-  // TODO: extract stuck detect component
-  private sentinelEl: Element | null = null;
-  private intersectionObserver: IntersectionObserver | null = null;
+const Table: React.FC<RouteComponentProps<TableRouteData>> = ({
+  data,
+  writeData,
+}) => {
+  const sentinelEl = useRef<HTMLDivElement | null>(null)
+  const entry = useIntersectionObserver(sentinelEl, {
+    threshold: [0],
+    rootMargin: '-48px 0px 0px 0px',
+  })
+  const isHeaderStuck = !entry?.isIntersecting
 
-  state = {
-    isHeaderStuck: false,
-    showShareButtonPopoverOnce: false,
-  };
+  const [showShareButtonPopoverOnce, setShowShareButtonPopoverOnce] = useState(false)
 
-  componentDidMount() {
-    if (window.IntersectionObserver) {
-      this.intersectionObserver = new IntersectionObserver((entries) => {
-        const stuck = !entries[0].isIntersecting
-        this.setState({ isHeaderStuck: stuck })
-      }, {threshold: [0], rootMargin: '-48px 0px 0px 0px'});
-      this.intersectionObserver.observe(this.sentinelEl!)
-    }
+  // scroll to top when filter changes
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [data.filter])
+
+  const { period, filter, containsKRSchedule, hasAnyRecord, items, currentUser } = data
+  let filteredItems = items
+  if (filter.addedOnly) {
+    filteredItems = filteredItems.filter(it => it.work.record != null)
+  }
+  
+  const onFilterChange = (newFilter: TableFilter) => {
+    writeData((data: TableRouteData) => {
+      data.filter = newFilter
+      data.items = sortBy(data.items, comparatorMap[newFilter.sort])
+    })
   }
 
-  componentWillUnmount() {
-    if (this.intersectionObserver)
-      this.intersectionObserver.disconnect();
-  }
-
-  render() {
-    const { period, filter, containsKRSchedule, hasAnyRecord, items, currentUser } = this.props.data;
-    let filteredItems = items;
-    if (filter.addedOnly) {
-      filteredItems = filteredItems.filter(it => it.work.record != null);
-    }
-    return (
-      <div className={Styles.container}>
-        <Layout.CenteredFullWidth>
-          <div className={Styles.search}>
-            <SearchInput />
-          </div>
-        </Layout.CenteredFullWidth>
-
-        <div ref={el => this.sentinelEl = el} />
-
-        <Layout.CenteredFullWidth className={this.state.isHeaderStuck ? Styles.stuckHeaderContainer : Styles.headerContainer}>
-          <Header
-            period={period}
-            filter={filter}
-            excludeKR={!containsKRSchedule}
-            showAddedOnlyFilter={hasAnyRecord}
-            onFilterChange={this._onFilterChange}
-            currentUser={currentUser}
-            totalCount={items.length}
-            addedCount={items.reduce((count, it) => count + (it.work.record != null ? 1 : 0), 0)}
-            showShareButtonPopoverOnce={this.state.showShareButtonPopoverOnce}
-          />
-        </Layout.CenteredFullWidth>
-
-        {/* <Layout.CenteredFullWidth>
-          {isRecommendationEnabled(period) && (
-            <div className={Styles.recommendationBetaNotice}>
-              <strong>✨ 신작 추천 (베타)</strong>
-              기록했던 작품과 겹치는 제작진을 표시합니다.
-            </div>
-          )}
-        </Layout.CenteredFullWidth> */}
-
-        <Grid.Row className={Styles.items}>
-          {filteredItems.map((item, i) => (
-            <>
-              <Grid.Column size={6} midSize={12} pull="left">
-                <TableItem key={item.work.id} item={item} onAddRecord={this._recordAdded} />
-              </Grid.Column>
-              {i % 2 === 1 && <div style={{ clear: 'both' }} />}
-            </>
-          ))}
-        </Grid.Row>
-      </div>
-    );
-  }
-
-  _onFilterChange = (newFilter: TableFilter) => {
-    this.props.writeData((data: TableRouteData) => {
-      data.filter = newFilter;
-      data.items = sortBy(data.items, comparatorMap[newFilter.sort]);
-    });
-    this.forceUpdate(() => {
-      window.scrollTo(0, 0);
-    });
-  };
-
-  _recordAdded = (item: TablePeriodItem, record: RecordDTO) => {
-    this.props.writeData((data: TableRouteData) => {
+  const recordAdded = (item: TablePeriodItem, record: RecordDTO) => {
+    writeData((data: TableRouteData) => {
       // TODO: use graphql mutation
       item.record = {
         id: record.id.toString(),
         status: record.status,
         statusType: record.status_type.toUpperCase() as any, // XXX
-      };
-      item.work.recordCount = (item.work.recordCount ?? 0) + 1;
-      data.hasAnyRecord = true;
-    });
-    // this.setState({ showShareButtonPopoverOnce: true }); // XXX
+      }
+      item.work.recordCount = (item.work.recordCount ?? 0) + 1
+      data.hasAnyRecord = true
+    })
+    // setShowShareButtonPopoverOnce(true) // XXX
   };
+
+  return (
+    <div className={Styles.container}>
+      <Layout.CenteredFullWidth>
+        <div className={Styles.search}>
+          <SearchInput />
+        </div>
+      </Layout.CenteredFullWidth>
+
+      <div ref={sentinelEl} />
+
+      <Layout.CenteredFullWidth className={isHeaderStuck ? Styles.stuckHeaderContainer : Styles.headerContainer}>
+        <Header
+          period={period}
+          filter={filter}
+          excludeKR={!containsKRSchedule}
+          showAddedOnlyFilter={hasAnyRecord}
+          onFilterChange={onFilterChange}
+          currentUser={currentUser}
+          totalCount={items.length}
+          addedCount={items.reduce((count, it) => count + (it.work.record != null ? 1 : 0), 0)}
+          showShareButtonPopoverOnce={showShareButtonPopoverOnce}
+        />
+      </Layout.CenteredFullWidth>
+
+      {/* <Layout.CenteredFullWidth>
+        {isRecommendationEnabled(period) && (
+          <div className={Styles.recommendationBetaNotice}>
+            <strong>✨ 신작 추천 (베타)</strong>
+            기록했던 작품과 겹치는 제작진을 표시합니다.
+          </div>
+        )}
+      </Layout.CenteredFullWidth> */}
+
+      <Grid.Row className={Styles.items}>
+        {filteredItems.map((item, i) => (
+          <>
+            <Grid.Column size={6} midSize={12} pull="left">
+              <TableItem key={item.work.id} item={item} onAddRecord={recordAdded} />
+            </Grid.Column>
+            {i % 2 === 1 && <div style={{ clear: 'both' }} />}
+          </>
+        ))}
+      </Grid.Row>
+    </div>
+  )
 }
 
 const routeHandler: RouteHandler<TableRouteData> = {

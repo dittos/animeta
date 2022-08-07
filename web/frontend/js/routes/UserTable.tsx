@@ -1,5 +1,5 @@
 import { RouteComponentProps, RouteHandler } from '../routes';
-import React from 'react';
+import React, { useRef } from 'react';
 import { User as UserLayout } from '../layouts';
 import * as Layout from '../ui/Layout';
 import * as Grid from '../ui/Grid';
@@ -12,6 +12,7 @@ import { isRecommendationEnabled } from './Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { UserTableRouteDocument, UserTableRouteQuery } from './__generated__/UserTable.graphql';
+import useIntersectionObserver from '../ui/useIntersectionObserver';
 
 type TablePeriodItem = UserTableRouteQuery['tablePeriod'][number]
 
@@ -20,67 +21,46 @@ type UserTableRouteData = UserTableRouteQuery & UserLayoutPropsData & {
   items: TablePeriodItem[];
 };
 
-class UserTable extends React.Component<RouteComponentProps<UserTableRouteData>> {
-  // TODO: extract stuck detect component
-  private sentinelEl: Element | null = null;
-  private intersectionObserver: IntersectionObserver | null = null;
+const UserTable: React.FC<RouteComponentProps<UserTableRouteData>> = ({ data }) => {
+  const sentinelEl = useRef<HTMLDivElement | null>(null)
+  const entry = useIntersectionObserver(sentinelEl, {
+    threshold: [0],
+    rootMargin: '-48px 0px 0px 0px',
+  })
+  const isHeaderStuck = !entry?.isIntersecting
 
-  state = {
-    isHeaderStuck: false,
-  };
-
-  componentDidMount() {
-    if (window.IntersectionObserver) {
-      this.intersectionObserver = new IntersectionObserver((entries) => {
-        const stuck = !entries[0].isIntersecting
-        this.setState({ isHeaderStuck: stuck })
-      }, {threshold: [0], rootMargin: '-48px 0px 0px 0px'});
-      this.intersectionObserver.observe(this.sentinelEl!)
-    }
-  }
-
-  componentWillUnmount() {
-    if (this.intersectionObserver)
-      this.intersectionObserver.disconnect();
-  }
-
-  render() {
-    const { items, period } = this.props.data;
-    return (
-      <div className={Styles.container}>
-        <div ref={el => this.sentinelEl = el} />
-        <Layout.CenteredFullWidth className={this.state.isHeaderStuck ? Styles.stuckHeaderContainer : Styles.headerContainer}>
-          <div className={Styles.userHeader}>
-            <div className={Styles.userPageTitle}>
-              {formatPeriod(period)} 신작
-            </div>
-            <Link to={`/table/${period}/`} className={Styles.fullTableLink}>전체 작품 보기 <FontAwesomeIcon icon={faChevronRight} /></Link>
+  const { items, period } = data
+  return (
+    <div className={Styles.container}>
+      <div ref={sentinelEl} />
+      <Layout.CenteredFullWidth className={isHeaderStuck ? Styles.stuckHeaderContainer : Styles.headerContainer}>
+        <div className={Styles.userHeader}>
+          <div className={Styles.userPageTitle}>
+            {formatPeriod(period)} 신작
           </div>
-        </Layout.CenteredFullWidth>
-        {items.length > 0 ? (
-          <Grid.Row className={Styles.items}>
-            {items.map((item, i) => (
-              <>
-                <Grid.Column size={6} midSize={12} pull="left">
-                  <TableItem key={item.work.id} item={item} onAddRecord={this._recordAdded} />
-                </Grid.Column>
-                {i % 2 === 1 && <div style={{ clear: 'both' }} />}
-              </>
-            ))}
-          </Grid.Row>
-        ) : (
-          <Grid.Row className={Styles.itemsEmpty}>
-            <p>추가한 작품이 없습니다.</p>
+          <Link to={`/table/${period}/`} className={Styles.fullTableLink}>전체 작품 보기 <FontAwesomeIcon icon={faChevronRight} /></Link>
+        </div>
+      </Layout.CenteredFullWidth>
+      {items.length > 0 ? (
+        <Grid.Row className={Styles.items}>
+          {items.map((item, i) => (
+            <>
+              <Grid.Column size={6} midSize={12} pull="left">
+                <TableItem key={item.work.id} item={item} onAddRecord={() => {}} />
+              </Grid.Column>
+              {i % 2 === 1 && <div style={{ clear: 'both' }} />}
+            </>
+          ))}
+        </Grid.Row>
+      ) : (
+        <Grid.Row className={Styles.itemsEmpty}>
+          <p>추가한 작품이 없습니다.</p>
 
-            <p><Link to={`/table/${period}/`} className={Styles.fullTableLink}>전체 작품 보기 <FontAwesomeIcon icon={faChevronRight} /></Link></p>
-          </Grid.Row>
-        )}
-      </div>
-    )
-  }
-
-  private _recordAdded = () => {
-  };
+          <p><Link to={`/table/${period}/`} className={Styles.fullTableLink}>전체 작품 보기 <FontAwesomeIcon icon={faChevronRight} /></Link></p>
+        </Grid.Row>
+      )}
+    </div>
+  )
 }
 
 const routeHandler: RouteHandler<UserTableRouteData> = {
