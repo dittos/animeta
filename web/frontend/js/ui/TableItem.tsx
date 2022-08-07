@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link } from 'nuri';
 import Styles from '../../less/table-period.less';
-import AddRecordDialog from '../ui/AddRecordDialog';
+import AddRecordDialog from './AddRecordDialog';
 import { trackEvent } from '../Tracking';
 import * as util from '../util';
-import { CreditType, RecordDTO, LegacyStatusType, WorkDTO, WorkSchedule } from '../../../shared/types';
-import { Recommendation$ByCredit } from '../../../shared/types_generated';
+import { RecordDTO } from '../../../shared/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faPencil, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { TableItem_ItemFragment } from './__generated__/TableItem.graphql';
+import { CreditType, WorkSchedule } from '../__generated__/globalTypes';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -24,8 +25,8 @@ function getDate(value: Date): string {
 }
 
 interface StatusButtonProps {
-  item: WorkDTO;
-  onAddRecord: (item: WorkDTO, record: RecordDTO) => any;
+  item: TableItem_ItemFragment;
+  onAddRecord: (item: TableItem_ItemFragment, record: RecordDTO) => any;
 }
 
 class StatusButton extends React.Component<StatusButtonProps> {
@@ -42,9 +43,9 @@ class StatusButton extends React.Component<StatusButtonProps> {
           to={`/records/${record.id}/`}
         >
           <FontAwesomeIcon icon={faPencil} />
-          {util.STATUS_TYPE_TEXT[record.status_type as LegacyStatusType]}
+          {record.statusType && util.GQL_STATUS_TYPE_TEXT[record.statusType]}
           {record.status && (
-            <span className={Styles.favoriteButtonSubtext}>@ {util.getStatusDisplay(record)}</span>
+            <span className={Styles.favoriteButtonSubtext}>@ {util.getStatusDisplayGql(record)}</span>
           )}
         </Link>
       );
@@ -90,12 +91,12 @@ class StatusButton extends React.Component<StatusButtonProps> {
   };
 }
 
-function Poster({ item }: { item: WorkDTO }) {
+function Poster({ work }: { work: TableItem_ItemFragment['work'] }) {
   return (
     <div className={Styles.poster}>
-      <img src={item.image_url!} className={Styles.posterImage} />
+      <img src={work.imageUrl!} className={Styles.posterImage} />
       <div className={Styles.posterOverlay}>
-      <FontAwesomeIcon icon={faCheck} /> {item.record_count}
+        <FontAwesomeIcon icon={faCheck} /> {work.recordCount}
       </div>
     </div>
   );
@@ -111,21 +112,22 @@ const creditTypeText: {[K in CreditType]: string} = {
   'MUSIC': '음악',
 };
 
-export function TableItem({ item, onAddRecord }: { item: WorkDTO; onAddRecord: (item: WorkDTO, record: RecordDTO) => any }) {
-  var { links, studios, source, schedule, durationMinutes } = item.metadata!;
+export function TableItem({ item, onAddRecord }: { item: TableItem_ItemFragment; onAddRecord: (item: TableItem_ItemFragment, record: RecordDTO) => any }) {
+  const work = item.work;
+  var { studioNames, source, schedules, durationMinutes, websiteUrl, namuwikiUrl, annUrl } = work.metadata!;
   return (
     <div className={Styles.item}>
-      <Link to={util.getWorkURL(item.title)}>
-        <Poster item={item} />
+      <Link to={util.getWorkURL(work.title!)}>
+        <Poster work={work} />
       </Link>
       <div className={Styles.itemContent}>
         <h3 className={Styles.title}>
-          {item.metadata!.title}
+          {item.title}
           {durationMinutes && <span className={Styles.duration}>{durationMinutes}분</span>}
         </h3>
         <div className={Styles.info}>
           <span className="studio">
-            {studios ? studios.join(', ') : '제작사 미정'}
+            {studioNames ? studioNames.join(', ') : '제작사 미정'}
           </span>
           {source && <>
             {' / '}
@@ -135,38 +137,40 @@ export function TableItem({ item, onAddRecord }: { item: WorkDTO; onAddRecord: (
         <div className={Styles.actions}>
           <StatusButton item={item} onAddRecord={onAddRecord} />
         </div>
-        <div className={Styles.schedules}>
-          {renderSchedule('jp', schedule!.jp!)}
-          {schedule!.kr && renderSchedule('kr', schedule!.kr)}
-        </div>
+        {schedules && (
+          <div className={Styles.schedules}>
+            {renderSchedule('jp', schedules)}
+            {renderSchedule('kr', schedules)}
+          </div>
+        )}
         <div className={Styles.credits}>
           {item.recommendations && item.recommendations.length > 0 && (
-            item.recommendations.map(({ credit, related }: Recommendation$ByCredit) => (
+            item.recommendations.map(({ credit, related }) => credit && (
               <div className={Styles.credit}>
-                <span className={Styles.creditType}>{creditTypeText[credit.type]}</span>
+                <span className={Styles.creditType}>{creditTypeText[credit.type!]}</span>
                 {credit.name}{' '}
-                <span className={Styles.creditRelated}>({related.map(it => it.workTitle).join(', ')})</span>
+                <span className={Styles.creditRelated}>({related && related.map(it => it.workTitle).join(', ')})</span>
               </div>
             ))
           )}
         </div>
         <div className={Styles.links}>
-          {links.website && (
+          {websiteUrl && (
             <a
-              href={links.website}
+              href={websiteUrl}
               className="link link-official"
               target="_blank"
             >
               공식 사이트
             </a>
           )}
-          {links.namu && (
-            <a href={links.namu} className="link link-namu" target="_blank">
+          {namuwikiUrl && (
+            <a href={namuwikiUrl} className="link link-namu" target="_blank">
               나무위키
             </a>
           )}
-          {links.ann && (
-            <a href={links.ann} className="link link-ann" target="_blank">
+          {annUrl && (
+            <a href={annUrl} className="link link-ann" target="_blank">
               ANN (en)
             </a>
           )}
@@ -177,8 +181,10 @@ export function TableItem({ item, onAddRecord }: { item: WorkDTO; onAddRecord: (
   );
 }
 
-function renderSchedule(country: string, schedule: WorkSchedule) {
-  var { date, date_only = false, broadcasts } = schedule;
+function renderSchedule(country: string, schedules: WorkSchedule[]) {
+  const schedule = schedules.find(it => it.country === country)
+  if (!schedule) return null
+  var { date, datePrecision, broadcasts } = schedule;
   const dateObject = date ? new Date(date) : null;
   return (
     <div className={Styles.schedule + ' item-schedule-' + country}>
@@ -187,8 +193,9 @@ function renderSchedule(country: string, schedule: WorkSchedule) {
       ) : (
         <span className="date">미정</span>
       )}
-      {dateObject &&
-        !date_only && <span className="time"> {util.formatTime(dateObject)}</span>}
+      {dateObject && datePrecision === 'DATE_TIME' && (
+        <span className="time"> {util.formatTime(dateObject)}</span>
+      )}
       {broadcasts && [
         ' ',
         <span className="broadcasts">({broadcasts.join(', ')})</span>,

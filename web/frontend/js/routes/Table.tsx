@@ -10,7 +10,7 @@ import * as Grid from '../ui/Grid';
 import LoginDialog from '../ui/LoginDialog';
 import SearchInput from '../ui/SearchInput';
 import { App } from '../layouts';
-import { RecordDTO, WorkDTO } from '../../../shared/types';
+import { RecordDTO } from '../../../shared/types';
 import { RouteComponentProps, RouteHandler } from '../routes';
 import { Popover } from '../ui/Popover';
 import { TableShareDialog } from '../ui/TableShareDialog';
@@ -19,6 +19,7 @@ import { formatPeriod } from '../util';
 import { UserDTO } from '../../../shared/types_generated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faShareSquare } from '@fortawesome/free-solid-svg-icons';
+import { TableRouteDocument, TableRouteQuery } from './__generated__/Table.graphql';
 
 export function isRecommendationEnabled(period: string): boolean {
   return period === Periods.current || period === Periods.upcoming;
@@ -179,20 +180,18 @@ function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period
   );
 }
 
-const scheduleComparator = (item: WorkDTO) =>
-  nullslast(item.metadata && item.metadata.schedule && item.metadata.schedule.jp && item.metadata.schedule.jp.date);
+const scheduleComparator = (item: TablePeriodItem) =>
+  nullslast(item.work.metadata?.schedules?.find(it => it.country === 'jp')?.date);
 
-const preferKRScheduleComparator = (item: WorkDTO) =>
+const preferKRScheduleComparator = (item: TablePeriodItem) =>
   nullslast(
-    item.metadata && item.metadata.schedule && (
-      (item.metadata.schedule.kr && item.metadata.schedule.kr.date) ||
-        (item.metadata.schedule.jp && item.metadata.schedule.jp.date)
-    )
+    item.work.metadata?.schedules?.find(it => it.country === 'kr')?.date ||
+      item.work.metadata?.schedules?.find(it => it.country === 'jp')?.date
   );
 
-const recordCountComparator = (item: WorkDTO) => -item.record_count;
+const recordCountComparator = (item: TablePeriodItem) => -(item.work.recordCount ?? 0);
 
-const recommendedComparator = (item: WorkDTO) => -(item.recommendationScore || 0);
+const recommendedComparator = (item: TablePeriodItem) => -(item.recommendationScore || 0);
 
 const comparatorMap = {
   recommended: recommendedComparator,
@@ -212,10 +211,12 @@ type TableFilter = {
   addedOnly: boolean;
 };
 
-type TableRouteData = {
+type TablePeriodItem = TableRouteQuery['tablePeriod'][number]
+
+type TableRouteData = TableRouteQuery & {
   currentUser: UserDTO | null;
   period: string;
-  items: WorkDTO[];
+  items: TablePeriodItem[];
   containsKRSchedule: boolean;
   hasAnyRecord: boolean;
   filter: TableFilter;
@@ -250,7 +251,7 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
     const { period, filter, containsKRSchedule, hasAnyRecord, items, currentUser } = this.props.data;
     let filteredItems = items;
     if (filter.addedOnly) {
-      filteredItems = filteredItems.filter(it => it.record != null);
+      filteredItems = filteredItems.filter(it => it.work.record != null);
     }
     return (
       <div className={Styles.container}>
@@ -271,7 +272,7 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
             onFilterChange={this._onFilterChange}
             currentUser={currentUser}
             totalCount={items.length}
-            addedCount={items.reduce((count, it) => count + (it.record != null ? 1 : 0), 0)}
+            addedCount={items.reduce((count, it) => count + (it.work.record != null ? 1 : 0), 0)}
             showShareButtonPopoverOnce={this.state.showShareButtonPopoverOnce}
           />
         </Layout.CenteredFullWidth>
@@ -289,7 +290,7 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
           {filteredItems.map((item, i) => (
             <>
               <Grid.Column size={6} midSize={12} pull="left">
-                <TableItem key={item.id} item={item} onAddRecord={this._recordAdded} />
+                <TableItem key={item.work.id} item={item} onAddRecord={this._recordAdded} />
               </Grid.Column>
               {i % 2 === 1 && <div style={{ clear: 'both' }} />}
             </>
@@ -309,10 +310,15 @@ class Table extends React.Component<RouteComponentProps<TableRouteData>> {
     });
   };
 
-  _recordAdded = (item: WorkDTO, record: RecordDTO) => {
+  _recordAdded = (item: TablePeriodItem, record: RecordDTO) => {
     this.props.writeData((data: TableRouteData) => {
-      item.record = record;
-      item.record_count++;
+      // TODO: use graphql mutation
+      item.record = {
+        id: record.id.toString(),
+        status: record.status,
+        statusType: record.status_type.toUpperCase() as any, // XXX
+      };
+      item.work.recordCount = (item.work.recordCount ?? 0) + 1;
       data.hasAnyRecord = true;
     });
     // this.setState({ showShareButtonPopoverOnce: true }); // XXX
@@ -324,28 +330,28 @@ const routeHandler: RouteHandler<TableRouteData> = {
 
   async load({ params, loader }) {
     const { period } = params;
-    const [currentUser, items] = await Promise.all([
+    const [currentUser, data] = await Promise.all([
       loader.getCurrentUser({
         options: {},
       }),
-      loader.callV4(`/table/periods/${period}`, {
-        with_recommendations: JSON.stringify(isRecommendationEnabled(period)),
-      }),
+      loader.graphql(TableRouteDocument, {period, withRecommendations: isRecommendationEnabled(period)}),
     ]);
     const sort: Ordering = currentUser && isRecommendationEnabled(period) ? 'recommended' :
       period === Periods.current ? 'schedule' :
         'recordCount';
+    const items = data.tablePeriod;
     return {
+      ...data,
       currentUser,
       period,
       items: sortBy(items, comparatorMap[sort]),
       containsKRSchedule: some(
         items,
-        i => i.metadata.schedule.kr && i.metadata.schedule.kr.date
+        i => i.work.metadata?.schedules?.find(it => it.country === 'kr')?.date
       ),
       hasAnyRecord: some(
         items,
-        i => i.record
+        i => i.work.record
       ),
       filter: {
         sort,

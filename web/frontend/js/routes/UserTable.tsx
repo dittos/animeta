@@ -5,17 +5,19 @@ import * as Layout from '../ui/Layout';
 import * as Grid from '../ui/Grid';
 import Styles from '../../less/table-period.less';
 import { TableItem } from '../ui/TableItem';
-import { WorkDTO } from '../../../shared/types';
 import { formatPeriod } from '../util';
 import { Link } from 'nuri';
 import { UserLayoutPropsData } from '../ui/UserLayout';
 import { isRecommendationEnabled } from './Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { UserTableRouteDocument, UserTableRouteQuery } from './__generated__/UserTable.graphql';
 
-type UserTableRouteData = UserLayoutPropsData & {
+type TablePeriodItem = UserTableRouteQuery['tablePeriod'][number]
+
+type UserTableRouteData = UserTableRouteQuery & UserLayoutPropsData & {
   period: string;
-  items: WorkDTO[];
+  items: TablePeriodItem[];
 };
 
 class UserTable extends React.Component<RouteComponentProps<UserTableRouteData>> {
@@ -60,7 +62,7 @@ class UserTable extends React.Component<RouteComponentProps<UserTableRouteData>>
             {items.map((item, i) => (
               <>
                 <Grid.Column size={6} midSize={12} pull="left">
-                  <TableItem key={item.id} item={item} onAddRecord={this._recordAdded} />
+                  <TableItem key={item.work.id} item={item} onAddRecord={this._recordAdded} />
                 </Grid.Column>
                 {i % 2 === 1 && <div style={{ clear: 'both' }} />}
               </>
@@ -84,9 +86,9 @@ class UserTable extends React.Component<RouteComponentProps<UserTableRouteData>>
 const routeHandler: RouteHandler<UserTableRouteData> = {
   component: UserLayout(UserTable, { noContentWrapper: true }, { noHero: true, noNotice: true }),
 
-  async load({ loader, params, query }) {
+  async load({ loader, params }) {
     const { username, period } = params;
-    const [currentUser, user, items] = await Promise.all([
+    const [currentUser, user, data] = await Promise.all([
       loader.getCurrentUser({
         options: {},
       }),
@@ -96,17 +98,18 @@ const routeHandler: RouteHandler<UserTableRouteData> = {
           categories: true,
         },
       }),
-      loader.callV4(`/table/periods/${period}`, {
-        only_added: JSON.stringify(true),
+      loader.graphql(UserTableRouteDocument, {
+        period,
         username,
-        with_recommendations: JSON.stringify(isRecommendationEnabled(period)),
+        withRecommendations: isRecommendationEnabled(period),
       }),
     ]);
     return {
+      ...data,
       currentUser,
       user,
       period,
-      items,
+      items: data.tablePeriod,
     };
   },
 

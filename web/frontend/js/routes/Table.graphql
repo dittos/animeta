@@ -1,0 +1,15 @@
+query TableRoute($period: String!, $withRecommendations: Boolean!) {
+  tablePeriod(period: $period, withRecommendations: $withRecommendations) {
+    ...TableRoute_item
+    ...TableItem_item
+  }
+}
+
+fragment TableRoute_item on TablePeriodItem {
+  work {
+    id
+    record {
+      id
+    }
+  }
+}

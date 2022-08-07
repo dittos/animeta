@@ -1,0 +1,45 @@
+fragment TableItem_item on TablePeriodItem {
+  title
+  work {
+    id
+    title
+    imageUrl
+    recordCount
+    metadata {
+      periods
+      studioNames
+      source
+      websiteUrl
+      namuwikiUrl
+      annUrl
+      durationMinutes
+      schedules {
+        country
+        date
+        datePrecision
+        broadcasts
+      }
+    }
+  }
+  record {
+    id
+    status
+    statusType
+  }
+  recommendations {
+    ... on RecommendationByCredit {
+      credit {
+        type
+        name
+        personId
+      }
+      related {
+        workId
+        workTitle
+        type
+      }
+      score
+    }
+  }
+  recommendationScore
+}

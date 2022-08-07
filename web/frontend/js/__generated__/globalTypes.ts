@@ -20,6 +20,23 @@ export type Category = Node & {
   user: Maybe<User>;
 };
 
+export type Credit = {
+  __typename?: 'Credit';
+  name: Maybe<Scalars['String']>;
+  personId: Scalars['ID'];
+  type: Maybe<CreditType>;
+};
+
+export const enum CreditType {
+  CharacterDesign = 'CHARACTER_DESIGN',
+  ChiefDirector = 'CHIEF_DIRECTOR',
+  Director = 'DIRECTOR',
+  Music = 'MUSIC',
+  OriginalWork = 'ORIGINAL_WORK',
+  SeriesComposition = 'SERIES_COMPOSITION',
+  SeriesDirector = 'SERIES_DIRECTOR'
+};
+
 export type CuratedList = {
   __typename?: 'CuratedList';
   id: Maybe<Scalars['ID']>;
@@ -83,6 +100,7 @@ export type Query = {
   currentUser: Maybe<User>;
   post: Maybe<Post>;
   searchWorks: Maybe<SearchWorksResult>;
+  tablePeriod: Array<TablePeriodItem>;
   timeline: Maybe<Array<Maybe<Post>>>;
   user: Maybe<User>;
   userByName: Maybe<User>;
@@ -104,6 +122,14 @@ export type QueryPostArgs = {
 
 export type QuerySearchWorksArgs = {
   query: Scalars['String'];
+};
+
+
+export type QueryTablePeriodArgs = {
+  onlyAdded?: InputMaybe<Scalars['Boolean']>;
+  period: Scalars['String'];
+  username: InputMaybe<Scalars['String']>;
+  withRecommendations?: InputMaybe<Scalars['Boolean']>;
 };
 
 
@@ -135,6 +161,15 @@ export type QueryWorkArgs = {
 
 export type QueryWorkByTitleArgs = {
   title: Scalars['String'];
+};
+
+export type Recommendation = RecommendationByCredit;
+
+export type RecommendationByCredit = {
+  __typename?: 'RecommendationByCredit';
+  credit: Maybe<Credit>;
+  related: Maybe<Array<WorkCredit>>;
+  score: Maybe<Scalars['Int']>;
 };
 
 export type Record = Node & {
@@ -171,6 +206,15 @@ export const enum StatusType {
   Interested = 'INTERESTED',
   Suspended = 'SUSPENDED',
   Watching = 'WATCHING'
+};
+
+export type TablePeriodItem = {
+  __typename?: 'TablePeriodItem';
+  recommendationScore: Maybe<Scalars['Int']>;
+  recommendations: Maybe<Array<Recommendation>>;
+  record: Maybe<Record>;
+  title: Scalars['String'];
+  work: Work;
 };
 
 export type User = Node & {
@@ -214,6 +258,13 @@ export type WorkPostsArgs = {
   beforeId: InputMaybe<Scalars['ID']>;
   count: InputMaybe<Scalars['Int']>;
   episode: InputMaybe<Scalars['Int']>;
+};
+
+export type WorkCredit = {
+  __typename?: 'WorkCredit';
+  type: Maybe<CreditType>;
+  workId: Scalars['ID'];
+  workTitle: Scalars['String'];
 };
 
 export type WorkMetadata = {
