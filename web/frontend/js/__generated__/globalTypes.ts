@@ -97,10 +97,13 @@ export type Query = {
   __typename?: 'Query';
   curatedList: Maybe<CuratedList>;
   curatedLists: Maybe<Array<Maybe<CuratedList>>>;
+  currentTablePeriod: TablePeriod;
   currentUser: Maybe<User>;
   post: Maybe<Post>;
   searchWorks: Maybe<SearchWorksResult>;
   tablePeriod: Array<TablePeriodItem>;
+  tablePeriod2: Maybe<TablePeriod>;
+  tablePeriods: Array<TablePeriod>;
   timeline: Maybe<Array<Maybe<Post>>>;
   user: Maybe<User>;
   userByName: Maybe<User>;
@@ -130,6 +133,11 @@ export type QueryTablePeriodArgs = {
   period: Scalars['String'];
   username: InputMaybe<Scalars['String']>;
   withRecommendations?: InputMaybe<Scalars['Boolean']>;
+};
+
+
+export type QueryTablePeriod2Args = {
+  period: Scalars['String'];
 };
 
 
@@ -206,6 +214,23 @@ export const enum StatusType {
   Interested = 'INTERESTED',
   Suspended = 'SUSPENDED',
   Watching = 'WATCHING'
+};
+
+export type TablePeriod = {
+  __typename?: 'TablePeriod';
+  isCurrent: Scalars['Boolean'];
+  isRecommendationEnabled: Scalars['Boolean'];
+  items: Array<TablePeriodItem>;
+  month: Scalars['Int'];
+  period: Scalars['String'];
+  year: Scalars['Int'];
+};
+
+
+export type TablePeriodItemsArgs = {
+  onlyAdded?: InputMaybe<Scalars['Boolean']>;
+  username: InputMaybe<Scalars['String']>;
+  withRecommendations?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type TablePeriodItem = {

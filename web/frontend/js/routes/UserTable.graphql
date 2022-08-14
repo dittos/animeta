@@ -1,7 +1,12 @@
 query UserTableRoute($period: String!, $username: String!, $withRecommendations: Boolean!) {
-  tablePeriod(period: $period, username: $username, onlyAdded: true, withRecommendations: $withRecommendations) {
-    ...TableRoute_item
-    ...TableItem_item
+  tablePeriod: tablePeriod2(period: $period) {
+    period
+    year
+    month
+    items(username: $username, onlyAdded: true, withRecommendations: $withRecommendations) {
+      ...TableRoute_item
+      ...TableItem_item
+    }
   }
 }
 

@@ -123,9 +123,6 @@ export const SOURCE_TYPE_MAP: {[K in WorkMetadata$SourceType]: string} = {
   NOVEL: '소설 원작',
 };
 
-export function formatPeriod(period: string): string {
-  var parts = period.split('Q');
-  var year = parts[0],
-    quarter = Number(parts[1]);
-  return year + '년 ' + [1, 4, 7, 10][quarter - 1] + '월';
+export function formatPeriod(period: {year: number; month: number}): string {
+  return `${period.year}년 ${period.month}월`
 }

@@ -8,17 +8,13 @@ import { TableItem } from '../ui/TableItem';
 import { formatPeriod } from '../util';
 import { Link } from 'nuri';
 import { UserLayoutPropsData } from '../ui/UserLayout';
-import { isRecommendationEnabled } from './Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { UserTableRouteDocument, UserTableRouteQuery } from './__generated__/UserTable.graphql';
 import useIntersectionObserver from '../ui/useIntersectionObserver';
 
-type TablePeriodItem = UserTableRouteQuery['tablePeriod'][number]
-
 type UserTableRouteData = UserTableRouteQuery & UserLayoutPropsData & {
-  period: string;
-  items: TablePeriodItem[];
+  tablePeriod: NonNullable<UserTableRouteQuery['tablePeriod']>;
 };
 
 const UserTable: React.FC<RouteComponentProps<UserTableRouteData>> = ({ data }) => {
@@ -27,18 +23,19 @@ const UserTable: React.FC<RouteComponentProps<UserTableRouteData>> = ({ data }) 
     threshold: [0],
     rootMargin: '-48px 0px 0px 0px',
   })
-  const isHeaderStuck = !entry?.isIntersecting
+  const isHeaderStuck = entry ? !entry.isIntersecting : false
 
-  const { items, period } = data
+  const { tablePeriod } = data
+  const { items } = tablePeriod
   return (
     <div className={Styles.container}>
       <div ref={sentinelEl} />
       <Layout.CenteredFullWidth className={isHeaderStuck ? Styles.stuckHeaderContainer : Styles.headerContainer}>
         <div className={Styles.userHeader}>
           <div className={Styles.userPageTitle}>
-            {formatPeriod(period)} 신작
+            {formatPeriod(tablePeriod)} 신작
           </div>
-          <Link to={`/table/${period}/`} className={Styles.fullTableLink}>전체 작품 보기 <FontAwesomeIcon icon={faChevronRight} /></Link>
+          <Link to={`/table/${tablePeriod.period}/`} className={Styles.fullTableLink}>전체 작품 보기 <FontAwesomeIcon icon={faChevronRight} /></Link>
         </div>
       </Layout.CenteredFullWidth>
       {items.length > 0 ? (
@@ -56,7 +53,7 @@ const UserTable: React.FC<RouteComponentProps<UserTableRouteData>> = ({ data }) 
         <Grid.Row className={Styles.itemsEmpty}>
           <p>추가한 작품이 없습니다.</p>
 
-          <p><Link to={`/table/${period}/`} className={Styles.fullTableLink}>전체 작품 보기 <FontAwesomeIcon icon={faChevronRight} /></Link></p>
+          <p><Link to={`/table/${tablePeriod.period}/`} className={Styles.fullTableLink}>전체 작품 보기 <FontAwesomeIcon icon={faChevronRight} /></Link></p>
         </Grid.Row>
       )}
     </div>
@@ -81,23 +78,25 @@ const routeHandler: RouteHandler<UserTableRouteData> = {
       loader.graphql(UserTableRouteDocument, {
         period,
         username,
-        withRecommendations: isRecommendationEnabled(period),
+        withRecommendations: true,
       }),
     ]);
+    const {tablePeriod} = data
+    if (!tablePeriod) throw new Error('not found')
     return {
       ...data,
+      tablePeriod,
       currentUser,
       user,
-      period,
-      items: data.tablePeriod,
     };
   },
 
-  renderTitle({ user, period }) {
-    return `${formatPeriod(period)} 신작 - ${user.name} 사용자`;
+  renderTitle({ user, tablePeriod }) {
+    return `${formatPeriod(tablePeriod)} 신작 - ${user.name} 사용자`;
   },
   
-  renderMeta({ user, period }) {
+  renderMeta({ user, tablePeriod }) {
+    const period = tablePeriod.period
     return {
       og_url: `/users/${user.name}/table/${period}/`,
       tw_url: `/users/${user.name}/table/${period}/`,

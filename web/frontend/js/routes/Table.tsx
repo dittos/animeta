@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import sortBy from 'lodash/sortBy';
 import some from 'lodash/some';
 import { Link } from 'nuri';
-import Periods from '../Periods.json';
 import Styles from '../../less/table-period.less';
 import { Switch, SwitchItem } from '../ui/Switch';
 import * as Layout from '../ui/Layout';
@@ -19,17 +18,15 @@ import { formatPeriod } from '../util';
 import { UserDTO } from '../../../shared/types_generated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faShareSquare } from '@fortawesome/free-solid-svg-icons';
-import { TableRouteDocument, TableRouteQuery } from './__generated__/Table.graphql';
+import { TableRouteDocument, TableRouteQuery, TableRoute_PageTitleFragment } from './__generated__/Table.graphql';
 import useIntersectionObserver from '../ui/useIntersectionObserver'
+import groupBy from 'lodash/groupBy';
 
-export function isRecommendationEnabled(period: string): boolean {
-  return period === Periods.current || period === Periods.upcoming;
-}
-
-function PageTitle(props: { period: string }) {
+function PageTitle(props: { period: TableRoute_PageTitleFragment, tablePeriods: TableRouteQuery['tablePeriods'] }) {
   const activePeriod = props.period;
-  const years = [];
-  for (let y = Number(Periods.current.substring(0, 4)); y >= 2014; y--) years.push(y);
+  const periodsByYear = Object.entries(groupBy(props.tablePeriods, 'year'))
+  periodsByYear.sort(([a, ], [b, ]) => Number(b) - Number(a))
+  periodsByYear.forEach(([, periods]) => periods.sort((a, b) => a.month - b.month))
   return (
     <Popover
       relativeContainer={false}
@@ -41,27 +38,27 @@ function PageTitle(props: { period: string }) {
         </a>
       )}
     >
-      {years.map(year => (
-        <div className={Styles.navRow}>
-          <div className={Styles.navYear}>{year}년</div>
-          {[1, 2, 3, 4].map(q => {
-            const period = `${year}Q${q}`;
-            const month = [1, 4, 7, 10][q - 1];
-            const isValidPeriod = Periods.min <= period && period <= Periods.current;
-            if (!isValidPeriod) {
-              return <span className={Styles.navPeriodHidden}>{month}월</span>;
-            }
-            return (
+      {periodsByYear.map(([year, periods]) => {
+        // fillers for mobile view
+        const fillers = []
+        for (let i = 0; i < 4 - periods.length; i++) {
+          fillers.push(<span className={Styles.navPeriodHidden} />)
+        }
+        return (
+          <div className={Styles.navRow}>
+            <div className={Styles.navYear}>{year}년</div>
+            {periods.map(({ period, month }) => (
               <Link
                 to={`/table/${period}/`}
-                className={period === activePeriod ? Styles.navPeriodActive : Styles.navPeriodNormal}
+                className={period === activePeriod.period ? Styles.navPeriodActive : Styles.navPeriodNormal}
               >
                 {month}월
               </Link>
-            );
-          })}
-        </div>
-      ))}
+            ))}
+            {fillers}
+          </div>
+        )
+      })}
     </Popover>
   );
 }
@@ -71,7 +68,8 @@ interface HeaderProps {
   showAddedOnlyFilter: boolean;
   filter: TableFilter;
   onFilterChange: (newFilter: TableFilter) => any;
-  period: string;
+  period: NonNullable<TableRouteQuery['tablePeriod']>;
+  tablePeriods: TableRouteQuery['tablePeriods'];
   currentUser: any;
   totalCount: number;
   addedCount: number;
@@ -79,7 +77,11 @@ interface HeaderProps {
 }
 
 class ShareButton extends React.Component<{
-  period: string;
+  period: {
+    period: string;
+    year: number;
+    month: number;
+  };
   username?: string;
   showAdded: boolean;
   showPopoverOnce: boolean;
@@ -121,7 +123,7 @@ class ShareButton extends React.Component<{
   private hidePopover = () => this.setState({ hidePopover: true });
 }
 
-function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period, currentUser, totalCount, addedCount, showShareButtonPopoverOnce }: HeaderProps) {
+function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period, tablePeriods, currentUser, totalCount, addedCount, showShareButtonPopoverOnce }: HeaderProps) {
   var options: { value: Ordering; label: string; onClick?: () => any; }[];
   if (!excludeKR) {
     options = [
@@ -135,7 +137,7 @@ function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period
       { value: 'recordCount', label: '인기' },
     ];
   }
-  if (isRecommendationEnabled(period)) {
+  if (period.isRecommendationEnabled) {
     options.unshift({
       value: 'recommended',
       label: '추천',
@@ -145,7 +147,7 @@ function Header({ excludeKR, showAddedOnlyFilter, filter, onFilterChange, period
   return (
     <div className={Styles.header}>
       <div className={Styles.pageTitleAndShareContainer}>
-        <PageTitle period={period} />
+        <PageTitle period={period} tablePeriods={tablePeriods} />
         <ShareButton
           period={period}
           username={currentUser && currentUser.name}
@@ -212,11 +214,11 @@ type TableFilter = {
   addedOnly: boolean;
 };
 
-type TablePeriodItem = TableRouteQuery['tablePeriod'][number]
+type TablePeriodItem = NonNullable<TableRouteQuery['tablePeriod']>['items'][number]
 
 type TableRouteData = TableRouteQuery & {
+  tablePeriod: NonNullable<TableRouteQuery['tablePeriod']>;
   currentUser: UserDTO | null;
-  period: string;
   items: TablePeriodItem[];
   containsKRSchedule: boolean;
   hasAnyRecord: boolean;
@@ -232,7 +234,7 @@ const Table: React.FC<RouteComponentProps<TableRouteData>> = ({
     threshold: [0],
     rootMargin: '-48px 0px 0px 0px',
   })
-  const isHeaderStuck = !entry?.isIntersecting
+  const isHeaderStuck = entry ? !entry.isIntersecting : false
 
   const [showShareButtonPopoverOnce, setShowShareButtonPopoverOnce] = useState(false)
 
@@ -241,7 +243,7 @@ const Table: React.FC<RouteComponentProps<TableRouteData>> = ({
     window.scrollTo(0, 0)
   }, [data.filter])
 
-  const { period, filter, containsKRSchedule, hasAnyRecord, items, currentUser } = data
+  const { filter, containsKRSchedule, hasAnyRecord, items, currentUser, tablePeriod } = data
   let filteredItems = items
   if (filter.addedOnly) {
     filteredItems = filteredItems.filter(it => it.work.record != null)
@@ -280,7 +282,8 @@ const Table: React.FC<RouteComponentProps<TableRouteData>> = ({
 
       <Layout.CenteredFullWidth className={isHeaderStuck ? Styles.stuckHeaderContainer : Styles.headerContainer}>
         <Header
-          period={period}
+          period={tablePeriod}
+          tablePeriods={data.tablePeriods}
           filter={filter}
           excludeKR={!containsKRSchedule}
           showAddedOnlyFilter={hasAnyRecord}
@@ -324,16 +327,18 @@ const routeHandler: RouteHandler<TableRouteData> = {
       loader.getCurrentUser({
         options: {},
       }),
-      loader.graphql(TableRouteDocument, {period, withRecommendations: isRecommendationEnabled(period)}),
+      loader.graphql(TableRouteDocument, {period, withRecommendations: true}),
     ]);
-    const sort: Ordering = currentUser && isRecommendationEnabled(period) ? 'recommended' :
-      period === Periods.current ? 'schedule' :
+    const {tablePeriod} = data
+    if (!tablePeriod) throw new Error('not found')
+    const sort: Ordering = currentUser && tablePeriod.isRecommendationEnabled ? 'recommended' :
+      period === tablePeriod.isCurrent ? 'schedule' :
         'recordCount';
-    const items = data.tablePeriod;
+    const items = tablePeriod.items;
     return {
       ...data,
+      tablePeriod,
       currentUser,
-      period,
       items: sortBy(items, comparatorMap[sort]),
       containsKRSchedule: some(
         items,
@@ -350,11 +355,12 @@ const routeHandler: RouteHandler<TableRouteData> = {
     };
   },
 
-  renderTitle({ period }) {
-    return `${formatPeriod(period)} 신작`;
+  renderTitle({ tablePeriod }) {
+    return `${formatPeriod(tablePeriod)} 신작`;
   },
   
-  renderMeta({ period }) {
+  renderMeta({ tablePeriod }) {
+    const period = tablePeriod.period
     return {
       og_url: `/table/${period}/`,
       tw_url: `/table/${period}/`,

@@ -8,7 +8,11 @@ import { Switch, SwitchItem } from './Switch';
 import Styles from './TableShareDialog.less';
 
 interface Props {
-  period: string;
+  period: {
+    period: string;
+    year: number;
+    month: number;
+  };
   username?: string;
   showAdded: boolean;
   onClose: () => any;
@@ -81,9 +85,9 @@ class TableShareDialogInternal extends React.Component<Props, State> {
 
   private getShareUrl() {
     if (this.state.shareContent === 'all') {
-      return `https://animeta.net/table/${this.props.period}/`;
+      return `https://animeta.net/table/${this.props.period.period}/`;
     } else if (this.state.shareContent === 'added') {
-      return `https://animeta.net/users/${this.props.username}/table/${this.props.period}/`;
+      return `https://animeta.net/users/${this.props.username}/table/${this.props.period.period}/`;
     }
     throw new Error('unreachable');
   }

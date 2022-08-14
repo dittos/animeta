@@ -1,7 +1,6 @@
 import React from 'react';
 import { createApp } from 'nuri';
 import * as NuriApp from 'nuri/app';
-import Periods from './Periods.json';
 import * as layouts from './layouts';
 import LoginDialog from './ui/LoginDialog';
 import IndexRoute from './routes/Index';
@@ -19,6 +18,7 @@ import AddRecordRoute from './routes/AddRecord';
 // import NewAddRecordRoute from './routes/NewAddRecord';
 import ManageCategoryRoute from './routes/ManageCategory';
 import { Loader } from '../../shared/loader';
+import { GetCurrentTablePeriodDocument } from './__generated__/routes.graphql';
 
 export type RouteHandler<D> = NuriApp.RouteHandler<D, Loader>;
 export type RouteComponent<D> = NuriApp.RouteComponent<D, Loader>;
@@ -40,7 +40,10 @@ app.route('/-:id', PostRoute);
 app.route('/works/:title+/ep/:episode/', WorkEpisodeRoute);
 app.route('/works/:title+/', WorkRoute);
 app.route('/table/', {
-  load: ({ redirect }) => redirect(`/table/${Periods.current}/`),
+  load: async ({ redirect, loader }) => {
+    const result = await loader.graphql(GetCurrentTablePeriodDocument)
+    return redirect(`/table/${result.currentTablePeriod.period}/`)
+  },
 });
 app.route('/table/:period/', TableRoute);
 app.route('/settings/', SettingsRoute);

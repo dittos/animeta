@@ -1,8 +1,24 @@
 query TableRoute($period: String!, $withRecommendations: Boolean!) {
-  tablePeriod(period: $period, withRecommendations: $withRecommendations) {
-    ...TableRoute_item
-    ...TableItem_item
+  tablePeriods {
+    period
+    year
+    month
   }
+  tablePeriod: tablePeriod2(period: $period) {
+    ...TableRoute_pageTitle
+    isRecommendationEnabled
+    isCurrent
+    items(withRecommendations: $withRecommendations) {
+      ...TableRoute_item
+      ...TableItem_item
+    }
+  }
+}
+
+fragment TableRoute_pageTitle on TablePeriod {
+  period
+  year
+  month
 }
 
 fragment TableRoute_item on TablePeriodItem {
