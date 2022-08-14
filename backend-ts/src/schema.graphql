@@ -10,12 +10,16 @@ type Query {
   work(id: ID!): Work
   workByTitle(title: String!): Work
   post(id: ID!): Post
+
   tablePeriod(
     period: String!,
     onlyAdded: Boolean = false,
     username: String,
     withRecommendations: Boolean = false
   ): [TablePeriodItem!]!
+  tablePeriod2(period: String!): TablePeriod
+  currentTablePeriod: TablePeriod!
+  tablePeriods: [TablePeriod!]!
 }
 
 interface Node {
@@ -156,6 +160,20 @@ type WorksChartItem {
   work: Work!
   diff: Int
   sign: Int
+}
+
+type TablePeriod {
+  period: String!
+  year: Int!
+  month: Int!
+  isCurrent: Boolean!
+  isRecommendationEnabled: Boolean!
+
+  items(
+    onlyAdded: Boolean = false,
+    username: String,
+    withRecommendations: Boolean = false
+  ): [TablePeriodItem!]!
 }
 
 type TablePeriodItem {

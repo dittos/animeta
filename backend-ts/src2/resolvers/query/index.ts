@@ -1,8 +1,9 @@
 import { QueryResolvers } from "src/graphql/generated"
 import { getPost } from "src2/services/post"
+import { getValidPeriods, Periods } from "src2/services/table"
 import { getUser, getUserByName } from "src2/services/user"
 import { getWork, getWorkByTitle } from "src2/services/work"
-import { tablePeriod } from "./tablePeriod"
+import { tablePeriod, tablePeriod2 } from "./tablePeriod"
 import { timeline } from "./timeline"
 import { weeklyWorksChart } from "./weeklyWorksChart"
 
@@ -15,4 +16,7 @@ export const Query: QueryResolvers = {
   workByTitle: (_, { title }) => getWorkByTitle(title),
   post: (_, { id }) => getPost(Number(id)),
   tablePeriod,
+  tablePeriod2,
+  currentTablePeriod: () => Periods.current,
+  tablePeriods: () => getValidPeriods(),
 }

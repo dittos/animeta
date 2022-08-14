@@ -1,6 +1,6 @@
 import { Period } from 'src/utils/period'
-import { rebuildWorkIndex } from 'src2/services/indexer'
-import { PostDtoFragment, PostDtoFragmentDoc, RecordDtoFragment, RecordDtoFragmentDoc, WorkDtoFragment, WorkDtoFragmentDoc } from '../fragments.generated'
+import { Periods } from 'src2/services/table'
+import { RecordDtoFragment, RecordDtoFragmentDoc, WorkDtoFragment, WorkDtoFragmentDoc } from '../fragments.generated'
 import { getTestUtils, gql, TestUtils } from '../utils'
 
 let utils: TestUtils
@@ -75,7 +75,7 @@ test('get with record', async () => {
 })
 
 test('get with recommendation', async () => {
-  const period = new Period(2021, 1)
+  const period = Periods.current
   const work = await utils.factory.newWork({ periods: [period] })
   const user = await utils.factory.newUser()
   await utils.factory.newRecord({ user, work })

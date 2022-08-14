@@ -4,6 +4,7 @@ import type { User as UserModel } from 'src/entities/user.entity';
 import type { Record as RecordModel } from 'src/entities/record.entity';
 import type { Work as WorkModel } from 'src/entities/work.entity';
 import type { Episode as EpisodeModel } from 'src/entities/episode.entity';
+import type { Period as PeriodModel } from 'src/utils/period';
 import type { MercuriusContext } from 'mercurius';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -38,6 +39,9 @@ export type Query = {
   workByTitle?: Maybe<Work>;
   post?: Maybe<Post>;
   tablePeriod: Array<TablePeriodItem>;
+  tablePeriod2?: Maybe<TablePeriod>;
+  currentTablePeriod: TablePeriod;
+  tablePeriods: Array<TablePeriod>;
 };
 
 
@@ -92,6 +96,11 @@ export type QuerytablePeriodArgs = {
   onlyAdded?: InputMaybe<Scalars['Boolean']>;
   username?: InputMaybe<Scalars['String']>;
   withRecommendations?: InputMaybe<Scalars['Boolean']>;
+};
+
+
+export type QuerytablePeriod2Args = {
+  period: Scalars['String'];
 };
 
 export type Node = {
@@ -261,6 +270,23 @@ export type WorksChartItem = {
   sign?: Maybe<Scalars['Int']>;
 };
 
+export type TablePeriod = {
+  __typename?: 'TablePeriod';
+  period: Scalars['String'];
+  year: Scalars['Int'];
+  month: Scalars['Int'];
+  isCurrent: Scalars['Boolean'];
+  isRecommendationEnabled: Scalars['Boolean'];
+  items: Array<TablePeriodItem>;
+};
+
+
+export type TablePerioditemsArgs = {
+  onlyAdded?: InputMaybe<Scalars['Boolean']>;
+  username?: InputMaybe<Scalars['String']>;
+  withRecommendations?: InputMaybe<Scalars['Boolean']>;
+};
+
 export type TablePeriodItem = {
   __typename?: 'TablePeriodItem';
   title: Scalars['String'];
@@ -389,6 +415,7 @@ export type ResolversTypes = {
   SearchWorksResult: ResolverTypeWrapper<Omit<SearchWorksResult, 'edges'> & { edges: Array<ResolversTypes['SearchWorksResultEdge']> }>;
   SearchWorksResultEdge: ResolverTypeWrapper<Omit<SearchWorksResultEdge, 'node'> & { node: ResolversTypes['Work'] }>;
   WorksChartItem: ResolverTypeWrapper<Omit<WorksChartItem, 'work'> & { work: ResolversTypes['Work'] }>;
+  TablePeriod: ResolverTypeWrapper<PeriodModel>;
   TablePeriodItem: ResolverTypeWrapper<Omit<TablePeriodItem, 'work' | 'record' | 'recommendations'> & { work: ResolversTypes['Work'], record?: Maybe<ResolversTypes['Record']>, recommendations?: Maybe<Array<ResolversTypes['Recommendation']>> }>;
   Recommendation: ResolversTypes['RecommendationByCredit'];
   RecommendationByCredit: ResolverTypeWrapper<RecommendationByCredit>;
@@ -421,6 +448,7 @@ export type ResolversParentTypes = {
   SearchWorksResult: Omit<SearchWorksResult, 'edges'> & { edges: Array<ResolversParentTypes['SearchWorksResultEdge']> };
   SearchWorksResultEdge: Omit<SearchWorksResultEdge, 'node'> & { node: ResolversParentTypes['Work'] };
   WorksChartItem: Omit<WorksChartItem, 'work'> & { work: ResolversParentTypes['Work'] };
+  TablePeriod: PeriodModel;
   TablePeriodItem: Omit<TablePeriodItem, 'work' | 'record' | 'recommendations'> & { work: ResolversParentTypes['Work'], record?: Maybe<ResolversParentTypes['Record']>, recommendations?: Maybe<Array<ResolversParentTypes['Recommendation']>> };
   Recommendation: ResolversParentTypes['RecommendationByCredit'];
   RecommendationByCredit: RecommendationByCredit;
@@ -441,6 +469,9 @@ export type QueryResolvers<ContextType = MercuriusContext, ParentType extends Re
   workByTitle?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType, RequireFields<QueryworkByTitleArgs, 'title'>>;
   post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QuerypostArgs, 'id'>>;
   tablePeriod?: Resolver<Array<ResolversTypes['TablePeriodItem']>, ParentType, ContextType, RequireFields<QuerytablePeriodArgs, 'period' | 'onlyAdded' | 'withRecommendations'>>;
+  tablePeriod2?: Resolver<Maybe<ResolversTypes['TablePeriod']>, ParentType, ContextType, RequireFields<QuerytablePeriod2Args, 'period'>>;
+  currentTablePeriod?: Resolver<ResolversTypes['TablePeriod'], ParentType, ContextType>;
+  tablePeriods?: Resolver<Array<ResolversTypes['TablePeriod']>, ParentType, ContextType>;
 };
 
 export type NodeResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = {
@@ -577,6 +608,16 @@ export type WorksChartItemResolvers<ContextType = MercuriusContext, ParentType e
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type TablePeriodResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['TablePeriod'] = ResolversParentTypes['TablePeriod']> = {
+  period?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  year?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  month?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  isCurrent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isRecommendationEnabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  items?: Resolver<Array<ResolversTypes['TablePeriodItem']>, ParentType, ContextType, RequireFields<TablePerioditemsArgs, 'onlyAdded' | 'withRecommendations'>>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type TablePeriodItemResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['TablePeriodItem'] = ResolversParentTypes['TablePeriodItem']> = {
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   work?: Resolver<ResolversTypes['Work'], ParentType, ContextType>;
@@ -630,6 +671,7 @@ export type Resolvers<ContextType = MercuriusContext> = {
   SearchWorksResult?: SearchWorksResultResolvers<ContextType>;
   SearchWorksResultEdge?: SearchWorksResultEdgeResolvers<ContextType>;
   WorksChartItem?: WorksChartItemResolvers<ContextType>;
+  TablePeriod?: TablePeriodResolvers<ContextType>;
   TablePeriodItem?: TablePeriodItemResolvers<ContextType>;
   Recommendation?: RecommendationResolvers<ContextType>;
   RecommendationByCredit?: RecommendationByCreditResolvers<ContextType>;

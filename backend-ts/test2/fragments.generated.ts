@@ -28,6 +28,9 @@ export type Query = {
   workByTitle: Maybe<Work>;
   post: Maybe<Post>;
   tablePeriod: Array<TablePeriodItem>;
+  tablePeriod2: Maybe<TablePeriod>;
+  currentTablePeriod: TablePeriod;
+  tablePeriods: Array<TablePeriod>;
 };
 
 
@@ -82,6 +85,11 @@ export type QueryTablePeriodArgs = {
   onlyAdded?: InputMaybe<Scalars['Boolean']>;
   username: InputMaybe<Scalars['String']>;
   withRecommendations?: InputMaybe<Scalars['Boolean']>;
+};
+
+
+export type QueryTablePeriod2Args = {
+  period: Scalars['String'];
 };
 
 export type Node = {
@@ -252,6 +260,23 @@ export type WorksChartItem = {
   work: Work;
   diff: Maybe<Scalars['Int']>;
   sign: Maybe<Scalars['Int']>;
+};
+
+export type TablePeriod = {
+  __typename?: 'TablePeriod';
+  period: Scalars['String'];
+  year: Scalars['Int'];
+  month: Scalars['Int'];
+  isCurrent: Scalars['Boolean'];
+  isRecommendationEnabled: Scalars['Boolean'];
+  items: Array<TablePeriodItem>;
+};
+
+
+export type TablePeriodItemsArgs = {
+  onlyAdded?: InputMaybe<Scalars['Boolean']>;
+  username: InputMaybe<Scalars['String']>;
+  withRecommendations?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type TablePeriodItem = {
