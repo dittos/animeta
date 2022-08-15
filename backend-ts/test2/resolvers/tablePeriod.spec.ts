@@ -15,17 +15,21 @@ test('get', async () => {
 
   const { data } = await utils.getHttpClient().query<{
     tablePeriod: {
-      work: WorkDtoFragment
-      record: RecordDtoFragment | null
-    }[]
+      items: {
+        work: WorkDtoFragment
+        record: RecordDtoFragment | null
+      }[]
+    }
   }, any>(gql`
     query($period: String!) {
       tablePeriod(period: $period) {
-        work {
-          ...WorkDTO
-        }
-        record {
-          ...RecordDTO
+        items {
+          work {
+            ...WorkDTO
+          }
+          record {
+            ...RecordDTO
+          }
         }
       }
     }
@@ -36,9 +40,9 @@ test('get', async () => {
       period: period.toString(),
     }
   })
-  expect(data.tablePeriod.length).toBe(1)
-  expect(data.tablePeriod[0].work.id).toBe(work.id.toString())
-  expect(data.tablePeriod[0].record).toBeFalsy()
+  expect(data.tablePeriod.items.length).toBe(1)
+  expect(data.tablePeriod.items[0].work.id).toBe(work.id.toString())
+  expect(data.tablePeriod.items[0].record).toBeFalsy()
 })
 
 test('get with record', async () => {
@@ -48,17 +52,21 @@ test('get with record', async () => {
   const { record } = await utils.factory.newRecord({ user, work })
   const { data } = await utils.getHttpClientForUser(user).query<{
     tablePeriod: {
-      work: WorkDtoFragment
-      record: RecordDtoFragment | null
-    }[]
+      items: {
+        work: WorkDtoFragment
+        record: RecordDtoFragment | null
+      }[]
+    }
   }, any>(gql`
     query($period: String!) {
       tablePeriod(period: $period) {
-        work {
-          ...WorkDTO
-        }
-        record {
-          ...RecordDTO
+        items {
+          work {
+            ...WorkDTO
+          }
+          record {
+            ...RecordDTO
+          }
         }
       }
     }
@@ -69,9 +77,9 @@ test('get with record', async () => {
       period: period.toString(),
     }
   })
-  expect(data.tablePeriod.length).toBe(1)
-  expect(data.tablePeriod[0].work.id).toBe(work.id.toString())
-  expect(data.tablePeriod[0].record?.id).toBe(record.id.toString())
+  expect(data.tablePeriod.items.length).toBe(1)
+  expect(data.tablePeriod.items[0].work.id).toBe(work.id.toString())
+  expect(data.tablePeriod.items[0].record?.id).toBe(record.id.toString())
 })
 
 test('get with recommendation', async () => {
@@ -81,32 +89,38 @@ test('get with recommendation', async () => {
   await utils.factory.newRecord({ user, work })
   const { data } = await utils.getHttpClientForUser(user).query<{
     tablePeriod: {
-      work: WorkDtoFragment
-      recommendations: any[]
-      recommendationScore: number
-    }[]
+      isRecommendationEnabled: boolean
+      items: {
+        work: WorkDtoFragment
+        recommendations: any[]
+        recommendationScore: number
+      }[]
+    }
   }, any>(gql`
     query($period: String!) {
-      tablePeriod(period: $period, withRecommendations: true) {
-        work {
-          ...WorkDTO
-        }
-        recommendations {
-          ... on RecommendationByCredit {
-            credit {
-              type
-              name
-              personId
-            }
-            related {
-              workId
-              workTitle
-              type
-            }
-            score
+      tablePeriod(period: $period) {
+        isRecommendationEnabled
+        items(withRecommendations: true) {
+          work {
+            ...WorkDTO
           }
+          recommendations {
+            ... on RecommendationByCredit {
+              credit {
+                type
+                name
+                personId
+              }
+              related {
+                workId
+                workTitle
+                type
+              }
+              score
+            }
+          }
+          recommendationScore
         }
-        recommendationScore
       }
     }
     ${WorkDtoFragmentDoc}
@@ -115,8 +129,9 @@ test('get with recommendation', async () => {
       period: period.toString(),
     }
   })
-  expect(data.tablePeriod.length).toBe(1)
-  expect(data.tablePeriod[0].work.id).toBe(work.id.toString())
-  expect(data.tablePeriod[0].recommendations).toBeTruthy()
-  expect(data.tablePeriod[0].recommendationScore).not.toBeNull()
+  expect(data.tablePeriod.isRecommendationEnabled).toBeTruthy()
+  expect(data.tablePeriod.items.length).toBe(1)
+  expect(data.tablePeriod.items[0].work.id).toBe(work.id.toString())
+  expect(data.tablePeriod.items[0].recommendations).toBeTruthy()
+  expect(data.tablePeriod.items[0].recommendationScore).not.toBeNull()
 })

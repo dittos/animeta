@@ -11,13 +11,8 @@ type Query {
   workByTitle(title: String!): Work
   post(id: ID!): Post
 
-  tablePeriod(
-    period: String!,
-    onlyAdded: Boolean = false,
-    username: String,
-    withRecommendations: Boolean = false
-  ): [TablePeriodItem!]!
-  tablePeriod2(period: String!): TablePeriod
+  tablePeriod(period: String!): TablePeriod
+  tablePeriod2(period: String!): TablePeriod # deprecated
   currentTablePeriod: TablePeriod!
   tablePeriods: [TablePeriod!]!
 }

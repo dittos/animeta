@@ -27,7 +27,7 @@ export type Query = {
   work: Maybe<Work>;
   workByTitle: Maybe<Work>;
   post: Maybe<Post>;
-  tablePeriod: Array<TablePeriodItem>;
+  tablePeriod: Maybe<TablePeriod>;
   tablePeriod2: Maybe<TablePeriod>;
   currentTablePeriod: TablePeriod;
   tablePeriods: Array<TablePeriod>;
@@ -82,9 +82,6 @@ export type QueryPostArgs = {
 
 export type QueryTablePeriodArgs = {
   period: Scalars['String'];
-  onlyAdded?: InputMaybe<Scalars['Boolean']>;
-  username: InputMaybe<Scalars['String']>;
-  withRecommendations?: InputMaybe<Scalars['Boolean']>;
 };
 
 

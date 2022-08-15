@@ -38,7 +38,7 @@ export type Query = {
   work?: Maybe<Work>;
   workByTitle?: Maybe<Work>;
   post?: Maybe<Post>;
-  tablePeriod: Array<TablePeriodItem>;
+  tablePeriod?: Maybe<TablePeriod>;
   tablePeriod2?: Maybe<TablePeriod>;
   currentTablePeriod: TablePeriod;
   tablePeriods: Array<TablePeriod>;
@@ -93,9 +93,6 @@ export type QuerypostArgs = {
 
 export type QuerytablePeriodArgs = {
   period: Scalars['String'];
-  onlyAdded?: InputMaybe<Scalars['Boolean']>;
-  username?: InputMaybe<Scalars['String']>;
-  withRecommendations?: InputMaybe<Scalars['Boolean']>;
 };
 
 
@@ -394,10 +391,10 @@ export type ResolversTypes = {
   ID: ResolverTypeWrapper<Scalars['ID']>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Node: ResolversTypes['User'] | ResolversTypes['Category'] | ResolversTypes['Post'] | ResolversTypes['Record'] | ResolversTypes['Work'];
   GraphQLTimestamp: ResolverTypeWrapper<Scalars['GraphQLTimestamp']>;
   User: ResolverTypeWrapper<UserModel>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Category: ResolverTypeWrapper<Omit<Category, 'user'> & { user?: Maybe<ResolversTypes['User']> }>;
   Post: ResolverTypeWrapper<HistoryModel>;
   StatusType: StatusType;
@@ -430,10 +427,10 @@ export type ResolversParentTypes = {
   ID: Scalars['ID'];
   String: Scalars['String'];
   Int: Scalars['Int'];
-  Boolean: Scalars['Boolean'];
   Node: ResolversParentTypes['User'] | ResolversParentTypes['Category'] | ResolversParentTypes['Post'] | ResolversParentTypes['Record'] | ResolversParentTypes['Work'];
   GraphQLTimestamp: Scalars['GraphQLTimestamp'];
   User: UserModel;
+  Boolean: Scalars['Boolean'];
   Category: Omit<Category, 'user'> & { user?: Maybe<ResolversParentTypes['User']> };
   Post: HistoryModel;
   Record: RecordModel;
@@ -468,7 +465,7 @@ export type QueryResolvers<ContextType = MercuriusContext, ParentType extends Re
   work?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType, RequireFields<QueryworkArgs, 'id'>>;
   workByTitle?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType, RequireFields<QueryworkByTitleArgs, 'title'>>;
   post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QuerypostArgs, 'id'>>;
-  tablePeriod?: Resolver<Array<ResolversTypes['TablePeriodItem']>, ParentType, ContextType, RequireFields<QuerytablePeriodArgs, 'period' | 'onlyAdded' | 'withRecommendations'>>;
+  tablePeriod?: Resolver<Maybe<ResolversTypes['TablePeriod']>, ParentType, ContextType, RequireFields<QuerytablePeriodArgs, 'period'>>;
   tablePeriod2?: Resolver<Maybe<ResolversTypes['TablePeriod']>, ParentType, ContextType, RequireFields<QuerytablePeriod2Args, 'period'>>;
   currentTablePeriod?: Resolver<ResolversTypes['TablePeriod'], ParentType, ContextType>;
   tablePeriods?: Resolver<Array<ResolversTypes['TablePeriod']>, ParentType, ContextType>;
