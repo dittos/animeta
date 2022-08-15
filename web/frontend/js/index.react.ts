@@ -11,6 +11,7 @@ import { config as faConfig } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { API } from './ApiClient';
 import request from 'graphql-request';
+import { errorHandler } from './routes/errorHandler';
 faConfig.autoAddCss = false
 
 if ((window as any).SENTRY_DSN) {
@@ -39,7 +40,7 @@ const loader: Loader = {
   },
 };
 
-bootstrap(app, loader, controller => {
+bootstrap(app, loader, errorHandler, controller => {
   nprogress.configure({
     trickleRate: 0.4,
     trickleSpeed: 600,
