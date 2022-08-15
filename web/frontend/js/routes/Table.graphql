@@ -4,7 +4,7 @@ query TableRoute($period: String!, $withRecommendations: Boolean!) {
     year
     month
   }
-  tablePeriod: tablePeriod2(period: $period) {
+  tablePeriod(period: $period) {
     ...TableRoute_pageTitle
     isRecommendationEnabled
     isCurrent

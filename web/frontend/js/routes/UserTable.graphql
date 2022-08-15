@@ -1,5 +1,5 @@
 query UserTableRoute($period: String!, $username: String!, $withRecommendations: Boolean!) {
-  tablePeriod: tablePeriod2(period: $period) {
+  tablePeriod(period: $period) {
     period
     year
     month
