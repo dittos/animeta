@@ -12,6 +12,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import Loading from './Loading';
 import Login from './Login';
 import * as API from './API';
+import { API as ApiClient } from './ApiClient';
 import { WorkAddForm } from './WorkAddForm';
 
 type State = {
@@ -93,7 +94,7 @@ class App extends React.Component<RouteComponentProps, State> {
   };
 
   _clearCache = () => {
-    API.clearCache().then(() => alert('Clear cache ok'));
+    ApiClient.call('/api/admin/v1/clearCache', {}).then(() => alert('Clear cache ok'));
   };
 }
 

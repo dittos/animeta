@@ -28,7 +28,6 @@ export type Query = {
   workByTitle: Maybe<Work>;
   post: Maybe<Post>;
   tablePeriod: Maybe<TablePeriod>;
-  tablePeriod2: Maybe<TablePeriod>;
   currentTablePeriod: TablePeriod;
   tablePeriods: Array<TablePeriod>;
 };
@@ -81,11 +80,6 @@ export type QueryPostArgs = {
 
 
 export type QueryTablePeriodArgs = {
-  period: Scalars['String'];
-};
-
-
-export type QueryTablePeriod2Args = {
   period: Scalars['String'];
 };
 

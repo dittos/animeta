@@ -12,7 +12,6 @@ type Query {
   post(id: ID!): Post
 
   tablePeriod(period: String!): TablePeriod
-  tablePeriod2(period: String!): TablePeriod # deprecated
   currentTablePeriod: TablePeriod!
   tablePeriods: [TablePeriod!]!
 }

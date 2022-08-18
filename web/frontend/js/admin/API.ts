@@ -77,7 +77,3 @@ export function searchWork(q: string, { minRecordCount = 2 }: { minRecordCount: 
   params.append('min_record_count', '' + minRecordCount);
   return fetchWithSession(`/api/v4/search?${params}`);
 }
-
-export function clearCache() {
-  return fetchWithSession('/api/admin/v0/caches', { method: 'DELETE' });
-}

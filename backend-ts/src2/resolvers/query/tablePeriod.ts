@@ -5,7 +5,7 @@ import { Temporal } from "@js-temporal/polyfill";
 
 const defaultTimeZone = Temporal.TimeZone.from('Asia/Seoul')
 
-export const tablePeriod: QueryResolvers['tablePeriod2'] = async (_, { period: periodParam }) => {
+export const tablePeriod: QueryResolvers['tablePeriod'] = async (_, { period: periodParam }) => {
   const period = Period.parse(periodParam)
   if (!period) throw new Error('invalid period: ' + periodParam)
   const maxPeriod = Period.now(defaultTimeZone).next()

@@ -102,7 +102,6 @@ export type Query = {
   post: Maybe<Post>;
   searchWorks: Maybe<SearchWorksResult>;
   tablePeriod: Maybe<TablePeriod>;
-  tablePeriod2: Maybe<TablePeriod>;
   tablePeriods: Array<TablePeriod>;
   timeline: Maybe<Array<Maybe<Post>>>;
   user: Maybe<User>;
@@ -129,11 +128,6 @@ export type QuerySearchWorksArgs = {
 
 
 export type QueryTablePeriodArgs = {
-  period: Scalars['String'];
-};
-
-
-export type QueryTablePeriod2Args = {
   period: Scalars['String'];
 };
 

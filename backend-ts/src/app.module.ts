@@ -29,8 +29,6 @@ import { UserRecordsService } from './services/user_records.service';
 import { UserRecordsController } from './controllers/user_records.controller';
 import { WorkSerializer } from './serializers/work.serializer';
 import { TitleMapping } from './entities/title_mapping.entity';
-import { TablePeriodController } from './controllers/table_period.controller';
-import { RecommendationService } from './services/recommendation.service';
 import { WorkStaff } from './entities/work_staff.entity';
 import { Person } from './entities/person.entity';
 import { ExternalServicesController } from './controllers/external_services.controller';
@@ -48,7 +46,6 @@ import { AuthService } from './services/auth.service';
 import { AuthenticateController } from './controllers/authenticate.controller';
 import { ChangePasswordController } from './controllers/change_password.controller';
 import { CreateAccountController } from './controllers/create_account.controller';
-import { AdminCachesController } from './controllers/admin/caches.controller';
 import { WorkCast } from './entities/work_cast.entity';
 import { WorkTitleIndex } from './entities/work_title_index.entity';
 import { WorkPeriodIndex } from './entities/work_period_index.entity';
@@ -104,7 +101,6 @@ import { BackupService } from './services/backup.service';
     RecordPostsController,
     UserPostsController,
     UserRecordsController,
-    TablePeriodController,
     ExternalServicesController,
     CreatePostController,
     DeletePostController,
@@ -120,8 +116,6 @@ import { BackupService } from './services/backup.service';
     UpdateCategoryOrderController,
     DisconnectTwitterController,
     CreateBackupController,
-
-    AdminCachesController,
   ],
   providers: [
     SearchService,
@@ -130,7 +124,6 @@ import { BackupService } from './services/backup.service';
     WorkService,
     UserService,
     UserRecordsService,
-    RecommendationService,
     TwitterService,
     TwitterApiService,
     CategoryService,

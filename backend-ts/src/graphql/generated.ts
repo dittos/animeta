@@ -39,7 +39,6 @@ export type Query = {
   workByTitle?: Maybe<Work>;
   post?: Maybe<Post>;
   tablePeriod?: Maybe<TablePeriod>;
-  tablePeriod2?: Maybe<TablePeriod>;
   currentTablePeriod: TablePeriod;
   tablePeriods: Array<TablePeriod>;
 };
@@ -92,11 +91,6 @@ export type QuerypostArgs = {
 
 
 export type QuerytablePeriodArgs = {
-  period: Scalars['String'];
-};
-
-
-export type QuerytablePeriod2Args = {
   period: Scalars['String'];
 };
 
@@ -466,7 +460,6 @@ export type QueryResolvers<ContextType = MercuriusContext, ParentType extends Re
   workByTitle?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType, RequireFields<QueryworkByTitleArgs, 'title'>>;
   post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QuerypostArgs, 'id'>>;
   tablePeriod?: Resolver<Maybe<ResolversTypes['TablePeriod']>, ParentType, ContextType, RequireFields<QuerytablePeriodArgs, 'period'>>;
-  tablePeriod2?: Resolver<Maybe<ResolversTypes['TablePeriod']>, ParentType, ContextType, RequireFields<QuerytablePeriod2Args, 'period'>>;
   currentTablePeriod?: Resolver<ResolversTypes['TablePeriod'], ParentType, ContextType>;
   tablePeriods?: Resolver<Array<ResolversTypes['TablePeriod']>, ParentType, ContextType>;
 };

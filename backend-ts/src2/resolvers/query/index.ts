@@ -16,7 +16,6 @@ export const Query: QueryResolvers = {
   workByTitle: (_, { title }) => getWorkByTitle(title),
   post: (_, { id }) => getPost(Number(id)),
   tablePeriod,
-  tablePeriod2: tablePeriod, // deprecated
   currentTablePeriod: () => Periods.current,
   tablePeriods: () => getValidPeriods(),
 }
