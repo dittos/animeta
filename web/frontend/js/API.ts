@@ -4,6 +4,8 @@ import { PostDTO, PostFetchOptions, RecordDTO, RecordFetchOptions, LegacyStatusT
 import * as CSRF from './CSRF';
 import { CategoryDTO, UserDTO } from '../../shared/types';
 import isString from 'lodash/isString';
+import graphqlRequest from 'graphql-request';
+import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 
 function serializeParams(params: any) {
   if (!params) {
@@ -310,4 +312,10 @@ export function updateCategoryOrder(categoryIds: number[]): Promise<{ categories
 
 export function getUserRecords(username: string, params: {}): Promise<RecordDTO[]> {
   return get(`/api/v4/users/${username}/records`, params);
+}
+
+// GraphQL
+
+export function graphql<Result, Variables>(doc: TypedDocumentNode<Result, Variables>, variables?: Variables): Promise<Result> {
+  return graphqlRequest('/api/graphql', doc, variables)
 }
