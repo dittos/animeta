@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
+import { InjectEntityManager } from "@nestjs/typeorm";
 import { WorkIndex } from "src/entities/work_index.entity";
-import { Connection } from "typeorm";
+import { EntityManager } from "typeorm";
 
 export type SearchResultItem = {
   id: number;
@@ -10,7 +11,7 @@ export type SearchResultItem = {
 
 @Injectable()
 export class SearchService {
-  constructor(private connection: Connection) {}
+  constructor(@InjectEntityManager() private em: EntityManager) {}
 
   async search(query: string, limit: number): Promise<SearchResultItem[]> {
     return this.doSearch(`%${makeKey(query).join('%')}%`, limit)
@@ -21,7 +22,7 @@ export class SearchService {
   }
 
   private async doSearch(pattern: string, limit: number): Promise<SearchResultItem[]> {
-    const result = await this.connection.createQueryBuilder(WorkIndex, 'wi')
+    const result = await this.em.createQueryBuilder(WorkIndex, 'wi')
       .innerJoin('search_worktitleindex', 'wti', 'wti.work_id = wi.work_id')
       .where('wti.key LIKE :pattern', { pattern })
       .andWhere('(wi.verified = true OR wi.record_count >= :minRecordCount)', { minRecordCount: 2 })
