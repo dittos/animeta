@@ -20,7 +20,7 @@ export type Query = {
   user: Maybe<User>;
   userByName: Maybe<User>;
   timeline: Maybe<Array<Maybe<Post>>>;
-  curatedLists: Maybe<Array<Maybe<CuratedList>>>;
+  curatedLists: Array<CuratedList>;
   curatedList: Maybe<CuratedList>;
   searchWorks: Maybe<SearchWorksResult>;
   weeklyWorksChart: Array<WorksChartItem>;
@@ -50,7 +50,7 @@ export type QueryTimelineArgs = {
 
 
 export type QueryCuratedListArgs = {
-  id: InputMaybe<Scalars['ID']>;
+  id: Scalars['ID'];
 };
 
 
@@ -143,7 +143,7 @@ export type Record = Node & {
 
 export type CuratedList = {
   __typename?: 'CuratedList';
-  id: Maybe<Scalars['ID']>;
+  id: Scalars['ID'];
   name: Maybe<Scalars['String']>;
   works: Maybe<CuratedListWorkConnection>;
 };

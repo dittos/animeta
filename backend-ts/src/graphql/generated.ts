@@ -5,6 +5,7 @@ import type { Record as RecordModel } from 'src/entities/record.entity';
 import type { Work as WorkModel } from 'src/entities/work.entity';
 import type { Episode as EpisodeModel } from 'src/entities/episode.entity';
 import type { Period as PeriodModel } from 'src/utils/period';
+import type { CuratedListMetadata as CuratedListMetadataModel } from 'src2/services/curatedList';
 import type { MercuriusContext } from 'mercurius';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -31,7 +32,7 @@ export type Query = {
   user?: Maybe<User>;
   userByName?: Maybe<User>;
   timeline?: Maybe<Array<Maybe<Post>>>;
-  curatedLists?: Maybe<Array<Maybe<CuratedList>>>;
+  curatedLists: Array<CuratedList>;
   curatedList?: Maybe<CuratedList>;
   searchWorks?: Maybe<SearchWorksResult>;
   weeklyWorksChart: Array<WorksChartItem>;
@@ -61,7 +62,7 @@ export type QuerytimelineArgs = {
 
 
 export type QuerycuratedListArgs = {
-  id?: InputMaybe<Scalars['ID']>;
+  id: Scalars['ID'];
 };
 
 
@@ -153,7 +154,7 @@ export type Record = Node & {
 
 export type CuratedList = {
   __typename?: 'CuratedList';
-  id?: Maybe<Scalars['ID']>;
+  id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
   works?: Maybe<CuratedListWorkConnection>;
 };
@@ -393,7 +394,7 @@ export type ResolversTypes = {
   Post: ResolverTypeWrapper<HistoryModel>;
   StatusType: StatusType;
   Record: ResolverTypeWrapper<RecordModel>;
-  CuratedList: ResolverTypeWrapper<Omit<CuratedList, 'works'> & { works?: Maybe<ResolversTypes['CuratedListWorkConnection']> }>;
+  CuratedList: ResolverTypeWrapper<CuratedListMetadataModel>;
   CuratedListWorkConnection: ResolverTypeWrapper<Omit<CuratedListWorkConnection, 'edges'> & { edges?: Maybe<Array<Maybe<ResolversTypes['CuratedListWorkEdge']>>> }>;
   CuratedListWorkEdge: ResolverTypeWrapper<Omit<CuratedListWorkEdge, 'node'> & { node?: Maybe<ResolversTypes['Work']> }>;
   Work: ResolverTypeWrapper<WorkModel>;
@@ -428,7 +429,7 @@ export type ResolversParentTypes = {
   Category: Omit<Category, 'user'> & { user?: Maybe<ResolversParentTypes['User']> };
   Post: HistoryModel;
   Record: RecordModel;
-  CuratedList: Omit<CuratedList, 'works'> & { works?: Maybe<ResolversParentTypes['CuratedListWorkConnection']> };
+  CuratedList: CuratedListMetadataModel;
   CuratedListWorkConnection: Omit<CuratedListWorkConnection, 'edges'> & { edges?: Maybe<Array<Maybe<ResolversParentTypes['CuratedListWorkEdge']>>> };
   CuratedListWorkEdge: Omit<CuratedListWorkEdge, 'node'> & { node?: Maybe<ResolversParentTypes['Work']> };
   Work: WorkModel;
@@ -452,8 +453,8 @@ export type QueryResolvers<ContextType = MercuriusContext, ParentType extends Re
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryuserArgs, 'id'>>;
   userByName?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryuserByNameArgs, 'name'>>;
   timeline?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType, Partial<QuerytimelineArgs>>;
-  curatedLists?: Resolver<Maybe<Array<Maybe<ResolversTypes['CuratedList']>>>, ParentType, ContextType>;
-  curatedList?: Resolver<Maybe<ResolversTypes['CuratedList']>, ParentType, ContextType, Partial<QuerycuratedListArgs>>;
+  curatedLists?: Resolver<Array<ResolversTypes['CuratedList']>, ParentType, ContextType>;
+  curatedList?: Resolver<Maybe<ResolversTypes['CuratedList']>, ParentType, ContextType, RequireFields<QuerycuratedListArgs, 'id'>>;
   searchWorks?: Resolver<Maybe<ResolversTypes['SearchWorksResult']>, ParentType, ContextType, RequireFields<QuerysearchWorksArgs, 'query'>>;
   weeklyWorksChart?: Resolver<Array<ResolversTypes['WorksChartItem']>, ParentType, ContextType, RequireFields<QueryweeklyWorksChartArgs, 'limit'>>;
   work?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType, RequireFields<QueryworkArgs, 'id'>>;
@@ -515,7 +516,7 @@ export type RecordResolvers<ContextType = MercuriusContext, ParentType extends R
 };
 
 export type CuratedListResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['CuratedList'] = ResolversParentTypes['CuratedList']> = {
-  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   works?: Resolver<Maybe<ResolversTypes['CuratedListWorkConnection']>, ParentType, ContextType>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

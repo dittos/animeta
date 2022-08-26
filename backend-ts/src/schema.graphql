@@ -3,8 +3,8 @@ type Query {
   user(id: ID!): User
   userByName(name: String!): User
   timeline(beforeId: ID, count: Int): [Post]
-  curatedLists: [CuratedList]
-  curatedList(id: ID): CuratedList
+  curatedLists: [CuratedList!]!
+  curatedList(id: ID!): CuratedList
   searchWorks(query: String!): SearchWorksResult
   weeklyWorksChart(limit: Int!): [WorksChartItem!]!
   work(id: ID!): Work
@@ -68,7 +68,7 @@ type Record implements Node {
 }
 
 type CuratedList {
-  id: ID
+  id: ID!
   name: String
   works: CuratedListWorkConnection
 }

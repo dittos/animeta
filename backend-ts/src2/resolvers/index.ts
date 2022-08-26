@@ -7,6 +7,7 @@ import { Record } from './record'
 import { Post } from "./post"
 import { Recommendation } from './recommendation'
 import { TablePeriod } from './tablePeriod'
+import { CuratedList } from './curatedList'
 
 export const resolvers: Resolvers = {
   Query,
@@ -17,4 +18,5 @@ export const resolvers: Resolvers = {
   Post,
   Recommendation,
   TablePeriod,
+  CuratedList,
 }

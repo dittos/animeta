@@ -6,6 +6,14 @@ export class Period {
     public readonly quarter: number
   ) {}
 
+  previous(): Period {
+    if (this.quarter === 1) {
+      return new Period(this.year - 1, 4)
+    } else {
+      return new Period(this.year, this.quarter - 1)
+    }
+  }
+
   next(): Period {
     if (this.quarter === 4) {
       return new Period(this.year + 1, 1)

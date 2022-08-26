@@ -1,4 +1,5 @@
 import { QueryResolvers } from "src/graphql/generated"
+import { getAllCuratedLists, getCuratedList } from "src2/services/curatedList"
 import { getPost } from "src2/services/post"
 import { getValidPeriods, Periods } from "src2/services/table"
 import { getUser, getUserByName } from "src2/services/user"
@@ -11,6 +12,8 @@ export const Query: QueryResolvers = {
   user: (_, { id }) => getUser(Number(id)),
   userByName: (_, { name }) => getUserByName(name),
   timeline,
+  curatedLists: getAllCuratedLists,
+  curatedList: (_, { id }) => getCuratedList(id),
   weeklyWorksChart,
   work: (_, { id }) => getWork(Number(id)),
   workByTitle: (_, { title }) => getWorkByTitle(title),

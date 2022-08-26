@@ -31,6 +31,7 @@ generates:
         Work: src/entities/work.entity#Work
         Episode: src/entities/episode.entity#Episode
         TablePeriod: src/utils/period#Period
+        CuratedList: src2/services/curatedList#CuratedListMetadata
       enumsAsTypes: true
       # end custom
       namingConvention: keep

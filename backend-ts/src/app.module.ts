@@ -9,7 +9,6 @@ import { Record } from './entities/record.entity';
 import { TwitterSetting } from './entities/twitter_setting.entity';
 import { User } from './entities/user.entity';
 import { SearchService } from './services/search.service';
-import { CuratedListService } from './services/curated_list.service';
 import { Work } from './entities/work.entity';
 import { WorkIndex } from './entities/work_index.entity';
 import { RecordService } from './services/record.service';
@@ -119,7 +118,6 @@ import { BackupService } from './services/backup.service';
   ],
   providers: [
     SearchService,
-    CuratedListService,
     RecordService,
     WorkService,
     UserService,
