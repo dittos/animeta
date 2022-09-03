@@ -50,7 +50,7 @@ module.exports = env => {
     mode: env.prod ? 'production' : 'development',
     context: __dirname,
     entry: env.server
-      ? './js/routes.tsx'
+      ? './js/serverEntry.ts'
       : {
           index: hot(env, ['babel-polyfill', './js/index.react.ts']),
           admin: hot(env, './js/admin.react.js'),
@@ -131,7 +131,7 @@ module.exports = env => {
     Object.assign(config, {
       target: 'node',
       node: false,
-      externals: [require('webpack-node-externals')()],
+      // externals: [require('webpack-node-externals')()],
     });
   } else {
     config.optimization = {

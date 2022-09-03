@@ -1,13 +1,12 @@
 import webpack from 'webpack';
 import MemoryFileSystem from 'memory-fs';
-import { evalCode, AppProvider } from '../core/AppProvider';
-import { App } from 'nuri/app';
+import { evalCode, AppProvider, AppModule } from '../core/AppProvider';
 
 export class CompilingAppProvider implements AppProvider {
   private compiler: webpack.Compiler;
   private vfs: MemoryFileSystem;
   private bundleFilename: string;
-  private app: App<any>;
+  private mod: AppModule;
 
   constructor(webpackConfig: webpack.Configuration) {
     this.compiler = webpack(webpackConfig);
@@ -33,16 +32,16 @@ export class CompilingAppProvider implements AppProvider {
   }
 
   get() {
-    if (!this.app) {
+    if (!this.mod) {
       throw new Error('app is not compiled yet. did you call #start()?');
     }
-    return this.app;
+    return this.mod;
   }
 
   private reloadApp() {
     const code = this.vfs.readFileSync('/' + this.bundleFilename).toString('utf8');
     try {
-      this.app = evalCode(code);
+      this.mod = evalCode(code);
     } catch (e) {
       console.error(e);
     }

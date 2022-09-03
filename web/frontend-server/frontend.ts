@@ -263,7 +263,8 @@ Disallow: /
     }
 
     // TODO: remove type assertion
-    render(appProvider.get(), req as ServerRequest, loaderFactory(req as ServerRequest))
+    const {app, render} = appProvider.get()
+    render(app, req as ServerRequest, loaderFactory(req as ServerRequest))
       .then(result => {
         const {
           preloadData,

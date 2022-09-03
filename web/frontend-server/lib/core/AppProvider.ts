@@ -1,27 +1,34 @@
 import vm from 'vm';
 import fs from 'fs';
-import { App } from 'nuri/app';
+import type { App } from 'nuri/app';
+import type {render} from 'nuri/server';
+
+export type AppModule = {
+  app: App<any>;
+  render: typeof render;
+}
 
 export interface AppProvider {
-  get(): App<any>;
+  get(): AppModule;
 }
 
 export class DefaultAppProvider implements AppProvider {
-  private app: App<any>;
+  private mod: AppModule;
 
   constructor(bundlePath: string) {
     const code = fs.readFileSync(bundlePath).toString('utf8');
-    this.app = evalCode(code);
+    this.mod = evalCode(code);
   }
 
   get() {
-    return this.app;
+    return this.mod;
   }
 }
 
-export function evalCode(code: string): App<any> {
+export function evalCode(code: string): AppModule {
   const sandbox = {
     require,
+    global: { Promise },
     module: { exports: <any>{} }
   };
   const context = vm.createContext(sandbox);
