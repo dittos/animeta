@@ -127,18 +127,21 @@ module.exports = env => {
     plugins: [],
     devtool: env.prod ? 'source-map' : 'cheap-source-map',
   };
+  config.optimization = {
+    minimizer: [
+      new TerserPlugin(),
+    ],
+  };
   if (env.server) {
     Object.assign(config, {
       target: 'node',
       node: false,
       // externals: [require('webpack-node-externals')()],
     });
+    config.plugins.push(new webpack.optimize.LimitChunkCountPlugin({
+      maxChunks: 1
+    }))
   } else {
-    config.optimization = {
-      minimizer: [
-        new TerserPlugin(),
-      ],
-    };
     config.plugins.push(
       new AssetsPlugin({
         path: __dirname,
