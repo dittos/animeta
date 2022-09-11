@@ -3,3 +3,4 @@ static/build/
 config.json
 frontend-dist/
 dist/
+stats.json
