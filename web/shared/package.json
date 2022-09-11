@@ -1,0 +1,7 @@
+{
+  "name": "@animeta/web-shared",
+  "private": true,
+  "dependencies": {
+    "@graphql-typed-document-node/core": "^3.1.1"
+  }
+}

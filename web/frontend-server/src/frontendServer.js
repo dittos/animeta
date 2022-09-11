@@ -1,14 +1,19 @@
-if (!global._babelPolyfill) {
-  require('babel-polyfill');
+var fs = require('fs')
+
+var config = JSON.parse(fs.readFileSync(process.env.ANIMETA_CONFIG_PATH || './config.json'));
+if (config.sentryDsnNew) {
+  Sentry.init({ dsn: config.sentryDsnNew });
 }
+
 var { createServer } = require('./frontend');
 var port = process.env.PORT || 3000;
 
-var {DefaultAppProvider} = require('./lib/core/AppProvider');
-var appProvider = new DefaultAppProvider(__dirname + '/bundle.js');
-var assets = require('./assets.json');
+var {DefaultAppProvider} = require('./AppProvider');
+var appProvider = new DefaultAppProvider(process.env.ANIMETA_BUNDLE_PATH);
+var assets = JSON.parse(fs.readFileSync(process.env.ANIMETA_ASSETS_PATH));
 
 var server = createServer({
+  config,
   appProvider,
   getAssets: () => assets,
 }).listen(port, () => {

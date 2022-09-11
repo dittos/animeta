@@ -3,11 +3,11 @@ const express = require('express');
 const webpack = require('webpack');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
-import { createServer } from './frontend';
-import { CompilingAppProvider } from './lib/dev/CompilingAppProvider';
+const {createServer} = require('@animeta/web-frontend-server');
+const {CompilingAppProvider} = require('./CompilingAppProvider');
 
 // Don't require directly to fool tsc
-const webpackConfigFactory = module.require('../frontend/webpack.config.js');
+const webpackConfigFactory = module.require('./webpack.config.js');
 const webpackConfig = webpackConfigFactory({ server: false, prod: false });
 const compiler = webpack(webpackConfig);
 
@@ -22,14 +22,16 @@ appProvider.start().then(() => {
   server.use(
     webpackDevMiddleware(compiler, {
       publicPath: webpackConfig.output.publicPath,
+      static: ['static'],
     })
   );
   server.use(webpackHotMiddleware(compiler));
-  server.use('/static', express.static(__dirname + '/../static'));
+  // server.use('/static', express.static(__dirname + '/static'));
   createServer({
+    config: require(process.env.ANIMETA_CONFIG_PATH || '../config.json'),
     server,
     appProvider,
-    // assets.json is written by frontend compiler
-    getAssets: () => JSON.parse(fs.readFileSync(__dirname + '/../frontend/assets.json').toString('utf8')),
+    // assets.json is written by webpack
+    getAssets: () => JSON.parse(fs.readFileSync(__dirname + '/dist/assets.json').toString('utf8')),
   }).listen(3000);
 });

@@ -57,12 +57,12 @@ module.exports = env => {
         },
     output: env.server
       ? {
-          path: env.outputPath || path.join(__dirname, '../frontend-server'),
-          filename: 'bundle.js',
+          path: env.outputPath || path.join(__dirname, 'dist'),
+          filename: 'bundle.server.js',
           libraryTarget: 'commonjs2',
         }
       : {
-          path: path.join(__dirname, '../static/build'),
+          path: path.join(__dirname, 'dist/static/build'),
           publicPath: '/static/build/',
           filename: env.prod ? '[name]-[hash].js' : '[name].js',
           chunkFilename: env.prod ? '[name]-[hash].js' : '[name].js',
@@ -144,7 +144,7 @@ module.exports = env => {
   } else {
     config.plugins.push(
       new AssetsPlugin({
-        path: __dirname,
+        path: path.join(__dirname, 'dist'),
         filename: 'assets.json',
       })
     );

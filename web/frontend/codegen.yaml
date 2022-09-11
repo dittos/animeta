@@ -1,13 +1,13 @@
-schema: ../backend-ts/src/schema.graphql
-documents: 'frontend/js/**/*.graphql'
+schema: ../../backend-ts/src/schema.graphql
+documents: './js/**/*.graphql'
 generates:
-  ./frontend/js/__generated__/globalTypes.ts:
+  ./js/__generated__/globalTypes.ts:
     plugins:
       - typescript
     config:
       constEnums: true
       avoidOptionals: true
-  ./frontend/js:
+  ./js:
     preset: near-operation-file
     presetConfig:
       folder: __generated__

@@ -9,18 +9,12 @@ import * as Sentry from '@sentry/node';
 import { resolve } from 'path';
 import Backend, { HttpNotFound } from './backend';
 import renderFeed from './renderFeed';
-import { render, ServerRequest } from 'nuri/server';
-import { AppProvider } from './lib/core/AppProvider';
-import { Loader } from '../shared/loader';
+import { ServerRequest } from 'nuri/server';
+import { AppProvider } from './AppProvider';
+import { Loader } from '@animeta/web-shared/loader';
 
-const config = require(process.env.ANIMETA_CONFIG_PATH || './config.json');
 const DEBUG = process.env.NODE_ENV !== 'production';
 const MAINTENANCE = process.env.MAINTENANCE;
-
-const backend = new Backend(config.backend.v4BaseUrl, config.backend.v5BaseUrl, config.backend.graphqlUrl);
-if (config.sentryDsnNew) {
-  Sentry.init({ dsn: config.sentryDsnNew });
-}
 
 function serializeParams(params: any) {
   if (!params) {
@@ -34,43 +28,46 @@ function serializeParams(params: any) {
   return result;
 }
 
-function loaderFactory(serverRequest: ServerRequest): Loader {
-  return {
-    callV4(path, params) {
-      return backend.callV4(serverRequest, path, serializeParams(params));
-    },
-    v5: {
-      call(path: string, params: any, options: any) {
-        return backend.callV5(serverRequest, path, params);
-      }
-    },
-    getCurrentUser(params) {
-      return backend.getCurrentUser(serverRequest, serializeParams(params));
-    },
-    graphql(doc, variables) {
-      return backend.graphql(serverRequest, doc, variables);
-    },
-  };
-}
-
-export function createServer({ server = express(), appProvider, getAssets }: {
+export function createServer({ config, server = express(), appProvider, getAssets }: {
+  config: any;
   server: express.Express;
   appProvider: AppProvider;
   getAssets: () => any;
 }) {
+  const backend = new Backend(config.backend.v4BaseUrl, config.backend.v5BaseUrl, config.backend.graphqlUrl);
+
+  function loaderFactory(serverRequest: ServerRequest): Loader {
+    return {
+      callV4(path, params) {
+        return backend.callV4(serverRequest, path, serializeParams(params));
+      },
+      v5: {
+        call(path: string, params: any, options: any) {
+          return backend.callV5(serverRequest, path, params);
+        }
+      },
+      getCurrentUser(params) {
+        return backend.getCurrentUser(serverRequest, serializeParams(params));
+      },
+      graphql(doc, variables) {
+        return backend.graphql(serverRequest, doc, variables);
+      },
+    };
+  }
+
   server.set('view engine', 'ejs');
-  server.set('views', __dirname);
+  server.set('views', __dirname + '/views');
   server.set('strict routing', true);
   server.set('etag', false);
 
   if (config.sentryDsnNew) {
     server.use(Sentry.Handlers.requestHandler());
   }
-  if (config.staticUrl) {
-    server.use('/static', (req, res) => res.redirect(config.staticUrl + req.path));
-  } else {
-    server.use('/static', express.static('static'));
-  }
+  // if (config.staticUrl) {
+  //   server.use('/static', (req, res) => res.redirect(config.staticUrl + req.path));
+  // } else {
+  //   server.use('/static', express.static('static'));
+  // }
   server.get('/mockServiceWorker.js', (req, res) => res.sendFile(resolve(__dirname, '../static/mockServiceWorker.js')))
   server.use(cookieParser());
 
