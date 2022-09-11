@@ -14,7 +14,7 @@ const port = process.env.PORT || 3000;
 const appProvider = new DefaultAppProvider(path.join(process.env.ANIMETA_FRONTEND_DIST_PATH, 'bundle.server.js'));
 const assets = JSON.parse(fs.readFileSync(path.join(process.env.ANIMETA_FRONTEND_DIST_PATH, 'assets.json'), {encoding: 'utf8'}));
 
-var server = createServer({
+const server = createServer({
   config,
   appProvider,
   getAssets: () => assets,

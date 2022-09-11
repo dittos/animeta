@@ -6,9 +6,8 @@ const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const {createServer} = require('@animeta/web-frontend-server');
 const {CompilingAppProvider} = require('./CompilingAppProvider');
+const webpackConfigFactory = require('./webpack.config.js');
 
-// Don't require directly to fool tsc
-const webpackConfigFactory = module.require('./webpack.config.js');
 const webpackConfig = webpackConfigFactory({ server: false, prod: false });
 const compiler = webpack(webpackConfig);
 
@@ -28,7 +27,7 @@ appProvider.start().then(() => {
   server.use(webpackHotMiddleware(compiler));
   server.get('/mockServiceWorker.js', (req, res) => res.sendFile(path.resolve(__dirname, './static/mockServiceWorker.js')))
   createServer({
-    config: require(process.env.ANIMETA_CONFIG_PATH || '../config.json'),
+    config: require(process.env.ANIMETA_CONFIG_PATH || './config.json'),
     server,
     appProvider,
     // assets.json is written by webpack

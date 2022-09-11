@@ -1,6 +1,4 @@
-node_modules
-static/build/
-config.json
-frontend-dist/
+node_modules/
 dist/
+config.json
 stats.json
