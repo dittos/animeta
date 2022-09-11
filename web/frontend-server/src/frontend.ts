@@ -29,7 +29,7 @@ function serializeParams(params: any) {
 
 export function createServer({ config, server = express(), appProvider, getAssets, staticDir }: {
   config: any;
-  server: express.Express;
+  server?: express.Express;
   appProvider: AppProvider;
   getAssets: () => any;
   staticDir?: string;

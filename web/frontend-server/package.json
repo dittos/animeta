@@ -3,9 +3,6 @@
   "private": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "bin": {
-    "frontend-server": "dist/frontendServer.js"
-  },
   "scripts": {
     "build": "pnpm run clean && tsc --build && cp -r src/views dist/",
     "clean": "rm -rf dist/",

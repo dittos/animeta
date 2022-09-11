@@ -101,7 +101,7 @@
     "build": "pnpm run clean && pnpm run build-assets && pnpm run build-server",
     "start": "node devServer.js",
     "start-remote": "cross-env ANIMETA_CONFIG_PATH=./config.remote.json pnpm run start",
-    "build-assets": "webpack --env.prod --progress",
+    "build-assets": "webpack --env.prod --progress && cp -r static/* dist/static/",
     "build-assets:analyze": "webpack --env.prod --progress --stats --json > stats.json && webpack-bundle-analyzer stats.json dist/static/build",
     "build-server": "webpack --env.server --env.prod --progress",
     "graphql-codegen": "graphql-codegen --watch",
