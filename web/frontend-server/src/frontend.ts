@@ -6,7 +6,6 @@ import httpProxy from 'http-proxy';
 import serializeJS from 'serialize-javascript';
 import isString from 'lodash/isString';
 import * as Sentry from '@sentry/node';
-import { resolve } from 'path';
 import Backend, { HttpNotFound } from './backend';
 import renderFeed from './renderFeed';
 import { ServerRequest } from 'nuri/server';
@@ -28,11 +27,12 @@ function serializeParams(params: any) {
   return result;
 }
 
-export function createServer({ config, server = express(), appProvider, getAssets }: {
+export function createServer({ config, server = express(), appProvider, getAssets, staticDir }: {
   config: any;
   server: express.Express;
   appProvider: AppProvider;
   getAssets: () => any;
+  staticDir?: string;
 }) {
   const backend = new Backend(config.backend.v4BaseUrl, config.backend.v5BaseUrl, config.backend.graphqlUrl);
 
@@ -63,12 +63,11 @@ export function createServer({ config, server = express(), appProvider, getAsset
   if (config.sentryDsnNew) {
     server.use(Sentry.Handlers.requestHandler());
   }
-  // if (config.staticUrl) {
-  //   server.use('/static', (req, res) => res.redirect(config.staticUrl + req.path));
-  // } else {
-  //   server.use('/static', express.static('static'));
-  // }
-  server.get('/mockServiceWorker.js', (req, res) => res.sendFile(resolve(__dirname, '../static/mockServiceWorker.js')))
+  if (config.staticUrl) {
+    server.use('/static', (req, res) => res.redirect(config.staticUrl + req.path));
+  } else if (staticDir) {
+    server.use('/static', express.static(staticDir));
+  }
   server.use(cookieParser());
 
   // graphql route should go before csurf middlware (FIXME when start using mutations)
