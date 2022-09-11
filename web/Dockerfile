@@ -32,10 +32,10 @@ COPY shared/package.json /app/shared/
 COPY frontend-server/package.json /app/frontend-server/
 COPY frontend/package.json /app/frontend/
 
-RUN pnpm -C frontend-server install --frozen-lockfile --prod
+RUN pnpm --filter @animeta/web-frontend-server install --frozen-lockfile --prod
 
 COPY --from=builder /app/shared /app/shared
-COPY --from=builder /app/frontend-server /app/frontend-server
+COPY --from=builder /app/frontend-server/dist /app/frontend-server/dist
 COPY --from=builder /app/frontend/dist /app/frontend/dist
 
 ENV NODE_ENV production

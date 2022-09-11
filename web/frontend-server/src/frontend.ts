@@ -1,4 +1,4 @@
-import querystring from 'querystring';
+import qs from 'qs';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import csurf from 'csurf';
@@ -167,7 +167,6 @@ export function createServer({ config, server = express(), appProvider, getAsset
   configureProxy('/api/v4', config.backend.v4BaseUrl)
   configureProxy('/api/v5', config.backend.v5BaseUrl, false, {prependPath: true})
   configureProxy('/api/admin/v1', config.backend.adminNewBaseUrl2)
-  configureProxy('/api', config.backend.baseUrl, true)
 
   function renderDefault(res: express.Response, locals: any, content: string) {
     const context = {
@@ -326,7 +325,7 @@ Disallow: /
     }
     if (path !== req.path) {
       var url = path;
-      var query = querystring.stringify(req.query);
+      var query = qs.stringify(req.query);
       if (query) {
         url += '?' + query;
       }
