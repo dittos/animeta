@@ -1,21 +1,16 @@
-import webpack from 'webpack';
-import MemoryFileSystem from 'memory-fs';
-import { evalCode, AppProvider, AppModule } from '../core/AppProvider';
+const webpack = require('webpack');
+const MemoryFileSystem = require('memory-fs');
+const {evalCode} = require('@animeta/web-frontend-server');
 
-export class CompilingAppProvider implements AppProvider {
-  private compiler: webpack.Compiler;
-  private vfs: MemoryFileSystem;
-  private bundleFilename: string;
-  private mod: AppModule;
-
-  constructor(webpackConfig: webpack.Configuration) {
+class CompilingAppProvider {
+  constructor(webpackConfig) {
     this.compiler = webpack(webpackConfig);
     this.vfs = new MemoryFileSystem();
     this.compiler.outputFileSystem = this.vfs;
     this.bundleFilename = webpackConfig.output.filename;
   }
 
-  start(): Promise<void> {
+  start() {
     return new Promise((resolve, reject) => {
       this.compiler.run((err) => {
         if (err) {
@@ -38,7 +33,7 @@ export class CompilingAppProvider implements AppProvider {
     return this.mod;
   }
 
-  private reloadApp() {
+  reloadApp() {
     const code = this.vfs.readFileSync('/' + this.bundleFilename).toString('utf8');
     try {
       this.mod = evalCode(code);
@@ -47,3 +42,5 @@ export class CompilingAppProvider implements AppProvider {
     }
   }
 }
+
+module.exports = {CompilingAppProvider};

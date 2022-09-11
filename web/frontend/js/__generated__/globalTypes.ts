@@ -39,7 +39,7 @@ export const enum CreditType {
 
 export type CuratedList = {
   __typename?: 'CuratedList';
-  id: Maybe<Scalars['ID']>;
+  id: Scalars['ID'];
   name: Maybe<Scalars['String']>;
   works: Maybe<CuratedListWorkConnection>;
 };
@@ -96,7 +96,7 @@ export type PostConnection = {
 export type Query = {
   __typename?: 'Query';
   curatedList: Maybe<CuratedList>;
-  curatedLists: Maybe<Array<Maybe<CuratedList>>>;
+  curatedLists: Array<CuratedList>;
   currentTablePeriod: TablePeriod;
   currentUser: Maybe<User>;
   post: Maybe<Post>;
@@ -113,7 +113,7 @@ export type Query = {
 
 
 export type QueryCuratedListArgs = {
-  id: InputMaybe<Scalars['ID']>;
+  id: Scalars['ID'];
 };
 
 

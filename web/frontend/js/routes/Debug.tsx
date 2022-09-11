@@ -1,3 +1,5 @@
+/// <reference types="mocha" />
+
 import React from 'react'
 import { RouteComponentProps } from '../routes'
 import * as API from '../API'

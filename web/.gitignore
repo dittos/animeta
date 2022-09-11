@@ -1,7 +1,4 @@
-node_modules
-static/build/
-frontend/assets.json
-frontend-server/config.json
-frontend-server/bundle.js*
-frontend-dist/
+node_modules/
 dist/
+config.json
+stats.json

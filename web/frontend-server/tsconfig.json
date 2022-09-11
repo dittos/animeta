@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "outDir": "../frontend-dist/",
+    "outDir": "./dist/",
+    "declaration": true,
     "noImplicitAny": true,
     "module": "commonjs",
     "esModuleInterop": true,
@@ -14,10 +15,7 @@
     ]
   },
   "include": [
-    "./**/*",
-  ],
-  "exclude": [
-    "bundle.js"
+    "./src/**/*"
   ],
   "references": [
     { "path": "../shared" }
