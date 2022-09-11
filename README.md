@@ -28,15 +28,17 @@ PostgreSQL DB에 `schema.sql`을 반영합니다.
 
 ### 의존성 설치
 
-    npm install
+[pnpm](https://pnpm.io/)이 필요합니다.
+
+    pnpm install
 
 ### 원격 백엔드를 사용하는 경우
 
 프론트엔드만 수정하고 싶을 때 사용할 수 있는 방법입니다. **(주의: 프로덕션 서비스 백엔드를 그대로 사용하게 됩니다.)**
 
-    npm run start-remote
+    pnpm -C frontend run start-remote
 
 ### 로컬 백엔드를 사용하는 경우
 
-1. `frontend-server/config.json.sample`을 가지고 `frontend-server/config.json`을 작성합니다.
-2. 개발 서버 실행: `npm start`
+1. `frontend/config.json.sample`을 가지고 `frontend/config.json`을 작성합니다.
+2. 개발 서버 실행: `cd frontend; pnpm start`
