@@ -11,6 +11,7 @@ import renderFeed from './renderFeed';
 import { ServerRequest } from 'nuri/server';
 import { AppProvider } from './AppProvider';
 import { Loader } from '@animeta/web-shared/loader';
+import * as ejs from 'ejs';
 
 const DEBUG = process.env.NODE_ENV !== 'production';
 const MAINTENANCE = process.env.MAINTENANCE;
@@ -59,6 +60,9 @@ export function createServer({ config, server = express(), appProvider, getAsset
   server.set('views', __dirname + '/views');
   server.set('strict routing', true);
   server.set('etag', false);
+
+  // explicitly set for bundling
+  server.engine('ejs', ejs.renderFile);
 
   if (config.sentryDsnNew) {
     server.use(Sentry.Handlers.requestHandler());

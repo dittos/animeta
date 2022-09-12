@@ -212,6 +212,7 @@ importers:
       '@types/aws-lambda': ^8.10.103
       '@types/cookie-parser': ^1.4.3
       '@types/csurf': ^1.11.2
+      '@types/ejs': ^3.1.1
       '@types/express': ^4.17.13
       '@types/express-serve-static-core': ^4.17.30
       '@types/http-proxy': ^1.17.5
@@ -267,6 +268,7 @@ importers:
       '@types/aws-lambda': 8.10.103
       '@types/cookie-parser': 1.4.3
       '@types/csurf': 1.11.2
+      '@types/ejs': 3.1.1
       '@types/express': 4.17.13
       '@types/express-serve-static-core': 4.17.30
       '@types/http-proxy': 1.17.5
@@ -2204,6 +2206,10 @@ packages:
     resolution: {integrity: sha512-9bc98EnwmC1S0aSJiA8rWwXtgXtXHHOQOsGHptImxFgqm6CeH+mIOunHRg6+/eg2tlmDMX3tY7XrWxo2M/nUNQ==}
     dependencies:
       '@types/express-serve-static-core': 4.17.30
+    dev: true
+
+  /@types/ejs/3.1.1:
+    resolution: {integrity: sha512-RQul5wEfY7BjWm0sYY86cmUN/pcXWGyVxWX93DFFJvcrxax5zKlieLwA3T77xJGwNcZW0YW6CYG70p1m8xPFmA==}
     dev: true
 
   /@types/estree/0.0.39:
