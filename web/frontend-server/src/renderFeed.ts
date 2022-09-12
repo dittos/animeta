@@ -1,15 +1,15 @@
-function getStatusDisplay(record) {
+function getStatusDisplay(record: any) {
   return record.status.trim().replace(/([0-9]+)$/, '$1화');
 }
 
-var STATUS_TYPE_TEXT = {
+const STATUS_TYPE_TEXT: {[key: string]: string} = {
   watching: '보는 중',
   finished: '완료',
   interested: '볼 예정',
   suspended: '중단',
 };
 
-function getStatusText(record) {
+function getStatusText(record: any) {
   var status = getStatusDisplay(record);
   if (record.status_type != 'watching' || status === '') {
     var statusTypeText = STATUS_TYPE_TEXT[record.status_type];
@@ -22,7 +22,7 @@ function getStatusText(record) {
   return status;
 }
 
-export default (owner, posts) =>
+export default (owner: any, posts: any[]) =>
   `<?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <title>${owner.name} 사용자의 감상 기록</title>
@@ -43,5 +43,5 @@ ${posts
         ${post.comment && `<summary>${post.comment}</summary>`}
     </entry>`
     )
-    .join()}
+    .join('')}
 </feed>`;

@@ -5,9 +5,9 @@
     "noImplicitAny": true,
     "module": "commonjs",
     "esModuleInterop": true,
-    "target": "es5",
+    "target": "es2015",
     "jsx": "react",
-    "allowJs": true,
+    "allowJs": false,
     "lib": [
       "es2015",
       "es2018",

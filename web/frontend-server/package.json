@@ -19,7 +19,6 @@
     "@types/node": "^16",
     "@types/qs": "^6.9.7",
     "@types/react": "^17.0.46",
-    "@types/request": "^2.48.3",
     "@types/serialize-javascript": "^5.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.2"
@@ -29,6 +28,7 @@
     "@sentry/node": "^6.19.7",
     "@vendia/serverless-express": "^4.10.1",
     "cookie-parser": "^1.4.6",
+    "cross-fetch": "^3.0.6",
     "csurf": "^1.11.0",
     "dotenv": "^16.0.2",
     "ejs": "^2.3.4",
@@ -40,7 +40,6 @@
     "nuri": "github:dittos/nuri-builds#1be420c859a8097bbbfe9e1f7a182954343a7182",
     "qs": "^6.11.0",
     "react": "^17.0.2",
-    "request": "^2.85.0",
     "serialize-javascript": "^1.9.1"
   }
 }
