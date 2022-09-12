@@ -25,7 +25,8 @@
   },
   "dependencies": {
     "@animeta/web-shared": "workspace:*",
-    "@sentry/node": "^6.19.7",
+    "@sentry/node": "^7.12.1",
+    "@sentry/serverless": "^7.12.1",
     "@vendia/serverless-express": "^4.10.1",
     "cookie-parser": "^1.4.6",
     "cross-fetch": "^3.0.6",

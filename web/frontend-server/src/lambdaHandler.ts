@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import * as Sentry from '@sentry/node';
+import * as Sentry from '@sentry/serverless';
 import type { Handler } from 'aws-lambda';
 import { createServer } from './frontend';
 import { DefaultAppProvider } from './AppProvider';
@@ -11,7 +11,7 @@ dotenv.config();
 
 const config = JSON.parse(fs.readFileSync(process.env.ANIMETA_CONFIG_PATH || './config.json', {encoding: 'utf8'}));
 if (config.sentryDsnNew) {
-  Sentry.init({ dsn: config.sentryDsnNew });
+  Sentry.AWSLambda.init({ dsn: config.sentryDsnNew });
 }
 
 const appProvider = new DefaultAppProvider(path.join(process.env.ANIMETA_FRONTEND_DIST_PATH, 'bundle.server.js'));
@@ -24,4 +24,4 @@ const app = createServer({
   staticDir: path.join(process.env.ANIMETA_FRONTEND_DIST_PATH, 'static'),
 })
 
-export const handler: Handler = serverlessExpress({ app })
+export const handler: Handler = Sentry.AWSLambda.wrapHandler(serverlessExpress({ app }))
