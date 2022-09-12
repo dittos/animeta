@@ -7,6 +7,7 @@ import { applyWorkMetadata } from "src2/services/work";
 import { db } from "src2/database";
 import { CompanyDto } from "src2/schemas/admin";
 import { serializeCompany } from "src2/serializers/company";
+import { CompanyAnnIds } from "src/entities/company_ann_ids.entity";
 
 export default async function(params: {
   id: string;
@@ -32,6 +33,9 @@ export default async function(params: {
         studios: metadata.studios?.map(it => it === other.name ? company.name : it),
       })
     }
+
+    await db.update(CompanyAnnIds, /* where */ {company_id: other.id}, /* updates */ {company_id: company.id})
+
     await db.remove(other)
 
     return serializeCompany(company)
