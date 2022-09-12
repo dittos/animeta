@@ -15,12 +15,14 @@ export interface AppProvider {
 export class DefaultAppProvider implements AppProvider {
   private mod: AppModule;
 
-  constructor(bundlePath: string) {
-    const code = fs.readFileSync(bundlePath).toString('utf8');
-    this.mod = evalCode(code);
+  constructor(private bundlePath: string) {
   }
 
   get() {
+    if (!this.mod) {
+      const code = fs.readFileSync(this.bundlePath).toString('utf8');
+      this.mod = evalCode(code);
+    }
     return this.mod;
   }
 }
