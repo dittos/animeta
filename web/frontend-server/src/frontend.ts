@@ -203,6 +203,10 @@ Disallow: /
 `);
   });
 
+  server.get('/favicon.ico', (req, res) => {
+    res.sendStatus(404);
+  });
+
   server.get('/healthz', (req, res) => {
     res.send('ok');
   });
