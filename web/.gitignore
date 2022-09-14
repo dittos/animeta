@@ -2,3 +2,4 @@ node_modules/
 dist/
 config.json
 stats.json
+deploy/lambda/*.packaged.*
