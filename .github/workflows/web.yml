@@ -5,7 +5,7 @@ on:
     branches: [ master ]
     paths: ['web/**', '.github/workflows/web.yml']
   pull_request:
-    # paths: ['web/**']  # temp
+    paths: ['web/**']
 
 jobs:
   build:
@@ -61,20 +61,21 @@ jobs:
 
     # Deploy
     - name: Set up gcloud
-      # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       uses: google-github-actions/setup-gcloud@v0
       with:
         version: '270.0.0'
         service_account_email: ${{ secrets.GCP_SA_EMAIL }}
         service_account_key: ${{ secrets.GCP_SA_KEY }}
     - name: Upload assets
-      # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       run: gsutil -m cp -z js,css,map -r frontend/dist/static gs://animeta-static/
     - name: Configure AWS Credentials
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-region: ap-northeast-2
         role-to-assume: arn:aws:iam::307761743095:role/animeta-deploy-github-actions-Role-19IZBY3F8TXQ
     - name: Deploy lambda
-      # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       run: ./deploy/lambda/package.sh && ./deploy/lambda/deploy.sh
