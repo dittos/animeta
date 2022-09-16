@@ -12,7 +12,9 @@ const commonOptions = {
       // Some code in bundle.server.js require querystring module dynamically
       ignoreDynamicRequires: true,
     }),
-    resolve(),
+    resolve({
+      exportConditions: ['node'],
+    }),
   ],
   external: [
     'util',
