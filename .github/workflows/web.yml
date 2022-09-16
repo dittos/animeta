@@ -42,3 +42,11 @@ jobs:
         gcloud auth configure-docker
         docker tag animeta-frontend gcr.io/ditto-1470749749381/animeta-frontend:latest
         docker push gcr.io/ditto-1470749749381/animeta-frontend:latest
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-region: ap-northeast-2
+        role-to-assume: arn:aws:iam::307761743095:role/animeta-deploy-github-actions-Role-19IZBY3F8TXQ
+    - name: Deploy lambda
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      run: ./deploy/lambda/build.sh && ./deploy/lambda/update.sh
