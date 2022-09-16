@@ -13,6 +13,7 @@ const commonOptions = {
       ignoreDynamicRequires: true,
     }),
     resolve({
+      // https://github.com/uuidjs/uuid/issues/544
       exportConditions: ['node'],
     }),
   ],

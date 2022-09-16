@@ -7,6 +7,10 @@ Parameters:
     Type: String
     Description: API Domain name
     Default: ''
+  ConfigSSMParameterName:
+    Type: String
+    Description: Name of the SSM parameter that contains SecureString of config.json
+    Default: '/animeta/frontend-lambda/config.json'
 
 Conditions:
   UseDomainName: !Not
@@ -32,7 +36,16 @@ Resources:
       Environment:
         Variables:
           NODE_ENV: production
+          ANIMETA_CONFIG_SSM_PARAMETER_NAME: !Ref ConfigSSMParameterName
           # AWS_LAMBDA_EXEC_WRAPPER: /opt/otel-handler
+      Policies:
+        - Statement:
+          - Sid: SSMGetParameterPolicy
+            Effect: Allow
+            Action:
+            - ssm:GetParameters
+            - ssm:GetParameter
+            Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${ConfigSSMParameterName}'
       Events:
         ProxyApiRoot:
           Type: HttpApi
