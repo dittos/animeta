@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@animeta/web-shared": "workspace:*",
+    "@aws-sdk/client-ssm": "^3.171.0",
     "@sentry/node": "^7.12.1",
     "@sentry/serverless": "^7.12.1",
     "@vendia/serverless-express": "^4.10.1",
