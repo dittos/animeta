@@ -14,7 +14,6 @@ COPY frontend/package.json /app/frontend/
 RUN pnpm install --frozen-lockfile
 
 COPY . .
-RUN pnpm -C frontend-server run build
 RUN pnpm -C frontend-server run build:bundle
 RUN pnpm -C frontend run build-assets
 RUN pnpm -C frontend run build-server
