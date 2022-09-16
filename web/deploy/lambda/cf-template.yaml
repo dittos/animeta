@@ -26,6 +26,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./dist/package.zip
+      AutoPublishAlias: live
       Handler: app/frontend-server/dist/bundle-lambda.handler
       MemorySize: 512
       Runtime: nodejs16.x
