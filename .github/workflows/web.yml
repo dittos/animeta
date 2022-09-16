@@ -54,4 +54,4 @@ jobs:
         role-to-assume: arn:aws:iam::307761743095:role/animeta-deploy-github-actions-Role-19IZBY3F8TXQ
     - name: Deploy lambda
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-      run: ./deploy/lambda/build.sh && ./deploy/lambda/update.sh
+      run: ./deploy/lambda/build.sh && ./deploy/lambda/deploy.sh
