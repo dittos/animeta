@@ -4,17 +4,17 @@ query UserTableRoute($period: String!, $username: String!, $withRecommendations:
     year
     month
     items(username: $username, onlyAdded: true, withRecommendations: $withRecommendations) {
-      ...TableRoute_item
+      ...UserTableRoute_item
       ...TableItem_item
     }
   }
 }
 
-fragment TableRoute_item on TablePeriodItem {
+fragment UserTableRoute_item on TablePeriodItem {
   work {
     id
-    record {
-      id
-    }
+  }
+  record {
+    id
   }
 }

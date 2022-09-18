@@ -246,7 +246,7 @@ const Table: React.FC<RouteComponentProps<TableRouteData>> = ({
   const { filter, containsKRSchedule, hasAnyRecord, items, currentUser, tablePeriod } = data
   let filteredItems = items
   if (filter.addedOnly) {
-    filteredItems = filteredItems.filter(it => it.work.record != null)
+    filteredItems = filteredItems.filter(it => it.record != null)
   }
   
   const onFilterChange = (newFilter: TableFilter) => {
@@ -290,7 +290,7 @@ const Table: React.FC<RouteComponentProps<TableRouteData>> = ({
           onFilterChange={onFilterChange}
           currentUser={currentUser}
           totalCount={items.length}
-          addedCount={items.reduce((count, it) => count + (it.work.record != null ? 1 : 0), 0)}
+          addedCount={items.reduce((count, it) => count + (it.record != null ? 1 : 0), 0)}
           showShareButtonPopoverOnce={showShareButtonPopoverOnce}
         />
       </Layout.CenteredFullWidth>
@@ -346,7 +346,7 @@ const routeHandler: RouteHandler<TableRouteData> = {
       ),
       hasAnyRecord: some(
         items,
-        i => i.work.record
+        i => i.record
       ),
       filter: {
         sort,
