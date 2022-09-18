@@ -1,4 +1,3 @@
-import { Company } from "src/entities/company.entity";
 import { Work } from "src/entities/work.entity";
 import { WorkCompany } from "src/entities/work_company.entity";
 import { WorkMetadata } from "src/entities/work_metadata";
@@ -16,6 +15,7 @@ import { WorkIndex } from "src/entities/work_index.entity";
 import * as DataLoader from "dataloader";
 import { objResults, objResultsNullable } from "src/utils/dataloader";
 import { Episode } from "src/entities/episode.entity";
+import { getOrCreateCompany } from "./admin/company";
 
 const dataLoader = new DataLoader<number, Work>(
   objResults(ids => db.findByIds(Work, Array.from(ids)), k => `${k}`, v => `${v.id}`),
@@ -68,13 +68,7 @@ export async function applyWorkMetadata(work: Work, metadata: WorkMetadata) {
     return wpi
   }))
   work.first_period = periods[0]?.toString() ?? null
-  const studios = await Promise.all(metadata.studios?.map(async it => {
-    let company = await db.findOne(Company, {name: it})
-    if (company) return company
-    company = new Company()
-    company.name = it
-    return db.save(company)
-  }) ?? [])
+  const studios = await Promise.all(metadata.studios?.map(it => getOrCreateCompany(it)) ?? [])
   await db.delete(WorkCompany, {work_id: work.id})
   await db.save(studios.map((company, index) => {
     const wc = new WorkCompany()
@@ -100,13 +94,25 @@ export async function addTitleMapping(work: Work, title: string) {
   await db.save(work)
 }
 
-export async function deleteTitleMapping(titleMappingId: string) {
+export async function deleteTitleMapping(work: Work, titleMappingId: string) {
   const mapping = await db.findOneOrFail(TitleMapping, titleMappingId)
+  if (mapping.work_id !== work.id) {
+    throw new ValidationError(`TitleMapping ${titleMappingId} does not belong to Work ${work.id}`)
+  }
   // TODO: 역할 분리
   if (await db.findOne(Record, {where: {title: mapping.title}})) {
     throw new ValidationError("Record exists")
   }
   await db.remove(mapping)
+}
+
+export async function setPrimaryTitleMapping(work: Work, titleMappingId: string) {
+  const mapping = await db.findOneOrFail(TitleMapping, titleMappingId)
+  if (mapping.work_id !== work.id) {
+    throw new ValidationError(`TitleMapping ${titleMappingId} does not belong to Work ${work.id}`)
+  }
+  work.title = mapping.title
+  await db.save(work)
 }
 
 export async function mergeWork(work: Work, other: Work, forceMerge: boolean = false) {

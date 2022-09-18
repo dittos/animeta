@@ -1,6 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Company } from "./company.entity";
-import { Person } from "./person.entity";
 import { Work } from "./work.entity";
 
 @Entity({
@@ -22,5 +21,5 @@ export class WorkCompany {
 
   @ManyToOne(() => Company)
   @JoinColumn({name: 'company_id'})
-  company!: Person;
+  company!: Company;
 }

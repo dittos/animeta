@@ -242,6 +242,7 @@ class WorkDetail extends React.Component<RouteComponentProps<RouteParams>, State
 
   _deleteTitleMapping = (titleMappingId: string) => {
     API.call('/api/admin/v1/WorkDetail/deleteTitleMapping', {
+      workId: this.state.work!.id,
       titleMappingId
     }).then(this._reload);
   };

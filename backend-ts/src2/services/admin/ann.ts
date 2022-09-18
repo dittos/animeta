@@ -3,13 +3,12 @@ import $, * as cheerio from 'cheerio';
 import got from 'got';
 import { LATEST_WORK_METADATA_VERSION, Schedule, WorkMetadata } from "src/entities/work_metadata";
 import { Temporal } from '@js-temporal/polyfill'
-import { Company } from "src/entities/company.entity";
-import { CompanyAnnIds } from "src/entities/company_ann_ids.entity";
 import { WorkStaff } from "src/entities/work_staff.entity";
 import { WorkCast } from "src/entities/work_cast.entity";
-import { Person } from "src/entities/person.entity";
 import { applyWorkMetadata } from "src2/services/work";
 import { db } from "src2/database";
+import { getOrCreateCompany } from "./company";
+import { getOrCreatePerson } from "./person";
 
 export async function getAnnMetadata(annId: string): Promise<cheerio.Cheerio<cheerio.Element>> {
   const response = await got.get(`https://cdn.animenewsnetwork.com/encyclopedia/api.xml?anime=${annId}`).text()
@@ -42,8 +41,10 @@ export async function importAnnMetadata(work: Work, anime: cheerio.Cheerio<cheer
   const staffs = await Promise.all(anime.find('staff').toArray().map(async (staffEl, index) => {
     const $staffEl = $(staffEl)
     const personEl = $staffEl.find('person').first()
+    const name = personEl.text().trim()
     const person = await getOrCreatePerson(
-      personEl.text().trim(),
+      name,
+      name,
       Number(personEl.attr('id'))
     )
     const gid = $staffEl.attr('gid')
@@ -63,8 +64,10 @@ export async function importAnnMetadata(work: Work, anime: cheerio.Cheerio<cheer
   const casts = await Promise.all(anime.find('cast[lang="JA"]').toArray().map(async (castEl, index) => {
     const $castEl = $(castEl)
     const personEl = $castEl.find('person').first()
+    const name = personEl.text().trim()
     const person = await getOrCreatePerson(
-      personEl.text().trim(),
+      name,
+      name,
       Number(personEl.attr('id'))
     )
     const gid = $castEl.attr('gid')
@@ -93,36 +96,6 @@ async function getStudios(anime: cheerio.Cheerio<cheerio.Element>): Promise<stri
     const annName = it.text()
     return (await getOrCreateCompany(annName, annId)).name
   }))
-}
-
-async function getOrCreatePerson(name: string, annId: number): Promise<Person> {
-  const existingByAnnId = await db.findOne(Person, {where: {ann_id: annId}})
-  if (existingByAnnId) return existingByAnnId
-  const person = new Person()
-  person.name = name
-  person.metadata = {name_en: name}
-  person.ann_id = annId
-  return await db.save(person)
-}
-
-async function getOrCreateCompany(name: string, annId: number): Promise<Company> {
-  const existingByAnnId = await db.createQueryBuilder(Company, 'c')
-    .leftJoin(CompanyAnnIds, 'cai', 'cai.company_id = c.id')
-    .where('cai.ann_ids = :annId', {annId})
-    .getOne()
-  if (existingByAnnId) return existingByAnnId
-  const existingByName = await db.findOne(Company, {where: {name}})
-  if (existingByName) return existingByName
-  const company = new Company()
-  company.name = name
-  company.metadata = null
-  company.ann_id = annId
-  await db.save(company)
-  const cai = new CompanyAnnIds()
-  cai.company_id = company.id
-  cai.ann_ids = annId
-  await db.save(cai)
-  return company
 }
 
 function getDurationMinutes(anime: cheerio.Cheerio<cheerio.Element>): number | null {

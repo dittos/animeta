@@ -31,8 +31,6 @@ function serializeMetadata(work: WorkEntity): WorkMetadata | null {
   const metadata = work.metadata
   if (!metadata) return null
 
-  // const title = metadata.title ?? work.title
-
   return {
     studioNames: metadata.studios ?? null,
     source: metadata.source ?? null,

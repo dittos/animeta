@@ -1,13 +1,9 @@
-import { HttpStatus } from "@nestjs/common";
 import { ApiException } from "src/controllers/exceptions";
 import { Company } from "src/entities/company.entity";
-import { WorkCompany } from "src/entities/work_company.entity";
-import { LATEST_WORK_METADATA_VERSION } from "src/entities/work_metadata";
-import { applyWorkMetadata } from "src2/services/work";
 import { db } from "src2/database";
 import { CompanyDto } from "src2/schemas/admin";
 import { serializeCompany } from "src2/serializers/company";
-import { CompanyAnnIds } from "src/entities/company_ann_ids.entity";
+import { mergeCompany } from "src2/services/admin/company";
 
 export default async function(params: {
   id: string;
@@ -18,26 +14,7 @@ export default async function(params: {
     if (!company) throw ApiException.notFound()
     const other = await db.findOne(Company, params.otherCompanyId)
     if (!other) throw ApiException.notFound()
-    if (company.id === other.id)
-      throw new ApiException('Cannot merge itself', HttpStatus.BAD_REQUEST)
-
-    const otherWorks = await db.find(WorkCompany, {where: {company: other}, relations: ['work', 'company']})
-    if (otherWorks.some(it => it.company.id === company.id))
-      throw new ApiException('Works with conflict exists', HttpStatus.BAD_REQUEST)
-
-    for (const workCompany of otherWorks) {
-      const work = workCompany.work!
-      const metadata = work.metadata ?? {version: LATEST_WORK_METADATA_VERSION}
-      await applyWorkMetadata(work, {
-        ...metadata,
-        studios: metadata.studios?.map(it => it === other.name ? company.name : it),
-      })
-    }
-
-    await db.update(CompanyAnnIds, /* where */ {company_id: other.id}, /* updates */ {company_id: company.id})
-
-    await db.remove(other)
-
+    await mergeCompany(company, other)
     return serializeCompany(company)
   })
 }

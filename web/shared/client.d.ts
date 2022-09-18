@@ -144,7 +144,10 @@ export interface Client<TOptions = any> {
     url: string;
   };
 }, options?: TOptions): Promise<AdminWorkDto>
-  call(path: "/api/admin/v1/WorkDetail/deleteTitleMapping", params: {titleMappingId: string}, options?: TOptions): Promise<boolean>
+  call(path: "/api/admin/v1/WorkDetail/deleteTitleMapping", params: {
+  workId: string;
+  titleMappingId: string;
+}, options?: TOptions): Promise<boolean>
   call(path: "/api/admin/v1/WorkDetail/editMetadata", params: {
   workId: string;
   rawMetadata: string;
