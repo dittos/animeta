@@ -252,6 +252,15 @@ export function updateRecordCategoryID(id: number, categoryId: number | null, op
   });
 }
 
+export function updateRecordRating(id: number, rating: number | null, options: RecordFetchOptions): Promise<{ record: RecordDTO }> {
+  return postJSON('/api/v4/UpdateRecord', {
+    id,
+    rating,
+    ratingIsSet: true,
+    options,
+  });
+}
+
 export function deleteRecord(id: number): Promise<{ ok: boolean }> {
   return postJSON('/api/v4/DeleteRecord', { id });
 }

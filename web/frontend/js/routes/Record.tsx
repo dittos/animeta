@@ -1,6 +1,5 @@
 /* global confirm */
 import * as React from 'react';
-import cx from 'classnames';
 import { Modal } from 'react-overlays';
 import { Link } from 'nuri';
 import * as util from '../util';
@@ -16,6 +15,7 @@ import {
   deleteRecord,
   deletePost,
   createPost,
+  updateRecordRating,
 } from '../API';
 import connectTwitter from '../connectTwitter';
 import { User } from '../layouts';
@@ -28,6 +28,7 @@ import { CategoryDTO, PostDTO, RecordDTO, UserDTO } from '../../../shared/types_
 import { RecordFetchOptions } from '../../../shared/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
+import { Rating } from '@mui/material';
 
 type RecordRouteData = {
   currentUser: UserDTO | null;
@@ -120,15 +121,41 @@ type HeaderViewProps = {
   currentUser: UserDTO | null;
   onCategoryChange(categoryId: string): void;
   onTitleChange(title: string): Promise<void>;
+  onRatingChange(rating: number | null): Promise<void>;
   onDelete(): void;
 };
 
 class HeaderView extends React.Component<HeaderViewProps> {
-  state = { isEditingTitle: false };
+  state = {
+    isEditingTitle: false,
+    isSavingRating: false,
+  };
 
   render() {
     const { record, currentUser } = this.props;
     const canEdit = currentUser && currentUser.id === record.user!.id;
+
+    var title = (
+      <h1 className={Styles.title}>
+        <Link to={util.getWorkURL(record.title)}>
+          {record.title}
+        </Link>
+      </h1>
+    );
+
+    if (!canEdit) {
+      return (
+        <div className={Styles.header}>
+          {title}
+          {this.props.record.rating && (
+            <div className={Styles.readOnlyRating}>
+              <Rating value={this.props.record.rating} readOnly={true} />
+            </div>
+          )}
+          <div style={{ clear: 'both' }} />
+        </div>
+      );
+    }
 
     var titleEditor, editTitleButton;
     if (this.state.isEditingTitle) {
@@ -140,41 +167,41 @@ class HeaderView extends React.Component<HeaderViewProps> {
         />
       );
     } else {
-      titleEditor = (
-        <h1 className={Styles.title}>
-          <Link to={util.getWorkURL(record.title)}>{record.title}</Link>
-        </h1>
-      );
       editTitleButton = (
         <a
           href="#"
-          className={Styles.toolbarButton}
+          className={Styles.editTitleButton}
           onClick={this._onTitleEditButtonClick}
         >
           제목 수정
         </a>
       );
     }
-    var toolbar;
-    if (canEdit) {
-      toolbar = (
-        <div className={Styles.toolbar}>
-          {editTitleButton}
-          <a href="#" className={Styles.deleteButton} onClick={this._onDelete}>
-            삭제
-          </a>
-          <CategoryEditView
-            categoryList={currentUser?.categories || []}
-            selectedId={record.category_id}
-            onChange={this.props.onCategoryChange}
+
+    var toolbar = (
+      <div className={Styles.toolbar}>
+        <span className={Styles.ratingForm}>
+          <Rating
+            defaultValue={this.props.record.rating ?? undefined}
+            onChange={this._updateRating}
+            disabled={this.state.isSavingRating}
           />
-        </div>
-      );
-    }
+        </span>
+        {editTitleButton}
+        <a href="#" className={Styles.deleteButton} onClick={this._onDelete}>
+          삭제
+        </a>
+        <CategoryEditView
+          categoryList={currentUser?.categories || []}
+          selectedId={record.category_id}
+          onChange={this.props.onCategoryChange}
+        />
+      </div>
+    );
 
     return (
       <div className={Styles.header}>
-        {titleEditor}
+        {titleEditor || title}
         {toolbar}
         <div style={{ clear: 'both' }} />
       </div>
@@ -196,6 +223,19 @@ class HeaderView extends React.Component<HeaderViewProps> {
     event.preventDefault();
     this.props.onDelete();
   };
+
+  _updateRating = async (event: React.ChangeEvent, newRating: number | null) => {
+    this.setState({
+      isSavingRating: true,
+    })
+    try {
+      await this.props.onRatingChange(newRating)
+    } finally {
+      this.setState({
+        isSavingRating: false,
+      })
+    }
+  }
 }
 
 function PostView({ post, canEdit, canDelete, onDelete }: {
@@ -298,6 +338,7 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
           currentUser={currentUser}
           onTitleChange={this._updateTitle}
           onCategoryChange={this._updateCategory}
+          onRatingChange={this._updateRating}
           onDelete={() => this.setState({ showDeleteModal: true })}
         />
         {canEdit && (
@@ -351,6 +392,16 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
       }
     );
   };
+
+  _updateRating = (rating: number | null) => {
+    return updateRecordRating(this.props.data.record.id, rating, recordFetchOptions).then(
+      result => {
+        this.props.writeData(data => {
+          data.record = result.record;
+        });
+      }
+    )
+  }
 
   _deleteRecord = () => {
     deleteRecord(this.props.data.record.id).then(() => {
