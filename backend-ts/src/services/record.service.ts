@@ -135,7 +135,7 @@ export async function createRecord(em: EntityManager, user: User, work: Work, pa
   history.updated_at = record.updated_at
   history.comment = params.comment
   history.contains_spoiler = false
-  history.rating = params.rating
+  history.rating = null // post should not inherit record rating
   await em.save(history)
 
   return { record, history }
