@@ -206,12 +206,13 @@ export function disconnectTwitter() {
 // Record
 
 export function createRecord(
-  { title, statusType, status, categoryId, comment, publishTwitter }: {
+  { title, statusType, status, categoryId, comment, rating, publishTwitter }: {
     title: string;
     statusType: StatusType;
     status: string;
     categoryId: number | null;
     comment: string;
+    rating: number | null;
     publishTwitter: boolean;
   },
   options: RecordFetchOptions | null = {},
@@ -223,6 +224,7 @@ export function createRecord(
     status,
     statusType,
     comment,
+    rating,
     publishTwitter,
     options,
     postOptions,
