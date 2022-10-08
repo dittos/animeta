@@ -150,26 +150,27 @@ export function createServer({ config, server = express(), appProvider, getAsset
     res.writeHead(500, { 'content-type': 'text/plain' });
     res.end('API error');
   }
-  function configureProxy(pathPrefix: string, targetUrl: string, warn: boolean = false, options?: Partial<httpProxy.ServerOptions>) {
+  function configureProxy(pathPrefix: string, targetUrl: string, options?: {
+    appendPathPrefixToTarget: boolean;
+  }) {
+    if (options?.appendPathPrefixToTarget) {
+      targetUrl = targetUrl.replace(/\/$/, '') + pathPrefix;
+    }
     const proxy = httpProxy.createProxyServer({
       target: targetUrl,
       changeOrigin: config.backend.remote ? true : false,
       cookieDomainRewrite: config.backend.remote ? '' : false,
-      ...options,
     });
     proxy.on('proxyReq', onProxyReq);
     proxy.on('error', onProxyError);
     
     server.use(pathPrefix, (req, res) => {
-      if (warn) {
-        Sentry.captureMessage(`${req.originalUrl} called`)
-      }
       proxy.web(req, res);
     });
   }
 
   configureProxy('/api/v4', config.backend.v4BaseUrl)
-  configureProxy('/api/v5', config.backend.v5BaseUrl, false, {prependPath: true})
+  configureProxy('/api/v5', config.backend.v5BaseUrl, {appendPathPrefixToTarget: true})
   configureProxy('/api/admin/v1', config.backend.adminNewBaseUrl2)
 
   function renderDefault(res: express.Response, locals: any, content: string) {
