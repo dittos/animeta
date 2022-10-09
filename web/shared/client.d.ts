@@ -93,6 +93,14 @@ export type UserDto = {
   historyCount: number | null;
   isTwitterConnected: boolean | null;
 }
+type UnratedRecord = {
+  id: string;
+  title: string;
+}
+type RatingSummary = {
+  rating: number;
+  recordCount: number;
+}
 
 
 export interface Client<TOptions = any> {
@@ -185,4 +193,14 @@ export interface Client<TOptions = any> {
   call(path: "/api/v5/getCurrentUser", params: {
   options?: UserSerializerOptions,
 }, options?: TOptions): Promise<UserDto>
+  call(path: "/api/v5/ManageRating/getUnratedRecords", params: {
+  cursor: string | null,
+}, options?: TOptions): Promise<{
+  data: UnratedRecord[];
+  nextCursor: string | null;
+}>
+  call(path: "/api/v5/ManageRating/", params: {}, options?: TOptions): Promise<{
+  ratingSummaries: RatingSummary[];
+  unratedRecordCount: number;
+}>
 }

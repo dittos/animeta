@@ -17,6 +17,7 @@ import RecordRoute from './routes/Record';
 import AddRecordRoute from './routes/AddRecord';
 // import NewAddRecordRoute from './routes/NewAddRecord';
 import ManageCategoryRoute from './routes/ManageCategory';
+import ManageRatingRoute from './routes/ManageRating';
 import { Loader } from '../../shared/loader';
 import { GetCurrentTablePeriodDocument } from './__generated__/routes.graphql';
 
@@ -54,6 +55,7 @@ app.route('/users/:username/table/:period/', UserTableRoute);
 app.route('/records/add/', AddRecordRoute);
 app.route('/records/add/:title+/', AddRecordRoute);
 app.route('/records/category/', ManageCategoryRoute);
+app.route('/records/rating/', ManageRatingRoute);
 app.route('/records/:recordId/', RecordRoute);
 if (process.env.NODE_ENV === 'development') {
   app.route('/_debug', require('./routes/Debug').default)

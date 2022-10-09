@@ -1,0 +1,135 @@
+@import "../../less/variables.less";
+
+.title {
+    line-height: 1;
+    font-size: 1.2em;
+    font-weight: normal;
+    margin-bottom: 0;
+}
+
+.help {
+    font-size: 14px;
+    color: @color-text-light;
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+.sidebar {
+    position: sticky;
+    top: @nav-height;
+    z-index: @z-header - 1;
+    background-color: #fff;
+    margin-top: -16px;
+    padding-top: 16px;
+    margin-bottom: 20px;
+}
+
+.stuckSidebar {
+    composes: sidebar;
+    @media (max-width: 480px) {
+        box-shadow: 0 2px 3px 0 fade(@color-shadow, 50%);
+    }
+}
+
+.progress {
+    text-align: center;
+    font-size: 1.2em;
+    color: @color-text-title;
+}
+
+.statsTable {
+    width: 100%;
+    background-color: #fff;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    border-collapse: collapse;
+}
+
+.ratingCell {
+    width: 2em;
+    height: 24px;
+    font-size: 14px;
+    color: @color-text-dark;
+    text-align: left;
+}
+
+.bar {
+    width: 100%;
+    background-color: @color-border;
+}
+
+.barInner {
+    height: 5px;
+    background-color: @color-primary;
+    transition: 0.25s width;
+}
+
+.countCell {
+    width: 0;
+    font-size: 13px;
+    color: @color-text-dark;
+    padding-left: 5px;
+}
+
+/////
+
+.rateEntry {
+    flex: 1;
+    box-shadow: 0 1px 4px 0 fade(@color-shadow, 80%);
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 13px;
+    text-align: center;
+}
+
+.rateEntryFiller {
+    flex: 1;
+    padding: 10px;
+}
+
+.rateEntryTitle {
+    color: @color-text-dark;
+    letter-spacing: -0.02em;
+    line-height: 1.4;
+    font-size: 16px;
+    font-weight: bold;
+    word-break: keep-all;
+    text-decoration: none;
+    &:hover {
+        color: @color-primary;
+    }
+}
+
+.rateEntryRating {
+    padding-top: 5px;
+}
+
+.loadMore {
+    padding-bottom: 20px;
+}
+
+// desktop
+@media screen and (min-width: 769px) {
+    .rateEntryRow {
+        display: flex;
+    }
+
+    .rateEntry:first-child {
+        margin-right: 11px;
+    }
+}
+
+///
+
+.empty {
+    text-align: center;
+
+    h1 {
+        font-size: 1.5em;
+        font-weight: normal;
+    }
+
+    p {
+        color: @color-text-dark;
+    }
+}
