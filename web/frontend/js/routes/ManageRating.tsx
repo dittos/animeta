@@ -8,7 +8,7 @@ import * as Grid from "../ui/Grid";
 import { Rating } from "@mui/material";
 import { chunk } from "lodash";
 import { RatingSummary, UnratedRecord } from "../../../shared/client";
-import { LoadMore } from "../ui/LoadMore";
+import { AutoLoadMore } from "../ui/LoadMore";
 import { updateRecordRating } from "../API";
 import { Link } from "nuri";
 import useIntersectionObserver from "../ui/useIntersectionObserver";
@@ -199,7 +199,7 @@ const ManageRating: React.FC<RouteComponentProps<ManageRatingRouteData>> = ({
 
         {unratedRecords.nextCursor && (
           <div className={Styles.loadMore}>
-            <LoadMore isLoading={isLoading} onClick={loadMore} />
+            <AutoLoadMore isLoading={isLoading} onClick={loadMore} />
           </div>
         )}
       </Grid.Column>
