@@ -1,0 +1,12 @@
+FROM node:16-slim
+
+RUN mkdir /app
+WORKDIR /app
+
+COPY ./frontend-server/dist /app/frontend-server/dist
+COPY ./frontend/dist /app/frontend/dist
+
+ENV NODE_ENV production
+ENV ANIMETA_FRONTEND_DIST_PATH /app/frontend/dist
+
+CMD ["node", "frontend-server/dist/bundle.js"]

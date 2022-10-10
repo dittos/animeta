@@ -59,6 +59,8 @@ jobs:
     - run: pnpm -C frontend run build-assets
     - run: pnpm -C frontend run build-server
 
+    - run: docker build -t animeta-frontend -f Dockerfile.prebuilt .
+
     # Deploy
     - name: Set up gcloud
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -70,6 +72,12 @@ jobs:
     - name: Upload assets
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       run: gsutil -m cp -z js,css,map -r frontend/dist/static gs://animeta-static/
+    - name: Docker push
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      run: |
+        gcloud auth configure-docker
+        docker tag animeta-frontend gcr.io/ditto-1470749749381/animeta-frontend:latest
+        docker push gcr.io/ditto-1470749749381/animeta-frontend:latest
     - name: Configure AWS Credentials
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       uses: aws-actions/configure-aws-credentials@v1
