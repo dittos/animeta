@@ -184,7 +184,6 @@
 }
 
 :local(.notice) {
-    color: @color-text-dark;
     border: 1px solid @color-border;
     background-color: @color-bg-lightest;
     border-radius: 5px;
@@ -192,12 +191,37 @@
     margin-bottom: 20px;
     font-size: 14px;
     line-height: 1.5;
-    a {
-        color: @color-text-dark;
-    }
+
     h3 {
+        font-size: 1.2em;
         display: block;
         margin: 0;
         padding-bottom: 5px;
+    }
+    
+    p {
+        margin: 0;
+        color: @color-text-dark;
+
+        a {
+            color: @color-text-light;
+        }
+    }
+}
+
+:local(.empty) {
+    text-align: center;
+
+    h1 {
+        font-size: 1.5em;
+        font-weight: normal;
+    }
+
+    p {
+        color: @color-text-dark;
+
+        a {
+            color: @color-primary;
+        }
     }
 }

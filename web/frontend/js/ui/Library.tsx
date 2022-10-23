@@ -345,15 +345,9 @@ class Library extends React.Component<LibraryProps> {
           </div>
         </Grid.Column>
         <Grid.Column size={9} pull="left">
-          <div className={Styles.notice}>
-            <h3>🤩 별점 기능 추가</h3>
-            개별 작품 기록에서 별점을 입력하거나,{' '}<br className="show-mobile" />
-            <Link to="/records/rating/">별점 관리</Link> 메뉴에서 한번에 별점을 매겨보세요.
-          </div>
-
           {this.props.count === 0 ? (
-            <>
-              <h2>아직 기록이 하나도 없네요.</h2>
+            <div className={Styles.empty}>
+              <h1>아직 기록이 하나도 없네요.</h1>
               {this.props.canEdit && (
                 <p>
                   <Link to={ENABLE_NEW_ADD_RECORD ? "/records/add-new/" : "/records/add/"} onClick={this._showAddModal}>
@@ -361,22 +355,31 @@ class Library extends React.Component<LibraryProps> {
                   </Link>를 눌러 감상 기록을 등록할 수 있습니다.
                 </p>
               )}
-            </>
+            </div>
           ) : (
-            groups.map(group => (
-              <div
-                className={Styles.group}
-                key={group.key}
-                id={'group' + group.index}
-              >
-                <h2 className={Styles.groupTitle}>{group.key}</h2>
-                <div className={Styles.groupItems}>
-                  {group.items.map(record => (
-                    <LibraryItem key={record.id} record={record} />
-                  ))}
-                </div>
+            <>
+              <div className={Styles.notice}>
+                <h3>🤩 별점 기능 추가</h3>
+                <p>
+                  개별 작품 기록에서 별점을 입력하거나,{' '}<br className="show-mobile" />
+                  <Link to="/records/rating/">별점 관리</Link> 메뉴에서 한번에 별점을 매겨보세요.
+                </p>
               </div>
-            ))
+              {groups.map(group => (
+                <div
+                  className={Styles.group}
+                  key={group.key}
+                  id={'group' + group.index}
+                >
+                  <h2 className={Styles.groupTitle}>{group.key}</h2>
+                  <div className={Styles.groupItems}>
+                    {group.items.map(record => (
+                      <LibraryItem key={record.id} record={record} />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </>
           )}
         </Grid.Column>
       </Grid.Row>
