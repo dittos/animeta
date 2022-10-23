@@ -14,7 +14,7 @@ import { trackEvent } from '../Tracking';
 import { CategoryDTO, RecordDTO, LegacyStatusType, UserDTO } from '../../../shared/types';
 import { LinkProps } from 'nuri/components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown, faCaretUp, faCog, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faCaretDown, faCaretUp, faCog, faPlus, faStar } from '@fortawesome/free-solid-svg-icons';
 
 const ENABLE_NEW_ADD_RECORD = false;
 
@@ -259,21 +259,29 @@ class Library extends React.Component<LibraryProps> {
       <Grid.Row className={Styles.library}>
         <Grid.Column size={3} pull="left">
           {this.props.canEdit && (
-            <Link
-              to={ENABLE_NEW_ADD_RECORD ? "/records/add-new/" : "/records/add/"}
-              className={Styles.addRecordButton}
-              onClick={this._showAddModal}
-            >
-              <FontAwesomeIcon icon={faPlus} /> 작품 추가
-            </Link>
-          )}
-          {this.state.showAddModal && (
-            /* TODO: automatically set selected filter state */
-            <AddRecordDialog
-              initialStatusType="FINISHED"
-              onCancel={() => this.setState({ showAddModal: false })}
-              onCreate={this._recordCreated}
-            />
+            <div className={Styles.navButtonGroup}>
+              <Link
+                to={ENABLE_NEW_ADD_RECORD ? "/records/add-new/" : "/records/add/"}
+                className={Styles.addRecordButton}
+                onClick={this._showAddModal}
+              >
+                <FontAwesomeIcon icon={faPlus} /> 작품 추가
+              </Link>
+              {this.state.showAddModal && (
+                /* TODO: automatically set selected filter state */
+                <AddRecordDialog
+                  initialStatusType="FINISHED"
+                  onCancel={() => this.setState({ showAddModal: false })}
+                  onCreate={this._recordCreated}
+                />
+              )}
+              <Link
+                to={"/records/rating/"}
+                className={Styles.manageRatingButton}
+              >
+                <FontAwesomeIcon icon={faStar} /> 별점 관리
+              </Link>
+            </div>
           )}
           <div
             className={Styles.mobileFilterToggle}
@@ -337,6 +345,12 @@ class Library extends React.Component<LibraryProps> {
           </div>
         </Grid.Column>
         <Grid.Column size={9} pull="left">
+          <div className={Styles.notice}>
+            <h3>🤩 별점 기능 추가</h3>
+            개별 작품 기록에서 별점을 입력하거나,{' '}<br className="show-mobile" />
+            <Link to="/records/rating/">별점 관리</Link> 메뉴에서 한번에 별점을 매겨보세요.
+          </div>
+
           {this.props.count === 0 ? (
             <>
               <h2>아직 기록이 하나도 없네요.</h2>
