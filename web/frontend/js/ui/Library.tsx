@@ -58,36 +58,16 @@ function getIndexChar(s: string): string {
 
 type RecordGroup = { key: string, items: RecordDTO[], index?: number };
 
-function groupRecordsByTitle(records: RecordDTO[]): RecordGroup[] {
-  records = sortBy(records, record => getIndexChar(record.title));
-  var groups: RecordGroup[] = [];
-  var lastKey: string | null = null;
-  var group: RecordDTO[] = [];
-  records.forEach(record => {
-    var key = getIndexChar(record.title);
-    if (key != lastKey) {
-      if (group.length > 0 && lastKey) groups.push({ key: lastKey, items: group });
-      lastKey = key;
-      group = [];
-    }
-    group.push(record);
-  });
-  if (group.length > 0 && lastKey) groups.push({ key: lastKey, items: group });
-  for (var i = 0; i < groups.length; i++) groups[i].index = 1 + i;
-  return groups;
-}
-
-function groupRecordsByDate(records: RecordDTO[]): RecordGroup[] {
-  records = sortBy(records, record => -(record.updated_at || 0));
+function groupRecords(records: RecordDTO[], keyFn: (record: RecordDTO) => string | null): RecordGroup[] {
   var groups: RecordGroup[] = [];
   var unknownGroup: RecordDTO[] = [];
   var lastKey: string | null = null;
   var group: RecordDTO[] = [];
   records.forEach(record => {
-    if (!record.updated_at) {
+    const key = keyFn(record);
+    if (key == null) {
       unknownGroup.push(record);
     } else {
-      var key = getDateHeader(record);
       if (key != lastKey) {
         if (group.length > 0 && lastKey) groups.push({ key: lastKey, items: group });
         lastKey = key;
@@ -100,6 +80,21 @@ function groupRecordsByDate(records: RecordDTO[]): RecordGroup[] {
   if (unknownGroup.length) groups.push({ key: '?', items: unknownGroup });
   for (var i = 0; i < groups.length; i++) groups[i].index = 1 + i;
   return groups;
+}
+
+function groupRecordsByTitle(records: RecordDTO[]): RecordGroup[] {
+  records = sortBy(records, record => getIndexChar(record.title));
+  return groupRecords(records, record => getIndexChar(record.title));
+}
+
+function groupRecordsByDate(records: RecordDTO[]): RecordGroup[] {
+  records = sortBy(records, record => -(record.updated_at || 0));
+  return groupRecords(records, record => record.updated_at ? getDateHeader(record) : null);
+}
+
+function groupRecordsByRating(records: RecordDTO[]): RecordGroup[] {
+  records = sortBy(records, record => -(record.rating || 0));
+  return groupRecords(records, record => record.rating ? `${record.rating}점` : '별점 없음');
 }
 
 function LibraryItem({ record }: { record: RecordDTO }) {
@@ -250,10 +245,12 @@ class Library extends React.Component<LibraryProps> {
       categoryList,
     } = this.props;
     var groups: RecordGroup[] = [];
-    if (sort == 'date') {
+    if (sort === 'date') {
       groups = groupRecordsByDate(records);
-    } else if (sort == 'title') {
+    } else if (sort === 'title') {
       groups = groupRecordsByTitle(records);
+    } else if (sort === 'rating') {
+      groups = groupRecordsByRating(records);
     }
     return (
       <Grid.Row className={Styles.library}>
@@ -312,8 +309,15 @@ class Library extends React.Component<LibraryProps> {
               >
                 제목순
               </SwitchItem>
+              <SwitchItem
+                Component={Link}
+                {...this._getLinkParams({ sort: 'rating' })}
+                active={sort === 'rating'}
+              >
+                별점순
+              </SwitchItem>
             </Switch>
-            {sort === 'title' && (
+            {(sort === 'title' || sort === 'rating') && (
               <div className={Styles.toc}>
                 {groups.map(group => (
                   <a
