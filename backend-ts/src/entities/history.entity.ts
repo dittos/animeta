@@ -42,6 +42,9 @@ export class History {
   @Column('boolean')
   contains_spoiler!: boolean;
 
-  @Column('integer')
+  @Column('numeric', {
+    precision: 4,
+    scale: 1,
+  })
   rating!: number | null;
 }

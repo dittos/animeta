@@ -39,6 +39,9 @@ export class Record {
   @Column('timestamp with time zone')
   updated_at!: Date | null;
 
-  @Column('integer')
+  @Column('numeric', {
+    precision: 4,
+    scale: 1,
+  })
   rating!: number | null;
 }

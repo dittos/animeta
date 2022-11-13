@@ -99,4 +99,28 @@ describe('CreateRecordController', () => {
     expect(record.rating).toEqual(params.rating)
     expect(post.rating).toBeNull() // post should not inherit record rating
   });
+  
+  it(`create record with half star rating`, async () => {
+    const user = await utils.factory.newUser()
+    const work = await utils.factory.newWork()
+    const params = {
+      title: work.title,
+      categoryId: null,
+      status: '2',
+      statusType: 'WATCHING',
+      comment: '2',
+      publishTwitter: false,
+      rating: 2.5,
+      options: {},
+      postOptions: {},
+    }
+    const res = await utils.getHttpClientForUser(user)
+      .post('/api/v4/CreateRecord')
+      .send(params)
+    expect(res.status).toBe(201)
+    const record = res.body.record as RecordDTO
+    const post = res.body.post as PostDTO
+    expect(record.rating).toEqual(params.rating)
+    expect(post.rating).toBeNull() // post should not inherit record rating
+  });
 });
