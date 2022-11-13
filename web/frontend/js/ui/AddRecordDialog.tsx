@@ -12,7 +12,7 @@ import { getLastPublishTwitter, setLastPublishTwitter } from '../Prefs';
 import { CategoryDTO, RecordDTO, UserDTO, StatusType } from '../../../shared/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
-import Rating from '@mui/material/Rating';
+import { Rating } from './Rating';
 
 type CategorySelectProps = {
   selectedId: string;

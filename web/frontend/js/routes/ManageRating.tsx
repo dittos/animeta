@@ -5,7 +5,7 @@ import { RouteComponentProps, RouteHandler } from "../routes";
 import { UserLayoutPropsData } from "../ui/UserLayout";
 import Styles from "./ManageRating.module.less";
 import * as Grid from "../ui/Grid";
-import { Rating } from "@mui/material";
+import { Rating } from "../ui/Rating";
 import { chunk } from "lodash";
 import { RatingSummary, UnratedRecord } from "../../../shared/client";
 import { AutoLoadMore } from "../ui/LoadMore";

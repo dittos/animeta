@@ -28,7 +28,7 @@ import { CategoryDTO, PostDTO, RecordDTO, UserDTO } from '../../../shared/types_
 import { RecordFetchOptions } from '../../../shared/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
-import { Rating } from '@mui/material';
+import { Rating } from '../ui/Rating';
 
 type RecordRouteData = {
   currentUser: UserDTO | null;
