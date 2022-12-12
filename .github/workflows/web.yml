@@ -62,13 +62,13 @@ jobs:
     - run: docker build -t animeta-frontend -f Dockerfile.prebuilt .
 
     # Deploy
-    - name: Set up gcloud
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-      uses: google-github-actions/setup-gcloud@v0
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v1'
       with:
-        version: '270.0.0'
-        service_account_email: ${{ secrets.GCP_SA_EMAIL }}
-        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        workload_identity_provider: 'projects/87165905547/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions'
+        service_account: 'animeta-github-actions@ditto-1470749749381.iam.gserviceaccount.com'
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v1'
     - name: Upload assets
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       run: gsutil -m cp -z js,css,map -r frontend/dist/static gs://animeta-static/
