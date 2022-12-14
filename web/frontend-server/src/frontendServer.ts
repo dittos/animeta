@@ -20,7 +20,7 @@ const server = createServer({
   appProvider,
   getAssets: () => assets,
   staticDir: path.join(process.env.ANIMETA_FRONTEND_DIST_PATH, 'static'),
-}).listen(port, () => {
+}).listen(Number(port), '0.0.0.0', () => {
   console.log('Server running at port', port);
 });
 
