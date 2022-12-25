@@ -26,10 +26,10 @@ jobs:
     - uses: azure/setup-kubectl@v3
     - name: Set up kubeconfig
       env:
-        KUBECONFIG_DATA: ${{ secrets.KUBECONFIG_DATA }}
+        KUBECONFIG_DATA_BASE64: ${{ secrets.KUBECONFIG_DATA_BASE64 }}
       run: |
         mkdir ~/.kube
-        echo $KUBECONFIG_DATA > ~/.kube/config
+        echo $KUBECONFIG_DATA_BASE64 | base64 -d > ~/.kube/config
     - name: Test kubeconfig
       run: kubectl cluster-info
 
