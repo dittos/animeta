@@ -2,7 +2,7 @@ name: Backend (TS)
 
 on:
   push:
-    branches: [ master, push-deploy-test ]
+    branches: [ master ]
     paths:
       - 'backend-ts/**'
       - 'tooling/**'
@@ -42,16 +42,16 @@ jobs:
         docker push gcr.io/ditto-1470749749381/animeta-backend-ts:latest
 
     - uses: azure/setup-kubectl@v3
-      # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     - name: Set up kubeconfig
-      # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       env:
         KUBECONFIG_DATA_BASE64: ${{ secrets.KUBECONFIG_DATA_BASE64 }}
       run: |
         mkdir ~/.kube
         echo $KUBECONFIG_DATA_BASE64 | base64 -d > ~/.kube/config
     - name: Rollout
-      # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       run: |
         kubectl rollout restart deployment/animeta-backend-ts
         kubectl rollout status deployment/animeta-backend-ts
