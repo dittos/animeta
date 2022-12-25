@@ -2,7 +2,7 @@ name: Backend (TS)
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, push-deploy-test ]
     paths:
       - 'backend-ts/**'
       - 'tooling/**'
@@ -22,7 +22,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - run: docker build -t animeta-backend-ts -f Dockerfile.backend-ts .
+
+    - uses: azure/setup-kubectl@v3
+    - name: Set up kubeconfig
+      env:
+        KUBECONFIG_DATA: ${{ secrets.KUBECONFIG_DATA }}
+      run: |
+        echo $KUBECONFIG_DATA > ~/.kube/config
+    - name: Test kubeconfig
+      run: kubectl cluster-info
+
+    # - run: docker build -t animeta-backend-ts -f Dockerfile.backend-ts .
 
     # Deploy
     - name: Set up gcloud
