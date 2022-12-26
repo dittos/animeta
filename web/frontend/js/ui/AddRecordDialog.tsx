@@ -12,6 +12,7 @@ import { getLastPublishTwitter, setLastPublishTwitter } from '../Prefs';
 import { CategoryDTO, RecordDTO, UserDTO, StatusType } from '../../../shared/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { Rating } from './Rating';
 
 type CategorySelectProps = {
   selectedId: string;
@@ -49,6 +50,7 @@ type AddRecordState = {
   statusType: StatusType;
   status: string;
   comment: string;
+  rating: number | null;
   publishTwitter: boolean;
   isRequesting: boolean;
   currentUser: UserDTO | null;
@@ -64,6 +66,7 @@ class AddRecord extends React.Component<AddRecordProps, AddRecordState> {
       statusType: props.initialStatusType || 'WATCHING',
       status: '',
       comment: '',
+      rating: null,
       publishTwitter: false,
       isRequesting: false,
       currentUser: null,
@@ -108,13 +111,22 @@ class AddRecord extends React.Component<AddRecordProps, AddRecordState> {
               </Switch>
             </div>
             {this.state.statusType !== 'INTERESTED' && (
-              <div className={Styles.field}>
-                <label>진행률 (선택 사항)</label>
-                <StatusInput
-                  value={this.state.status}
-                  onChange={this._onStatusChange}
-                />
-              </div>
+              <>
+                <div className={Styles.field}>
+                  <label>진행률 (선택 사항)</label>
+                  <StatusInput
+                    value={this.state.status}
+                    onChange={this._onStatusChange}
+                  />
+                </div>
+                <div className={Styles.field}>
+                  <label>별점</label>
+                  <Rating
+                    value={this.state.rating ?? undefined}
+                    onChange={this._onRatingChange}
+                  />
+                </div>
+              </>
             )}
             <div className={Styles.field}>
               <label>분류</label>
@@ -162,15 +174,21 @@ class AddRecord extends React.Component<AddRecordProps, AddRecordState> {
     this.setState({ publishTwitter: getLastPublishTwitter() });
   }
 
+  _onRatingChange = (event: any, rating: number | null) => {
+    this.setState({ rating });
+  };
+
   _onCategoryChange = (categoryId: string) => {
     this.setState({ selectedCategoryId: categoryId });
   };
 
   _onStatusTypeChange = (statusType: StatusType) => {
     const status = statusType === 'INTERESTED' ? '' : this.state.status;
+    const rating = statusType === 'INTERESTED' ? null : this.state.rating;
     this.setState({
       statusType,
       status,
+      rating,
     });
   };
 
@@ -206,6 +224,7 @@ class AddRecord extends React.Component<AddRecordProps, AddRecordState> {
       status: this.state.status,
       categoryId: this.state.selectedCategoryId !== '' ? Number(this.state.selectedCategoryId) : null,
       comment: this.state.comment,
+      rating: this.state.rating,
       publishTwitter: this.state.publishTwitter,
     })
       .then(result => {

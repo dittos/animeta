@@ -1,18 +1,25 @@
 @import "../../less/variables.less";
 
 .header {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 
     @media (min-width: 481px) {
-        padding-bottom: 16px;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
         border-bottom: 1px solid @color-border;
+    }
+
+    @media (min-width: 787px) {
+        padding-bottom: 16px;
+        display: flex;
     }
 }
 
 .title {
-    float: left;
+    flex: 1;
     margin: 0;
     font-size: 20px;
+    word-break: keep-all;
     a {
         color: @color-text-title;
         text-decoration: none;
@@ -23,47 +30,61 @@
     }
 }
 
-.toolbar {
-    float: right;
-
-    @media (max-width: 480px) {
-        float: left;
-        clear: both;
+.readOnlyRating {
+    @media (max-width: 768px) {
         margin-top: 16px;
     }
 }
 
 .titleForm {
-    float: left;
-
+    flex: 1;
     input {
         width: 15em;
+    }
+}
+
+.toolbar {
+    @media (max-width: 768px) {
+        margin-top: 10px;
     }
 }
 
 @toolbar-button-spacing: 20px;
 
 .toolbarButton {
-    float: left;
     vertical-align: middle;
+    white-space: nowrap;
     text-decoration: none;
-    line-height: 22px;
     font-size: 13px;
     color: @color-text-dark;
+
+    @media (max-width: 768px) {
+        line-height: 36px;
+    }
+}
+
+.ratingForm {
+    composes: toolbarButton;
+    margin-right: @toolbar-button-spacing;
+
+    display: inline-flex;
+}
+
+.editTitleButton {
+    composes: toolbarButton;
+    margin-right: @toolbar-button-spacing;
 }
 
 .deleteButton {
     composes: toolbarButton;
-    margin-left: @toolbar-button-spacing;
+    margin-right: @toolbar-button-spacing;
+
     color: @color-danger;
-    border-color: @color-danger;
 }
 
 .categoryForm {
     composes: toolbarButton;
 
-    float: left;
-    margin-left: @toolbar-button-spacing;
     position: relative;
     label {
         color: @color-text-light;
@@ -78,6 +99,8 @@
         cursor: pointer;
     }
 }
+
+////
 
 .postComposerContainer {
     padding-bottom: 20px;

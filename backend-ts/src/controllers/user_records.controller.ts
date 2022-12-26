@@ -55,7 +55,9 @@ export class UserRecordsController {
           category_id: categoryIdParam !== 0 ? categoryIdParam : null
         } : {},
       },
-      order: sort === 'title' ? { title: 'ASC' } : /* sort === 'date' || !sort */ { updated_at: 'DESC' },
+      order: sort === 'title' ? { title: 'ASC' } :
+        sort === 'rating' ? { rating: 'DESC', updated_at: 'DESC' } :
+        /* sort === 'date' || !sort */ { updated_at: 'DESC' },
       ...limit ? { take: limit } : {},
     })
     const options: RecordSerializerOptions =

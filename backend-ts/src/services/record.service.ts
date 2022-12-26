@@ -11,6 +11,8 @@ import { objResults } from "src/utils/dataloader";
 import { EntityManager, Repository } from "typeorm";
 import { PermissionError, ValidationError } from "./exceptions";
 
+const INVALID_RATING_ERROR_MESSAGE = '별점은 0.5부터 5까지 0.5 단위로 입력할 수 있습니다.'
+
 @Injectable()
 export class RecordService {
   private dataLoader = new DataLoader<number, Record>(
@@ -83,8 +85,8 @@ export class RecordService {
   }
 
   async updateRating(record: Record, rating: number | null): Promise<void> {
-    if (rating != null && ![1, 2, 3, 4, 5].includes(rating)) {
-      throw new ValidationError('별점은 1부터 5까지 입력할 수 있습니다.')
+    if (rating != null && !isValidRating(rating)) {
+      throw new ValidationError(INVALID_RATING_ERROR_MESSAGE)
     }
     record.rating = rating
     await this.recordRepository.save(record)
@@ -106,8 +108,8 @@ export async function createRecord(em: EntityManager, user: User, work: Work, pa
 }): Promise<{ record: Record, history: History }> {
   if (params.title.trim() === '')
     throw new ValidationError('작품 제목을 입력하세요.')
-  if (params.rating != null && ![1, 2, 3, 4, 5].includes(params.rating))
-    throw new ValidationError('별점은 1부터 5까지 입력할 수 있습니다.')
+  if (params.rating != null && !isValidRating(params.rating))
+    throw new ValidationError(INVALID_RATING_ERROR_MESSAGE)
   const category = params.categoryId ? await em.findOne(Category, params.categoryId) : null
   if (category != null && user.id !== category.user_id)
     throw new PermissionError()
@@ -148,8 +150,8 @@ export async function addRecordHistory(em: EntityManager, record: Record, params
   containsSpoiler: boolean;
   rating: number | null;
 }): Promise<History> {
-  if (params.rating != null && ![1, 2, 3, 4, 5].includes(params.rating))
-    throw new ValidationError('별점은 1부터 5까지 입력할 수 있습니다.')
+  if (params.rating != null && !isValidRating(params.rating))
+    throw new ValidationError(INVALID_RATING_ERROR_MESSAGE)
 
   const history = new History()
   history.user_id = record.user_id
@@ -169,4 +171,8 @@ export async function addRecordHistory(em: EntityManager, record: Record, params
   await em.save(record)
 
   return history
+}
+
+function isValidRating(rating: number) {
+  return [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].includes(rating)
 }
