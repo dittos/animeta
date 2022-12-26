@@ -78,13 +78,16 @@ const ManageRating: React.FC<RouteComponentProps<ManageRatingRouteData>> = ({
     unratedRecords,
   } = data;
 
-  const ratingSummaries: RatingSummary[] = [5, 4, 3, 2, 1].map(
+  const ratingSummaries: RatingSummary[] = [5, 4, 3, 2, 1, 0].map(
     (rating) =>
-      rawRatingSummaries.find((it) => it.rating === rating) ?? {
-        rating,
-        recordCount: 0,
-        sampleTitles: [],
-      }
+      rawRatingSummaries.filter((it) => Math.floor(it.rating) === rating)
+        .reduce((acc, it) => ({
+          rating,
+          recordCount: acc.recordCount + it.recordCount,
+        }), {
+          rating,
+          recordCount: 0,
+        })
   );
 
   const ratedCount = ratingSummaries.reduce(
@@ -148,7 +151,9 @@ const ManageRating: React.FC<RouteComponentProps<ManageRatingRouteData>> = ({
           <tbody>
             {ratingSummaries.map((it) => (
               <tr key={`rating-${it.rating}`}>
-                <th className={Styles.ratingCell}>{it.rating}점</th>
+                <th className={Styles.ratingCell}>
+                  {it.rating === 5 ? '5점' : it.rating === 0 ? '0.5점' : `${it.rating}점대`}
+                </th>
                 <td>
                   <div className={Styles.bar}>
                     <div
