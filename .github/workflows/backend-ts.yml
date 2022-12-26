@@ -50,6 +50,9 @@ jobs:
       run: |
         mkdir ~/.kube
         echo $KUBECONFIG_DATA_BASE64 | base64 -d > ~/.kube/config
+    - name: Run migration
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      run: npx zx@7 bin/migrate-remote.mjs
     - name: Rollout
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       run: |
