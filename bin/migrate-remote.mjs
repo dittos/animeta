@@ -1,5 +1,17 @@
 #!/usr/bin/env zx
 
+const $0 = $
+$ = (...args) => {
+  const promise = $0(...args)
+  promise.then(output => {
+    if (!output.toString().endsWith('\n')) {
+      echo('')
+    }
+    return output
+  })
+  return promise
+}
+
 const secretName = (await $`kubectl get deployment animeta-backend-ts -o jsonpath='{.spec.template.spec.volumes[?(@.name=="secret")].secret.secretName}'`).stdout
 
 const jobManifest = `
@@ -67,9 +79,7 @@ const waitJob = async (jobName, conditionPredicate) => {
 }
 
 await waitJob(jobName, condition => condition != null)
-echo('')
 await $`kubectl logs job/${jobName} -f`
-echo('')
 
 const finalCondition = await waitJob(jobName, condition => condition === 'Complete' || condition === 'Failed')
 if (finalCondition === 'Complete') {
