@@ -32,7 +32,7 @@ export class BackupService {
         userHistoryCsvRows(em, user),
         csvStringify({
           header: true,
-          columns: ["id", "title", "category", "status", "status_type", "comment", "updated_at", "contains_spoiler"],
+          columns: ["id", "title", "category", "status", "status_type", "comment", "updated_at", "contains_spoiler", "rating"],
           bom: true,
           quoted: true,
         }),
@@ -89,6 +89,7 @@ async function* userHistoryCsvRows(em: EntityManager, user: User) {
       it.status, StatusType[it.status_type], it.comment,
       it.updated_at ? it.updated_at.toJSON() : '',
       it.contains_spoiler ? 'true' : 'false',
+      it.record.rating ?? '',
     ])
   }
 }
