@@ -7,6 +7,7 @@ import { TitleMapping } from "src/entities/title_mapping.entity";
 import { User } from "src/entities/user.entity";
 import { Work } from "src/entities/work.entity";
 import { WorkIndex } from "src/entities/work_index.entity";
+import { WorkMetadata } from "src/entities/work_metadata";
 import { createCategory } from "src/services/category.service";
 import { addRecordHistory, createRecord } from "src/services/record.service";
 import { getOrCreateWork } from "src/services/work.service";
@@ -45,14 +46,17 @@ export class TestFactoryUtils {
   }
 
   async newWork({
-    periods
+    periods,
+    metadata,
   }: {
     periods?: Period[];
+    metadata?: Partial<WorkMetadata>;
   } = {}): Promise<Work> {
     const work = await getOrCreateWork(db, cuid())
     work.metadata = {
       version: 2,
       ...periods ? { periods: periods.map(it => it.toString()) } : {},
+      ...metadata ?? {},
     }
     if (periods)
       work.first_period = periods[0].toString()

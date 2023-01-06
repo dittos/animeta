@@ -50,7 +50,7 @@ function serializeSchedules(schedules: {[country: string]: Schedule}): WorkSched
     result.push({
       country,
       date: schedule.datePrecision !== 'YEAR_MONTH' && schedule.date ?
-        Temporal.PlainDate.from(schedule.date)
+        Temporal.PlainDateTime.from(schedule.date)
           .toZonedDateTime(defaultTimeZone).toInstant().epochMilliseconds :
         null,
       datePrecision: schedule.datePrecision,
