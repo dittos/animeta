@@ -1,9 +1,9 @@
 {
     "backend": {
-        "v4BaseUrl": "https://api.animeta.net/api/v4",
-        "v5BaseUrl": "https://api.animeta.net",
-        "adminNewBaseUrl2": "https://api.animeta.net/api/admin/v1",
-        "graphqlUrl": "https://api.animeta.net/graphql",
+        "v4BaseUrl": "https://animeta.net/api/v4",
+        "v5BaseUrl": "https://animeta.net",
+        "adminNewBaseUrl2": "https://animeta.net/api/admin/v1",
+        "graphqlUrl": "https://animeta.net/api/graphql",
         "remote": true
     },
     "sentryDsn": "",
