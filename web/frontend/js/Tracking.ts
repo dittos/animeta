@@ -1,20 +1,22 @@
-declare var ga: Function | undefined;
+declare var gtag: Function | undefined;
 
 export interface ITrackingEvent {
-    eventCategory: string;
-    eventAction: string;
-    eventLabel?: string;
-    eventValue?: number;
+  eventCategory: string;
+  eventAction: string;
+  eventLabel?: string;
+  eventValue?: number;
 }
 
 export function trackPageView() {
-    if (ga) {
-        ga('send', 'pageview');
-    }
+  // do nothing for GA4
 }
 
 export function trackEvent(event: ITrackingEvent) {
-    if (ga) {
-        ga('send', 'event', event);
-    }
+  if (gtag) {
+    gtag("event", event.eventAction, {
+      event_category: event.eventCategory,
+      event_label: event.eventLabel,
+      value: event.eventValue,
+    });
+  }
 }
