@@ -27,7 +27,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: call
-          image: gcr.io/ditto-1470749749381/animeta-backend-ts
+          image: ghcr.io/dittos/animeta-backend-ts
           imagePullPolicy: Always
           command: ['node_modules/.bin/typeorm', 'migration:run']
           env:

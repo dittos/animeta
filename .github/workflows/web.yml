@@ -20,6 +20,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      packages: write
 
     steps:
 
@@ -72,18 +73,30 @@ jobs:
     - name: Upload assets
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       run: gsutil -m cp -z js,css,map -r frontend/dist/static gs://animeta-static/
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     - name: Docker push
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       run: |
-        gcloud auth configure-docker
-        docker tag animeta-frontend gcr.io/ditto-1470749749381/animeta-frontend:latest
-        docker push gcr.io/ditto-1470749749381/animeta-frontend:latest
-    - name: Configure AWS Credentials
+        docker tag animeta-frontend ghcr.io/dittos/animeta-frontend:latest
+        docker push ghcr.io/dittos/animeta-frontend:latest
+
+    - uses: azure/setup-kubectl@v3
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-region: ap-northeast-2
-        role-to-assume: arn:aws:iam::307761743095:role/animeta-deploy-github-actions-Role-19IZBY3F8TXQ
-    - name: Deploy lambda
+    - name: Set up kubeconfig
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-      run: ./deploy/lambda/package.sh && ./deploy/lambda/deploy.sh
+      env:
+        KUBECONFIG_DATA_BASE64: ${{ secrets.KUBECONFIG_DATA_BASE64 }}
+      run: |
+        mkdir ~/.kube
+        echo $KUBECONFIG_DATA_BASE64 | base64 -d > ~/.kube/config
+    - name: Rollout
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      run: |
+        kubectl rollout restart deployment/animeta-frontend
+        kubectl rollout status deployment/animeta-frontend

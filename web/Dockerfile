@@ -1,5 +1,8 @@
 FROM node:16 AS builder
 
+# https://docs.github.com/en/packages/learn-github-packages/connecting-a-repository-to-a-package#connecting-a-repository-to-a-container-image-using-the-command-line
+LABEL org.opencontainers.image.source=https://github.com/dittos/animeta
+
 RUN curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
 
 RUN mkdir /app
