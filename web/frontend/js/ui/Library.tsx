@@ -362,7 +362,7 @@ class Library extends React.Component<LibraryProps> {
             </div>
           ) : (
             <>
-              {this.props.canEdit && (
+              {/*this.props.canEdit && (
                 <div className={Styles.notice}>
                   <h3>🤩 별점 기능 추가</h3>
                   <p>
@@ -370,7 +370,7 @@ class Library extends React.Component<LibraryProps> {
                     <Link to="/records/rating/">별점 관리</Link> 메뉴에서 한번에 별점을 매겨보세요.
                   </p>
                 </div>
-              )}
+              )*/}
               {groups.map(group => (
                 <div
                   className={Styles.group}
