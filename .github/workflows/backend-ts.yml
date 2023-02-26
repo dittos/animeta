@@ -27,9 +27,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Docker build
-      run: docker build -t animeta-backend-ts -f Dockerfile.backend-ts .
-
     # Deploy
     - name: Log in to the Container registry
       uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
@@ -37,11 +34,15 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    - name: Docker push
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-      run: |
-        docker tag animeta-backend-ts ghcr.io/dittos/animeta-backend-ts:latest
-        docker push ghcr.io/dittos/animeta-backend-ts:latest
+    - name: Build and push
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        file: Dockerfile.backend-ts
+        push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        tags: "ghcr.io/dittos/animeta-backend-ts:latest"
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
     - uses: azure/setup-kubectl@v3
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
