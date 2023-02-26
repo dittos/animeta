@@ -2,7 +2,7 @@ name: Backend (TS)
 
 on:
   push:
-    branches: [ master, ghcr ]
+    branches: [ master ]
     paths:
       - 'backend-ts/**'
       - 'tooling/**'
@@ -38,9 +38,8 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Docker push
-      # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       run: |
-        gcloud auth configure-docker
         docker tag animeta-backend-ts ghcr.io/dittos/animeta-backend-ts:latest
         docker push ghcr.io/dittos/animeta-backend-ts:latest
 

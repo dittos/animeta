@@ -2,7 +2,7 @@ name: Web
 
 on:
   push:
-    branches: [ master, ghcr ]
+    branches: [ master ]
     paths: ['web/**', '.github/workflows/web.yml']
   pull_request:
     paths: ['web/**']
@@ -81,8 +81,22 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Docker push
-      # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       run: |
-        # gcloud auth configure-docker
         docker tag animeta-frontend ghcr.io/dittos/animeta-frontend:latest
         docker push ghcr.io/dittos/animeta-frontend:latest
+
+    - uses: azure/setup-kubectl@v3
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    - name: Set up kubeconfig
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      env:
+        KUBECONFIG_DATA_BASE64: ${{ secrets.KUBECONFIG_DATA_BASE64 }}
+      run: |
+        mkdir ~/.kube
+        echo $KUBECONFIG_DATA_BASE64 | base64 -d > ~/.kube/config
+    - name: Rollout
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      run: |
+        kubectl rollout restart deployment/animeta-frontend
+        kubectl rollout status deployment/animeta-frontend
