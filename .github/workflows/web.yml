@@ -2,7 +2,7 @@ name: Web
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, ghcr ]
     paths: ['web/**', '.github/workflows/web.yml']
   pull_request:
     paths: ['web/**']
@@ -72,12 +72,19 @@ jobs:
     - name: Upload assets
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       run: gsutil -m cp -z js,css,map -r frontend/dist/static gs://animeta-static/
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     - name: Docker push
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       run: |
-        gcloud auth configure-docker
-        docker tag animeta-frontend gcr.io/ditto-1470749749381/animeta-frontend:latest
-        docker push gcr.io/ditto-1470749749381/animeta-frontend:latest
+        # gcloud auth configure-docker
+        docker tag animeta-frontend ghcr.io/dittos/animeta-frontend:latest
+        docker push ghcr.io/dittos/animeta-frontend:latest
     - name: Configure AWS Credentials
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       uses: aws-actions/configure-aws-credentials@v1
