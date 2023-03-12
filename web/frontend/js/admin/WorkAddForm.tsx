@@ -21,7 +21,7 @@ export const WorkAddForm: React.FC<{}> = () => {
       const anchor = decodeURIComponent(url.hash.substring(1))
       const namuRef = anchor ? `${page}#${anchor}` : page
       
-      const title = page.replace(/\/애니메이션$/, '')
+      const title = page.replace(/\/애니메이션$/, '').replace(/\(애니메이션( [0-9]+기)?\)/, '').trim()
       setNamuRef(namuRef)
       ref.current!.setValue(title)
     }
