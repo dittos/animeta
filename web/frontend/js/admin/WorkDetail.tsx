@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
-import { Table, Form, FormGroup, FormControl, Button, Navbar, Container } from 'react-bootstrap';
+import { Table, Form, FormGroup, FormControl, Button, Navbar, Container, NavLink } from 'react-bootstrap';
 import { API } from './ApiClient';
 import WorkMergeForm from './WorkMergeForm';
 import ImageUploadForm from './ImageUploadForm';
@@ -196,6 +196,7 @@ class WorkDetail extends React.Component<RouteComponentProps<RouteParams>, State
               <Button variant="primary" onClick={this._saveMetadata} disabled={this.state.isSavingMetadata}>Save</Button>
               {this.state.showMetadataSaved ? ' Saved!' : null}
             </Form>
+            <NavLink href="#top" onClick={this._backToTop}>&uarr; Back to top</NavLink>
           </Container>
         </Navbar>
       </div>
@@ -311,6 +312,11 @@ class WorkDetail extends React.Component<RouteComponentProps<RouteParams>, State
     }, e => {
       alert(e.message);
     });
+  };
+
+  _backToTop = (event: React.MouseEvent) => {
+    event.preventDefault();
+    window.scrollTo(0, 0);
   };
 }
 
