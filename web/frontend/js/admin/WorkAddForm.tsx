@@ -2,12 +2,14 @@ import React, { useRef, useState } from "react"
 import { Button, Form, FormGroup } from "react-bootstrap"
 import { useHistory } from "react-router-dom"
 import { API } from "./ApiClient"
+import { usePeriod, clearPeriod } from "./EditingSessionState"
 import TitleAutosuggest from "./TitleAutosuggest"
 
 export const WorkAddForm: React.FC<{}> = () => {
   const ref = useRef<TitleAutosuggest>(null)
   const history = useHistory()
   const [namuRef, setNamuRef] = useState<string | null>(null)
+  const period = usePeriod()
 
   function onTitleSelected(item: { id: number }) {
     history.push(`/works/${item.id}`)
@@ -32,6 +34,7 @@ export const WorkAddForm: React.FC<{}> = () => {
     API.call('/api/admin/v1/WorkAddForm/createWork', {
       title,
       namuRef,
+      period,
     }).then(work => {
       history.push(`/works/${work.id}`)
       ref.current!.clear()
@@ -51,6 +54,12 @@ export const WorkAddForm: React.FC<{}> = () => {
           <Form.Text>
             <Button size="sm" variant="danger" onClick={() => setNamuRef(null)}>&times;</Button>
             <strong>Namuwiki Reference:</strong> {namuRef}
+          </Form.Text>
+        )}
+        {period && (
+          <Form.Text>
+            <Button size="sm" variant="danger" onClick={() => clearPeriod()}>&times;</Button>
+            <strong>{period}</strong>
           </Form.Text>
         )}
       </FormGroup>{' '}

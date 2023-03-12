@@ -7,6 +7,7 @@ import ImageUploadForm from './ImageUploadForm';
 import ImageCropper from './ImageCropper';
 import WorkMetadataEditor from './WorkMetadataEditor';
 import { AdminWorkDto, WorkMetadata } from '../../../shared/client';
+import * as EditingSessionState from './EditingSessionState';
 
 type RouteParams = {
   id: string;
@@ -258,6 +259,15 @@ class WorkDetail extends React.Component<RouteComponentProps<RouteParams>, State
 
   _saveMetadata = () => {
     this.setState({ isSavingMetadata: true });
+
+    const periods = this.state.work!.metadata?.periods
+    if (periods) {
+      const period = periods[periods.length - 1];
+      if (period) {
+        EditingSessionState.setPeriod(period);
+      }
+    }
+
     API.call('/api/admin/v1/WorkDetail/editMetadata', {
       workId: this.state.work!.id,
       rawMetadata: this.state.work!.raw_metadata,

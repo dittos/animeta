@@ -8,6 +8,7 @@ import { applyWorkMetadata } from "src2/services/work";
 export default async function(params: {
   title: string,
   namuRef: string | null,
+  period: string | null,
 }): Promise<AdminWorkDto> {
   const work = await getOrCreateWork(db, params.title)
   if (params.namuRef) {
@@ -15,6 +16,7 @@ export default async function(params: {
     await applyWorkMetadata(work, {
       ...metadata,
       namuRef: params.namuRef,
+      ...params.period ? {periods: [params.period]} : {},
     })
   }
   return serializeAdminWork(work)

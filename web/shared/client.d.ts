@@ -137,6 +137,7 @@ export interface Client<TOptions = any> {
   call(path: "/api/admin/v1/WorkAddForm/createWork", params: {
   title: string,
   namuRef: string | null,
+  period: string | null,
 }, options?: TOptions): Promise<AdminWorkDto>
   call(path: "/api/admin/v1/WorkDetail/addTitleMapping", params: {
   workId: string;
