@@ -4,6 +4,7 @@ import type { User as UserModel } from 'src/entities/user.entity';
 import type { Record as RecordModel } from 'src/entities/record.entity';
 import type { Work as WorkModel } from 'src/entities/work.entity';
 import type { Episode as EpisodeModel } from 'src/entities/episode.entity';
+import type { Category as CategoryModel } from 'src/entities/category.entity';
 import type { Period as PeriodModel } from 'src/utils/period';
 import type { CuratedListMetadata as CuratedListMetadataModel } from 'src2/services/curatedList';
 import type { MercuriusContext } from 'mercurius';
@@ -95,6 +96,32 @@ export type QuerytablePeriodArgs = {
   period: Scalars['String'];
 };
 
+export type Mutation = {
+  __typename?: 'Mutation';
+  createRecord: CreateRecordResult;
+};
+
+
+export type MutationcreateRecordArgs = {
+  input: CreateRecordInput;
+};
+
+export type CreateRecordInput = {
+  title: Scalars['String'];
+  categoryId?: InputMaybe<Scalars['ID']>;
+  status: Scalars['String'];
+  statusType: StatusType;
+  comment: Scalars['String'];
+  publishTwitter?: InputMaybe<Scalars['Boolean']>;
+  rating?: InputMaybe<Scalars['Float']>;
+};
+
+export type CreateRecordResult = {
+  __typename?: 'CreateRecordResult';
+  record: Record;
+  post?: Maybe<Post>;
+};
+
 export type Node = {
   id: Scalars['ID'];
 };
@@ -134,6 +161,7 @@ export type Post = Node & {
   containsSpoiler?: Maybe<Scalars['Boolean']>;
   user?: Maybe<User>;
   updatedAt?: Maybe<Scalars['GraphQLTimestamp']>;
+  rating?: Maybe<Scalars['Float']>;
   work?: Maybe<Work>;
   episode?: Maybe<Episode>;
 };
@@ -150,6 +178,11 @@ export type Record = Node & {
   title?: Maybe<Scalars['String']>;
   statusType?: Maybe<StatusType>;
   status?: Maybe<Scalars['String']>;
+  user?: Maybe<User>;
+  work?: Maybe<Work>;
+  category?: Maybe<Category>;
+  updatedAt?: Maybe<Scalars['GraphQLTimestamp']>;
+  rating?: Maybe<Scalars['Float']>;
 };
 
 export type CuratedList = {
@@ -386,11 +419,15 @@ export type ResolversTypes = {
   ID: ResolverTypeWrapper<Scalars['ID']>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  Mutation: ResolverTypeWrapper<{}>;
+  CreateRecordInput: CreateRecordInput;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  Float: ResolverTypeWrapper<Scalars['Float']>;
+  CreateRecordResult: ResolverTypeWrapper<Omit<CreateRecordResult, 'record' | 'post'> & { record: ResolversTypes['Record'], post?: Maybe<ResolversTypes['Post']> }>;
   Node: ResolversTypes['User'] | ResolversTypes['Category'] | ResolversTypes['Post'] | ResolversTypes['Record'] | ResolversTypes['Work'];
   GraphQLTimestamp: ResolverTypeWrapper<Scalars['GraphQLTimestamp']>;
   User: ResolverTypeWrapper<UserModel>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
-  Category: ResolverTypeWrapper<Omit<Category, 'user'> & { user?: Maybe<ResolversTypes['User']> }>;
+  Category: ResolverTypeWrapper<CategoryModel>;
   Post: ResolverTypeWrapper<HistoryModel>;
   StatusType: StatusType;
   Record: ResolverTypeWrapper<RecordModel>;
@@ -422,11 +459,15 @@ export type ResolversParentTypes = {
   ID: Scalars['ID'];
   String: Scalars['String'];
   Int: Scalars['Int'];
+  Mutation: {};
+  CreateRecordInput: CreateRecordInput;
+  Boolean: Scalars['Boolean'];
+  Float: Scalars['Float'];
+  CreateRecordResult: Omit<CreateRecordResult, 'record' | 'post'> & { record: ResolversParentTypes['Record'], post?: Maybe<ResolversParentTypes['Post']> };
   Node: ResolversParentTypes['User'] | ResolversParentTypes['Category'] | ResolversParentTypes['Post'] | ResolversParentTypes['Record'] | ResolversParentTypes['Work'];
   GraphQLTimestamp: Scalars['GraphQLTimestamp'];
   User: UserModel;
-  Boolean: Scalars['Boolean'];
-  Category: Omit<Category, 'user'> & { user?: Maybe<ResolversParentTypes['User']> };
+  Category: CategoryModel;
   Post: HistoryModel;
   Record: RecordModel;
   CuratedList: CuratedListMetadataModel;
@@ -463,6 +504,16 @@ export type QueryResolvers<ContextType = MercuriusContext, ParentType extends Re
   tablePeriod?: Resolver<Maybe<ResolversTypes['TablePeriod']>, ParentType, ContextType, RequireFields<QuerytablePeriodArgs, 'period'>>;
   currentTablePeriod?: Resolver<ResolversTypes['TablePeriod'], ParentType, ContextType>;
   tablePeriods?: Resolver<Array<ResolversTypes['TablePeriod']>, ParentType, ContextType>;
+};
+
+export type MutationResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  createRecord?: Resolver<ResolversTypes['CreateRecordResult'], ParentType, ContextType, RequireFields<MutationcreateRecordArgs, 'input'>>;
+};
+
+export type CreateRecordResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['CreateRecordResult'] = ResolversParentTypes['CreateRecordResult']> = {
+  record?: Resolver<ResolversTypes['Record'], ParentType, ContextType>;
+  post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type NodeResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = {
@@ -502,6 +553,7 @@ export type PostResolvers<ContextType = MercuriusContext, ParentType extends Res
   containsSpoiler?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['GraphQLTimestamp']>, ParentType, ContextType>;
+  rating?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   work?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType>;
   episode?: Resolver<Maybe<ResolversTypes['Episode']>, ParentType, ContextType>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -512,6 +564,11 @@ export type RecordResolvers<ContextType = MercuriusContext, ParentType extends R
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   statusType?: Resolver<Maybe<ResolversTypes['StatusType']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  work?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType>;
+  category?: Resolver<Maybe<ResolversTypes['Category']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['GraphQLTimestamp']>, ParentType, ContextType>;
+  rating?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -645,6 +702,8 @@ export type WorkCreditResolvers<ContextType = MercuriusContext, ParentType exten
 
 export type Resolvers<ContextType = MercuriusContext> = {
   Query?: QueryResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
+  CreateRecordResult?: CreateRecordResultResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
   GraphQLTimestamp?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;

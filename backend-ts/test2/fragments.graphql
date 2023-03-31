@@ -38,6 +38,7 @@ fragment PostDTO on Post {
   containsSpoiler
   user { ...UserDTO }
   updatedAt
+  rating
 }
 
 fragment EpisodeDTO on Episode {
@@ -52,4 +53,9 @@ fragment RecordDTO on Record {
   title
   statusType
   status
+  user { id }
+  work { id }
+  category { id }
+  rating
+  updatedAt
 }

@@ -83,6 +83,32 @@ export type QueryTablePeriodArgs = {
   period: Scalars['String'];
 };
 
+export type Mutation = {
+  __typename?: 'Mutation';
+  createRecord: CreateRecordResult;
+};
+
+
+export type MutationCreateRecordArgs = {
+  input: CreateRecordInput;
+};
+
+export type CreateRecordInput = {
+  title: Scalars['String'];
+  categoryId: InputMaybe<Scalars['ID']>;
+  status: Scalars['String'];
+  statusType: StatusType;
+  comment: Scalars['String'];
+  publishTwitter: InputMaybe<Scalars['Boolean']>;
+  rating: InputMaybe<Scalars['Float']>;
+};
+
+export type CreateRecordResult = {
+  __typename?: 'CreateRecordResult';
+  record: Record;
+  post: Maybe<Post>;
+};
+
 export type Node = {
   id: Scalars['ID'];
 };
@@ -122,6 +148,7 @@ export type Post = Node & {
   containsSpoiler: Maybe<Scalars['Boolean']>;
   user: Maybe<User>;
   updatedAt: Maybe<Scalars['GraphQLTimestamp']>;
+  rating: Maybe<Scalars['Float']>;
   work: Maybe<Work>;
   episode: Maybe<Episode>;
 };
@@ -139,6 +166,11 @@ export type Record = Node & {
   title: Maybe<Scalars['String']>;
   statusType: Maybe<StatusType>;
   status: Maybe<Scalars['String']>;
+  user: Maybe<User>;
+  work: Maybe<Work>;
+  category: Maybe<Category>;
+  updatedAt: Maybe<Scalars['GraphQLTimestamp']>;
+  rating: Maybe<Scalars['Float']>;
 };
 
 export type CuratedList = {
@@ -316,14 +348,14 @@ export type WorkDtoFragment = { __typename?: 'Work', id: string, title: string |
 
 export type UserDtoFragment = { __typename?: 'User', id: string, name: string | null, joinedAt: any | null };
 
-export type PostDtoFragment = { __typename?: 'Post', id: string, statusType: StatusType | null, status: string | null, comment: string | null, containsSpoiler: boolean | null, updatedAt: any | null, record: { __typename?: 'Record', id: string } | null, user: { __typename?: 'User', id: string, name: string | null, joinedAt: any | null } | null };
+export type PostDtoFragment = { __typename?: 'Post', id: string, statusType: StatusType | null, status: string | null, comment: string | null, containsSpoiler: boolean | null, updatedAt: any | null, rating: number | null, record: { __typename?: 'Record', id: string } | null, user: { __typename?: 'User', id: string, name: string | null, joinedAt: any | null } | null };
 
 export type EpisodeDtoFragment = { __typename?: 'Episode', number: number, postCount: number | null, userCount: number | null, suspendedUserCount: number | null };
 
-export type RecordDtoFragment = { __typename?: 'Record', id: string, title: string | null, statusType: StatusType | null, status: string | null };
+export type RecordDtoFragment = { __typename?: 'Record', id: string, title: string | null, statusType: StatusType | null, status: string | null, rating: number | null, updatedAt: any | null, user: { __typename?: 'User', id: string } | null, work: { __typename?: 'Work', id: string } | null, category: { __typename?: 'Category', id: string } | null };
 
 export const WorkDtoFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"WorkDTO"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Work"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}},{"kind":"Field","name":{"kind":"Name","value":"recordCount"}},{"kind":"Field","name":{"kind":"Name","value":"record"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"metadata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"periods"}},{"kind":"Field","name":{"kind":"Name","value":"studioNames"}},{"kind":"Field","name":{"kind":"Name","value":"source"}},{"kind":"Field","name":{"kind":"Name","value":"websiteUrl"}},{"kind":"Field","name":{"kind":"Name","value":"namuwikiUrl"}},{"kind":"Field","name":{"kind":"Name","value":"annUrl"}},{"kind":"Field","name":{"kind":"Name","value":"durationMinutes"}},{"kind":"Field","name":{"kind":"Name","value":"schedules"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"datePrecision"}},{"kind":"Field","name":{"kind":"Name","value":"broadcasts"}}]}}]}}]}}]} as unknown as DocumentNode<WorkDtoFragment, unknown>;
 export const UserDtoFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserDTO"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"joinedAt"}}]}}]} as unknown as DocumentNode<UserDtoFragment, unknown>;
-export const PostDtoFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PostDTO"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Post"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"record"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"statusType"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"comment"}},{"kind":"Field","name":{"kind":"Name","value":"containsSpoiler"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserDTO"}}]}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},...UserDtoFragmentDoc.definitions]} as unknown as DocumentNode<PostDtoFragment, unknown>;
+export const PostDtoFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PostDTO"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Post"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"record"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"statusType"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"comment"}},{"kind":"Field","name":{"kind":"Name","value":"containsSpoiler"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserDTO"}}]}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"rating"}}]}},...UserDtoFragmentDoc.definitions]} as unknown as DocumentNode<PostDtoFragment, unknown>;
 export const EpisodeDtoFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EpisodeDTO"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Episode"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"postCount"}},{"kind":"Field","name":{"kind":"Name","value":"userCount"}},{"kind":"Field","name":{"kind":"Name","value":"suspendedUserCount"}}]}}]} as unknown as DocumentNode<EpisodeDtoFragment, unknown>;
-export const RecordDtoFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RecordDTO"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Record"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"statusType"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]} as unknown as DocumentNode<RecordDtoFragment, unknown>;
+export const RecordDtoFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RecordDTO"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Record"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"statusType"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"work"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"rating"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<RecordDtoFragment, unknown>;

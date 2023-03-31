@@ -16,6 +16,25 @@ type Query {
   tablePeriods: [TablePeriod!]!
 }
 
+type Mutation {
+  createRecord(input: CreateRecordInput!): CreateRecordResult!
+}
+
+input CreateRecordInput {
+  title: String!
+  categoryId: ID
+  status: String!
+  statusType: StatusType!
+  comment: String!
+  publishTwitter: Boolean
+  rating: Float
+}
+
+type CreateRecordResult {
+  record: Record!
+  post: Post
+}
+
 interface Node {
   id: ID!
 }
@@ -48,6 +67,7 @@ type Post implements Node {
   containsSpoiler: Boolean
   user: User
   updatedAt: GraphQLTimestamp
+  rating: Float
 
   work: Work
   episode: Episode
@@ -65,6 +85,11 @@ type Record implements Node {
   title: String
   statusType: StatusType
   status: String
+  user: User
+  work: Work
+  category: Category
+  updatedAt: GraphQLTimestamp
+  rating: Float
 }
 
 type CuratedList {

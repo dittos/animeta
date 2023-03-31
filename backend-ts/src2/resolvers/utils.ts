@@ -1,4 +1,6 @@
 import { GraphQLResolveInfo } from "graphql"
+import mercurius, { MercuriusContext } from "mercurius"
+import { User } from "src/entities/user.entity"
 
 export function isIdOnly(info: GraphQLResolveInfo): boolean {
   for (const fieldNode of info.fieldNodes) {
@@ -12,4 +14,11 @@ export function isIdOnly(info: GraphQLResolveInfo): boolean {
     }
   }
   return true
+}
+
+export function requireUser(ctx: MercuriusContext): User {
+  if (!ctx.currentUser) {
+    throw new mercurius.ErrorWithProps('Login required.')
+  }
+  return ctx.currentUser
 }

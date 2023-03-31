@@ -1,5 +1,6 @@
 import { Resolvers } from 'src/graphql/generated'
-import { Query } from "./query"
+import { Query } from './query'
+import { Mutation } from './mutation'
 import { User } from './user'
 import { Work } from './work'
 import { Episode } from './episode'
@@ -11,6 +12,7 @@ import { CuratedList } from './curatedList'
 
 export const resolvers: Resolvers = {
   Query,
+  Mutation,
   User,
   Work,
   Episode,
