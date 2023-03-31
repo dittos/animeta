@@ -4,8 +4,9 @@ import { PostDTO, PostFetchOptions, RecordDTO, RecordFetchOptions, LegacyStatusT
 import * as CSRF from './CSRF';
 import { CategoryDTO, UserDTO } from '../../shared/types';
 import isString from 'lodash/isString';
-import graphqlRequest from 'graphql-request';
+import graphqlRequest, { ClientError } from 'graphql-request';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import { GraphQLRequestContext, GraphQLResponse } from 'graphql-request/dist/types';
 
 function serializeParams(params: any) {
   if (!params) {
@@ -327,6 +328,68 @@ export function getUserRecords(username: string, params: {}): Promise<RecordDTO[
 
 // GraphQL
 
-export function graphql<Result, Variables>(doc: TypedDocumentNode<Result, Variables>, variables?: Variables): Promise<Result> {
-  return graphqlRequest('/api/graphql', doc, variables)
+export async function graphql<Result, Variables>(doc: TypedDocumentNode<Result, Variables>, variables?: Variables, customErrorHandling: boolean = false): Promise<Result> {
+  // try to refresh CSRF token if not exists
+  try {
+    await CSRF.refresh()
+  } catch (e) {
+    Sentry.captureException(e)
+    // ignore
+  }
+  try {
+    return await graphqlRequest('/api/graphql', doc, variables, {
+      'Accept': 'application/json',
+      'X-CSRF-Token': CSRF.getToken(),
+    })
+  } catch (e) {
+    if (e instanceof ClientError) {
+      await handleGqlError(e.request, e.response, e, customErrorHandling)
+    } else {
+      if (!customErrorHandling) {
+        alert(`서버 오류로 요청에 실패했습니다.`)
+      }
+    }
+    throw e
+  }
+}
+
+async function handleGqlError(
+  request: GraphQLRequestContext,
+  response: GraphQLResponse,
+  thrownError: any,
+  customErrorHandling: boolean,
+) {
+  if (customErrorHandling) return;
+
+  const message = response.errors?.[0]?.message
+
+  try {
+    let responseText = ""
+    try {
+      responseText = JSON.stringify(response)
+    } catch (e) {
+      // ignore
+    }
+    Sentry.captureMessage(message ?? `GraphQL Error (Code: ${response.status})`, {
+      extra: {
+        query: request.query,
+        variables: request.variables,
+        status: response?.status,
+        error: thrownError,
+        response: responseText.substring(0, 100),
+      },
+    });
+  } catch (e) {
+    try {
+      Sentry.captureException(e);
+    } catch (e2) {
+      // ignore
+    }
+  }
+
+  if (message) {
+    alert(message)
+  } else {
+    alert(`서버 오류로 요청에 실패했습니다. [${response.status}]`)
+  }
 }
