@@ -83,15 +83,15 @@ export function createServer({ config, server = express(), appProvider, getAsset
   });
   graphqlProxy.on('proxyReq', onProxyReq);
   graphqlProxy.on('error', onProxyError);
-  server.use('/api/graphql', (req, res) => {
-    graphqlProxy.web(req, res);
-  })
 
   server.use(csurf({ cookie: true }));
   server.use((req, res, next) => {
     res.cookie('crumb', (req as any).csrfToken());
     next();
   });
+  server.use('/api/graphql', (req, res) => {
+    graphqlProxy.web(req, res);
+  })
 
   if (MAINTENANCE) {
     console.log('Starting in maintenance mode!');
