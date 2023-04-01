@@ -20,6 +20,22 @@ export type Category = Node & {
   user: Maybe<User>;
 };
 
+export type CreateRecordInput = {
+  categoryId: InputMaybe<Scalars['ID']>;
+  comment: Scalars['String'];
+  publishTwitter: InputMaybe<Scalars['Boolean']>;
+  rating: InputMaybe<Scalars['Float']>;
+  status: Scalars['String'];
+  statusType: StatusType;
+  title: Scalars['String'];
+};
+
+export type CreateRecordResult = {
+  __typename?: 'CreateRecordResult';
+  post: Maybe<Post>;
+  record: Record;
+};
+
 export type Credit = {
   __typename?: 'Credit';
   name: Maybe<Scalars['String']>;
@@ -69,6 +85,16 @@ export type Episode = {
   userCount: Maybe<Scalars['Int']>;
 };
 
+export type Mutation = {
+  __typename?: 'Mutation';
+  createRecord: CreateRecordResult;
+};
+
+
+export type MutationCreateRecordArgs = {
+  input: CreateRecordInput;
+};
+
 export type Node = {
   id: Scalars['ID'];
 };
@@ -79,6 +105,7 @@ export type Post = Node & {
   containsSpoiler: Maybe<Scalars['Boolean']>;
   episode: Maybe<Episode>;
   id: Scalars['ID'];
+  rating: Maybe<Scalars['Float']>;
   record: Maybe<Record>;
   status: Maybe<Scalars['String']>;
   statusType: Maybe<StatusType>;
@@ -173,10 +200,15 @@ export type RecommendationByCredit = {
 
 export type Record = Node & {
   __typename?: 'Record';
+  category: Maybe<Category>;
   id: Scalars['ID'];
+  rating: Maybe<Scalars['Float']>;
   status: Maybe<Scalars['String']>;
   statusType: Maybe<StatusType>;
   title: Maybe<Scalars['String']>;
+  updatedAt: Maybe<Scalars['GraphQLTimestamp']>;
+  user: Maybe<User>;
+  work: Maybe<Work>;
 };
 
 export type SearchWorksResult = {

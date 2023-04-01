@@ -22,9 +22,7 @@ fragment TableItem_item on TablePeriodItem {
     }
   }
   record {
-    id
-    status
-    statusType
+    ...TableItem_item_record
   }
   recommendations {
     ... on RecommendationByCredit {
@@ -42,4 +40,18 @@ fragment TableItem_item on TablePeriodItem {
     }
   }
   recommendationScore
+}
+
+fragment TableItem_item_record on Record {
+  id
+  status
+  statusType
+}
+
+mutation TableItem_createRecord($input: CreateRecordInput!) {
+  createRecord(input: $input) {
+    record {
+      ...TableItem_item_record
+    }
+  }
 }

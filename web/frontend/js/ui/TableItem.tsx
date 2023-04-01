@@ -4,10 +4,9 @@ import Styles from '../../less/table-period.less';
 import AddRecordDialog from './AddRecordDialog';
 import { trackEvent } from '../Tracking';
 import * as util from '../util';
-import { RecordDTO } from '../../../shared/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faPencil, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { TableItem_ItemFragment } from './__generated__/TableItem.graphql';
+import { TableItem_CreateRecordDocument, TableItem_CreateRecordMutation, TableItem_ItemFragment, TableItem_Item_RecordFragment } from './__generated__/TableItem.graphql';
 import { CreditType, WorkSchedule } from '../__generated__/globalTypes';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
@@ -26,7 +25,7 @@ function getDate(value: Date): string {
 
 interface StatusButtonProps {
   item: TableItem_ItemFragment;
-  onAddRecord: (item: TableItem_ItemFragment, record: RecordDTO) => any;
+  onAddRecord: (item: TableItem_ItemFragment, record: TableItem_Item_RecordFragment) => any;
 }
 
 class StatusButton extends React.Component<StatusButtonProps> {
@@ -65,6 +64,7 @@ class StatusButton extends React.Component<StatusButtonProps> {
             initialTitle={this.props.item.title}
             onCancel={this._closeAddModal}
             onCreate={this._recordAdded}
+            createRecordMutation={TableItem_CreateRecordDocument}
           />
         )}
       </>);
@@ -80,7 +80,7 @@ class StatusButton extends React.Component<StatusButtonProps> {
     this.setState({ showAddModal: false });
   };
 
-  _recordAdded = (result: { record: RecordDTO }) => {
+  _recordAdded = (result: TableItem_CreateRecordMutation['createRecord']) => {
     this.setState({ showAddModal: false });
     trackEvent({
       eventCategory: 'Record',
@@ -112,7 +112,10 @@ const creditTypeText: {[K in CreditType]: string} = {
   'MUSIC': '음악',
 };
 
-export function TableItem({ item, onAddRecord }: { item: TableItem_ItemFragment; onAddRecord: (item: TableItem_ItemFragment, record: RecordDTO) => any }) {
+export function TableItem({ item, onAddRecord }: {
+  item: TableItem_ItemFragment
+  onAddRecord: (item: TableItem_ItemFragment, record: TableItem_Item_RecordFragment) => any
+}) {
   const work = item.work;
   var { studioNames, source, schedules, durationMinutes, websiteUrl, namuwikiUrl, annUrl } = work.metadata!;
   return (

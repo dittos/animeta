@@ -1,0 +1,7 @@
+mutation Library_createRecord($input: CreateRecordInput!) {
+  createRecord(input: $input) {
+    record {
+      id
+    }
+  }
+}

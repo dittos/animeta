@@ -5,6 +5,7 @@ import { trackEvent } from '../Tracking';
 import * as Mutations from '../Mutations';
 import { RouteComponentProps, RouteHandler } from '../routes';
 import { RecordDTO, UserDTO } from '../../../shared/types_generated';
+import { AddRecord_CreateRecordDocument, AddRecord_CreateRecordMutation } from './__generated__/AddRecord.graphql';
 
 type AddRecordRouteData = StackablePropsData & {
   currentUser: UserDTO;
@@ -20,17 +21,22 @@ class AddRecord extends React.Component<RouteComponentProps<AddRecordRouteData>>
         initialTitle={this.props.data.title}
         onCancel={this._returnToUser}
         onCreate={this._onCreate}
+        createRecordMutation={AddRecord_CreateRecordDocument}
       />
     );
   }
 
-  _onCreate = (result: { record: RecordDTO }) => {
+  _onCreate = (result: AddRecord_CreateRecordMutation['createRecord']) => {
     trackEvent({
       eventCategory: 'Record',
       eventAction: 'Create',
       eventLabel: this.props.data.referrer,
     });
-    Mutations.records.next(result.record);
+    Mutations.records.next({
+      id: result.record.id,
+      userId: result.record.user!.id,
+      workId: result.record.work!.id,
+    });
     this._returnToUser();
   };
 

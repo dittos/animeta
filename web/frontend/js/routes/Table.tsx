@@ -9,7 +9,6 @@ import * as Grid from '../ui/Grid';
 import LoginDialog from '../ui/LoginDialog';
 import SearchInput from '../ui/SearchInput';
 import { App } from '../layouts';
-import { RecordDTO } from '../../../shared/types';
 import { RouteComponentProps, RouteHandler } from '../routes';
 import { Popover } from '../ui/Popover';
 import { TableShareDialog } from '../ui/TableShareDialog';
@@ -21,6 +20,7 @@ import { faCaretDown, faShareSquare } from '@fortawesome/free-solid-svg-icons';
 import { TableRouteDocument, TableRouteQuery, TableRoute_PageTitleFragment } from './__generated__/Table.graphql';
 import useIntersectionObserver from '../ui/useIntersectionObserver'
 import groupBy from 'lodash/groupBy';
+import { TableItem_Item_RecordFragment } from '../ui/__generated__/TableItem.graphql';
 
 function PageTitle(props: { period: TableRoute_PageTitleFragment, tablePeriods: TableRouteQuery['tablePeriods'] }) {
   const activePeriod = props.period;
@@ -256,14 +256,9 @@ const Table: React.FC<RouteComponentProps<TableRouteData>> = ({
     })
   }
 
-  const recordAdded = (item: TablePeriodItem, record: RecordDTO) => {
+  const recordAdded = (item: TablePeriodItem, record: TableItem_Item_RecordFragment) => {
     writeData((data: TableRouteData) => {
-      // TODO: use graphql mutation
-      item.record = {
-        id: record.id.toString(),
-        status: record.status,
-        statusType: record.status_type.toUpperCase() as any, // XXX
-      }
+      item.record = record
       item.work.recordCount = (item.work.recordCount ?? 0) + 1
       data.hasAnyRecord = true
     })

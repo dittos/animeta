@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal } from 'react-overlays';
-import { getCurrentUser, createRecord } from '../API';
+import { getCurrentUser, graphql } from '../API';
 import connectTwitter from '../connectTwitter';
 import * as Typeahead from './Typeahead';
 import { Switch, SwitchItem } from './Switch';
@@ -9,10 +9,12 @@ import { StatusInput } from './StatusInput';
 import ModalStyles from './Modal.less';
 import Styles from './AddRecordDialog.less';
 import { getLastPublishTwitter, setLastPublishTwitter } from '../Prefs';
-import { CategoryDTO, RecordDTO, UserDTO, StatusType } from '../../../shared/types';
+import { CategoryDTO, UserDTO, StatusType } from '../../../shared/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { Rating } from './Rating';
+import { CreateRecordInput, StatusType as GqlStatusType } from '../__generated__/globalTypes';
+import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 
 type CategorySelectProps = {
   selectedId: string;
@@ -38,11 +40,17 @@ class CategorySelect extends React.Component<CategorySelectProps> {
   };
 }
 
-type AddRecordProps = {
+type AbstractCreateRecordMutationDocument<T> = TypedDocumentNode<{
+  createRecord: T
+}, {
+  input: CreateRecordInput
+}>
+type AddRecordProps<T> = {
   initialTitle?: string;
   initialStatusType?: StatusType;
   currentUser?: UserDTO;
-  onCreate(result: { record: RecordDTO }): any;
+  createRecordMutation: AbstractCreateRecordMutationDocument<T>;
+  onCreate(result: T): any;
   onCancel(): any;
 };
 type AddRecordState = {
@@ -56,10 +64,10 @@ type AddRecordState = {
   currentUser: UserDTO | null;
 };
 
-class AddRecord extends React.Component<AddRecordProps, AddRecordState> {
+class AddRecord<T> extends React.Component<AddRecordProps<T>, AddRecordState> {
   private _titleEl: HTMLInputElement | null = null;
 
-  constructor(props: AddRecordProps) {
+  constructor(props: AddRecordProps<T>) {
     super(props);
     this.state = {
       selectedCategoryId: '',
@@ -218,17 +226,26 @@ class AddRecord extends React.Component<AddRecordProps, AddRecordState> {
     if (this.state.isRequesting) return;
     this.setState({ isRequesting: true });
     setLastPublishTwitter(this.state.publishTwitter);
-    createRecord({
+    graphql(this.props.createRecordMutation, {input: {
       title: this._titleEl!.value,
-      statusType: this.state.statusType,
+      statusType: this.state.statusType as GqlStatusType,
       status: this.state.status,
-      categoryId: this.state.selectedCategoryId !== '' ? Number(this.state.selectedCategoryId) : null,
+      categoryId: this.state.selectedCategoryId !== '' ? this.state.selectedCategoryId : null,
       comment: this.state.comment,
       rating: this.state.rating,
       publishTwitter: this.state.publishTwitter,
-    })
+    }})
+    // createRecord({
+    //   title: this._titleEl!.value,
+    //   statusType: this.state.statusType,
+    //   status: this.state.status,
+    //   categoryId: this.state.selectedCategoryId !== '' ? Number(this.state.selectedCategoryId) : null,
+    //   comment: this.state.comment,
+    //   rating: this.state.rating,
+    //   publishTwitter: this.state.publishTwitter,
+    // })
       .then(result => {
-        this.props.onCreate({ record: result.record! });
+        this.props.onCreate(result.createRecord);
         this.setState({ isRequesting: false });
       }, () => {
         this.setState({ isRequesting: false });

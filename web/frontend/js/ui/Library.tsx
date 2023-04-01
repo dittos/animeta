@@ -15,6 +15,7 @@ import { CategoryDTO, RecordDTO, LegacyStatusType, UserDTO } from '../../../shar
 import { LinkProps } from 'nuri/components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faCaretUp, faCog, faPlus, faStar } from '@fortawesome/free-solid-svg-icons';
+import { Library_CreateRecordDocument } from './__generated__/Library.graphql';
 
 const ENABLE_NEW_ADD_RECORD = false;
 
@@ -224,7 +225,7 @@ type LibraryProps = {
   categoryList: CategoryDTO[];
   statusTypeStats: {[key: string]: number} & {_all: number};
   canEdit: boolean;
-  onAddRecord(record: RecordDTO): any;
+  onAddRecord(): any;
 };
 
 class Library extends React.Component<LibraryProps> {
@@ -270,6 +271,7 @@ class Library extends React.Component<LibraryProps> {
                   initialStatusType="FINISHED"
                   onCancel={() => this.setState({ showAddModal: false })}
                   onCreate={this._recordCreated}
+                  createRecordMutation={Library_CreateRecordDocument}
                 />
               )}
               <Link
@@ -419,8 +421,8 @@ class Library extends React.Component<LibraryProps> {
     this.setState({ showAddModal: true });
   };
 
-  _recordCreated = (result: { record: RecordDTO }) => {
-    this.props.onAddRecord(result.record);
+  _recordCreated = () => {
+    this.props.onAddRecord();
     trackEvent({
       eventCategory: 'Record',
       eventAction: 'Create',

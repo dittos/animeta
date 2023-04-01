@@ -93,7 +93,7 @@ export class Work extends React.Component<{
   work: WorkViewsFragment;
   episode?: string;
   chart: WeeklyChartFragment;
-  onRecordChange(recordId: number): void;
+  onRecordChange(recordId: string): void;
 }> {
   private _subscription: Subscription;
 
@@ -101,7 +101,7 @@ export class Work extends React.Component<{
     // TODO: move subscription up to route
     if (this.props.currentUser) {
       this._subscription = Mutations.records
-        .pipe(filter(it => it.work_id.toString() === this.props.work.id && it.user_id === this.props.currentUser?.id))
+        .pipe(filter(it => it.workId === this.props.work.id && it.userId === this.props.currentUser?.id?.toString()))
         .subscribe(it => {
           this.props.onRecordChange(it.id);
         });

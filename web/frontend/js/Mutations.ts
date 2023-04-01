@@ -1,4 +1,9 @@
 import { Subject } from 'rxjs';
-import { RecordDTO } from './../../shared/types_generated';
 
-export const records = new Subject<RecordDTO>();
+export type RecordMutationEvent = {
+  id: string
+  userId: string
+  workId: string
+}
+
+export const records = new Subject<RecordMutationEvent>();
