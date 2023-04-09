@@ -30,7 +30,18 @@ for (var h = 0; h < 24; h++) {
   HOURS[h] = result;
 }
 
+let TIME_FORMAT: Intl.DateTimeFormat | null = null;
+try {
+  TIME_FORMAT = new Intl.DateTimeFormat('ko-u-hc-h11', {
+    hour: 'numeric', minute: 'numeric',
+    timeZone: 'Asia/Seoul'
+  });
+} catch (e) {}
+
 export function formatTime(value: Date): string {
+  if (TIME_FORMAT) {
+    return TIME_FORMAT.format(value);
+  }
   var result = HOURS[value.getHours()];
   var m = value.getMinutes();
   if (m > 0) {

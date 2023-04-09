@@ -11,7 +11,18 @@ import { CreditType, WorkSchedule } from '../__generated__/globalTypes';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
+let DATE_FORMAT: Intl.DateTimeFormat | null = null;
+try {
+  DATE_FORMAT = new Intl.DateTimeFormat('ko', {
+    month: '2-digit', day: '2-digit', weekday: 'short',
+    timeZone: 'Asia/Seoul'
+  });
+} catch (e) {}
+
 function getDate(value: Date): string {
+  if (DATE_FORMAT) {
+    return DATE_FORMAT.format(value).replace(/([0-9]+)\. ([0-9]+)\./, '$1/$2');
+  }
   var weekday = WEEKDAYS[value.getDay()];
   return (
     util.zerofill(value.getMonth() + 1) +
