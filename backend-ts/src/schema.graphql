@@ -50,6 +50,22 @@ type User implements Node {
   recordCount: Int
   postCount: Int
   posts(beforeId: ID, count: Int): PostConnection!
+  records(
+    statusType: StatusType,
+    categoryId: ID,
+    orderBy: RecordOrder,
+    first: Int,
+  ): RecordConnection!
+  recordCountForFilter(
+    statusType: StatusType,
+    categoryId: ID,
+  ): RecordCountForFilter!
+}
+
+enum RecordOrder {
+  DATE
+  TITLE
+  RATING
 }
 
 type Category implements Node {
@@ -90,6 +106,7 @@ type Record implements Node {
   category: Category
   updatedAt: GraphQLTimestamp
   rating: Float
+  hasNewerEpisode: Boolean
 }
 
 type CuratedList {
@@ -122,6 +139,22 @@ type Work implements Node {
 type PostConnection {
   nodes: [Post!]!
   hasMore: Boolean!
+}
+
+type RecordConnection {
+  nodes: [Record!]!
+}
+
+type RecordCountForFilter {
+  total: Int!
+  filtered: Int!
+  byStatusType: [RecordCountByCriteria!]!
+  byCategoryId: [RecordCountByCriteria!]!
+}
+
+type RecordCountByCriteria {
+  key: String!
+  count: Int!
 }
 
 type Episode {

@@ -123,6 +123,8 @@ export type User = Node & {
   recordCount: Maybe<Scalars['Int']>;
   postCount: Maybe<Scalars['Int']>;
   posts: PostConnection;
+  records: RecordConnection;
+  recordCountForFilter: RecordCountForFilter;
 };
 
 
@@ -130,6 +132,26 @@ export type UserPostsArgs = {
   beforeId: InputMaybe<Scalars['ID']>;
   count: InputMaybe<Scalars['Int']>;
 };
+
+
+export type UserRecordsArgs = {
+  statusType: InputMaybe<StatusType>;
+  categoryId: InputMaybe<Scalars['ID']>;
+  orderBy: InputMaybe<RecordOrder>;
+  first: InputMaybe<Scalars['Int']>;
+};
+
+
+export type UserRecordCountForFilterArgs = {
+  statusType: InputMaybe<StatusType>;
+  categoryId: InputMaybe<Scalars['ID']>;
+};
+
+export enum RecordOrder {
+  Date = 'DATE',
+  Title = 'TITLE',
+  Rating = 'RATING'
+}
 
 export type Category = Node & {
   __typename?: 'Category';
@@ -171,6 +193,7 @@ export type Record = Node & {
   category: Maybe<Category>;
   updatedAt: Maybe<Scalars['GraphQLTimestamp']>;
   rating: Maybe<Scalars['Float']>;
+  hasNewerEpisode: Maybe<Scalars['Boolean']>;
 };
 
 export type CuratedList = {
@@ -220,6 +243,25 @@ export type PostConnection = {
   __typename?: 'PostConnection';
   nodes: Array<Post>;
   hasMore: Scalars['Boolean'];
+};
+
+export type RecordConnection = {
+  __typename?: 'RecordConnection';
+  nodes: Array<Record>;
+};
+
+export type RecordCountForFilter = {
+  __typename?: 'RecordCountForFilter';
+  total: Scalars['Int'];
+  filtered: Scalars['Int'];
+  byStatusType: Array<RecordCountByCriteria>;
+  byCategoryId: Array<RecordCountByCriteria>;
+};
+
+export type RecordCountByCriteria = {
+  __typename?: 'RecordCountByCriteria';
+  key: Scalars['String'];
+  count: Scalars['Int'];
 };
 
 export type Episode = {

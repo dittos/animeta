@@ -136,6 +136,8 @@ export type User = Node & {
   recordCount?: Maybe<Scalars['Int']>;
   postCount?: Maybe<Scalars['Int']>;
   posts: PostConnection;
+  records: RecordConnection;
+  recordCountForFilter: RecordCountForFilter;
 };
 
 
@@ -143,6 +145,25 @@ export type UserpostsArgs = {
   beforeId?: InputMaybe<Scalars['ID']>;
   count?: InputMaybe<Scalars['Int']>;
 };
+
+
+export type UserrecordsArgs = {
+  statusType?: InputMaybe<StatusType>;
+  categoryId?: InputMaybe<Scalars['ID']>;
+  orderBy?: InputMaybe<RecordOrder>;
+  first?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type UserrecordCountForFilterArgs = {
+  statusType?: InputMaybe<StatusType>;
+  categoryId?: InputMaybe<Scalars['ID']>;
+};
+
+export type RecordOrder =
+  | 'DATE'
+  | 'TITLE'
+  | 'RATING';
 
 export type Category = Node & {
   __typename?: 'Category';
@@ -183,6 +204,7 @@ export type Record = Node & {
   category?: Maybe<Category>;
   updatedAt?: Maybe<Scalars['GraphQLTimestamp']>;
   rating?: Maybe<Scalars['Float']>;
+  hasNewerEpisode?: Maybe<Scalars['Boolean']>;
 };
 
 export type CuratedList = {
@@ -232,6 +254,25 @@ export type PostConnection = {
   __typename?: 'PostConnection';
   nodes: Array<Post>;
   hasMore: Scalars['Boolean'];
+};
+
+export type RecordConnection = {
+  __typename?: 'RecordConnection';
+  nodes: Array<Record>;
+};
+
+export type RecordCountForFilter = {
+  __typename?: 'RecordCountForFilter';
+  total: Scalars['Int'];
+  filtered: Scalars['Int'];
+  byStatusType: Array<RecordCountByCriteria>;
+  byCategoryId: Array<RecordCountByCriteria>;
+};
+
+export type RecordCountByCriteria = {
+  __typename?: 'RecordCountByCriteria';
+  key: Scalars['String'];
+  count: Scalars['Int'];
 };
 
 export type Episode = {
@@ -427,6 +468,7 @@ export type ResolversTypes = {
   Node: ResolversTypes['User'] | ResolversTypes['Category'] | ResolversTypes['Post'] | ResolversTypes['Record'] | ResolversTypes['Work'];
   GraphQLTimestamp: ResolverTypeWrapper<Scalars['GraphQLTimestamp']>;
   User: ResolverTypeWrapper<UserModel>;
+  RecordOrder: RecordOrder;
   Category: ResolverTypeWrapper<CategoryModel>;
   Post: ResolverTypeWrapper<HistoryModel>;
   StatusType: StatusType;
@@ -436,6 +478,9 @@ export type ResolversTypes = {
   CuratedListWorkEdge: ResolverTypeWrapper<Omit<CuratedListWorkEdge, 'node'> & { node?: Maybe<ResolversTypes['Work']> }>;
   Work: ResolverTypeWrapper<WorkModel>;
   PostConnection: ResolverTypeWrapper<Omit<PostConnection, 'nodes'> & { nodes: Array<ResolversTypes['Post']> }>;
+  RecordConnection: ResolverTypeWrapper<Omit<RecordConnection, 'nodes'> & { nodes: Array<ResolversTypes['Record']> }>;
+  RecordCountForFilter: ResolverTypeWrapper<RecordCountForFilter>;
+  RecordCountByCriteria: ResolverTypeWrapper<RecordCountByCriteria>;
   Episode: ResolverTypeWrapper<EpisodeModel>;
   WorkMetadata: ResolverTypeWrapper<WorkMetadata>;
   SourceType: SourceType;
@@ -475,6 +520,9 @@ export type ResolversParentTypes = {
   CuratedListWorkEdge: Omit<CuratedListWorkEdge, 'node'> & { node?: Maybe<ResolversParentTypes['Work']> };
   Work: WorkModel;
   PostConnection: Omit<PostConnection, 'nodes'> & { nodes: Array<ResolversParentTypes['Post']> };
+  RecordConnection: Omit<RecordConnection, 'nodes'> & { nodes: Array<ResolversParentTypes['Record']> };
+  RecordCountForFilter: RecordCountForFilter;
+  RecordCountByCriteria: RecordCountByCriteria;
   Episode: EpisodeModel;
   WorkMetadata: WorkMetadata;
   WorkSchedule: WorkSchedule;
@@ -534,6 +582,8 @@ export type UserResolvers<ContextType = MercuriusContext, ParentType extends Res
   recordCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   postCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   posts?: Resolver<ResolversTypes['PostConnection'], ParentType, ContextType, Partial<UserpostsArgs>>;
+  records?: Resolver<ResolversTypes['RecordConnection'], ParentType, ContextType, Partial<UserrecordsArgs>>;
+  recordCountForFilter?: Resolver<ResolversTypes['RecordCountForFilter'], ParentType, ContextType, Partial<UserrecordCountForFilterArgs>>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -569,6 +619,7 @@ export type RecordResolvers<ContextType = MercuriusContext, ParentType extends R
   category?: Resolver<Maybe<ResolversTypes['Category']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['GraphQLTimestamp']>, ParentType, ContextType>;
   rating?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  hasNewerEpisode?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -606,6 +657,25 @@ export type WorkResolvers<ContextType = MercuriusContext, ParentType extends Res
 export type PostConnectionResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['PostConnection'] = ResolversParentTypes['PostConnection']> = {
   nodes?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType>;
   hasMore?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type RecordConnectionResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['RecordConnection'] = ResolversParentTypes['RecordConnection']> = {
+  nodes?: Resolver<Array<ResolversTypes['Record']>, ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type RecordCountForFilterResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['RecordCountForFilter'] = ResolversParentTypes['RecordCountForFilter']> = {
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  filtered?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  byStatusType?: Resolver<Array<ResolversTypes['RecordCountByCriteria']>, ParentType, ContextType>;
+  byCategoryId?: Resolver<Array<ResolversTypes['RecordCountByCriteria']>, ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type RecordCountByCriteriaResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['RecordCountByCriteria'] = ResolversParentTypes['RecordCountByCriteria']> = {
+  key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -715,6 +785,9 @@ export type Resolvers<ContextType = MercuriusContext> = {
   CuratedListWorkEdge?: CuratedListWorkEdgeResolvers<ContextType>;
   Work?: WorkResolvers<ContextType>;
   PostConnection?: PostConnectionResolvers<ContextType>;
+  RecordConnection?: RecordConnectionResolvers<ContextType>;
+  RecordCountForFilter?: RecordCountForFilterResolvers<ContextType>;
+  RecordCountByCriteria?: RecordCountByCriteriaResolvers<ContextType>;
   Episode?: EpisodeResolvers<ContextType>;
   WorkMetadata?: WorkMetadataResolvers<ContextType>;
   WorkSchedule?: WorkScheduleResolvers<ContextType>;
