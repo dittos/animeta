@@ -1,0 +1,5 @@
+type Category implements Node {
+  id: ID!
+  user: User
+  name: String
+}

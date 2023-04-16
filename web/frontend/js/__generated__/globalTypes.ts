@@ -87,6 +87,7 @@ export type Episode = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  _empty: Maybe<Scalars['Boolean']>;
   createRecord: CreateRecordResult;
 };
 
@@ -201,6 +202,7 @@ export type RecommendationByCredit = {
 export type Record = Node & {
   __typename?: 'Record';
   category: Maybe<Category>;
+  hasNewerEpisode: Maybe<Scalars['Boolean']>;
   id: Scalars['ID'];
   rating: Maybe<Scalars['Float']>;
   status: Maybe<Scalars['String']>;
@@ -209,6 +211,31 @@ export type Record = Node & {
   updatedAt: Maybe<Scalars['GraphQLTimestamp']>;
   user: Maybe<User>;
   work: Maybe<Work>;
+};
+
+export type RecordConnection = {
+  __typename?: 'RecordConnection';
+  nodes: Array<Record>;
+};
+
+export type RecordCountByCriteria = {
+  __typename?: 'RecordCountByCriteria';
+  count: Scalars['Int'];
+  key: Scalars['String'];
+};
+
+export type RecordCountForFilter = {
+  __typename?: 'RecordCountForFilter';
+  byCategoryId: Array<RecordCountByCriteria>;
+  byStatusType: Array<RecordCountByCriteria>;
+  filtered: Scalars['Int'];
+  total: Scalars['Int'];
+};
+
+export const enum RecordOrder {
+  Date = 'DATE',
+  Rating = 'RATING',
+  Title = 'TITLE'
 };
 
 export type SearchWorksResult = {
@@ -275,12 +302,28 @@ export type User = Node & {
   postCount: Maybe<Scalars['Int']>;
   posts: PostConnection;
   recordCount: Maybe<Scalars['Int']>;
+  recordCountForFilter: RecordCountForFilter;
+  records: RecordConnection;
 };
 
 
 export type UserPostsArgs = {
   beforeId: InputMaybe<Scalars['ID']>;
   count: InputMaybe<Scalars['Int']>;
+};
+
+
+export type UserRecordCountForFilterArgs = {
+  categoryId: InputMaybe<Scalars['ID']>;
+  statusType: InputMaybe<StatusType>;
+};
+
+
+export type UserRecordsArgs = {
+  categoryId: InputMaybe<Scalars['ID']>;
+  first: InputMaybe<Scalars['Int']>;
+  orderBy: InputMaybe<RecordOrder>;
+  statusType: InputMaybe<StatusType>;
 };
 
 export type Work = Node & {

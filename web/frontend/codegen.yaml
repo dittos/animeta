@@ -1,4 +1,4 @@
-schema: ../../backend-ts/src/schema.graphql
+schema: ../../backend-ts/schema/**/*.graphql
 documents: './js/**/*.graphql'
 generates:
   ./js/__generated__/globalTypes.ts:

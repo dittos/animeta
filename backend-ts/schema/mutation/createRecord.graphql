@@ -1,0 +1,18 @@
+extend type Mutation {
+  createRecord(input: CreateRecordInput!): CreateRecordResult!
+}
+
+input CreateRecordInput {
+  title: String!
+  categoryId: ID
+  status: String!
+  statusType: StatusType!
+  comment: String!
+  publishTwitter: Boolean
+  rating: Float
+}
+
+type CreateRecordResult {
+  record: Record!
+  post: Post
+}

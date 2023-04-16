@@ -1,0 +1,12 @@
+extend type Query {
+  searchWorks(query: String!): SearchWorksResult
+}
+
+type SearchWorksResult {
+  edges: [SearchWorksResultEdge!]!
+}
+
+type SearchWorksResultEdge {
+  node: Work!
+  recordCount: Int
+}

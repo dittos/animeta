@@ -27,103 +27,51 @@ export type Scalars = {
   GraphQLTimestamp: any;
 };
 
-export type Query = {
-  __typename?: 'Query';
-  currentUser?: Maybe<User>;
+export type Category = Node & {
+  __typename?: 'Category';
+  id: Scalars['ID'];
   user?: Maybe<User>;
-  userByName?: Maybe<User>;
-  timeline?: Maybe<Array<Maybe<Post>>>;
-  curatedLists: Array<CuratedList>;
-  curatedList?: Maybe<CuratedList>;
-  searchWorks?: Maybe<SearchWorksResult>;
-  weeklyWorksChart: Array<WorksChartItem>;
+  name?: Maybe<Scalars['String']>;
+};
+
+export type Post = Node & {
+  __typename?: 'Post';
+  id: Scalars['ID'];
+  record?: Maybe<Record>;
+  statusType?: Maybe<StatusType>;
+  status?: Maybe<Scalars['String']>;
+  comment?: Maybe<Scalars['String']>;
+  containsSpoiler?: Maybe<Scalars['Boolean']>;
+  user?: Maybe<User>;
+  updatedAt?: Maybe<Scalars['GraphQLTimestamp']>;
+  rating?: Maybe<Scalars['Float']>;
   work?: Maybe<Work>;
-  workByTitle?: Maybe<Work>;
-  post?: Maybe<Post>;
-  tablePeriod?: Maybe<TablePeriod>;
-  currentTablePeriod: TablePeriod;
-  tablePeriods: Array<TablePeriod>;
+  episode?: Maybe<Episode>;
 };
 
+export type PostConnection = {
+  __typename?: 'PostConnection';
+  nodes: Array<Post>;
+  hasMore: Scalars['Boolean'];
+};
 
-export type QueryuserArgs = {
+export type Record = Node & {
+  __typename?: 'Record';
   id: Scalars['ID'];
+  title?: Maybe<Scalars['String']>;
+  statusType?: Maybe<StatusType>;
+  status?: Maybe<Scalars['String']>;
+  user?: Maybe<User>;
+  work?: Maybe<Work>;
+  category?: Maybe<Category>;
+  updatedAt?: Maybe<Scalars['GraphQLTimestamp']>;
+  rating?: Maybe<Scalars['Float']>;
+  hasNewerEpisode?: Maybe<Scalars['Boolean']>;
 };
 
-
-export type QueryuserByNameArgs = {
-  name: Scalars['String'];
-};
-
-
-export type QuerytimelineArgs = {
-  beforeId?: InputMaybe<Scalars['ID']>;
-  count?: InputMaybe<Scalars['Int']>;
-};
-
-
-export type QuerycuratedListArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QuerysearchWorksArgs = {
-  query: Scalars['String'];
-};
-
-
-export type QueryweeklyWorksChartArgs = {
-  limit: Scalars['Int'];
-};
-
-
-export type QueryworkArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryworkByTitleArgs = {
-  title: Scalars['String'];
-};
-
-
-export type QuerypostArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QuerytablePeriodArgs = {
-  period: Scalars['String'];
-};
-
-export type Mutation = {
-  __typename?: 'Mutation';
-  createRecord: CreateRecordResult;
-};
-
-
-export type MutationcreateRecordArgs = {
-  input: CreateRecordInput;
-};
-
-export type CreateRecordInput = {
-  title: Scalars['String'];
-  categoryId?: InputMaybe<Scalars['ID']>;
-  status: Scalars['String'];
-  statusType: StatusType;
-  comment: Scalars['String'];
-  publishTwitter?: InputMaybe<Scalars['Boolean']>;
-  rating?: InputMaybe<Scalars['Float']>;
-};
-
-export type CreateRecordResult = {
-  __typename?: 'CreateRecordResult';
-  record: Record;
-  post?: Maybe<Post>;
-};
-
-export type Node = {
-  id: Scalars['ID'];
+export type RecordConnection = {
+  __typename?: 'RecordConnection';
+  nodes: Array<Record>;
 };
 
 export type User = Node & {
@@ -165,64 +113,18 @@ export type RecordOrder =
   | 'TITLE'
   | 'RATING';
 
-export type Category = Node & {
-  __typename?: 'Category';
-  id: Scalars['ID'];
-  user?: Maybe<User>;
-  name?: Maybe<Scalars['String']>;
+export type RecordCountForFilter = {
+  __typename?: 'RecordCountForFilter';
+  total: Scalars['Int'];
+  filtered: Scalars['Int'];
+  byStatusType: Array<RecordCountByCriteria>;
+  byCategoryId: Array<RecordCountByCriteria>;
 };
 
-export type Post = Node & {
-  __typename?: 'Post';
-  id: Scalars['ID'];
-  record?: Maybe<Record>;
-  statusType?: Maybe<StatusType>;
-  status?: Maybe<Scalars['String']>;
-  comment?: Maybe<Scalars['String']>;
-  containsSpoiler?: Maybe<Scalars['Boolean']>;
-  user?: Maybe<User>;
-  updatedAt?: Maybe<Scalars['GraphQLTimestamp']>;
-  rating?: Maybe<Scalars['Float']>;
-  work?: Maybe<Work>;
-  episode?: Maybe<Episode>;
-};
-
-export type StatusType =
-  | 'FINISHED'
-  | 'WATCHING'
-  | 'SUSPENDED'
-  | 'INTERESTED';
-
-export type Record = Node & {
-  __typename?: 'Record';
-  id: Scalars['ID'];
-  title?: Maybe<Scalars['String']>;
-  statusType?: Maybe<StatusType>;
-  status?: Maybe<Scalars['String']>;
-  user?: Maybe<User>;
-  work?: Maybe<Work>;
-  category?: Maybe<Category>;
-  updatedAt?: Maybe<Scalars['GraphQLTimestamp']>;
-  rating?: Maybe<Scalars['Float']>;
-  hasNewerEpisode?: Maybe<Scalars['Boolean']>;
-};
-
-export type CuratedList = {
-  __typename?: 'CuratedList';
-  id: Scalars['ID'];
-  name?: Maybe<Scalars['String']>;
-  works?: Maybe<CuratedListWorkConnection>;
-};
-
-export type CuratedListWorkConnection = {
-  __typename?: 'CuratedListWorkConnection';
-  edges?: Maybe<Array<Maybe<CuratedListWorkEdge>>>;
-  totalCount?: Maybe<Scalars['Int']>;
-};
-
-export type CuratedListWorkEdge = {
-  __typename?: 'CuratedListWorkEdge';
-  node?: Maybe<Work>;
+export type RecordCountByCriteria = {
+  __typename?: 'RecordCountByCriteria';
+  key: Scalars['String'];
+  count: Scalars['Int'];
 };
 
 export type Work = Node & {
@@ -248,31 +150,6 @@ export type WorkpostsArgs = {
   beforeId?: InputMaybe<Scalars['ID']>;
   count?: InputMaybe<Scalars['Int']>;
   episode?: InputMaybe<Scalars['Int']>;
-};
-
-export type PostConnection = {
-  __typename?: 'PostConnection';
-  nodes: Array<Post>;
-  hasMore: Scalars['Boolean'];
-};
-
-export type RecordConnection = {
-  __typename?: 'RecordConnection';
-  nodes: Array<Record>;
-};
-
-export type RecordCountForFilter = {
-  __typename?: 'RecordCountForFilter';
-  total: Scalars['Int'];
-  filtered: Scalars['Int'];
-  byStatusType: Array<RecordCountByCriteria>;
-  byCategoryId: Array<RecordCountByCriteria>;
-};
-
-export type RecordCountByCriteria = {
-  __typename?: 'RecordCountByCriteria';
-  key: Scalars['String'];
-  count: Scalars['Int'];
 };
 
 export type Episode = {
@@ -317,6 +194,130 @@ export type DatePrecision =
   | 'DATE'
   | 'DATE_TIME';
 
+export type Node = {
+  id: Scalars['ID'];
+};
+
+export type StatusType =
+  | 'FINISHED'
+  | 'WATCHING'
+  | 'SUSPENDED'
+  | 'INTERESTED';
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  _empty?: Maybe<Scalars['Boolean']>;
+  createRecord: CreateRecordResult;
+};
+
+
+export type MutationcreateRecordArgs = {
+  input: CreateRecordInput;
+};
+
+export type CreateRecordInput = {
+  title: Scalars['String'];
+  categoryId?: InputMaybe<Scalars['ID']>;
+  status: Scalars['String'];
+  statusType: StatusType;
+  comment: Scalars['String'];
+  publishTwitter?: InputMaybe<Scalars['Boolean']>;
+  rating?: InputMaybe<Scalars['Float']>;
+};
+
+export type CreateRecordResult = {
+  __typename?: 'CreateRecordResult';
+  record: Record;
+  post?: Maybe<Post>;
+};
+
+export type Query = {
+  __typename?: 'Query';
+  currentUser?: Maybe<User>;
+  user?: Maybe<User>;
+  userByName?: Maybe<User>;
+  timeline?: Maybe<Array<Maybe<Post>>>;
+  work?: Maybe<Work>;
+  workByTitle?: Maybe<Work>;
+  post?: Maybe<Post>;
+  curatedLists: Array<CuratedList>;
+  curatedList?: Maybe<CuratedList>;
+  searchWorks?: Maybe<SearchWorksResult>;
+  tablePeriod?: Maybe<TablePeriod>;
+  currentTablePeriod: TablePeriod;
+  tablePeriods: Array<TablePeriod>;
+  weeklyWorksChart: Array<WorksChartItem>;
+};
+
+
+export type QueryuserArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryuserByNameArgs = {
+  name: Scalars['String'];
+};
+
+
+export type QuerytimelineArgs = {
+  beforeId?: InputMaybe<Scalars['ID']>;
+  count?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryworkArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryworkByTitleArgs = {
+  title: Scalars['String'];
+};
+
+
+export type QuerypostArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QuerycuratedListArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QuerysearchWorksArgs = {
+  query: Scalars['String'];
+};
+
+
+export type QuerytablePeriodArgs = {
+  period: Scalars['String'];
+};
+
+
+export type QueryweeklyWorksChartArgs = {
+  limit: Scalars['Int'];
+};
+
+export type CuratedList = {
+  __typename?: 'CuratedList';
+  id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
+  works?: Maybe<CuratedListWorkConnection>;
+};
+
+export type CuratedListWorkConnection = {
+  __typename?: 'CuratedListWorkConnection';
+  edges?: Maybe<Array<Maybe<CuratedListWorkEdge>>>;
+  totalCount?: Maybe<Scalars['Int']>;
+};
+
+export type CuratedListWorkEdge = {
+  __typename?: 'CuratedListWorkEdge';
+  node?: Maybe<Work>;
+};
+
 export type SearchWorksResult = {
   __typename?: 'SearchWorksResult';
   edges: Array<SearchWorksResultEdge>;
@@ -326,14 +327,6 @@ export type SearchWorksResultEdge = {
   __typename?: 'SearchWorksResultEdge';
   node: Work;
   recordCount?: Maybe<Scalars['Int']>;
-};
-
-export type WorksChartItem = {
-  __typename?: 'WorksChartItem';
-  rank: Scalars['Int'];
-  work: Work;
-  diff?: Maybe<Scalars['Int']>;
-  sign?: Maybe<Scalars['Int']>;
 };
 
 export type TablePeriod = {
@@ -393,6 +386,14 @@ export type CreditType =
   | 'SERIES_COMPOSITION'
   | 'CHARACTER_DESIGN'
   | 'MUSIC';
+
+export type WorksChartItem = {
+  __typename?: 'WorksChartItem';
+  rank: Scalars['Int'];
+  work: Work;
+  diff?: Maybe<Scalars['Int']>;
+  sign?: Maybe<Scalars['Int']>;
+};
 
 
 
@@ -456,39 +457,38 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  Query: ResolverTypeWrapper<{}>;
+  Category: ResolverTypeWrapper<CategoryModel>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   String: ResolverTypeWrapper<Scalars['String']>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
-  Mutation: ResolverTypeWrapper<{}>;
-  CreateRecordInput: CreateRecordInput;
+  Post: ResolverTypeWrapper<HistoryModel>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
-  CreateRecordResult: ResolverTypeWrapper<Omit<CreateRecordResult, 'record' | 'post'> & { record: ResolversTypes['Record'], post?: Maybe<ResolversTypes['Post']> }>;
-  Node: ResolversTypes['User'] | ResolversTypes['Category'] | ResolversTypes['Post'] | ResolversTypes['Record'] | ResolversTypes['Work'];
-  GraphQLTimestamp: ResolverTypeWrapper<Scalars['GraphQLTimestamp']>;
-  User: ResolverTypeWrapper<UserModel>;
-  RecordOrder: RecordOrder;
-  Category: ResolverTypeWrapper<CategoryModel>;
-  Post: ResolverTypeWrapper<HistoryModel>;
-  StatusType: StatusType;
-  Record: ResolverTypeWrapper<RecordModel>;
-  CuratedList: ResolverTypeWrapper<CuratedListMetadataModel>;
-  CuratedListWorkConnection: ResolverTypeWrapper<Omit<CuratedListWorkConnection, 'edges'> & { edges?: Maybe<Array<Maybe<ResolversTypes['CuratedListWorkEdge']>>> }>;
-  CuratedListWorkEdge: ResolverTypeWrapper<Omit<CuratedListWorkEdge, 'node'> & { node?: Maybe<ResolversTypes['Work']> }>;
-  Work: ResolverTypeWrapper<WorkModel>;
   PostConnection: ResolverTypeWrapper<Omit<PostConnection, 'nodes'> & { nodes: Array<ResolversTypes['Post']> }>;
+  Record: ResolverTypeWrapper<RecordModel>;
   RecordConnection: ResolverTypeWrapper<Omit<RecordConnection, 'nodes'> & { nodes: Array<ResolversTypes['Record']> }>;
+  User: ResolverTypeWrapper<UserModel>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
+  RecordOrder: RecordOrder;
   RecordCountForFilter: ResolverTypeWrapper<RecordCountForFilter>;
   RecordCountByCriteria: ResolverTypeWrapper<RecordCountByCriteria>;
+  Work: ResolverTypeWrapper<WorkModel>;
   Episode: ResolverTypeWrapper<EpisodeModel>;
   WorkMetadata: ResolverTypeWrapper<WorkMetadata>;
   SourceType: SourceType;
   WorkSchedule: ResolverTypeWrapper<WorkSchedule>;
   DatePrecision: DatePrecision;
+  GraphQLTimestamp: ResolverTypeWrapper<Scalars['GraphQLTimestamp']>;
+  Node: ResolversTypes['Category'] | ResolversTypes['Post'] | ResolversTypes['Record'] | ResolversTypes['User'] | ResolversTypes['Work'];
+  StatusType: StatusType;
+  Mutation: ResolverTypeWrapper<{}>;
+  CreateRecordInput: CreateRecordInput;
+  CreateRecordResult: ResolverTypeWrapper<Omit<CreateRecordResult, 'record' | 'post'> & { record: ResolversTypes['Record'], post?: Maybe<ResolversTypes['Post']> }>;
+  Query: ResolverTypeWrapper<{}>;
+  CuratedList: ResolverTypeWrapper<CuratedListMetadataModel>;
+  CuratedListWorkConnection: ResolverTypeWrapper<Omit<CuratedListWorkConnection, 'edges'> & { edges?: Maybe<Array<Maybe<ResolversTypes['CuratedListWorkEdge']>>> }>;
+  CuratedListWorkEdge: ResolverTypeWrapper<Omit<CuratedListWorkEdge, 'node'> & { node?: Maybe<ResolversTypes['Work']> }>;
   SearchWorksResult: ResolverTypeWrapper<Omit<SearchWorksResult, 'edges'> & { edges: Array<ResolversTypes['SearchWorksResultEdge']> }>;
   SearchWorksResultEdge: ResolverTypeWrapper<Omit<SearchWorksResultEdge, 'node'> & { node: ResolversTypes['Work'] }>;
-  WorksChartItem: ResolverTypeWrapper<Omit<WorksChartItem, 'work'> & { work: ResolversTypes['Work'] }>;
   TablePeriod: ResolverTypeWrapper<PeriodModel>;
   TablePeriodItem: ResolverTypeWrapper<Omit<TablePeriodItem, 'work' | 'record' | 'recommendations'> & { work: ResolversTypes['Work'], record?: Maybe<ResolversTypes['Record']>, recommendations?: Maybe<Array<ResolversTypes['Recommendation']>> }>;
   Recommendation: ResolversTypes['RecommendationByCredit'];
@@ -496,95 +496,46 @@ export type ResolversTypes = {
   Credit: ResolverTypeWrapper<Credit>;
   WorkCredit: ResolverTypeWrapper<WorkCredit>;
   CreditType: CreditType;
+  WorksChartItem: ResolverTypeWrapper<Omit<WorksChartItem, 'work'> & { work: ResolversTypes['Work'] }>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  Query: {};
+  Category: CategoryModel;
   ID: Scalars['ID'];
   String: Scalars['String'];
-  Int: Scalars['Int'];
-  Mutation: {};
-  CreateRecordInput: CreateRecordInput;
+  Post: HistoryModel;
   Boolean: Scalars['Boolean'];
   Float: Scalars['Float'];
-  CreateRecordResult: Omit<CreateRecordResult, 'record' | 'post'> & { record: ResolversParentTypes['Record'], post?: Maybe<ResolversParentTypes['Post']> };
-  Node: ResolversParentTypes['User'] | ResolversParentTypes['Category'] | ResolversParentTypes['Post'] | ResolversParentTypes['Record'] | ResolversParentTypes['Work'];
-  GraphQLTimestamp: Scalars['GraphQLTimestamp'];
-  User: UserModel;
-  Category: CategoryModel;
-  Post: HistoryModel;
-  Record: RecordModel;
-  CuratedList: CuratedListMetadataModel;
-  CuratedListWorkConnection: Omit<CuratedListWorkConnection, 'edges'> & { edges?: Maybe<Array<Maybe<ResolversParentTypes['CuratedListWorkEdge']>>> };
-  CuratedListWorkEdge: Omit<CuratedListWorkEdge, 'node'> & { node?: Maybe<ResolversParentTypes['Work']> };
-  Work: WorkModel;
   PostConnection: Omit<PostConnection, 'nodes'> & { nodes: Array<ResolversParentTypes['Post']> };
+  Record: RecordModel;
   RecordConnection: Omit<RecordConnection, 'nodes'> & { nodes: Array<ResolversParentTypes['Record']> };
+  User: UserModel;
+  Int: Scalars['Int'];
   RecordCountForFilter: RecordCountForFilter;
   RecordCountByCriteria: RecordCountByCriteria;
+  Work: WorkModel;
   Episode: EpisodeModel;
   WorkMetadata: WorkMetadata;
   WorkSchedule: WorkSchedule;
+  GraphQLTimestamp: Scalars['GraphQLTimestamp'];
+  Node: ResolversParentTypes['Category'] | ResolversParentTypes['Post'] | ResolversParentTypes['Record'] | ResolversParentTypes['User'] | ResolversParentTypes['Work'];
+  Mutation: {};
+  CreateRecordInput: CreateRecordInput;
+  CreateRecordResult: Omit<CreateRecordResult, 'record' | 'post'> & { record: ResolversParentTypes['Record'], post?: Maybe<ResolversParentTypes['Post']> };
+  Query: {};
+  CuratedList: CuratedListMetadataModel;
+  CuratedListWorkConnection: Omit<CuratedListWorkConnection, 'edges'> & { edges?: Maybe<Array<Maybe<ResolversParentTypes['CuratedListWorkEdge']>>> };
+  CuratedListWorkEdge: Omit<CuratedListWorkEdge, 'node'> & { node?: Maybe<ResolversParentTypes['Work']> };
   SearchWorksResult: Omit<SearchWorksResult, 'edges'> & { edges: Array<ResolversParentTypes['SearchWorksResultEdge']> };
   SearchWorksResultEdge: Omit<SearchWorksResultEdge, 'node'> & { node: ResolversParentTypes['Work'] };
-  WorksChartItem: Omit<WorksChartItem, 'work'> & { work: ResolversParentTypes['Work'] };
   TablePeriod: PeriodModel;
   TablePeriodItem: Omit<TablePeriodItem, 'work' | 'record' | 'recommendations'> & { work: ResolversParentTypes['Work'], record?: Maybe<ResolversParentTypes['Record']>, recommendations?: Maybe<Array<ResolversParentTypes['Recommendation']>> };
   Recommendation: ResolversParentTypes['RecommendationByCredit'];
   RecommendationByCredit: RecommendationByCredit;
   Credit: Credit;
   WorkCredit: WorkCredit;
-};
-
-export type QueryResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  currentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryuserArgs, 'id'>>;
-  userByName?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryuserByNameArgs, 'name'>>;
-  timeline?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType, Partial<QuerytimelineArgs>>;
-  curatedLists?: Resolver<Array<ResolversTypes['CuratedList']>, ParentType, ContextType>;
-  curatedList?: Resolver<Maybe<ResolversTypes['CuratedList']>, ParentType, ContextType, RequireFields<QuerycuratedListArgs, 'id'>>;
-  searchWorks?: Resolver<Maybe<ResolversTypes['SearchWorksResult']>, ParentType, ContextType, RequireFields<QuerysearchWorksArgs, 'query'>>;
-  weeklyWorksChart?: Resolver<Array<ResolversTypes['WorksChartItem']>, ParentType, ContextType, RequireFields<QueryweeklyWorksChartArgs, 'limit'>>;
-  work?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType, RequireFields<QueryworkArgs, 'id'>>;
-  workByTitle?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType, RequireFields<QueryworkByTitleArgs, 'title'>>;
-  post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QuerypostArgs, 'id'>>;
-  tablePeriod?: Resolver<Maybe<ResolversTypes['TablePeriod']>, ParentType, ContextType, RequireFields<QuerytablePeriodArgs, 'period'>>;
-  currentTablePeriod?: Resolver<ResolversTypes['TablePeriod'], ParentType, ContextType>;
-  tablePeriods?: Resolver<Array<ResolversTypes['TablePeriod']>, ParentType, ContextType>;
-};
-
-export type MutationResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  createRecord?: Resolver<ResolversTypes['CreateRecordResult'], ParentType, ContextType, RequireFields<MutationcreateRecordArgs, 'input'>>;
-};
-
-export type CreateRecordResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['CreateRecordResult'] = ResolversParentTypes['CreateRecordResult']> = {
-  record?: Resolver<ResolversTypes['Record'], ParentType, ContextType>;
-  post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType>;
-  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type NodeResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = {
-  resolveType: TypeResolveFn<'User' | 'Category' | 'Post' | 'Record' | 'Work', ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-};
-
-export interface GraphQLTimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['GraphQLTimestamp'], any> {
-  name: 'GraphQLTimestamp';
-}
-
-export type UserResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  joinedAt?: Resolver<Maybe<ResolversTypes['GraphQLTimestamp']>, ParentType, ContextType>;
-  isTwitterConnected?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  categories?: Resolver<Maybe<Array<Maybe<ResolversTypes['Category']>>>, ParentType, ContextType>;
-  recordCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  postCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  posts?: Resolver<ResolversTypes['PostConnection'], ParentType, ContextType, Partial<UserpostsArgs>>;
-  records?: Resolver<ResolversTypes['RecordConnection'], ParentType, ContextType, Partial<UserrecordsArgs>>;
-  recordCountForFilter?: Resolver<ResolversTypes['RecordCountForFilter'], ParentType, ContextType, Partial<UserrecordCountForFilterArgs>>;
-  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+  WorksChartItem: Omit<WorksChartItem, 'work'> & { work: ResolversParentTypes['Work'] };
 };
 
 export type CategoryResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
@@ -609,6 +560,12 @@ export type PostResolvers<ContextType = MercuriusContext, ParentType extends Res
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type PostConnectionResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['PostConnection'] = ResolversParentTypes['PostConnection']> = {
+  nodes?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType>;
+  hasMore?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type RecordResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Record'] = ResolversParentTypes['Record']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -623,45 +580,22 @@ export type RecordResolvers<ContextType = MercuriusContext, ParentType extends R
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type CuratedListResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['CuratedList'] = ResolversParentTypes['CuratedList']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  works?: Resolver<Maybe<ResolversTypes['CuratedListWorkConnection']>, ParentType, ContextType>;
-  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type CuratedListWorkConnectionResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['CuratedListWorkConnection'] = ResolversParentTypes['CuratedListWorkConnection']> = {
-  edges?: Resolver<Maybe<Array<Maybe<ResolversTypes['CuratedListWorkEdge']>>>, ParentType, ContextType>;
-  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type CuratedListWorkEdgeResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['CuratedListWorkEdge'] = ResolversParentTypes['CuratedListWorkEdge']> = {
-  node?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType>;
-  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type WorkResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Work'] = ResolversParentTypes['Work']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  imageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  record?: Resolver<Maybe<ResolversTypes['Record']>, ParentType, ContextType>;
-  recordCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  metadata?: Resolver<Maybe<ResolversTypes['WorkMetadata']>, ParentType, ContextType>;
-  episodes?: Resolver<Maybe<Array<ResolversTypes['Episode']>>, ParentType, ContextType>;
-  episode?: Resolver<Maybe<ResolversTypes['Episode']>, ParentType, ContextType, RequireFields<WorkepisodeArgs, 'episode'>>;
-  posts?: Resolver<ResolversTypes['PostConnection'], ParentType, ContextType, Partial<WorkpostsArgs>>;
-  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type PostConnectionResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['PostConnection'] = ResolversParentTypes['PostConnection']> = {
-  nodes?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType>;
-  hasMore?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type RecordConnectionResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['RecordConnection'] = ResolversParentTypes['RecordConnection']> = {
   nodes?: Resolver<Array<ResolversTypes['Record']>, ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  joinedAt?: Resolver<Maybe<ResolversTypes['GraphQLTimestamp']>, ParentType, ContextType>;
+  isTwitterConnected?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  categories?: Resolver<Maybe<Array<Maybe<ResolversTypes['Category']>>>, ParentType, ContextType>;
+  recordCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  postCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  posts?: Resolver<ResolversTypes['PostConnection'], ParentType, ContextType, Partial<UserpostsArgs>>;
+  records?: Resolver<ResolversTypes['RecordConnection'], ParentType, ContextType, Partial<UserrecordsArgs>>;
+  recordCountForFilter?: Resolver<ResolversTypes['RecordCountForFilter'], ParentType, ContextType, Partial<UserrecordCountForFilterArgs>>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -676,6 +610,19 @@ export type RecordCountForFilterResolvers<ContextType = MercuriusContext, Parent
 export type RecordCountByCriteriaResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['RecordCountByCriteria'] = ResolversParentTypes['RecordCountByCriteria']> = {
   key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type WorkResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Work'] = ResolversParentTypes['Work']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  imageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  record?: Resolver<Maybe<ResolversTypes['Record']>, ParentType, ContextType>;
+  recordCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  metadata?: Resolver<Maybe<ResolversTypes['WorkMetadata']>, ParentType, ContextType>;
+  episodes?: Resolver<Maybe<Array<ResolversTypes['Episode']>>, ParentType, ContextType>;
+  episode?: Resolver<Maybe<ResolversTypes['Episode']>, ParentType, ContextType, RequireFields<WorkepisodeArgs, 'episode'>>;
+  posts?: Resolver<ResolversTypes['PostConnection'], ParentType, ContextType, Partial<WorkpostsArgs>>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -707,6 +654,61 @@ export type WorkScheduleResolvers<ContextType = MercuriusContext, ParentType ext
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export interface GraphQLTimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['GraphQLTimestamp'], any> {
+  name: 'GraphQLTimestamp';
+}
+
+export type NodeResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = {
+  resolveType: TypeResolveFn<'Category' | 'Post' | 'Record' | 'User' | 'Work', ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+};
+
+export type MutationResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  _empty?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  createRecord?: Resolver<ResolversTypes['CreateRecordResult'], ParentType, ContextType, RequireFields<MutationcreateRecordArgs, 'input'>>;
+};
+
+export type CreateRecordResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['CreateRecordResult'] = ResolversParentTypes['CreateRecordResult']> = {
+  record?: Resolver<ResolversTypes['Record'], ParentType, ContextType>;
+  post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type QueryResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  currentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryuserArgs, 'id'>>;
+  userByName?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryuserByNameArgs, 'name'>>;
+  timeline?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType, Partial<QuerytimelineArgs>>;
+  work?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType, RequireFields<QueryworkArgs, 'id'>>;
+  workByTitle?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType, RequireFields<QueryworkByTitleArgs, 'title'>>;
+  post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QuerypostArgs, 'id'>>;
+  curatedLists?: Resolver<Array<ResolversTypes['CuratedList']>, ParentType, ContextType>;
+  curatedList?: Resolver<Maybe<ResolversTypes['CuratedList']>, ParentType, ContextType, RequireFields<QuerycuratedListArgs, 'id'>>;
+  searchWorks?: Resolver<Maybe<ResolversTypes['SearchWorksResult']>, ParentType, ContextType, RequireFields<QuerysearchWorksArgs, 'query'>>;
+  tablePeriod?: Resolver<Maybe<ResolversTypes['TablePeriod']>, ParentType, ContextType, RequireFields<QuerytablePeriodArgs, 'period'>>;
+  currentTablePeriod?: Resolver<ResolversTypes['TablePeriod'], ParentType, ContextType>;
+  tablePeriods?: Resolver<Array<ResolversTypes['TablePeriod']>, ParentType, ContextType>;
+  weeklyWorksChart?: Resolver<Array<ResolversTypes['WorksChartItem']>, ParentType, ContextType, RequireFields<QueryweeklyWorksChartArgs, 'limit'>>;
+};
+
+export type CuratedListResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['CuratedList'] = ResolversParentTypes['CuratedList']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  works?: Resolver<Maybe<ResolversTypes['CuratedListWorkConnection']>, ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CuratedListWorkConnectionResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['CuratedListWorkConnection'] = ResolversParentTypes['CuratedListWorkConnection']> = {
+  edges?: Resolver<Maybe<Array<Maybe<ResolversTypes['CuratedListWorkEdge']>>>, ParentType, ContextType>;
+  totalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CuratedListWorkEdgeResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['CuratedListWorkEdge'] = ResolversParentTypes['CuratedListWorkEdge']> = {
+  node?: Resolver<Maybe<ResolversTypes['Work']>, ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type SearchWorksResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['SearchWorksResult'] = ResolversParentTypes['SearchWorksResult']> = {
   edges?: Resolver<Array<ResolversTypes['SearchWorksResultEdge']>, ParentType, ContextType>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -715,14 +717,6 @@ export type SearchWorksResultResolvers<ContextType = MercuriusContext, ParentTyp
 export type SearchWorksResultEdgeResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['SearchWorksResultEdge'] = ResolversParentTypes['SearchWorksResultEdge']> = {
   node?: Resolver<ResolversTypes['Work'], ParentType, ContextType>;
   recordCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type WorksChartItemResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['WorksChartItem'] = ResolversParentTypes['WorksChartItem']> = {
-  rank?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  work?: Resolver<ResolversTypes['Work'], ParentType, ContextType>;
-  diff?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  sign?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -770,35 +764,43 @@ export type WorkCreditResolvers<ContextType = MercuriusContext, ParentType exten
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type WorksChartItemResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['WorksChartItem'] = ResolversParentTypes['WorksChartItem']> = {
+  rank?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  work?: Resolver<ResolversTypes['Work'], ParentType, ContextType>;
+  diff?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  sign?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = MercuriusContext> = {
-  Query?: QueryResolvers<ContextType>;
-  Mutation?: MutationResolvers<ContextType>;
-  CreateRecordResult?: CreateRecordResultResolvers<ContextType>;
-  Node?: NodeResolvers<ContextType>;
-  GraphQLTimestamp?: GraphQLScalarType;
-  User?: UserResolvers<ContextType>;
   Category?: CategoryResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
-  Record?: RecordResolvers<ContextType>;
-  CuratedList?: CuratedListResolvers<ContextType>;
-  CuratedListWorkConnection?: CuratedListWorkConnectionResolvers<ContextType>;
-  CuratedListWorkEdge?: CuratedListWorkEdgeResolvers<ContextType>;
-  Work?: WorkResolvers<ContextType>;
   PostConnection?: PostConnectionResolvers<ContextType>;
+  Record?: RecordResolvers<ContextType>;
   RecordConnection?: RecordConnectionResolvers<ContextType>;
+  User?: UserResolvers<ContextType>;
   RecordCountForFilter?: RecordCountForFilterResolvers<ContextType>;
   RecordCountByCriteria?: RecordCountByCriteriaResolvers<ContextType>;
+  Work?: WorkResolvers<ContextType>;
   Episode?: EpisodeResolvers<ContextType>;
   WorkMetadata?: WorkMetadataResolvers<ContextType>;
   WorkSchedule?: WorkScheduleResolvers<ContextType>;
+  GraphQLTimestamp?: GraphQLScalarType;
+  Node?: NodeResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
+  CreateRecordResult?: CreateRecordResultResolvers<ContextType>;
+  Query?: QueryResolvers<ContextType>;
+  CuratedList?: CuratedListResolvers<ContextType>;
+  CuratedListWorkConnection?: CuratedListWorkConnectionResolvers<ContextType>;
+  CuratedListWorkEdge?: CuratedListWorkEdgeResolvers<ContextType>;
   SearchWorksResult?: SearchWorksResultResolvers<ContextType>;
   SearchWorksResultEdge?: SearchWorksResultEdgeResolvers<ContextType>;
-  WorksChartItem?: WorksChartItemResolvers<ContextType>;
   TablePeriod?: TablePeriodResolvers<ContextType>;
   TablePeriodItem?: TablePeriodItemResolvers<ContextType>;
   Recommendation?: RecommendationResolvers<ContextType>;
   RecommendationByCredit?: RecommendationByCreditResolvers<ContextType>;
   Credit?: CreditResolvers<ContextType>;
   WorkCredit?: WorkCreditResolvers<ContextType>;
+  WorksChartItem?: WorksChartItemResolvers<ContextType>;
 };
 

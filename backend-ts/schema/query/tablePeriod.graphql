@@ -1,0 +1,57 @@
+extend type Query {
+  tablePeriod(period: String!): TablePeriod
+  currentTablePeriod: TablePeriod!
+  tablePeriods: [TablePeriod!]!
+}
+
+type TablePeriod {
+  period: String!
+  year: Int!
+  month: Int!
+  isCurrent: Boolean!
+  isRecommendationEnabled: Boolean!
+
+  items(
+    onlyAdded: Boolean = false,
+    username: String,
+    withRecommendations: Boolean = false
+  ): [TablePeriodItem!]!
+}
+
+type TablePeriodItem {
+  title: String!
+  work: Work!
+  record: Record
+  recommendations: [Recommendation!]
+  recommendationScore: Int
+}
+
+union Recommendation = RecommendationByCredit
+
+type RecommendationByCredit {
+  credit: Credit
+  related: [WorkCredit!]
+  score: Int
+}
+
+type Credit {
+  type: CreditType
+  name: String
+  personId: ID!
+}
+
+type WorkCredit {
+  workId: ID!
+  workTitle: String!
+  type: CreditType
+}
+
+enum CreditType {
+  ORIGINAL_WORK
+  CHIEF_DIRECTOR
+  SERIES_DIRECTOR
+  DIRECTOR
+  SERIES_COMPOSITION
+  CHARACTER_DESIGN
+  MUSIC
+}

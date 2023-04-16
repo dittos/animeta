@@ -1,0 +1,52 @@
+type Work implements Node {
+  id: ID!
+  title: String
+  imageUrl: String
+  record: Record
+  recordCount: Int
+  metadata: WorkMetadata
+  episodes: [Episode!]
+  episode(episode: Int!): Episode
+  posts(beforeId: ID, count: Int, episode: Int): PostConnection!
+}
+
+type Episode {
+  number: Int!
+  postCount: Int
+  userCount: Int
+  suspendedUserCount: Int
+}
+
+type WorkMetadata {
+  periods: [String!]
+  studioNames: [String!]
+  source: SourceType
+  websiteUrl: String
+  namuwikiUrl: String
+  annUrl: String
+  durationMinutes: Int
+  schedules: [WorkSchedule!]
+}
+
+enum SourceType {
+  MANGA,
+  ORIGINAL,
+  LIGHT_NOVEL,
+  GAME,
+  FOUR_KOMA,
+  VISUAL_NOVEL,
+  NOVEL,
+}
+
+type WorkSchedule {
+  country: String!
+  date: GraphQLTimestamp
+  datePrecision: DatePrecision
+  broadcasts: [String!]
+}
+
+enum DatePrecision {
+  YEAR_MONTH,
+  DATE,
+  DATE_TIME,
+}

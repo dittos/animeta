@@ -1,0 +1,12 @@
+type Query {
+  currentUser: User
+  user(id: ID!): User
+  userByName(name: String!): User
+
+  timeline(beforeId: ID, count: Int): [Post]
+
+  work(id: ID!): Work
+  workByTitle(title: String!): Work
+
+  post(id: ID!): Post
+}

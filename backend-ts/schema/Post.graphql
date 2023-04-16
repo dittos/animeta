@@ -1,0 +1,19 @@
+type Post implements Node {
+  id: ID!
+  record: Record
+  statusType: StatusType
+  status: String
+  comment: String
+  containsSpoiler: Boolean
+  user: User
+  updatedAt: GraphQLTimestamp
+  rating: Float
+
+  work: Work
+  episode: Episode
+}
+
+type PostConnection {
+  nodes: [Post!]!
+  hasMore: Boolean!
+}

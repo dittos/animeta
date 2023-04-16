@@ -1,0 +1,38 @@
+type User implements Node {
+  id: ID!
+  name: String
+  joinedAt: GraphQLTimestamp
+  isTwitterConnected: Boolean
+  categories: [Category]
+  recordCount: Int
+  postCount: Int
+  posts(beforeId: ID, count: Int): PostConnection!
+  records(
+    statusType: StatusType,
+    categoryId: ID,
+    orderBy: RecordOrder,
+    first: Int,
+  ): RecordConnection!
+  recordCountForFilter(
+    statusType: StatusType,
+    categoryId: ID,
+  ): RecordCountForFilter!
+}
+
+enum RecordOrder {
+  DATE
+  TITLE
+  RATING
+}
+
+type RecordCountForFilter {
+  total: Int!
+  filtered: Int!
+  byStatusType: [RecordCountByCriteria!]!
+  byCategoryId: [RecordCountByCriteria!]!
+}
+
+type RecordCountByCriteria {
+  key: String!
+  count: Int!
+}

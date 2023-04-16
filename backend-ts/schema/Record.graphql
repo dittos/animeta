@@ -1,0 +1,16 @@
+type Record implements Node {
+  id: ID!
+  title: String
+  statusType: StatusType
+  status: String
+  user: User
+  work: Work
+  category: Category
+  updatedAt: GraphQLTimestamp
+  rating: Float
+  hasNewerEpisode: Boolean
+}
+
+type RecordConnection {
+  nodes: [Record!]!
+}

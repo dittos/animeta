@@ -6,6 +6,7 @@ import { createConnection } from 'typeorm'
 import { HttpException } from '@nestjs/common'
 import { resolvers } from './resolvers'
 import { getCurrentUser } from './auth'
+import { glob } from 'glob'
 
 // TODO: dotenv
 
@@ -33,7 +34,7 @@ declare module 'mercurius' {
 }
 
 server.register(mercurius, {
-  schema: fs.readFileSync('src/schema.graphql', {encoding: 'utf-8'}),
+  schema: glob.sync('schema/**/*.graphql').map(it => fs.readFileSync(it, {encoding: 'utf-8'})),
   resolvers: resolvers as any,
   context: buildContext,
   graphiql: process.env.NODE_ENV !== 'production',
