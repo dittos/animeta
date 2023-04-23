@@ -1,0 +1,48 @@
+@import "../../less/variables.less";
+
+.filter {
+    @media (max-width: 480px) {
+        border: 1px solid @color-border;
+        background-color: @color-bg-lightest;
+        padding: 16px;
+        padding-bottom: 0;
+        margin-bottom: 16px;
+    }
+}
+
+.filterGroup {
+    padding-bottom: 20px;
+    font-size: 14px;
+    word-break: break-all;
+}
+
+.filterGroupTitle {
+    font-weight: bold;
+    padding-bottom: 16px;
+}
+
+.filterGroupItem {
+    padding-bottom: 8px;
+    font-size: 13px;
+
+    a {
+        color: @color-text-dark;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+.filterGroupItemActive {
+    composes: filterGroupItem;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.manageCategoryButton {
+    color: @color-primary;
+    text-decoration: none;
+    font-size: 13px;
+}

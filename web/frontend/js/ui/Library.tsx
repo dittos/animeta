@@ -11,11 +11,11 @@ import * as Grid from './Grid';
 import { Switch, SwitchItem } from './Switch';
 import AddRecordDialog from './AddRecordDialog';
 import { trackEvent } from '../Tracking';
-import { CategoryDTO, RecordDTO, LegacyStatusType, UserDTO } from '../../../shared/types';
-import { LinkProps } from 'nuri/components';
+import { CategoryDTO, RecordDTO, UserDTO } from '../../../shared/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown, faCaretUp, faCog, faPlus, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faCaretDown, faCaretUp, faPlus, faStar } from '@fortawesome/free-solid-svg-icons';
 import { Library_CreateRecordDocument } from './__generated__/Library.graphql';
+import { LibraryFilter } from './LibraryFilter';
 
 const ENABLE_NEW_ADD_RECORD = false;
 
@@ -110,105 +110,6 @@ function LibraryItem({ record }: { record: RecordDTO }) {
   );
 }
 
-type LibraryFilterProps = {
-  count: number;
-  filteredCount: number;
-  sortBy: string;
-  groups: RecordGroup[];
-  scrollToGroup(event: React.MouseEvent<HTMLAnchorElement>): any;
-  statusTypeFilter: string;
-  categoryFilter: string;
-  getLinkParams(params: Partial<LibraryRouteQuery>): LinkProps;
-  statusTypeStats: {[key: string]: number} & {_all: number};
-  categoryStats: {[key: string]: number} & {_all: number};
-  categoryList: CategoryDTO[];
-  canEdit: boolean;
-};
-
-class LibraryFilter extends React.Component<LibraryFilterProps> {
-  render() {
-    return (
-      <div className={Styles.filter}>
-        <div className={Styles.filterGroup}>
-          <div className={Styles.filterGroupTitle}>상태</div>
-          <div
-            className={
-              this.props.statusTypeFilter === ''
-                ? Styles.filterGroupItemActive
-                : Styles.filterGroupItem
-            }
-          >
-            <Link {...this.props.getLinkParams({ type: '' })}>
-              전체 ({this.props.statusTypeStats._all})
-            </Link>
-          </div>
-          {['watching', 'finished', 'suspended', 'interested'].map(
-            (statusType: LegacyStatusType) => (
-              <div
-                className={
-                  this.props.statusTypeFilter === statusType
-                    ? Styles.filterGroupItemActive
-                    : Styles.filterGroupItem
-                }
-              >
-                <Link
-                  {...this.props.getLinkParams({
-                    type: statusType,
-                  })}
-                >
-                  {util.STATUS_TYPE_TEXT[statusType]} ({this.props
-                    .statusTypeStats[statusType] || 0})
-                </Link>
-              </div>
-            )
-          )}
-        </div>
-        <div className={Styles.filterGroup}>
-          <div className={Styles.filterGroupTitle}>분류</div>
-          <div
-            className={
-              this.props.categoryFilter === ''
-                ? Styles.filterGroupItemActive
-                : Styles.filterGroupItem
-            }
-          >
-            <Link {...this.props.getLinkParams({ category: '' })}>
-              전체 ({this.props.categoryStats._all})
-            </Link>
-          </div>
-          {[{ id: 0, name: '지정 안함' }]
-            .concat(this.props.categoryList)
-            .map(category => (
-              <div
-                className={
-                  this.props.categoryFilter === String(category.id)
-                    ? Styles.filterGroupItemActive
-                    : Styles.filterGroupItem
-                }
-              >
-                <Link
-                  {...this.props.getLinkParams({
-                    category: String(category.id),
-                  })}
-                >
-                  {category.name} ({this.props.categoryStats[category.id] || 0})
-                </Link>
-              </div>
-            ))}{' '}
-          {this.props.canEdit && (
-            <Link
-              to="/records/category/"
-              className={Styles.manageCategoryButton}
-            >
-              <FontAwesomeIcon icon={faCog} /> 분류 관리
-            </Link>
-          )}
-        </div>
-      </div>
-    );
-  }
-}
-
 export type LibraryRouteQuery = {
   type?: string;
   category?: string;
@@ -295,7 +196,7 @@ class Library extends React.Component<LibraryProps> {
               }
             />
           </div>
-          <div className={Styles.filterGroup}>
+          <div className={Styles.sort}>
             <Switch>
               <SwitchItem
                 Component={Link}
@@ -335,11 +236,6 @@ class Library extends React.Component<LibraryProps> {
           </div>
           <div className={this.state.mobileFilterVisible ? '' : 'hide-mobile'}>
             <LibraryFilter
-              count={count}
-              filteredCount={filteredCount}
-              sortBy={sort}
-              groups={groups}
-              scrollToGroup={this._scrollToGroup}
               statusTypeFilter={type}
               statusTypeStats={statusTypeStats}
               categoryFilter={category}
