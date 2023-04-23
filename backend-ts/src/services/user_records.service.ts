@@ -5,7 +5,7 @@ import { StatusType } from "src/entities/status_type";
 import { User } from "src/entities/user.entity";
 import { QueryBuilder, Repository } from "typeorm";
 
-type CountByCriteria = {[key: string]: number} & {_all: number}
+export type CountByCriteria = {[key: string]: number} & {_all: number}
 
 export type RecordsCount = {
   total: number;

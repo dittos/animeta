@@ -72,7 +72,7 @@ export type User = Node & {
   postCount: Maybe<Scalars['Int']>;
   posts: PostConnection;
   records: RecordConnection;
-  recordCountForFilter: RecordCountForFilter;
+  recordFilters: RecordFilters;
 };
 
 
@@ -90,7 +90,7 @@ export type UserRecordsArgs = {
 };
 
 
-export type UserRecordCountForFilterArgs = {
+export type UserRecordFiltersArgs = {
   statusType: InputMaybe<StatusType>;
   categoryId: InputMaybe<Scalars['ID']>;
 };
@@ -101,16 +101,20 @@ export enum RecordOrder {
   Rating = 'RATING'
 }
 
-export type RecordCountForFilter = {
-  __typename?: 'RecordCountForFilter';
-  total: Scalars['Int'];
-  filtered: Scalars['Int'];
-  byStatusType: Array<RecordCountByCriteria>;
-  byCategoryId: Array<RecordCountByCriteria>;
+export type RecordFilters = {
+  __typename?: 'RecordFilters';
+  statusType: RecordFilter;
+  categoryId: RecordFilter;
 };
 
-export type RecordCountByCriteria = {
-  __typename?: 'RecordCountByCriteria';
+export type RecordFilter = {
+  __typename?: 'RecordFilter';
+  allCount: Scalars['Int'];
+  items: Array<RecordFilterItem>;
+};
+
+export type RecordFilterItem = {
+  __typename?: 'RecordFilterItem';
   key: Scalars['String'];
   count: Scalars['Int'];
 };
@@ -184,17 +188,6 @@ export enum DatePrecision {
   DateTime = 'DATE_TIME'
 }
 
-export type Node = {
-  id: Scalars['ID'];
-};
-
-export enum StatusType {
-  Finished = 'FINISHED',
-  Watching = 'WATCHING',
-  Suspended = 'SUSPENDED',
-  Interested = 'INTERESTED'
-}
-
 export type Mutation = {
   __typename?: 'Mutation';
   _empty: Maybe<Scalars['Boolean']>;
@@ -221,6 +214,17 @@ export type CreateRecordResult = {
   record: Record;
   post: Maybe<Post>;
 };
+
+export type Node = {
+  id: Scalars['ID'];
+};
+
+export enum StatusType {
+  Finished = 'FINISHED',
+  Watching = 'WATCHING',
+  Suspended = 'SUSPENDED',
+  Interested = 'INTERESTED'
+}
 
 export type Query = {
   __typename?: 'Query';

@@ -1,5 +1,6 @@
 import { StatusType } from "src/entities/status_type";
-import { UserResolvers } from "src/graphql/generated";
+import { RecordFilter, UserResolvers } from "src/graphql/generated";
+import { CountByCriteria } from "src/services/user_records.service";
 import { getUserPosts } from "src2/services/post";
 import { countRecordsForFilter, getUserRecords } from "src2/services/record";
 
@@ -20,16 +21,26 @@ export const User: UserResolvers = {
       limit: first ?? null,
     }),
   
-  async recordCountForFilter(user, { statusType, categoryId }) {
+  async recordFilters(user, { statusType, categoryId }) {
     const counts = await countRecordsForFilter(user, {
       statusType: statusType ? StatusType[statusType] : null,
       categoryId: categoryId != null ? Number(categoryId) : null,
     })
     return {
-      total: counts.total,
-      filtered: counts.filtered,
-      byStatusType: Object.entries(counts.by_status_type).map(([key, count]) => ({key, count})),
-      byCategoryId: Object.entries(counts.by_category_id).map(([key, count]) => ({key, count})),
+      statusType: toFilter(counts.by_status_type),
+      categoryId: toFilter(counts.by_category_id),
     }
+  }
+}
+
+function toFilter(countByCriteria: CountByCriteria): RecordFilter {
+  return {
+    allCount: countByCriteria._all,
+    items: Object.entries(countByCriteria)
+      .filter(([key, _]) => key !== '_all')
+      .map(([key, count]) => ({
+        key: key.toUpperCase(), // FIXME: only for StatusType
+        count,
+      })),
   }
 }

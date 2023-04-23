@@ -13,10 +13,10 @@ type User implements Node {
     orderBy: RecordOrder,
     first: Int,
   ): RecordConnection!
-  recordCountForFilter(
+  recordFilters(
     statusType: StatusType,
     categoryId: ID,
-  ): RecordCountForFilter!
+  ): RecordFilters!
 }
 
 enum RecordOrder {
@@ -25,14 +25,17 @@ enum RecordOrder {
   RATING
 }
 
-type RecordCountForFilter {
-  total: Int!
-  filtered: Int!
-  byStatusType: [RecordCountByCriteria!]!
-  byCategoryId: [RecordCountByCriteria!]!
+type RecordFilters {
+  statusType: RecordFilter!
+  categoryId: RecordFilter!
 }
 
-type RecordCountByCriteria {
+type RecordFilter {
+  allCount: Int!
+  items: [RecordFilterItem!]!
+}
+
+type RecordFilterItem {
   key: String!
   count: Int!
 }
