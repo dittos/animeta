@@ -1,0 +1,9 @@
+query UserRoute(
+  $username: String!,
+  $statusTypeFilter: StatusType,
+  $categoryIdFilter: ID
+) {
+  gqlUser: userByName(name: $username) {
+    ...Library_user
+  }
+}

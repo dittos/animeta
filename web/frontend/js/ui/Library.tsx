@@ -14,8 +14,10 @@ import { trackEvent } from '../Tracking';
 import { CategoryDTO, RecordDTO, UserDTO } from '../../../shared/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faCaretUp, faPlus, faStar } from '@fortawesome/free-solid-svg-icons';
-import { Library_CreateRecordDocument } from './__generated__/Library.graphql';
+import { Library_CreateRecordDocument, Library_UserFragment } from './__generated__/Library.graphql';
 import { LibraryFilter } from './LibraryFilter';
+import { NormalizedUserRouteQuery, serializeUserRouteQuery } from '../UserRouteUtils';
+import { RecordOrder } from '../__generated__/globalTypes';
 
 const ENABLE_NEW_ADD_RECORD = false;
 
@@ -110,23 +112,16 @@ function LibraryItem({ record }: { record: RecordDTO }) {
   );
 }
 
-export type LibraryRouteQuery = {
-  type?: string;
-  category?: string;
-  sort?: string;
-};
-
 type LibraryProps = {
   user: UserDTO;
   count: number;
-  query: LibraryRouteQuery;
+  query: NormalizedUserRouteQuery;
   records: RecordDTO[];
   filteredCount: number;
-  categoryStats: {[key: string]: number} & {_all: number};
   categoryList: CategoryDTO[];
-  statusTypeStats: {[key: string]: number} & {_all: number};
   canEdit: boolean;
   onAddRecord(): any;
+  gqlUser: Library_UserFragment;
 };
 
 class Library extends React.Component<LibraryProps> {
@@ -136,22 +131,19 @@ class Library extends React.Component<LibraryProps> {
   };
 
   render() {
-    var { type = '', category = '', sort } = this.props.query;
-    if (!sort) sort = 'date';
-    var {
+    const { orderBy } = this.props.query;
+    const {
       count,
       filteredCount,
       records,
-      categoryStats,
-      statusTypeStats,
       categoryList,
     } = this.props;
     var groups: RecordGroup[] = [];
-    if (sort === 'date') {
+    if (orderBy === RecordOrder.Date) {
       groups = groupRecordsByDate(records);
-    } else if (sort === 'title') {
+    } else if (orderBy === RecordOrder.Title) {
       groups = groupRecordsByTitle(records);
-    } else if (sort === 'rating') {
+    } else if (orderBy === RecordOrder.Rating) {
       groups = groupRecordsByRating(records);
     }
     return (
@@ -200,27 +192,27 @@ class Library extends React.Component<LibraryProps> {
             <Switch>
               <SwitchItem
                 Component={Link}
-                {...this._getLinkParams({ sort: 'date' })}
-                active={sort === 'date'}
+                {...this._getLinkParams({ orderBy: RecordOrder.Date })}
+                active={orderBy === RecordOrder.Date}
               >
                 시간순
               </SwitchItem>
               <SwitchItem
                 Component={Link}
-                {...this._getLinkParams({ sort: 'title' })}
-                active={sort === 'title'}
+                {...this._getLinkParams({ orderBy: RecordOrder.Title })}
+                active={orderBy === RecordOrder.Title}
               >
                 제목순
               </SwitchItem>
               <SwitchItem
                 Component={Link}
-                {...this._getLinkParams({ sort: 'rating' })}
-                active={sort === 'rating'}
+                {...this._getLinkParams({ orderBy: RecordOrder.Rating })}
+                active={orderBy === RecordOrder.Rating}
               >
                 별점순
               </SwitchItem>
             </Switch>
-            {(sort === 'title' || sort === 'rating') && (
+            {(orderBy === RecordOrder.Title || orderBy === RecordOrder.Rating) && (
               <div className={Styles.toc}>
                 {groups.map(group => (
                   <a
@@ -236,11 +228,9 @@ class Library extends React.Component<LibraryProps> {
           </div>
           <div className={this.state.mobileFilterVisible ? '' : 'hide-mobile'}>
             <LibraryFilter
-              statusTypeFilter={type}
-              statusTypeStats={statusTypeStats}
-              categoryFilter={category}
+              query={this.props.query}
+              filters={this.props.gqlUser.recordFilters}
               categoryList={categoryList}
-              categoryStats={categoryStats}
               canEdit={this.props.canEdit}
               getLinkParams={this._getLinkParams}
             />
@@ -290,11 +280,11 @@ class Library extends React.Component<LibraryProps> {
     );
   }
 
-  _getLinkParams = (updates: Partial<LibraryRouteQuery>) => {
+  _getLinkParams = (updates: Partial<NormalizedUserRouteQuery>) => {
     const basePath = `/users/${encodeURIComponent(this.props.user.name)}/`;
     return {
       to: basePath,
-      queryParams: { ...this.props.query, ...updates },
+      queryParams: serializeUserRouteQuery({ ...this.props.query, ...updates }),
     };
   };
 

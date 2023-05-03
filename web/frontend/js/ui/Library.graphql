@@ -1,3 +1,9 @@
+fragment Library_user on User {
+  recordFilters(statusType: $statusTypeFilter, categoryId: $categoryIdFilter) {
+    ...LibraryFilter_recordFilters
+  }
+}
+
 mutation Library_createRecord($input: CreateRecordInput!) {
   createRecord(input: $input) {
     record {

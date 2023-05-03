@@ -2,64 +2,57 @@ import React from 'react';
 import { Link } from 'nuri';
 import * as util from '../util';
 import Styles from './LibraryFilter.module.less';
-import { CategoryDTO, LegacyStatusType } from '../../../shared/types';
+import { CategoryDTO } from '../../../shared/types';
 import { LinkProps } from 'nuri/components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
-
-type LibraryRouteQuery = {
-  type?: string;
-  category?: string;
-  sort?: string;
-};
+import { LibraryFilter_RecordFiltersFragment } from './__generated__/LibraryFilter.graphql';
+import { StatusType } from '../__generated__/globalTypes';
+import { NormalizedUserRouteQuery } from '../UserRouteUtils';
 
 export function LibraryFilter({
-  statusTypeFilter,
-  categoryFilter,
+  query,
   getLinkParams,
-  statusTypeStats,
-  categoryStats,
+  filters,
   categoryList,
   canEdit,
 }: {
-  statusTypeFilter: string;
-  categoryFilter: string;
-  getLinkParams(params: Partial<LibraryRouteQuery>): LinkProps;
-  statusTypeStats: {[key: string]: number} & {_all: number};
-  categoryStats: {[key: string]: number} & {_all: number};
+  query: NormalizedUserRouteQuery;
+  getLinkParams(params: Partial<NormalizedUserRouteQuery>): LinkProps;
+  filters: LibraryFilter_RecordFiltersFragment;
   categoryList: CategoryDTO[];
   canEdit: boolean;
 }) {
+  const statusTypeStats = filters.statusType.items.reduce((acc, it) => { acc[it.key] = it.count; return acc }, {} as Record<string, number>)
+  const categoryStats = filters.categoryId.items.reduce((acc, it) => { acc[it.key] = it.count; return acc }, {} as Record<string, number>)
   return (
     <div className={Styles.filter}>
       <div className={Styles.filterGroup}>
         <div className={Styles.filterGroupTitle}>상태</div>
         <div
           className={
-            statusTypeFilter === ''
+            query.statusType == null
               ? Styles.filterGroupItemActive
               : Styles.filterGroupItem
           }
         >
-          <Link {...getLinkParams({ type: '' })}>
-            전체 ({statusTypeStats._all})
+          <Link {...getLinkParams({ statusType: null })}>
+            전체 ({filters.statusType.allCount})
           </Link>
         </div>
-        {['watching', 'finished', 'suspended', 'interested'].map(
-          (statusType: LegacyStatusType) => (
+        {[StatusType.Watching, StatusType.Finished, StatusType.Suspended, StatusType.Interested].map(
+          statusType => (
             <div
               className={
-                statusTypeFilter === statusType
+                query.statusType === statusType
                   ? Styles.filterGroupItemActive
                   : Styles.filterGroupItem
               }
             >
               <Link
-                {...getLinkParams({
-                  type: statusType,
-                })}
+                {...getLinkParams({ statusType })}
               >
-                {util.STATUS_TYPE_TEXT[statusType]} ({statusTypeStats[statusType] || 0})
+                {util.GQL_STATUS_TYPE_TEXT[statusType]} ({statusTypeStats[statusType] || 0})
               </Link>
             </div>
           )
@@ -69,13 +62,13 @@ export function LibraryFilter({
         <div className={Styles.filterGroupTitle}>분류</div>
         <div
           className={
-            categoryFilter === ''
+            query.categoryId == null
               ? Styles.filterGroupItemActive
               : Styles.filterGroupItem
           }
         >
-          <Link {...getLinkParams({ category: '' })}>
-            전체 ({categoryStats._all})
+          <Link {...getLinkParams({ categoryId: null })}>
+            전체 ({filters.categoryId.allCount})
           </Link>
         </div>
         {[{ id: 0, name: '지정 안함' }]
@@ -83,14 +76,14 @@ export function LibraryFilter({
           .map(category => (
             <div
               className={
-                categoryFilter === String(category.id)
+                query.categoryId === String(category.id)
                   ? Styles.filterGroupItemActive
                   : Styles.filterGroupItem
               }
             >
               <Link
                 {...getLinkParams({
-                  category: String(category.id),
+                  categoryId: String(category.id),
                 })}
               >
                 {category.name} ({categoryStats[category.id] || 0})

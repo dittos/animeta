@@ -1,0 +1,15 @@
+fragment LibraryFilter_recordFilters on RecordFilters {
+  statusType { 
+    ...LibraryFilter_recordFilter
+  }
+  categoryId {
+    ...LibraryFilter_recordFilter
+  }
+}
+
+fragment LibraryFilter_recordFilter on RecordFilter {
+  allCount
+  items {
+    key, count
+  }
+}

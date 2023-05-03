@@ -218,18 +218,22 @@ export type RecordConnection = {
   nodes: Array<Record>;
 };
 
-export type RecordCountByCriteria = {
-  __typename?: 'RecordCountByCriteria';
+export type RecordFilter = {
+  __typename?: 'RecordFilter';
+  allCount: Scalars['Int'];
+  items: Array<RecordFilterItem>;
+};
+
+export type RecordFilterItem = {
+  __typename?: 'RecordFilterItem';
   count: Scalars['Int'];
   key: Scalars['String'];
 };
 
-export type RecordCountForFilter = {
-  __typename?: 'RecordCountForFilter';
-  byCategoryId: Array<RecordCountByCriteria>;
-  byStatusType: Array<RecordCountByCriteria>;
-  filtered: Scalars['Int'];
-  total: Scalars['Int'];
+export type RecordFilters = {
+  __typename?: 'RecordFilters';
+  categoryId: RecordFilter;
+  statusType: RecordFilter;
 };
 
 export const enum RecordOrder {
@@ -302,7 +306,7 @@ export type User = Node & {
   postCount: Maybe<Scalars['Int']>;
   posts: PostConnection;
   recordCount: Maybe<Scalars['Int']>;
-  recordCountForFilter: RecordCountForFilter;
+  recordFilters: RecordFilters;
   records: RecordConnection;
 };
 
@@ -313,7 +317,7 @@ export type UserPostsArgs = {
 };
 
 
-export type UserRecordCountForFilterArgs = {
+export type UserRecordFiltersArgs = {
   categoryId: InputMaybe<Scalars['ID']>;
   statusType: InputMaybe<StatusType>;
 };
