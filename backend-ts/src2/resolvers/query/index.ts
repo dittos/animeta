@@ -10,6 +10,7 @@ import { timeline } from "./timeline"
 import { weeklyWorksChart } from "./weeklyWorksChart"
 
 export const Query: QueryResolvers = {
+  currentUser: (_, _2, { currentUser }) => currentUser,
   user: (_, { id }) => getUser(Number(id)),
   userByName: (_, { name }) => getUserByName(name),
   timeline,
