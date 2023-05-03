@@ -26,6 +26,9 @@ enum RecordOrder {
 }
 
 type RecordFilters {
+  totalCount: Int!
+  filteredCount: Int!
+
   statusType: RecordFilter!
   categoryId: RecordFilter!
 }

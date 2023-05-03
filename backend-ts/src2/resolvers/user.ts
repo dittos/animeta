@@ -27,6 +27,8 @@ export const User: UserResolvers = {
       categoryId: categoryId != null ? Number(categoryId) : null,
     })
     return {
+      totalCount: counts.total,
+      filteredCount: counts.filtered,
       statusType: toFilter(counts.by_status_type),
       categoryId: toFilter(counts.by_category_id),
     }
