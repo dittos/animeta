@@ -3,7 +3,7 @@ type User implements Node {
   name: String
   joinedAt: GraphQLTimestamp
   isTwitterConnected: Boolean
-  categories: [Category]
+  categories: [Category!]!
   recordCount: Int
   postCount: Int
   posts(beforeId: ID, count: Int): PostConnection!

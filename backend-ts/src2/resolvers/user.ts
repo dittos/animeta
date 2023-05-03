@@ -1,6 +1,8 @@
+import { Category } from "src/entities/category.entity";
 import { StatusType } from "src/entities/status_type";
 import { RecordFilter, UserResolvers } from "src/graphql/generated";
 import { CountByCriteria } from "src/services/user_records.service";
+import { db } from "src2/database";
 import { getUserPosts } from "src2/services/post";
 import { countRecordsForFilter, getUserRecords } from "src2/services/record";
 
@@ -32,6 +34,10 @@ export const User: UserResolvers = {
       statusType: toFilter(counts.by_status_type),
       categoryId: toFilter(counts.by_category_id),
     }
+  },
+
+  async categories(user) {
+    return await db.find(Category, { where: { user }, order: {position: 'ASC'} })
   }
 }
 

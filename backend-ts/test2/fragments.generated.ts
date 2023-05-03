@@ -18,7 +18,7 @@ export type Category = Node & {
   __typename?: 'Category';
   id: Scalars['ID'];
   user: Maybe<User>;
-  name: Maybe<Scalars['String']>;
+  name: Scalars['String'];
 };
 
 export type Post = Node & {
@@ -67,7 +67,7 @@ export type User = Node & {
   name: Maybe<Scalars['String']>;
   joinedAt: Maybe<Scalars['GraphQLTimestamp']>;
   isTwitterConnected: Maybe<Scalars['Boolean']>;
-  categories: Maybe<Array<Maybe<Category>>>;
+  categories: Array<Category>;
   recordCount: Maybe<Scalars['Int']>;
   postCount: Maybe<Scalars['Int']>;
   posts: PostConnection;
@@ -190,17 +190,6 @@ export enum DatePrecision {
   DateTime = 'DATE_TIME'
 }
 
-export type Mutation = {
-  __typename?: 'Mutation';
-  _empty: Maybe<Scalars['Boolean']>;
-  createRecord: CreateRecordResult;
-};
-
-
-export type MutationCreateRecordArgs = {
-  input: CreateRecordInput;
-};
-
 export type Node = {
   id: Scalars['ID'];
 };
@@ -211,6 +200,33 @@ export enum StatusType {
   Suspended = 'SUSPENDED',
   Interested = 'INTERESTED'
 }
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  createRecord: CreateRecordResult;
+  _empty: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationCreateRecordArgs = {
+  input: CreateRecordInput;
+};
+
+export type CreateRecordInput = {
+  title: Scalars['String'];
+  categoryId: InputMaybe<Scalars['ID']>;
+  status: Scalars['String'];
+  statusType: StatusType;
+  comment: Scalars['String'];
+  publishTwitter: InputMaybe<Scalars['Boolean']>;
+  rating: InputMaybe<Scalars['Float']>;
+};
+
+export type CreateRecordResult = {
+  __typename?: 'CreateRecordResult';
+  record: Record;
+  post: Maybe<Post>;
+};
 
 export type Query = {
   __typename?: 'Query';
@@ -279,22 +295,6 @@ export type QueryTablePeriodArgs = {
 
 export type QueryWeeklyWorksChartArgs = {
   limit: Scalars['Int'];
-};
-
-export type CreateRecordInput = {
-  title: Scalars['String'];
-  categoryId: InputMaybe<Scalars['ID']>;
-  status: Scalars['String'];
-  statusType: StatusType;
-  comment: Scalars['String'];
-  publishTwitter: InputMaybe<Scalars['Boolean']>;
-  rating: InputMaybe<Scalars['Float']>;
-};
-
-export type CreateRecordResult = {
-  __typename?: 'CreateRecordResult';
-  record: Record;
-  post: Maybe<Post>;
 };
 
 export type CuratedList = {
