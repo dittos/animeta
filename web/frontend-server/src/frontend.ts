@@ -74,7 +74,6 @@ export function createServer({ config, server = express(), appProvider, getAsset
   }
   server.use(cookieParser());
 
-  // graphql route should go before csurf middlware (FIXME when start using mutations)
   const graphqlProxy = httpProxy.createProxyServer({
     target: config.backend.graphqlUrl,
     changeOrigin: config.backend.remote ? true : false,
@@ -85,10 +84,9 @@ export function createServer({ config, server = express(), appProvider, getAsset
   graphqlProxy.on('error', onProxyError);
 
   server.use(csurf({ cookie: true }));
-  server.use((req, res, next) => {
+  function setCsrfCookie(req: express.Request, res: express.Response) {
     res.cookie('crumb', (req as any).csrfToken());
-    next();
-  });
+  }
   server.use('/api/graphql', (req, res) => {
     graphqlProxy.web(req, res);
   })
@@ -137,6 +135,7 @@ export function createServer({ config, server = express(), appProvider, getAsset
     res.json({ ok: true });
   });
   server.get('/api/fe/csrf-token', (req, res) => {
+    setCsrfCookie(req, res);
     res.json({ ok: true });
   });
 
@@ -173,7 +172,7 @@ export function createServer({ config, server = express(), appProvider, getAsset
   configureProxy('/api/v5', config.backend.v5BaseUrl, {appendPathPrefixToTarget: true})
   configureProxy('/api/admin/v1', config.backend.adminNewBaseUrl2)
 
-  function renderDefault(res: express.Response, locals: any, content: string) {
+  function renderDefault(req: express.Request, res: express.Response, locals: any, content: string) {
     const context = {
       DEBUG,
       STATIC_URL: config.staticUrl || '/static',
@@ -189,6 +188,7 @@ export function createServer({ config, server = express(), appProvider, getAsset
     };
 
     res.type('text/html');
+    setCsrfCookie(req, res);
     res.render('layout', context);
   }
 
@@ -250,7 +250,7 @@ Disallow: /
 
   server.get('/admin/', (req, res) => {
     renderDefault(
-      res,
+      req, res,
       {
         title: `Admin`,
         preloadData: {},
@@ -292,7 +292,7 @@ Disallow: /
 
         preloadData.kakaoApiKey = config.kakaoApiKey; // XXX
         renderDefault(
-          res,
+          req, res,
           {
             preloadData,
             title,
