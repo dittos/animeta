@@ -1,4 +1,6 @@
 import { Category } from "src/entities/category.entity";
+import { History } from "src/entities/history.entity";
+import { Record } from "src/entities/record.entity";
 import { StatusType } from "src/entities/status_type";
 import { RecordFilter, UserResolvers } from "src/graphql/generated";
 import { CountByCriteria } from "src/services/user_records.service";
@@ -8,6 +10,10 @@ import { countRecordsForFilter, getUserRecords } from "src2/services/record";
 
 export const User: UserResolvers = {
   name: (user) => user.username,
+  joinedAt: (user) => user.date_joined,
+
+  recordCount: (user) => db.count(Record, { where: { user } }),
+  postCount: (user) => db.count(History, { where: { user } }),
 
   posts: (user, { beforeId, count }) =>
     getUserPosts(user, {
