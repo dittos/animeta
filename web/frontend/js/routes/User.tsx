@@ -27,7 +27,6 @@ function User({ data, controller }: RouteComponentProps<UserRouteData>) {
     <Library
       query={query}
       records={records}
-      categoryList={user.categories!}
       canEdit={canEdit}
       onAddRecord={addRecord}
       gqlUser={gqlUser!}
@@ -49,7 +48,6 @@ const routeHandler: RouteHandler<UserRouteData> = {
       loader.callV4<UserDTO>(`/users/${encodeURIComponent(username)}`, {
         options: {
           stats: true,
-          categories: true,
         },
       }),
       loader.callV4<RecordDTO[]>(`/users/${encodeURIComponent(username)}/records`, {

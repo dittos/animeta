@@ -16,7 +16,7 @@ export type Scalars = {
 export type Category = Node & {
   __typename?: 'Category';
   id: Scalars['ID'];
-  name: Maybe<Scalars['String']>;
+  name: Scalars['String'];
   user: Maybe<User>;
 };
 
@@ -300,7 +300,7 @@ export type TablePeriodItem = {
 
 export type User = Node & {
   __typename?: 'User';
-  categories: Maybe<Array<Maybe<Category>>>;
+  categories: Array<Category>;
   id: Scalars['ID'];
   isTwitterConnected: Maybe<Scalars['Boolean']>;
   joinedAt: Maybe<Scalars['GraphQLTimestamp']>;

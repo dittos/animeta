@@ -13,3 +13,8 @@ fragment LibraryFilter_recordFilter on RecordFilter {
     key, count
   }
 }
+
+fragment LibraryFilter_category on Category {
+  id
+  name
+}

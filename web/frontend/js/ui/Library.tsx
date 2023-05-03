@@ -115,7 +115,6 @@ function LibraryItem({ record }: { record: RecordDTO }) {
 type LibraryProps = {
   query: NormalizedUserRouteQuery;
   records: RecordDTO[];
-  categoryList: CategoryDTO[];
   canEdit: boolean;
   onAddRecord(): any;
   gqlUser: Library_UserFragment;
@@ -131,7 +130,6 @@ class Library extends React.Component<LibraryProps> {
     const { orderBy } = this.props.query;
     const {
       records,
-      categoryList,
     } = this.props;
     var groups: RecordGroup[] = [];
     if (orderBy === RecordOrder.Date) {
@@ -227,7 +225,7 @@ class Library extends React.Component<LibraryProps> {
             <LibraryFilter
               query={this.props.query}
               filters={filters}
-              categoryList={categoryList}
+              categoryList={this.props.gqlUser.categories}
               canEdit={this.props.canEdit}
               getLinkParams={this._getLinkParams}
             />
