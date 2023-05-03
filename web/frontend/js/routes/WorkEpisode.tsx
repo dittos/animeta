@@ -4,6 +4,7 @@ import { App } from '../layouts';
 import { UserDTO } from '../../../shared/types_generated';
 import { RouteComponentProps, RouteHandler } from '../routes';
 import { WorkEpisodeRouteDocument, WorkEpisodeRouteQuery, WorkEpisodeRoute_MorePostsDocument, WorkEpisodeRoute_RefetchDocument } from './__generated__/WorkEpisode.graphql';
+import { Redirect } from 'nuri/app';
 
 type WorkEpisodeRouteData = WorkEpisodeRouteQuery & {
   currentUser: UserDTO | null;
@@ -69,6 +70,9 @@ const routeHandler: RouteHandler<WorkEpisodeRouteData> = {
       }),
       loader.graphql(WorkEpisodeRouteDocument, { title, episode }),
     ]);
+    if (!data.work?.episode) {
+      return new Redirect(`/works/${encodeURIComponent(title)}/`);
+    }
     return {
       ...data,
       currentUser,
