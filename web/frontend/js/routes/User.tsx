@@ -7,19 +7,11 @@ import { UserRouteDocument, UserRouteQuery } from './__generated__/User.graphql'
 import { NormalizedUserRouteQuery, normalizeUserRouteQuery } from '../UserRouteUtils';
 import { UserLayoutPropsData } from '../ui/UserLayout';
 
-type RecordsResult = {
-  data: RecordDTO[];
-  counts: {
-    total: number;
-    filtered: number;
-  };
-};
-
 type UserRouteData = UserLayoutPropsData & UserRouteQuery & {
   currentUser: UserDTO | null;
   user: UserDTO;
   query: NormalizedUserRouteQuery;
-  records: RecordsResult;
+  records: RecordDTO[];
 };
 
 function User({ data, controller }: RouteComponentProps<UserRouteData>) {
@@ -33,11 +25,8 @@ function User({ data, controller }: RouteComponentProps<UserRouteData>) {
 
   return (
     <Library
-      user={user}
-      count={records.counts.total}
       query={query}
-      records={records.data}
-      filteredCount={records.counts.filtered}
+      records={records}
       categoryList={user.categories!}
       canEdit={canEdit}
       onAddRecord={addRecord}
@@ -63,11 +52,10 @@ const routeHandler: RouteHandler<UserRouteData> = {
           categories: true,
         },
       }),
-      loader.callV4<RecordsResult>(`/users/${encodeURIComponent(username)}/records`, {
+      loader.callV4<RecordDTO[]>(`/users/${encodeURIComponent(username)}/records`, {
         sort,
         status_type: type,
         category_id: category,
-        with_counts: true,
         options: {
           hasNewerEpisode: true,
         },

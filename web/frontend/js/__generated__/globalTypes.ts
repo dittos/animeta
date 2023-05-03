@@ -233,7 +233,9 @@ export type RecordFilterItem = {
 export type RecordFilters = {
   __typename?: 'RecordFilters';
   categoryId: RecordFilter;
+  filteredCount: Scalars['Int'];
   statusType: RecordFilter;
+  totalCount: Scalars['Int'];
 };
 
 export const enum RecordOrder {

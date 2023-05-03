@@ -1,5 +1,8 @@
 fragment Library_user on User {
+  name
   recordFilters(statusType: $statusTypeFilter, categoryId: $categoryIdFilter) {
+    totalCount
+    filteredCount
     ...LibraryFilter_recordFilters
   }
 }

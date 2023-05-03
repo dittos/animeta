@@ -113,11 +113,8 @@ function LibraryItem({ record }: { record: RecordDTO }) {
 }
 
 type LibraryProps = {
-  user: UserDTO;
-  count: number;
   query: NormalizedUserRouteQuery;
   records: RecordDTO[];
-  filteredCount: number;
   categoryList: CategoryDTO[];
   canEdit: boolean;
   onAddRecord(): any;
@@ -133,8 +130,6 @@ class Library extends React.Component<LibraryProps> {
   render() {
     const { orderBy } = this.props.query;
     const {
-      count,
-      filteredCount,
       records,
       categoryList,
     } = this.props;
@@ -146,6 +141,8 @@ class Library extends React.Component<LibraryProps> {
     } else if (orderBy === RecordOrder.Rating) {
       groups = groupRecordsByRating(records);
     }
+    const filters = this.props.gqlUser.recordFilters;
+    const { totalCount, filteredCount } = filters;
     return (
       <Grid.Row className={Styles.library}>
         <Grid.Column size={3} pull="left">
@@ -179,7 +176,7 @@ class Library extends React.Component<LibraryProps> {
             className={Styles.mobileFilterToggle}
             onClick={this._toggleMobileFilter}
           >
-            {count !== filteredCount ? '필터 (사용중)' : '필터'}{' '}
+            {totalCount !== filteredCount ? '필터 (사용중)' : '필터'}{' '}
             <FontAwesomeIcon
               icon={
                 this.state.mobileFilterVisible
@@ -229,7 +226,7 @@ class Library extends React.Component<LibraryProps> {
           <div className={this.state.mobileFilterVisible ? '' : 'hide-mobile'}>
             <LibraryFilter
               query={this.props.query}
-              filters={this.props.gqlUser.recordFilters}
+              filters={filters}
               categoryList={categoryList}
               canEdit={this.props.canEdit}
               getLinkParams={this._getLinkParams}
@@ -237,7 +234,7 @@ class Library extends React.Component<LibraryProps> {
           </div>
         </Grid.Column>
         <Grid.Column size={9} pull="left">
-          {this.props.count === 0 ? (
+          {totalCount === 0 ? (
             <div className={Styles.empty}>
               <h1>아직 기록이 하나도 없네요.</h1>
               {this.props.canEdit && (
@@ -281,7 +278,7 @@ class Library extends React.Component<LibraryProps> {
   }
 
   _getLinkParams = (updates: Partial<NormalizedUserRouteQuery>) => {
-    const basePath = `/users/${encodeURIComponent(this.props.user.name)}/`;
+    const basePath = `/users/${encodeURIComponent(this.props.gqlUser.name!)}/`;
     return {
       to: basePath,
       queryParams: serializeUserRouteQuery({ ...this.props.query, ...updates }),
