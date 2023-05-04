@@ -1,5 +1,11 @@
 query UserHistoryRoute($username: String!) {
-  gqlUser: userByName(name: $username) {
+  currentUser {
+    ...UserLayout_currentUser
+  }
+  user: userByName(name: $username) {
+    id
+    name
+    ...UserLayout_user
     posts(count: 32) {
       ...UserHistoryRoute_postConnection
     }

@@ -1,25 +1,22 @@
 import { RouteComponentProps, RouteHandler } from '../routes';
 import React from 'react';
-import { User as UserLayout } from '../layouts';
-import { RecordDTO, UserDTO } from '../../../shared/types';
+import { GqlUser as UserLayout } from '../layouts';
+import { RecordDTO } from '../../../shared/types';
 import Library from '../ui/Library';
 import { UserRouteDocument, UserRouteQuery } from './__generated__/User.graphql';
 import { NormalizedUserRouteQuery, normalizeUserRouteQuery } from '../UserRouteUtils';
-import { UserLayoutPropsData } from '../ui/UserLayout';
+import { UserLayoutPropsData } from '../ui/GqlUserLayout';
 
 type UserRouteData = UserLayoutPropsData & UserRouteQuery & {
-  currentUser: UserDTO | null;
-  user: UserDTO;
   query: NormalizedUserRouteQuery;
   records: RecordDTO[];
 };
 
 function User({ data, controller }: RouteComponentProps<UserRouteData>) {
-  const { currentUser, user, query, records, gqlUser } = data;
-  const canEdit = currentUser ? currentUser.id === user.id : false;
+  const { query, records, user } = data;
 
   function addRecord() {
-    const basePath = `/users/${encodeURIComponent(user.name)}/`;
+    const basePath = `/users/${encodeURIComponent(user.name!)}/`;
     controller!.load({ path: basePath, query: {} });
   }
 
@@ -27,9 +24,8 @@ function User({ data, controller }: RouteComponentProps<UserRouteData>) {
     <Library
       query={query}
       records={records}
-      canEdit={canEdit}
       onAddRecord={addRecord}
-      gqlUser={gqlUser!}
+      gqlUser={user}
     />
   );
 }
@@ -41,15 +37,7 @@ const routeHandler: RouteHandler<UserRouteData> = {
     const { username } = params;
     const { type, category, sort } = query;
     const normalizedQuery = normalizeUserRouteQuery(query);
-    const [currentUser, user, records, data] = await Promise.all([
-      loader.getCurrentUser({
-        options: {},
-      }),
-      loader.callV4<UserDTO>(`/users/${encodeURIComponent(username)}`, {
-        options: {
-          stats: true,
-        },
-      }),
+    const [records, data] = await Promise.all([
       loader.callV4<RecordDTO[]>(`/users/${encodeURIComponent(username)}/records`, {
         sort,
         status_type: type,
@@ -64,17 +52,20 @@ const routeHandler: RouteHandler<UserRouteData> = {
         categoryIdFilter: normalizedQuery.categoryId,
       })
     ]);
+    const user = data.user;
+    if (!user) {
+      // TODO: 404
+    }
     return {
-      currentUser,
-      user,
       records,
       query: normalizedQuery,
       ...data,
+      user: user!,
     };
   },
 
   renderTitle({ user }) {
-    return `${user.name} 사용자`;
+    return `${user.name!} 사용자`;
   },
 };
 export default routeHandler;

@@ -302,6 +302,7 @@ export type User = Node & {
   __typename?: 'User';
   categories: Array<Category>;
   id: Scalars['ID'];
+  isCurrentUser: Scalars['Boolean'];
   isTwitterConnected: Maybe<Scalars['Boolean']>;
   joinedAt: Maybe<Scalars['GraphQLTimestamp']>;
   name: Maybe<Scalars['String']>;

@@ -3,7 +3,11 @@ query UserRoute(
   $statusTypeFilter: StatusType,
   $categoryIdFilter: ID
 ) {
-  gqlUser: userByName(name: $username) {
+  currentUser {
+    ...UserLayout_currentUser
+  }
+  user: userByName(name: $username) {
+    ...UserLayout_user
     ...Library_user
   }
 }

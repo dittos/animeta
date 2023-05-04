@@ -1,4 +1,10 @@
 query UserTableRoute($period: String!, $username: String!, $withRecommendations: Boolean!) {
+  currentUser {
+    ...UserLayout_currentUser
+  }
+  user: userByName(name: $username) {
+    ...UserLayout_user
+  }
   tablePeriod(period: $period) {
     period
     year

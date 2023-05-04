@@ -1,3 +1,10 @@
+query AddRecordRoute {
+  currentUser {
+    ...UserLayout_currentUser
+    ...UserLayout_user
+  }
+}
+
 mutation AddRecord_createRecord($input: CreateRecordInput!) {
   createRecord(input: $input) {
     record {

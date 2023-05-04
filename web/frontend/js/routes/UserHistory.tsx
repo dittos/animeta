@@ -1,18 +1,15 @@
 import { RouteComponentProps, RouteHandler } from '../routes';
 import React, { useState } from 'react';
-import { User } from '../layouts';
-import { UserDTO } from '../../../shared/types_generated';
+import { GqlUser as User } from '../layouts';
 import * as Layout from '../ui/Layout';
 import { LoadMore } from '../ui/LoadMore';
 import { Post } from '../ui/Post';
 import Styles from './UserHistory.less';
-import { UserLayoutPropsData } from '../ui/UserLayout';
+import { UserLayoutPropsData } from '../ui/GqlUserLayout';
 import { UserHistoryRouteDocument, UserHistoryRouteQuery, UserHistoryRoute_MorePostsDocument } from './__generated__/UserHistory.graphql';
 import { Post_PostFragment } from '../ui/__generated__/Post.graphql';
 
-type UserHistoryRouteData = UserLayoutPropsData & UserHistoryRouteQuery & {
-  user: UserDTO;
-};
+type UserHistoryRouteData = UserLayoutPropsData & UserHistoryRouteQuery;
 
 function getDateHeader(post: Post_PostFragment) {
   if (!post.updatedAt) {
@@ -25,7 +22,7 @@ function getDateHeader(post: Post_PostFragment) {
 function UserHistory({ data, writeData, loader }: RouteComponentProps<UserHistoryRouteData>) {
   const [isLoading, setIsLoading] = useState(false)
 
-  const postConnection = data.gqlUser!.posts
+  const postConnection = data.user!.posts
   const posts = postConnection.nodes
 
   var groups: { key: string; items: Post_PostFragment[]; }[] = [];
@@ -50,12 +47,12 @@ function UserHistory({ data, writeData, loader }: RouteComponentProps<UserHistor
   async function _loadMore() {
     setIsLoading(true)
     const result = await loader.graphql(UserHistoryRoute_MorePostsDocument, {
-      userId: '' + data.user.id,
+      userId: data.user.id,
       beforeId: posts?.length ? posts[posts.length - 1]?.id : null,
     })
     writeData(data => {
-      data.gqlUser!.posts.nodes = data.gqlUser!.posts.nodes.concat(result.user!.posts!.nodes);
-      data.gqlUser!.posts.hasMore = result.user!.posts!.hasMore
+      data.user!.posts.nodes = data.user!.posts.nodes.concat(result.user!.posts!.nodes);
+      data.user!.posts.hasMore = result.user!.posts!.hasMore
     });
     setIsLoading(false)
   }
@@ -82,21 +79,13 @@ const routeHandler: RouteHandler<UserHistoryRouteData> = {
 
   async load({ loader, params }) {
     const { username } = params;
-    const [currentUser, user, data] = await Promise.all([
-      loader.getCurrentUser({
-        options: {},
-      }),
-      loader.callV4(`/users/${encodeURIComponent(username)}`, {
-        options: {
-          stats: true,
-        },
-      }),
-      loader.graphql(UserHistoryRouteDocument, {username}),
-    ]);
+    const {user, ...data} = await loader.graphql(UserHistoryRouteDocument, {username});
+    if (!user) {
+      // TODO: 404
+    }
     return {
       ...data,
-      currentUser,
-      user,
+      user: user!,
     };
   },
 

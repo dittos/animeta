@@ -115,7 +115,6 @@ function LibraryItem({ record }: { record: RecordDTO }) {
 type LibraryProps = {
   query: NormalizedUserRouteQuery;
   records: RecordDTO[];
-  canEdit: boolean;
   onAddRecord(): any;
   gqlUser: Library_UserFragment;
 };
@@ -141,10 +140,11 @@ class Library extends React.Component<LibraryProps> {
     }
     const filters = this.props.gqlUser.recordFilters;
     const { totalCount, filteredCount } = filters;
+    const canEdit = this.props.gqlUser.isCurrentUser;
     return (
       <Grid.Row className={Styles.library}>
         <Grid.Column size={3} pull="left">
-          {this.props.canEdit && (
+          {canEdit && (
             <div className={Styles.navButtonGroup}>
               <Link
                 to={ENABLE_NEW_ADD_RECORD ? "/records/add-new/" : "/records/add/"}
@@ -226,7 +226,7 @@ class Library extends React.Component<LibraryProps> {
               query={this.props.query}
               filters={filters}
               categoryList={this.props.gqlUser.categories}
-              canEdit={this.props.canEdit}
+              canEdit={canEdit}
               getLinkParams={this._getLinkParams}
             />
           </div>
@@ -235,7 +235,7 @@ class Library extends React.Component<LibraryProps> {
           {totalCount === 0 ? (
             <div className={Styles.empty}>
               <h1>아직 기록이 하나도 없네요.</h1>
-              {this.props.canEdit && (
+              {canEdit && (
                 <p>
                   <Link to={ENABLE_NEW_ADD_RECORD ? "/records/add-new/" : "/records/add/"} onClick={this._showAddModal}>
                     작품 추가

@@ -1,13 +1,13 @@
 import { RouteComponentProps, RouteHandler } from '../routes';
 import React, { useRef } from 'react';
-import { User as UserLayout } from '../layouts';
+import { GqlUser as UserLayout } from '../layouts';
 import * as Layout from '../ui/Layout';
 import * as Grid from '../ui/Grid';
 import Styles from '../../less/table-period.less';
 import { TableItem } from '../ui/TableItem';
 import { formatPeriod } from '../util';
 import { Link } from 'nuri';
-import { UserLayoutPropsData } from '../ui/UserLayout';
+import { UserLayoutPropsData } from '../ui/GqlUserLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { UserTableRouteDocument, UserTableRouteQuery } from './__generated__/UserTable.graphql';
@@ -65,29 +65,19 @@ const routeHandler: RouteHandler<UserTableRouteData> = {
 
   async load({ loader, params }) {
     const { username, period } = params;
-    const [currentUser, user, data] = await Promise.all([
-      loader.getCurrentUser({
-        options: {},
-      }),
-      loader.callV4(`/users/${encodeURIComponent(username)}`, {
-        options: {
-          stats: true,
-          categories: true,
-        },
-      }),
-      loader.graphql(UserTableRouteDocument, {
-        period,
-        username,
-        withRecommendations: true,
-      }),
-    ]);
-    const {tablePeriod} = data
+    const {user, tablePeriod, ...data} = await loader.graphql(UserTableRouteDocument, {
+      period,
+      username,
+      withRecommendations: true,
+    });
     if (!tablePeriod) throw new Error('not found')
+    if (!user) {
+      // TODO: 404
+    }
     return {
       ...data,
       tablePeriod,
-      currentUser,
-      user,
+      user: user!,
     };
   },
 

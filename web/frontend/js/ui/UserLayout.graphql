@@ -1,0 +1,12 @@
+fragment UserLayout_currentUser on User {
+  name
+}
+
+fragment UserLayout_user on User {
+  id
+  name
+  joinedAt
+  isCurrentUser
+  recordCount
+  postCount
+}

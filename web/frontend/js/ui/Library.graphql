@@ -1,5 +1,6 @@
 fragment Library_user on User {
   name
+  isCurrentUser
   categories {
     ...LibraryFilter_category
   }

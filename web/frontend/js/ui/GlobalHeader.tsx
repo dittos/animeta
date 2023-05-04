@@ -6,20 +6,20 @@ import SearchInput from './SearchInput';
 import { Dropdown } from './Dropdown';
 import Styles from './GlobalHeader.less';
 import { getStatusDisplay } from '../util';
-import { RecordDTO, UserDTO } from '../../../shared/types_generated';
+import { RecordDTO } from '../../../shared/types_generated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faHome, faSearch, faUser } from '@fortawesome/free-solid-svg-icons';
 import { getUserRecords } from '../API';
 
 class DropdownUserMenu extends React.Component<{
-  user: UserDTO;
+  username: string;
 }> {
   state = {
     records: null as RecordDTO[] | null,
   };
 
   componentDidMount() {
-    getUserRecords(this.props.user.name, {
+    getUserRecords(this.props.username, {
       sort: 'date',
       status_type: 'watching',
       limit: 10,
@@ -31,7 +31,7 @@ class DropdownUserMenu extends React.Component<{
   render() {
     return (
       <>
-        <Link to={`/users/${this.props.user.name}/`}>내 기록</Link>
+        <Link to={`/users/${this.props.username}/`}>내 기록</Link>
         <Link to="/settings/">설정</Link>
         {this.state.records && (
           <div>
@@ -45,7 +45,7 @@ class DropdownUserMenu extends React.Component<{
               </Link>
             ))}
             <Link
-              to={`/users/${this.props.user.name}/`}
+              to={`/users/${this.props.username}/`}
               className={Styles.quickRecordViewAll}
             >
               전체 보기
@@ -58,7 +58,7 @@ class DropdownUserMenu extends React.Component<{
 }
 
 export type GlobalHeaderProps = {
-  currentUser?: UserDTO | null;
+  currentUsername?: string | null;
   noNotice?: boolean;
   noHero?: boolean;
   activeMenu?: 'home' | 'search' | 'user' | null;
@@ -84,7 +84,7 @@ export class GlobalHeader extends React.Component<GlobalHeaderProps> {
 
   render() {
     const activeMenu = this.props.activeMenu;
-    const user = this.props.currentUser;
+    const username = this.props.currentUsername;
     const showNotice = this.state.showNotice && activeMenu !== 'search' && !this.props.noNotice;
     // const showNotice = false;
     return (
@@ -129,8 +129,8 @@ export class GlobalHeader extends React.Component<GlobalHeaderProps> {
               </Link>
               <Link
                 to={
-                  this.props.currentUser
-                    ? `/users/${this.props.currentUser.name}/`
+                  username
+                    ? `/users/${username}/`
                     : '/login/'
                 }
                 className={
@@ -153,29 +153,29 @@ export class GlobalHeader extends React.Component<GlobalHeaderProps> {
             <div className={Styles.search}>
               <SearchInput />
             </div>
-            {user && (
+            {username && (
               <Dropdown
                 containerClassName={`${Styles.accountMenu} hide-mobile`}
                 contentClassName={Styles.userMenu}
                 renderTrigger={({ toggle }) => (
                   <Link
-                    to={`/users/${user.name}/`}
+                    to={`/users/${username}/`}
                     className={Styles.userButton}
                     onClick={toggle}
                   >
                     <FontAwesomeIcon icon={faUser} />
-                    {user.name}
+                    {username}
                     <FontAwesomeIcon icon={faCaretDown} />
                   </Link>
                 )}
               >
-                <DropdownUserMenu user={user} />
+                <DropdownUserMenu username={username} />
               </Dropdown>
             )}
           </div>
         </Layout.CenteredFullWidth>
 
-        {!this.props.currentUser &&
+        {!this.props.currentUsername &&
           !this.props.noHero && (
             <div className={Styles.hero}>
               <Layout.CenteredFullWidth>
@@ -208,7 +208,7 @@ export class GlobalHeader extends React.Component<GlobalHeaderProps> {
   }
 
   _openLoginIfNeeded = (e: React.MouseEvent) => {
-    if (!this.props.currentUser) {
+    if (!this.props.currentUsername) {
       e.preventDefault();
       LoginDialog.open({ next: { redirectToUser: true } }); // FIXME
     }
