@@ -11,6 +11,7 @@ import { countRecordsForFilter, getUserRecords } from "src2/services/record";
 export const User: UserResolvers = {
   name: (user) => user.username,
   joinedAt: (user) => user.date_joined,
+  isCurrentUser: (user, _, { currentUser }) => user.id === currentUser?.id,
 
   recordCount: (user) => db.count(Record, { where: { user } }),
   postCount: (user) => db.count(History, { where: { user } }),

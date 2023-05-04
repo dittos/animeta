@@ -19,13 +19,15 @@ test('get without session', async () => {
 
 test('get', async () => {
   const user = await utils.factory.newUser()
-  const { data } = await utils.getHttpClientForUser(user).query<{currentUser: UserDtoFragment}>(gql`
+  const { data } = await utils.getHttpClientForUser(user).query<{currentUser: UserDtoFragment & {isCurrentUser: boolean}}>(gql`
     query {
       currentUser {
         ...UserDTO
+        isCurrentUser
       }
     }
     ${UserDtoFragmentDoc}
   `)
   expect(data.currentUser.id).toBe(user.id.toString())
+  expect(data.currentUser.isCurrentUser).toBeTruthy()
 })

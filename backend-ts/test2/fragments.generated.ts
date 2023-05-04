@@ -67,6 +67,7 @@ export type User = Node & {
   name: Maybe<Scalars['String']>;
   joinedAt: Maybe<Scalars['GraphQLTimestamp']>;
   isTwitterConnected: Maybe<Scalars['Boolean']>;
+  isCurrentUser: Scalars['Boolean'];
   categories: Array<Category>;
   recordCount: Maybe<Scalars['Int']>;
   postCount: Maybe<Scalars['Int']>;
@@ -203,8 +204,8 @@ export enum StatusType {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createRecord: CreateRecordResult;
   _empty: Maybe<Scalars['Boolean']>;
+  createRecord: CreateRecordResult;
 };
 
 

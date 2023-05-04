@@ -80,6 +80,7 @@ export type User = Node & {
   name?: Maybe<Scalars['String']>;
   joinedAt?: Maybe<Scalars['GraphQLTimestamp']>;
   isTwitterConnected?: Maybe<Scalars['Boolean']>;
+  isCurrentUser: Scalars['Boolean'];
   categories: Array<Category>;
   recordCount?: Maybe<Scalars['Int']>;
   postCount?: Maybe<Scalars['Int']>;
@@ -212,8 +213,8 @@ export type StatusType =
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createRecord: CreateRecordResult;
   _empty?: Maybe<Scalars['Boolean']>;
+  createRecord: CreateRecordResult;
 };
 
 
@@ -598,6 +599,7 @@ export type UserResolvers<ContextType = MercuriusContext, ParentType extends Res
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   joinedAt?: Resolver<Maybe<ResolversTypes['GraphQLTimestamp']>, ParentType, ContextType>;
   isTwitterConnected?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  isCurrentUser?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType>;
   recordCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   postCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -678,8 +680,8 @@ export type NodeResolvers<ContextType = MercuriusContext, ParentType extends Res
 };
 
 export type MutationResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  createRecord?: Resolver<ResolversTypes['CreateRecordResult'], ParentType, ContextType, RequireFields<MutationcreateRecordArgs, 'input'>>;
   _empty?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  createRecord?: Resolver<ResolversTypes['CreateRecordResult'], ParentType, ContextType, RequireFields<MutationcreateRecordArgs, 'input'>>;
 };
 
 export type CreateRecordResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['CreateRecordResult'] = ResolversParentTypes['CreateRecordResult']> = {
