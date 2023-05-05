@@ -1,27 +1,22 @@
 /* global confirm */
 import React from 'react';
-import { User } from '../layouts';
+import { GqlUser as User } from '../layouts';
 import { Sortable } from '../ui/Sortable';
 import { CenteredFullWidth } from '../ui/Layout';
-import {
-  renameCategory,
-  removeCategory,
-  addCategory,
-  updateCategoryOrder,
-} from '../API';
+import { graphql } from '../API';
 import Styles from './ManageCategory.less';
-import { CategoryDTO, UserDTO } from '../../../shared/types_generated';
 import { RouteComponentProps, RouteHandler } from '../routes';
-import { UserLayoutPropsData } from '../ui/UserLayout';
+import { UserLayoutPropsData } from '../ui/GqlUserLayout';
+import { ManageCategoryRouteDocument, ManageCategoryRouteQuery, ManageCategory_CategoryFragment, ManageCategory_CreateCategoryDocument, ManageCategory_DeleteCategoryDocument, ManageCategory_RenameCategoryDocument, ManageCategory_UpdateCategoryOrderDocument } from './__generated__/ManageCategory.graphql';
 
-type ManageCategoryRouteData = UserLayoutPropsData & {
-  currentUser: UserDTO;
-  categories: CategoryDTO[];
+type ManageCategoryRouteData = UserLayoutPropsData & ManageCategoryRouteQuery & {
+  currentUser: NonNullable<ManageCategoryRouteQuery['currentUser']>;
+  categories: ManageCategory_CategoryFragment[];
 };
 
 class CategoryItem extends React.Component<{
   isSorting: boolean;
-  category: CategoryDTO;
+  category: ManageCategory_CategoryFragment;
   onRename(name: string): Promise<void>;
   onRemove(): void;
 }> {
@@ -92,7 +87,7 @@ class CategoryItem extends React.Component<{
 class ManageCategory extends React.Component<RouteComponentProps<ManageCategoryRouteData>> {
   nameInput = React.createRef<HTMLInputElement>();
   state: {
-    sortingCategories: CategoryDTO[] | null;
+    sortingCategories: ManageCategory_CategoryFragment[] | null;
   } = {
     sortingCategories: null,
   };
@@ -139,7 +134,7 @@ class ManageCategory extends React.Component<RouteComponentProps<ManageCategoryR
     );
   }
 
-  _renderItem = (category: CategoryDTO) => {
+  _renderItem = (category: ManageCategory_CategoryFragment) => {
     const isSorting = this.state.sortingCategories != null;
     return (
       <CategoryItem
@@ -157,12 +152,12 @@ class ManageCategory extends React.Component<RouteComponentProps<ManageCategoryR
   };
 
   _endSorting = () => {
-    const categoryIDs = this.state.sortingCategories!.map(c => c.id);
-    updateCategoryOrder(categoryIDs).then(
+    const categoryIds = this.state.sortingCategories!.map(c => c.id);
+    graphql(ManageCategory_UpdateCategoryOrderDocument, {input: {categoryIds}}).then(
       result => {
         this.setState({ sortingCategories: null });
         this.props.writeData(data => {
-          data.categories = result.categories;
+          data.categories = result.updateCategoryOrder.categories;
         });
       }
     );
@@ -179,21 +174,21 @@ class ManageCategory extends React.Component<RouteComponentProps<ManageCategoryR
   _addCategory = (event: React.FormEvent) => {
     event.preventDefault();
     var input = this.nameInput.current!;
-    addCategory(input.value).then(result => {
+    graphql(ManageCategory_CreateCategoryDocument, {input: {name: input.value}}).then(result => {
       input.value = '';
       this.props.writeData(data => {
-        data.categories.push(result.category);
+        data.categories.push(result.createCategory.category);
       });
     });
   };
 
-  _removeCategory = (category: CategoryDTO) => {
+  _removeCategory = (category: ManageCategory_CategoryFragment) => {
     if (
       confirm(
         '분류를 삭제해도 기록은 삭제되지 않습니다.\n분류를 삭제하시려면 [확인]을 누르세요.'
       )
     ) {
-      removeCategory(category.id).then(() => {
+      graphql(ManageCategory_DeleteCategoryDocument, {input: {categoryId: category.id}}).then(() => {
         this.props.writeData(data => {
           data.categories = data.categories.filter(c => c.id !== category.id);
         });
@@ -201,8 +196,8 @@ class ManageCategory extends React.Component<RouteComponentProps<ManageCategoryR
     }
   };
 
-  _renameCategory = (category: CategoryDTO, name: string) => {
-    return renameCategory(category.id, name).then(() => {
+  _renameCategory = (category: ManageCategory_CategoryFragment, name: string) => {
+    return graphql(ManageCategory_RenameCategoryDocument, {input: {categoryId: category.id, name}}).then(() => {
       this.props.writeData(() => {
         category.name = name;
       });
@@ -214,17 +209,13 @@ const routeHandler: RouteHandler<ManageCategoryRouteData> = {
   component: User(ManageCategory),
 
   async load({ loader }) {
-    const currentUser = await loader.getCurrentUser({
-      options: {
-        stats: true,
-        categories: true,
-      },
-    });
+    const {currentUser, ...data} = await loader.graphql(ManageCategoryRouteDocument);
     // TODO: redirect to login page
     if (!currentUser) {
       throw new Error('Login required.');
     }
     return {
+      ...data,
       currentUser,
       user: currentUser, // for layout
       categories: currentUser.categories!,

@@ -1,0 +1,44 @@
+query ManageCategoryRoute {
+  currentUser {
+    ...UserLayout_currentUser
+    ...UserLayout_user
+    categories {
+      ...ManageCategory_category
+    }
+  }
+}
+
+fragment ManageCategory_category on Category {
+  id
+  name
+}
+
+mutation ManageCategory_createCategory($input: CreateCategoryInput!) {
+  createCategory(input: $input) {
+    category {
+      ...ManageCategory_category
+    }
+  }
+}
+
+mutation ManageCategory_renameCategory($input: RenameCategoryInput!) {
+  renameCategory(input: $input) {
+    category {
+      ...ManageCategory_category
+    }
+  }
+}
+
+mutation ManageCategory_deleteCategory($input: DeleteCategoryInput!) {
+  deleteCategory(input: $input) {
+    deleted
+  }
+}
+
+mutation ManageCategory_updateCategoryOrder($input: UpdateCategoryOrderInput!) {
+  updateCategoryOrder(input: $input) {
+    categories {
+      ...ManageCategory_category
+    }
+  }
+}

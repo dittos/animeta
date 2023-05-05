@@ -298,28 +298,6 @@ export function deletePost(id: number, recordOptions: RecordFetchOptions): Promi
   return postJSON('/api/v4/DeletePost', { id, recordOptions });
 }
 
-// Category
-
-export function renameCategory(id: number, name: string) {
-  return postJSON('/api/v4/UpdateCategory', { id, name });
-}
-
-export function removeCategory(id: number) {
-  return postJSON('/api/v4/DeleteCategory', { id });
-}
-
-// User Categories
-
-export function addCategory(name: string): Promise<{ category: CategoryDTO }> {
-  return postJSON('/api/v4/CreateCategory', {
-    name,
-  });
-}
-
-export function updateCategoryOrder(categoryIds: number[]): Promise<{ categories: CategoryDTO[] }> {
-  return postJSON('/api/v4/UpdateCategoryOrder', { categoryIds });
-}
-
 // User Records
 
 export function getUserRecords(username: string, params: {}): Promise<RecordDTO[]> {

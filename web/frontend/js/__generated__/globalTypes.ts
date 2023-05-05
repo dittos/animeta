@@ -20,6 +20,15 @@ export type Category = Node & {
   user: Maybe<User>;
 };
 
+export type CreateCategoryInput = {
+  name: Scalars['String'];
+};
+
+export type CreateCategoryResult = {
+  __typename?: 'CreateCategoryResult';
+  category: Category;
+};
+
 export type CreateRecordInput = {
   categoryId: InputMaybe<Scalars['ID']>;
   comment: Scalars['String'];
@@ -77,6 +86,16 @@ export const enum DatePrecision {
   YearMonth = 'YEAR_MONTH'
 };
 
+export type DeleteCategoryInput = {
+  categoryId: Scalars['ID'];
+};
+
+export type DeleteCategoryResult = {
+  __typename?: 'DeleteCategoryResult';
+  deleted: Scalars['Boolean'];
+  user: Maybe<User>;
+};
+
 export type Episode = {
   __typename?: 'Episode';
   number: Scalars['Int'];
@@ -88,12 +107,36 @@ export type Episode = {
 export type Mutation = {
   __typename?: 'Mutation';
   _empty: Maybe<Scalars['Boolean']>;
+  createCategory: CreateCategoryResult;
   createRecord: CreateRecordResult;
+  deleteCategory: DeleteCategoryResult;
+  renameCategory: RenameCategoryResult;
+  updateCategoryOrder: UpdateCategoryOrderResult;
+};
+
+
+export type MutationCreateCategoryArgs = {
+  input: CreateCategoryInput;
 };
 
 
 export type MutationCreateRecordArgs = {
   input: CreateRecordInput;
+};
+
+
+export type MutationDeleteCategoryArgs = {
+  input: DeleteCategoryInput;
+};
+
+
+export type MutationRenameCategoryArgs = {
+  input: RenameCategoryInput;
+};
+
+
+export type MutationUpdateCategoryOrderArgs = {
+  input: UpdateCategoryOrderInput;
 };
 
 export type Node = {
@@ -244,6 +287,16 @@ export const enum RecordOrder {
   Title = 'TITLE'
 };
 
+export type RenameCategoryInput = {
+  categoryId: Scalars['ID'];
+  name: Scalars['String'];
+};
+
+export type RenameCategoryResult = {
+  __typename?: 'RenameCategoryResult';
+  category: Category;
+};
+
 export type SearchWorksResult = {
   __typename?: 'SearchWorksResult';
   edges: Array<SearchWorksResultEdge>;
@@ -296,6 +349,15 @@ export type TablePeriodItem = {
   record: Maybe<Record>;
   title: Scalars['String'];
   work: Work;
+};
+
+export type UpdateCategoryOrderInput = {
+  categoryIds: Array<Scalars['ID']>;
+};
+
+export type UpdateCategoryOrderResult = {
+  __typename?: 'UpdateCategoryOrderResult';
+  categories: Array<Category>;
 };
 
 export type User = Node & {
