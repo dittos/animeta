@@ -1,0 +1,11 @@
+extend type Mutation {
+  createCategory(input: CreateCategoryInput!): CreateCategoryResult!
+}
+
+input CreateCategoryInput {
+  name: String!
+}
+
+type CreateCategoryResult {
+  category: Category!
+}

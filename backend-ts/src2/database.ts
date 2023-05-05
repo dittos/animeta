@@ -19,3 +19,7 @@ export const db = new Proxy<EntityManager>({} as any, {
     }
   }
 })
+
+export function runWithDb<T>(em: EntityManager, fn: () => Promise<T>) {
+  return transactionalEntityManager.run(em, fn)
+}

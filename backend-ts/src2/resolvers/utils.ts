@@ -22,3 +22,7 @@ export function requireUser(ctx: MercuriusContext): User {
   }
   return ctx.currentUser
 }
+
+export function permissionDeniedException() {
+  return new mercurius.ErrorWithProps('Permission denied.')
+}

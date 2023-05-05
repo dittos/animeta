@@ -59,3 +59,8 @@ fragment RecordDTO on Record {
   rating
   updatedAt
 }
+
+fragment CategoryDTO on Category {
+  id
+  name
+}

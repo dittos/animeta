@@ -1,0 +1,12 @@
+extend type Mutation {
+  deleteCategory(input: DeleteCategoryInput!): DeleteCategoryResult!
+}
+
+input DeleteCategoryInput {
+  categoryId: ID!
+}
+
+type DeleteCategoryResult {
+  deleted: Boolean!
+  user: User
+}
