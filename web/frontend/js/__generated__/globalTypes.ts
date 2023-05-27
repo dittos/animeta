@@ -171,6 +171,7 @@ export type Query = {
   currentTablePeriod: TablePeriod;
   currentUser: Maybe<User>;
   post: Maybe<Post>;
+  record: Maybe<Record>;
   searchWorks: Maybe<SearchWorksResult>;
   tablePeriod: Maybe<TablePeriod>;
   tablePeriods: Array<TablePeriod>;
@@ -189,6 +190,11 @@ export type QueryCuratedListArgs = {
 
 
 export type QueryPostArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryRecordArgs = {
   id: Scalars['ID'];
 };
 

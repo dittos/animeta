@@ -9,4 +9,6 @@ type Query {
   workByTitle(title: String!): Work
 
   post(id: ID!): Post
+
+  record(id: ID!): Record
 }
