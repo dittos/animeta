@@ -1,8 +1,7 @@
 import React, { useRef, useState } from "react";
-import { UserDTO } from "../../../shared/types_generated";
-import { User } from "../layouts";
+import { GqlUser as User } from "../layouts";
 import { RouteComponentProps, RouteHandler } from "../routes";
-import { UserLayoutPropsData } from "../ui/UserLayout";
+import { UserLayoutPropsData } from "../ui/GqlUserLayout";
 import Styles from "./ManageRating.module.less";
 import * as Grid from "../ui/Grid";
 import { Rating } from "../ui/Rating";
@@ -12,13 +11,14 @@ import { AutoLoadMore } from "../ui/LoadMore";
 import { updateRecordRating } from "../API";
 import { Link } from "nuri";
 import useIntersectionObserver from "../ui/useIntersectionObserver";
+import { UserLayout_CommonPrivateDocument } from "../ui/__generated__/UserLayout.graphql";
 
 type ClientUnratedRecord = UnratedRecord & {
   rating?: number;
 };
 
 type ManageRatingRouteData = UserLayoutPropsData & {
-  currentUser: UserDTO;
+  currentUser: NonNullable<UserLayoutPropsData['currentUser']>;
   ratingSummaries: RatingSummary[];
   unratedRecordCount: number;
   unratedRecords: {
@@ -219,12 +219,7 @@ const routeHandler: RouteHandler<ManageRatingRouteData> = {
   component: User(ManageRating),
 
   async load({ loader }) {
-    const currentUser = await loader.getCurrentUser({
-      options: {
-        stats: true,
-        categories: true,
-      },
-    });
+    const {currentUser, user, ...layoutData} = await loader.graphql(UserLayout_CommonPrivateDocument);
     // TODO: redirect to login page
     if (!currentUser) {
       throw new Error("Login required.");
@@ -237,7 +232,8 @@ const routeHandler: RouteHandler<ManageRatingRouteData> = {
     ]);
     return {
       currentUser,
-      user: currentUser, // for layout
+      user: user!, // for layout
+      ...layoutData,
       ...data,
       unratedRecords,
     };
