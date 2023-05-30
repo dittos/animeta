@@ -64,6 +64,8 @@ type AddRecordState = {
   currentUser: UserDTO | null;
 };
 
+const PUBLISH_TWITTER_DISABLED_MESSAGE = "트위터 API 유료화로 공유 기능 제공을 중단합니다.";
+
 class AddRecord<T> extends React.Component<AddRecordProps<T>, AddRecordState> {
   private _titleEl: HTMLInputElement | null = null;
 
@@ -154,8 +156,8 @@ class AddRecord<T> extends React.Component<AddRecordProps<T>, AddRecordState> {
           </form>
           <div className={Styles.shareOptions}>
             <label
-              title="트위터 API 유료화로 공유 기능 제공을 중단합니다."
-              onClick={e => alert((e.target as any).title)}
+              title={PUBLISH_TWITTER_DISABLED_MESSAGE}
+              onClick={e => alert(PUBLISH_TWITTER_DISABLED_MESSAGE)}
             >
               <input
                 type="checkbox"

@@ -22,6 +22,8 @@ export type PostComposerResult = {
   publishTwitter: boolean;
 };
 
+const PUBLISH_TWITTER_DISABLED_MESSAGE = "트위터 API 유료화로 공유 기능 제공을 중단합니다.";
+
 export class PostComposer extends React.Component<PostComposerProps> {
   private _submitting: boolean;
 
@@ -81,8 +83,8 @@ export class PostComposer extends React.Component<PostComposerProps> {
           </label>
           <label
             className={Styles.disabledLabel}
-            title="트위터 API 유료화로 공유 기능 제공을 중단합니다."
-            onClick={e => alert((e.target as any).title)}
+            title={PUBLISH_TWITTER_DISABLED_MESSAGE}
+            onClick={e => alert(PUBLISH_TWITTER_DISABLED_MESSAGE)}
           >
             <input
               type="checkbox"
