@@ -11,7 +11,7 @@ import Styles from './AddRecordDialog.less';
 import { getLastPublishTwitter, setLastPublishTwitter } from '../Prefs';
 import { CategoryDTO, UserDTO, StatusType } from '../../../shared/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { faTimesCircle, faWarning } from '@fortawesome/free-solid-svg-icons';
 import { Rating } from './Rating';
 import { CreateRecordInput, StatusType as GqlStatusType } from '../__generated__/globalTypes';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
@@ -153,15 +153,16 @@ class AddRecord<T> extends React.Component<AddRecordProps<T>, AddRecordState> {
             </div>
           </form>
           <div className={Styles.shareOptions}>
-            <label>
+            <label
+              title="트위터 API 유료화로 공유 기능 제공을 중단합니다."
+              onClick={e => alert((e.target as any).title)}
+            >
               <input
                 type="checkbox"
-                checked={
-                  currentUser.is_twitter_connected === true && this.state.publishTwitter
-                }
-                onChange={this._onPublishTwitterChange}
+                disabled
               />
               {' 트위터에 공유'}
+              <FontAwesomeIcon icon={faWarning} />
             </label>
           </div>
           <button
@@ -179,7 +180,6 @@ class AddRecord<T> extends React.Component<AddRecordProps<T>, AddRecordState> {
 
   componentDidMount() {
     this._load();
-    this.setState({ publishTwitter: getLastPublishTwitter() });
   }
 
   _onRatingChange = (event: any, rating: number | null) => {

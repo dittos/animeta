@@ -2,9 +2,10 @@ import * as React from 'react';
 import * as util from '../util';
 import { StatusInput } from './StatusInput';
 import Styles from './PostComposer.less';
-import { getLastPublishTwitter } from '../Prefs';
 import { RecordDTO, UserDTO } from '../../../shared/types_generated';
 import { LegacyStatusType } from '../../../shared/types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWarning } from '@fortawesome/free-solid-svg-icons';
 
 export type PostComposerProps = {
   record: RecordDTO;
@@ -32,12 +33,8 @@ export class PostComposer extends React.Component<PostComposerProps> {
     containsSpoiler: false,
   };
 
-  componentDidMount() {
-    this.setState({ publishTwitter: getLastPublishTwitter() });
-  }
-
   render() {
-    const { record, currentUser } = this.props;
+    const { record } = this.props;
     var currentStatus;
     if (record.status) {
       currentStatus = (
@@ -82,15 +79,17 @@ export class PostComposer extends React.Component<PostComposerProps> {
             />
             {' 내용 누설 포함'}
           </label>
-          <label>
+          <label
+            className={Styles.disabledLabel}
+            title="트위터 API 유료화로 공유 기능 제공을 중단합니다."
+            onClick={e => alert((e.target as any).title)}
+          >
             <input
               type="checkbox"
-              checked={
-                currentUser.is_twitter_connected ? this.state.publishTwitter : false
-              }
-              onChange={this._onPublishTwitterChange}
+              disabled
             />
             {' 트위터에 공유'}
+            <FontAwesomeIcon icon={faWarning} />
           </label>
           <button type="button" onClick={this._onSubmit}>
             기록 추가
@@ -110,16 +109,6 @@ export class PostComposer extends React.Component<PostComposerProps> {
 
   _onContainsSpoilerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ containsSpoiler: event.target.checked });
-  };
-
-  _onPublishTwitterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!this.props.currentUser.is_twitter_connected) {
-      this.props.onTwitterConnect().then(() => {
-        this.setState({ publishTwitter: true });
-      });
-    } else {
-      this.setState({ publishTwitter: event.target.checked });
-    }
   };
 
   _onSubmit = (event: React.MouseEvent) => {
