@@ -7,9 +7,9 @@ import { db } from "src2/database";
 import { getRecordByUserAndWork } from "src2/services/record";
 
 export const Periods = {
-  current: Period.parseOrThrow("2023Q2"),
+  current: Period.parseOrThrow("2023Q3"),
   min: Period.parseOrThrow("2014Q2"),
-  upcoming: Period.parseOrThrow("2023Q2"),
+  upcoming: Period.parseOrThrow("2023Q3"),
 }
 
 export function getValidPeriods(): Period[] {
