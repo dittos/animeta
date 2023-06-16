@@ -66,7 +66,7 @@ export type GlobalHeaderProps = {
 
 export class GlobalHeader extends React.Component<GlobalHeaderProps> {
   static LAST_NOTICE_CLICKED = 'lastNoticeClicked';
-  static noticeId = '2023Q2';
+  static noticeId = '2023Q3';
 
   state = {
     showNotice: false,
@@ -123,7 +123,7 @@ export class GlobalHeader extends React.Component<GlobalHeaderProps> {
                 <span className={Styles.globalMenuItemText}>작품 찾기</span>
                 {showNotice && (
                   <span className={Styles.globalMenuItemPopover}>
-                    2023년 4월 신작 업데이트
+                    2023년 7월 신작 업데이트
                   </span>
                 )}
               </Link>
