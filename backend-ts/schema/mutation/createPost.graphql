@@ -1,0 +1,17 @@
+extend type Mutation {
+  createPost(input: CreatePostInput!): CreatePostResult!
+}
+
+input CreatePostInput {
+  recordId: ID!
+  status: String!
+  statusType: StatusType!
+  comment: String!
+  containsSpoiler: Boolean
+  publishTwitter: Boolean
+  rating: Float
+}
+
+type CreatePostResult {
+  post: Post!
+}
