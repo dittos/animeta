@@ -73,10 +73,7 @@ export class RecordService {
   }
 
   async updateRecordWorkAndTitle(em: EntityManager, record: Record, work: Work, title: string): Promise<void> {
-    record.work_id = work.id
-    record.title = title
-    await em.save(record)
-    await em.update(History, {record}, {work_id: work.id})
+    return updateRecordWorkAndTitle(em, record, work, title)
   }
 
   async updateCategory(record: Record, category: Category | null): Promise<void> {
@@ -175,4 +172,11 @@ export async function addRecordHistory(em: EntityManager, record: Record, params
 
 function isValidRating(rating: number) {
   return [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].includes(rating)
+}
+
+export async function updateRecordWorkAndTitle(em: EntityManager, record: Record, work: Work, title: string) {
+  record.work_id = work.id
+  record.title = title
+  await em.save(record)
+  await em.update(History, {record}, {work_id: work.id})
 }
