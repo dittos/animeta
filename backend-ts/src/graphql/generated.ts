@@ -213,14 +213,15 @@ export type StatusType =
 
 export type Mutation = {
   __typename?: 'Mutation';
+  _empty?: Maybe<Scalars['Boolean']>;
   createCategory: CreateCategoryResult;
   createRecord: CreateRecordResult;
-  _empty?: Maybe<Scalars['Boolean']>;
   deleteCategory: DeleteCategoryResult;
   renameCategory: RenameCategoryResult;
-  updateRecordCategoryId: UpdateRecordCategoryIdResult;
-  updateRecordTitle: UpdateRecordTitleResult;
   updateCategoryOrder: UpdateCategoryOrderResult;
+  updateRecordCategoryId: UpdateRecordCategoryIdResult;
+  updateRecordRating: UpdateRecordRatingResult;
+  updateRecordTitle: UpdateRecordTitleResult;
 };
 
 
@@ -244,18 +245,23 @@ export type MutationrenameCategoryArgs = {
 };
 
 
+export type MutationupdateCategoryOrderArgs = {
+  input: UpdateCategoryOrderInput;
+};
+
+
 export type MutationupdateRecordCategoryIdArgs = {
   input: UpdateRecordCategoryIdInput;
 };
 
 
-export type MutationupdateRecordTitleArgs = {
-  input: UpdateRecordTitleInput;
+export type MutationupdateRecordRatingArgs = {
+  input: UpdateRecordRatingInput;
 };
 
 
-export type MutationupdateCategoryOrderArgs = {
-  input: UpdateCategoryOrderInput;
+export type MutationupdateRecordTitleArgs = {
+  input: UpdateRecordTitleInput;
 };
 
 export type CreateCategoryInput = {
@@ -303,6 +309,15 @@ export type RenameCategoryResult = {
   category: Category;
 };
 
+export type UpdateCategoryOrderInput = {
+  categoryIds: Array<Scalars['ID']>;
+};
+
+export type UpdateCategoryOrderResult = {
+  __typename?: 'UpdateCategoryOrderResult';
+  categories: Array<Category>;
+};
+
 export type UpdateRecordCategoryIdInput = {
   recordId: Scalars['ID'];
   categoryId?: InputMaybe<Scalars['ID']>;
@@ -313,23 +328,14 @@ export type UpdateRecordCategoryIdResult = {
   record: Record;
 };
 
-export type UpdateRecordTitleInput = {
+export type UpdateRecordRatingInput = {
   recordId: Scalars['ID'];
-  title: Scalars['String'];
+  rating?: InputMaybe<Scalars['Float']>;
 };
 
-export type UpdateRecordTitleResult = {
-  __typename?: 'UpdateRecordTitleResult';
+export type UpdateRecordRatingResult = {
+  __typename?: 'UpdateRecordRatingResult';
   record: Record;
-};
-
-export type UpdateCategoryOrderInput = {
-  categoryIds: Array<Scalars['ID']>;
-};
-
-export type UpdateCategoryOrderResult = {
-  __typename?: 'UpdateCategoryOrderResult';
-  categories: Array<Category>;
 };
 
 export type Query = {
@@ -345,10 +351,10 @@ export type Query = {
   curatedLists: Array<CuratedList>;
   curatedList?: Maybe<CuratedList>;
   searchWorks?: Maybe<SearchWorksResult>;
-  weeklyWorksChart: Array<WorksChartItem>;
   tablePeriod?: Maybe<TablePeriod>;
   currentTablePeriod: TablePeriod;
   tablePeriods: Array<TablePeriod>;
+  weeklyWorksChart: Array<WorksChartItem>;
 };
 
 
@@ -398,13 +404,23 @@ export type QuerysearchWorksArgs = {
 };
 
 
+export type QuerytablePeriodArgs = {
+  period: Scalars['String'];
+};
+
+
 export type QueryweeklyWorksChartArgs = {
   limit: Scalars['Int'];
 };
 
+export type UpdateRecordTitleInput = {
+  recordId: Scalars['ID'];
+  title: Scalars['String'];
+};
 
-export type QuerytablePeriodArgs = {
-  period: Scalars['String'];
+export type UpdateRecordTitleResult = {
+  __typename?: 'UpdateRecordTitleResult';
+  record: Record;
 };
 
 export type CuratedList = {
@@ -434,14 +450,6 @@ export type SearchWorksResultEdge = {
   __typename?: 'SearchWorksResultEdge';
   node: Work;
   recordCount?: Maybe<Scalars['Int']>;
-};
-
-export type WorksChartItem = {
-  __typename?: 'WorksChartItem';
-  rank: Scalars['Int'];
-  work: Work;
-  diff?: Maybe<Scalars['Int']>;
-  sign?: Maybe<Scalars['Int']>;
 };
 
 export type TablePeriod = {
@@ -501,6 +509,14 @@ export type CreditType =
   | 'SERIES_COMPOSITION'
   | 'CHARACTER_DESIGN'
   | 'MUSIC';
+
+export type WorksChartItem = {
+  __typename?: 'WorksChartItem';
+  rank: Scalars['Int'];
+  work: Work;
+  diff?: Maybe<Scalars['Int']>;
+  sign?: Maybe<Scalars['Int']>;
+};
 
 
 
@@ -597,19 +613,20 @@ export type ResolversTypes = {
   DeleteCategoryResult: ResolverTypeWrapper<Omit<DeleteCategoryResult, 'user'> & { user?: Maybe<ResolversTypes['User']> }>;
   RenameCategoryInput: RenameCategoryInput;
   RenameCategoryResult: ResolverTypeWrapper<Omit<RenameCategoryResult, 'category'> & { category: ResolversTypes['Category'] }>;
-  UpdateRecordCategoryIdInput: UpdateRecordCategoryIdInput;
-  UpdateRecordCategoryIdResult: ResolverTypeWrapper<Omit<UpdateRecordCategoryIdResult, 'record'> & { record: ResolversTypes['Record'] }>;
-  UpdateRecordTitleInput: UpdateRecordTitleInput;
-  UpdateRecordTitleResult: ResolverTypeWrapper<Omit<UpdateRecordTitleResult, 'record'> & { record: ResolversTypes['Record'] }>;
   UpdateCategoryOrderInput: UpdateCategoryOrderInput;
   UpdateCategoryOrderResult: ResolverTypeWrapper<Omit<UpdateCategoryOrderResult, 'categories'> & { categories: Array<ResolversTypes['Category']> }>;
+  UpdateRecordCategoryIdInput: UpdateRecordCategoryIdInput;
+  UpdateRecordCategoryIdResult: ResolverTypeWrapper<Omit<UpdateRecordCategoryIdResult, 'record'> & { record: ResolversTypes['Record'] }>;
+  UpdateRecordRatingInput: UpdateRecordRatingInput;
+  UpdateRecordRatingResult: ResolverTypeWrapper<Omit<UpdateRecordRatingResult, 'record'> & { record: ResolversTypes['Record'] }>;
   Query: ResolverTypeWrapper<{}>;
+  UpdateRecordTitleInput: UpdateRecordTitleInput;
+  UpdateRecordTitleResult: ResolverTypeWrapper<Omit<UpdateRecordTitleResult, 'record'> & { record: ResolversTypes['Record'] }>;
   CuratedList: ResolverTypeWrapper<CuratedListMetadataModel>;
   CuratedListWorkConnection: ResolverTypeWrapper<Omit<CuratedListWorkConnection, 'edges'> & { edges?: Maybe<Array<Maybe<ResolversTypes['CuratedListWorkEdge']>>> }>;
   CuratedListWorkEdge: ResolverTypeWrapper<Omit<CuratedListWorkEdge, 'node'> & { node?: Maybe<ResolversTypes['Work']> }>;
   SearchWorksResult: ResolverTypeWrapper<Omit<SearchWorksResult, 'edges'> & { edges: Array<ResolversTypes['SearchWorksResultEdge']> }>;
   SearchWorksResultEdge: ResolverTypeWrapper<Omit<SearchWorksResultEdge, 'node'> & { node: ResolversTypes['Work'] }>;
-  WorksChartItem: ResolverTypeWrapper<Omit<WorksChartItem, 'work'> & { work: ResolversTypes['Work'] }>;
   TablePeriod: ResolverTypeWrapper<PeriodModel>;
   TablePeriodItem: ResolverTypeWrapper<Omit<TablePeriodItem, 'work' | 'record' | 'recommendations'> & { work: ResolversTypes['Work'], record?: Maybe<ResolversTypes['Record']>, recommendations?: Maybe<Array<ResolversTypes['Recommendation']>> }>;
   Recommendation: ResolversTypes['RecommendationByCredit'];
@@ -617,6 +634,7 @@ export type ResolversTypes = {
   Credit: ResolverTypeWrapper<Credit>;
   WorkCredit: ResolverTypeWrapper<WorkCredit>;
   CreditType: CreditType;
+  WorksChartItem: ResolverTypeWrapper<Omit<WorksChartItem, 'work'> & { work: ResolversTypes['Work'] }>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -650,25 +668,27 @@ export type ResolversParentTypes = {
   DeleteCategoryResult: Omit<DeleteCategoryResult, 'user'> & { user?: Maybe<ResolversParentTypes['User']> };
   RenameCategoryInput: RenameCategoryInput;
   RenameCategoryResult: Omit<RenameCategoryResult, 'category'> & { category: ResolversParentTypes['Category'] };
-  UpdateRecordCategoryIdInput: UpdateRecordCategoryIdInput;
-  UpdateRecordCategoryIdResult: Omit<UpdateRecordCategoryIdResult, 'record'> & { record: ResolversParentTypes['Record'] };
-  UpdateRecordTitleInput: UpdateRecordTitleInput;
-  UpdateRecordTitleResult: Omit<UpdateRecordTitleResult, 'record'> & { record: ResolversParentTypes['Record'] };
   UpdateCategoryOrderInput: UpdateCategoryOrderInput;
   UpdateCategoryOrderResult: Omit<UpdateCategoryOrderResult, 'categories'> & { categories: Array<ResolversParentTypes['Category']> };
+  UpdateRecordCategoryIdInput: UpdateRecordCategoryIdInput;
+  UpdateRecordCategoryIdResult: Omit<UpdateRecordCategoryIdResult, 'record'> & { record: ResolversParentTypes['Record'] };
+  UpdateRecordRatingInput: UpdateRecordRatingInput;
+  UpdateRecordRatingResult: Omit<UpdateRecordRatingResult, 'record'> & { record: ResolversParentTypes['Record'] };
   Query: {};
+  UpdateRecordTitleInput: UpdateRecordTitleInput;
+  UpdateRecordTitleResult: Omit<UpdateRecordTitleResult, 'record'> & { record: ResolversParentTypes['Record'] };
   CuratedList: CuratedListMetadataModel;
   CuratedListWorkConnection: Omit<CuratedListWorkConnection, 'edges'> & { edges?: Maybe<Array<Maybe<ResolversParentTypes['CuratedListWorkEdge']>>> };
   CuratedListWorkEdge: Omit<CuratedListWorkEdge, 'node'> & { node?: Maybe<ResolversParentTypes['Work']> };
   SearchWorksResult: Omit<SearchWorksResult, 'edges'> & { edges: Array<ResolversParentTypes['SearchWorksResultEdge']> };
   SearchWorksResultEdge: Omit<SearchWorksResultEdge, 'node'> & { node: ResolversParentTypes['Work'] };
-  WorksChartItem: Omit<WorksChartItem, 'work'> & { work: ResolversParentTypes['Work'] };
   TablePeriod: PeriodModel;
   TablePeriodItem: Omit<TablePeriodItem, 'work' | 'record' | 'recommendations'> & { work: ResolversParentTypes['Work'], record?: Maybe<ResolversParentTypes['Record']>, recommendations?: Maybe<Array<ResolversParentTypes['Recommendation']>> };
   Recommendation: ResolversParentTypes['RecommendationByCredit'];
   RecommendationByCredit: RecommendationByCredit;
   Credit: Credit;
   WorkCredit: WorkCredit;
+  WorksChartItem: Omit<WorksChartItem, 'work'> & { work: ResolversParentTypes['Work'] };
 };
 
 export type CategoryResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
@@ -804,14 +824,15 @@ export type NodeResolvers<ContextType = MercuriusContext, ParentType extends Res
 };
 
 export type MutationResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  _empty?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   createCategory?: Resolver<ResolversTypes['CreateCategoryResult'], ParentType, ContextType, RequireFields<MutationcreateCategoryArgs, 'input'>>;
   createRecord?: Resolver<ResolversTypes['CreateRecordResult'], ParentType, ContextType, RequireFields<MutationcreateRecordArgs, 'input'>>;
-  _empty?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   deleteCategory?: Resolver<ResolversTypes['DeleteCategoryResult'], ParentType, ContextType, RequireFields<MutationdeleteCategoryArgs, 'input'>>;
   renameCategory?: Resolver<ResolversTypes['RenameCategoryResult'], ParentType, ContextType, RequireFields<MutationrenameCategoryArgs, 'input'>>;
-  updateRecordCategoryId?: Resolver<ResolversTypes['UpdateRecordCategoryIdResult'], ParentType, ContextType, RequireFields<MutationupdateRecordCategoryIdArgs, 'input'>>;
-  updateRecordTitle?: Resolver<ResolversTypes['UpdateRecordTitleResult'], ParentType, ContextType, RequireFields<MutationupdateRecordTitleArgs, 'input'>>;
   updateCategoryOrder?: Resolver<ResolversTypes['UpdateCategoryOrderResult'], ParentType, ContextType, RequireFields<MutationupdateCategoryOrderArgs, 'input'>>;
+  updateRecordCategoryId?: Resolver<ResolversTypes['UpdateRecordCategoryIdResult'], ParentType, ContextType, RequireFields<MutationupdateRecordCategoryIdArgs, 'input'>>;
+  updateRecordRating?: Resolver<ResolversTypes['UpdateRecordRatingResult'], ParentType, ContextType, RequireFields<MutationupdateRecordRatingArgs, 'input'>>;
+  updateRecordTitle?: Resolver<ResolversTypes['UpdateRecordTitleResult'], ParentType, ContextType, RequireFields<MutationupdateRecordTitleArgs, 'input'>>;
 };
 
 export type CreateCategoryResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['CreateCategoryResult'] = ResolversParentTypes['CreateCategoryResult']> = {
@@ -836,18 +857,18 @@ export type RenameCategoryResultResolvers<ContextType = MercuriusContext, Parent
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type UpdateCategoryOrderResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['UpdateCategoryOrderResult'] = ResolversParentTypes['UpdateCategoryOrderResult']> = {
+  categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type UpdateRecordCategoryIdResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['UpdateRecordCategoryIdResult'] = ResolversParentTypes['UpdateRecordCategoryIdResult']> = {
   record?: Resolver<ResolversTypes['Record'], ParentType, ContextType>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UpdateRecordTitleResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['UpdateRecordTitleResult'] = ResolversParentTypes['UpdateRecordTitleResult']> = {
+export type UpdateRecordRatingResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['UpdateRecordRatingResult'] = ResolversParentTypes['UpdateRecordRatingResult']> = {
   record?: Resolver<ResolversTypes['Record'], ParentType, ContextType>;
-  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type UpdateCategoryOrderResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['UpdateCategoryOrderResult'] = ResolversParentTypes['UpdateCategoryOrderResult']> = {
-  categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -863,10 +884,15 @@ export type QueryResolvers<ContextType = MercuriusContext, ParentType extends Re
   curatedLists?: Resolver<Array<ResolversTypes['CuratedList']>, ParentType, ContextType>;
   curatedList?: Resolver<Maybe<ResolversTypes['CuratedList']>, ParentType, ContextType, RequireFields<QuerycuratedListArgs, 'id'>>;
   searchWorks?: Resolver<Maybe<ResolversTypes['SearchWorksResult']>, ParentType, ContextType, RequireFields<QuerysearchWorksArgs, 'query'>>;
-  weeklyWorksChart?: Resolver<Array<ResolversTypes['WorksChartItem']>, ParentType, ContextType, RequireFields<QueryweeklyWorksChartArgs, 'limit'>>;
   tablePeriod?: Resolver<Maybe<ResolversTypes['TablePeriod']>, ParentType, ContextType, RequireFields<QuerytablePeriodArgs, 'period'>>;
   currentTablePeriod?: Resolver<ResolversTypes['TablePeriod'], ParentType, ContextType>;
   tablePeriods?: Resolver<Array<ResolversTypes['TablePeriod']>, ParentType, ContextType>;
+  weeklyWorksChart?: Resolver<Array<ResolversTypes['WorksChartItem']>, ParentType, ContextType, RequireFields<QueryweeklyWorksChartArgs, 'limit'>>;
+};
+
+export type UpdateRecordTitleResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['UpdateRecordTitleResult'] = ResolversParentTypes['UpdateRecordTitleResult']> = {
+  record?: Resolver<ResolversTypes['Record'], ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CuratedListResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['CuratedList'] = ResolversParentTypes['CuratedList']> = {
@@ -895,14 +921,6 @@ export type SearchWorksResultResolvers<ContextType = MercuriusContext, ParentTyp
 export type SearchWorksResultEdgeResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['SearchWorksResultEdge'] = ResolversParentTypes['SearchWorksResultEdge']> = {
   node?: Resolver<ResolversTypes['Work'], ParentType, ContextType>;
   recordCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type WorksChartItemResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['WorksChartItem'] = ResolversParentTypes['WorksChartItem']> = {
-  rank?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  work?: Resolver<ResolversTypes['Work'], ParentType, ContextType>;
-  diff?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  sign?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -950,6 +968,14 @@ export type WorkCreditResolvers<ContextType = MercuriusContext, ParentType exten
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type WorksChartItemResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['WorksChartItem'] = ResolversParentTypes['WorksChartItem']> = {
+  rank?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  work?: Resolver<ResolversTypes['Work'], ParentType, ContextType>;
+  diff?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  sign?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = MercuriusContext> = {
   Category?: CategoryResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
@@ -971,21 +997,22 @@ export type Resolvers<ContextType = MercuriusContext> = {
   CreateRecordResult?: CreateRecordResultResolvers<ContextType>;
   DeleteCategoryResult?: DeleteCategoryResultResolvers<ContextType>;
   RenameCategoryResult?: RenameCategoryResultResolvers<ContextType>;
-  UpdateRecordCategoryIdResult?: UpdateRecordCategoryIdResultResolvers<ContextType>;
-  UpdateRecordTitleResult?: UpdateRecordTitleResultResolvers<ContextType>;
   UpdateCategoryOrderResult?: UpdateCategoryOrderResultResolvers<ContextType>;
+  UpdateRecordCategoryIdResult?: UpdateRecordCategoryIdResultResolvers<ContextType>;
+  UpdateRecordRatingResult?: UpdateRecordRatingResultResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  UpdateRecordTitleResult?: UpdateRecordTitleResultResolvers<ContextType>;
   CuratedList?: CuratedListResolvers<ContextType>;
   CuratedListWorkConnection?: CuratedListWorkConnectionResolvers<ContextType>;
   CuratedListWorkEdge?: CuratedListWorkEdgeResolvers<ContextType>;
   SearchWorksResult?: SearchWorksResultResolvers<ContextType>;
   SearchWorksResultEdge?: SearchWorksResultEdgeResolvers<ContextType>;
-  WorksChartItem?: WorksChartItemResolvers<ContextType>;
   TablePeriod?: TablePeriodResolvers<ContextType>;
   TablePeriodItem?: TablePeriodItemResolvers<ContextType>;
   Recommendation?: RecommendationResolvers<ContextType>;
   RecommendationByCredit?: RecommendationByCreditResolvers<ContextType>;
   Credit?: CreditResolvers<ContextType>;
   WorkCredit?: WorkCreditResolvers<ContextType>;
+  WorksChartItem?: WorksChartItemResolvers<ContextType>;
 };
 

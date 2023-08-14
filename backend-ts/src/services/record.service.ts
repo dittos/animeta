@@ -186,3 +186,11 @@ export async function updateRecordCategory(record: Record, category: Category | 
   record.category_id = category?.id ?? null
   await db.save(record)
 }
+
+export async function updateRecordRating(record: Record, rating: number | null): Promise<void> {
+  if (rating != null && !isValidRating(rating)) {
+    throw new ValidationError(INVALID_RATING_ERROR_MESSAGE)
+  }
+  record.rating = rating
+  await db.save(record)
+}

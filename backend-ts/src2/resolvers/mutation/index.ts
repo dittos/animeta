@@ -6,11 +6,13 @@ import { deleteCategory } from "./deleteCategory";
 import { updateCategoryOrder } from "./updateCategoryOrder";
 import { updateRecordTitle } from "./updateRecordTitle";
 import { updateRecordCategoryId } from "./updateRecordCategoryId";
+import { updateRecordRating } from "./updateRecordRating";
 
 export const Mutation: MutationResolvers = {
   createRecord,
   updateRecordTitle,
   updateRecordCategoryId,
+  updateRecordRating,
   
   createCategory,
   renameCategory,

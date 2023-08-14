@@ -204,14 +204,15 @@ export enum StatusType {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  _empty: Maybe<Scalars['Boolean']>;
   createCategory: CreateCategoryResult;
   createRecord: CreateRecordResult;
-  _empty: Maybe<Scalars['Boolean']>;
   deleteCategory: DeleteCategoryResult;
   renameCategory: RenameCategoryResult;
-  updateRecordCategoryId: UpdateRecordCategoryIdResult;
-  updateRecordTitle: UpdateRecordTitleResult;
   updateCategoryOrder: UpdateCategoryOrderResult;
+  updateRecordCategoryId: UpdateRecordCategoryIdResult;
+  updateRecordRating: UpdateRecordRatingResult;
+  updateRecordTitle: UpdateRecordTitleResult;
 };
 
 
@@ -235,18 +236,23 @@ export type MutationRenameCategoryArgs = {
 };
 
 
+export type MutationUpdateCategoryOrderArgs = {
+  input: UpdateCategoryOrderInput;
+};
+
+
 export type MutationUpdateRecordCategoryIdArgs = {
   input: UpdateRecordCategoryIdInput;
 };
 
 
-export type MutationUpdateRecordTitleArgs = {
-  input: UpdateRecordTitleInput;
+export type MutationUpdateRecordRatingArgs = {
+  input: UpdateRecordRatingInput;
 };
 
 
-export type MutationUpdateCategoryOrderArgs = {
-  input: UpdateCategoryOrderInput;
+export type MutationUpdateRecordTitleArgs = {
+  input: UpdateRecordTitleInput;
 };
 
 export type CreateCategoryInput = {
@@ -294,6 +300,15 @@ export type RenameCategoryResult = {
   category: Category;
 };
 
+export type UpdateCategoryOrderInput = {
+  categoryIds: Array<Scalars['ID']>;
+};
+
+export type UpdateCategoryOrderResult = {
+  __typename?: 'UpdateCategoryOrderResult';
+  categories: Array<Category>;
+};
+
 export type UpdateRecordCategoryIdInput = {
   recordId: Scalars['ID'];
   categoryId: InputMaybe<Scalars['ID']>;
@@ -304,23 +319,14 @@ export type UpdateRecordCategoryIdResult = {
   record: Record;
 };
 
-export type UpdateRecordTitleInput = {
+export type UpdateRecordRatingInput = {
   recordId: Scalars['ID'];
-  title: Scalars['String'];
+  rating: InputMaybe<Scalars['Float']>;
 };
 
-export type UpdateRecordTitleResult = {
-  __typename?: 'UpdateRecordTitleResult';
+export type UpdateRecordRatingResult = {
+  __typename?: 'UpdateRecordRatingResult';
   record: Record;
-};
-
-export type UpdateCategoryOrderInput = {
-  categoryIds: Array<Scalars['ID']>;
-};
-
-export type UpdateCategoryOrderResult = {
-  __typename?: 'UpdateCategoryOrderResult';
-  categories: Array<Category>;
 };
 
 export type Query = {
@@ -336,10 +342,10 @@ export type Query = {
   curatedLists: Array<CuratedList>;
   curatedList: Maybe<CuratedList>;
   searchWorks: Maybe<SearchWorksResult>;
-  weeklyWorksChart: Array<WorksChartItem>;
   tablePeriod: Maybe<TablePeriod>;
   currentTablePeriod: TablePeriod;
   tablePeriods: Array<TablePeriod>;
+  weeklyWorksChart: Array<WorksChartItem>;
 };
 
 
@@ -389,13 +395,23 @@ export type QuerySearchWorksArgs = {
 };
 
 
+export type QueryTablePeriodArgs = {
+  period: Scalars['String'];
+};
+
+
 export type QueryWeeklyWorksChartArgs = {
   limit: Scalars['Int'];
 };
 
+export type UpdateRecordTitleInput = {
+  recordId: Scalars['ID'];
+  title: Scalars['String'];
+};
 
-export type QueryTablePeriodArgs = {
-  period: Scalars['String'];
+export type UpdateRecordTitleResult = {
+  __typename?: 'UpdateRecordTitleResult';
+  record: Record;
 };
 
 export type CuratedList = {
@@ -425,14 +441,6 @@ export type SearchWorksResultEdge = {
   __typename?: 'SearchWorksResultEdge';
   node: Work;
   recordCount: Maybe<Scalars['Int']>;
-};
-
-export type WorksChartItem = {
-  __typename?: 'WorksChartItem';
-  rank: Scalars['Int'];
-  work: Work;
-  diff: Maybe<Scalars['Int']>;
-  sign: Maybe<Scalars['Int']>;
 };
 
 export type TablePeriod = {
@@ -493,6 +501,14 @@ export enum CreditType {
   CharacterDesign = 'CHARACTER_DESIGN',
   Music = 'MUSIC'
 }
+
+export type WorksChartItem = {
+  __typename?: 'WorksChartItem';
+  rank: Scalars['Int'];
+  work: Work;
+  diff: Maybe<Scalars['Int']>;
+  sign: Maybe<Scalars['Int']>;
+};
 
 export type WorkDtoFragment = { __typename?: 'Work', id: string, title: string | null, imageUrl: string | null, recordCount: number | null, record: { __typename?: 'Record', id: string } | null, metadata: { __typename?: 'WorkMetadata', periods: Array<string> | null, studioNames: Array<string> | null, source: SourceType | null, websiteUrl: string | null, namuwikiUrl: string | null, annUrl: string | null, durationMinutes: number | null, schedules: Array<{ __typename?: 'WorkSchedule', country: string, date: any | null, datePrecision: DatePrecision | null, broadcasts: Array<string> | null }> | null } | null };
 
