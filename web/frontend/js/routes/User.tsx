@@ -25,7 +25,7 @@ function User({ data, controller }: RouteComponentProps<UserRouteData>) {
       query={query}
       records={records}
       onAddRecord={addRecord}
-      gqlUser={user}
+      user={user}
     />
   );
 }

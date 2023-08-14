@@ -11,7 +11,7 @@ import * as Grid from './Grid';
 import { Switch, SwitchItem } from './Switch';
 import AddRecordDialog from './AddRecordDialog';
 import { trackEvent } from '../Tracking';
-import { CategoryDTO, RecordDTO, UserDTO } from '../../../shared/types';
+import { RecordDTO } from '../../../shared/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faCaretUp, faPlus, faStar } from '@fortawesome/free-solid-svg-icons';
 import { Library_CreateRecordDocument, Library_UserFragment } from './__generated__/Library.graphql';
@@ -116,7 +116,7 @@ type LibraryProps = {
   query: NormalizedUserRouteQuery;
   records: RecordDTO[];
   onAddRecord(): any;
-  gqlUser: Library_UserFragment;
+  user: Library_UserFragment;
 };
 
 class Library extends React.Component<LibraryProps> {
@@ -138,9 +138,9 @@ class Library extends React.Component<LibraryProps> {
     } else if (orderBy === RecordOrder.Rating) {
       groups = groupRecordsByRating(records);
     }
-    const filters = this.props.gqlUser.recordFilters;
+    const filters = this.props.user.recordFilters;
     const { totalCount, filteredCount } = filters;
-    const canEdit = this.props.gqlUser.isCurrentUser;
+    const canEdit = this.props.user.isCurrentUser;
     return (
       <Grid.Row className={Styles.library}>
         <Grid.Column size={3} pull="left">
@@ -225,7 +225,7 @@ class Library extends React.Component<LibraryProps> {
             <LibraryFilter
               query={this.props.query}
               filters={filters}
-              categoryList={this.props.gqlUser.categories}
+              categoryList={this.props.user.categories}
               canEdit={canEdit}
               getLinkParams={this._getLinkParams}
             />
@@ -276,7 +276,7 @@ class Library extends React.Component<LibraryProps> {
   }
 
   _getLinkParams = (updates: Partial<NormalizedUserRouteQuery>) => {
-    const basePath = `/users/${encodeURIComponent(this.props.gqlUser.name!)}/`;
+    const basePath = `/users/${encodeURIComponent(this.props.user.name!)}/`;
     return {
       to: basePath,
       queryParams: serializeUserRouteQuery({ ...this.props.query, ...updates }),
