@@ -10,6 +10,7 @@ import { Work } from "src/entities/work.entity";
 import { objResults } from "src/utils/dataloader";
 import { EntityManager, Repository } from "typeorm";
 import { PermissionError, ValidationError } from "./exceptions";
+import { db } from "src2/database";
 
 const INVALID_RATING_ERROR_MESSAGE = '별점은 0.5부터 5까지 0.5 단위로 입력할 수 있습니다.'
 
@@ -179,4 +180,9 @@ export async function updateRecordWorkAndTitle(em: EntityManager, record: Record
   record.title = title
   await em.save(record)
   await em.update(History, {record}, {work_id: work.id})
+}
+
+export async function updateRecordCategory(record: Record, category: Category | null): Promise<void> {
+  record.category_id = category?.id ?? null
+  await db.save(record)
 }
