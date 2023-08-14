@@ -324,6 +324,7 @@ export type Record = Node & {
   category: Maybe<Category>;
   hasNewerEpisode: Maybe<Scalars['Boolean']>;
   id: Scalars['ID'];
+  posts: PostConnection;
   rating: Maybe<Scalars['Float']>;
   status: Maybe<Scalars['String']>;
   statusType: Maybe<StatusType>;
@@ -331,6 +332,12 @@ export type Record = Node & {
   updatedAt: Maybe<Scalars['GraphQLTimestamp']>;
   user: Maybe<User>;
   work: Maybe<Work>;
+};
+
+
+export type RecordPostsArgs = {
+  beforeId: InputMaybe<Scalars['ID']>;
+  count: InputMaybe<Scalars['Int']>;
 };
 
 export type RecordConnection = {

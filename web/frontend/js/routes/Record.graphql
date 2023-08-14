@@ -40,12 +40,24 @@ fragment RecordRoute_header_category on Category {
   name
 }
 
-query RecordRoute_posts($workId: ID!, $beforeId: ID, $episode: Int) {
-  work(id: $workId) {
-    posts(beforeId: $beforeId, count: 10, episode: $episode) {
-      ...WorkViews_postConnection
+query RecordRoute_posts($recordId: ID!) {
+  record(id: $recordId) {
+    posts(beforeId: null, count: null) {
+      nodes {
+        ...RecordRoute_post
+      }
     }
   }
+}
+
+fragment RecordRoute_post on Post {
+  id
+  statusType
+  status
+  comment
+  containsSpoiler
+  updatedAt
+  ...PostComment_post
 }
 
 mutation RecordRoute_updateTitle($input: UpdateRecordTitleInput!) {

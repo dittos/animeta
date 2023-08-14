@@ -6,9 +6,8 @@ import * as util from '../util';
 import { TimeAgo } from '../ui/TimeAgo';
 import { PostComposer, PostComposerResult } from '../ui/PostComposer';
 import * as Typeahead from '../ui/Typeahead';
-import PostComment from '../ui/PostComment';
+import PostComment from '../ui/GqlPostComment';
 import Styles from '../ui/RecordDetail.module.less';
-import { getRecordPosts } from '../API';
 import connectTwitter from '../connectTwitter';
 import { User } from '../layouts';
 import { CenteredFullWidth } from '../ui/Layout';
@@ -16,11 +15,10 @@ import ModalStyles from '../ui/Modal.less';
 import { trackEvent } from '../Tracking';
 import { setLastPublishTwitter } from '../Prefs';
 import { RouteComponentProps, RouteHandler } from '../routes';
-import { PostDTO } from '../../../shared/types_generated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
 import { Rating } from '../ui/Rating';
-import { RecordRouteDocument, RecordRouteQuery, RecordRoute_CreatePostDocument, RecordRoute_DeletePostDocument, RecordRoute_DeleteRecordDocument, RecordRoute_HeaderFragment, RecordRoute_Header_CategoryFragment, RecordRoute_RecordFragment, RecordRoute_UpdateCategoryDocument, RecordRoute_UpdateRatingDocument, RecordRoute_UpdateTitleDocument } from './__generated__/Record.graphql';
+import { RecordRouteDocument, RecordRouteQuery, RecordRoute_CreatePostDocument, RecordRoute_DeletePostDocument, RecordRoute_DeleteRecordDocument, RecordRoute_HeaderFragment, RecordRoute_Header_CategoryFragment, RecordRoute_PostFragment, RecordRoute_PostsDocument, RecordRoute_RecordFragment, RecordRoute_UpdateCategoryDocument, RecordRoute_UpdateRatingDocument, RecordRoute_UpdateTitleDocument } from './__generated__/Record.graphql';
 import { UserLayoutPropsData } from '../ui/UserLayout';
 
 type RecordRouteData = UserLayoutPropsData & RecordRouteQuery & {
@@ -223,23 +221,23 @@ class HeaderView extends React.Component<HeaderViewProps> {
 }
 
 function PostView({ post, canEdit, canDelete, onDelete }: {
-  post: PostDTO;
+  post: RecordRoute_PostFragment;
   canEdit: boolean;
   canDelete: boolean;
   onDelete(): void;
 }) {
   return (
     <div className={`${Styles.post} ${post.comment ? '' : Styles.noComment}`}>
-      <div className={Styles.postProgress}>{util.getStatusText(post)}</div>
+      <div className={Styles.postProgress}>{util.getStatusTextGql(post)}</div>
       <PostComment post={post} className={Styles.postComment} showSpoiler={canEdit} />
       <div className={Styles.postMeta}>
-        {post.contains_spoiler && (
+        {post.containsSpoiler && (
           <span className={Styles.spoilerMark}>
             <FontAwesomeIcon icon={faMicrophoneSlash} size="sm" />
           </span>
         )}
-        <Link to={util.getPostURL(post)} className={Styles.postTime}>
-          {post.updated_at ? <TimeAgo time={new Date(post.updated_at)} /> : '#'}
+        <Link to={util.getPostURLGql(post)} className={Styles.postTime}>
+          {post.updatedAt ? <TimeAgo time={new Date(post.updatedAt)} /> : '#'}
         </Link>
         {canDelete && (
           <span className={Styles.deletePostButton} onClick={onDelete}>
@@ -289,7 +287,7 @@ function Record(props: RouteComponentProps<RecordRouteData>) {
 
 class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
   state = {
-    posts: [] as PostDTO[],
+    posts: [] as RecordRoute_PostFragment[],
     showDeleteModal: false,
   };
 
@@ -302,9 +300,9 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
       posts: [],
       showDeleteModal: false,
     });
-    getRecordPosts(props.data.record.id).then(data => {
+    props.loader.graphql(RecordRoute_PostsDocument, {recordId: props.data.record.id}).then(data => {
       this.setState({
-        posts: data.posts,
+        posts: data.record?.posts.nodes ?? [],
       });
     });
   };
@@ -408,7 +406,7 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
     });
   };
 
-  _deletePost = (post: PostDTO) => {
+  _deletePost = (post: { id: string }) => {
     if (
       confirm(
         '삭제 후에는 복구할 수 없습니다.\n기록을 정말로 삭제하시겠습니까?'
@@ -416,7 +414,7 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
     ) {
       this.props.loader.graphql(RecordRoute_DeletePostDocument, {
         input: {
-          postId: post.id.toString(),
+          postId: post.id,
         }
       }).then(result => {
         this.loadPosts(this.props);

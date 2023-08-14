@@ -232,12 +232,6 @@ export function createRecord(
   });
 }
 
-export function getRecordPosts(recordID: number | string): Promise<{posts: PostDTO[]}> {
-  return get(`/api/v4/records/${recordID}/posts`, {
-    options: {},
-  });
-}
-
 export function updateRecordRating(id: number, rating: number | null, options: RecordFetchOptions): Promise<{ record: RecordDTO }> {
   return postJSON('/api/v4/UpdateRecord', {
     id,
