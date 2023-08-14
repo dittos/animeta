@@ -29,6 +29,21 @@ export type CreateCategoryResult = {
   category: Category;
 };
 
+export type CreatePostInput = {
+  comment: Scalars['String'];
+  containsSpoiler: InputMaybe<Scalars['Boolean']>;
+  publishTwitter: InputMaybe<Scalars['Boolean']>;
+  rating: InputMaybe<Scalars['Float']>;
+  recordId: Scalars['ID'];
+  status: Scalars['String'];
+  statusType: StatusType;
+};
+
+export type CreatePostResult = {
+  __typename?: 'CreatePostResult';
+  post: Post;
+};
+
 export type CreateRecordInput = {
   categoryId: InputMaybe<Scalars['ID']>;
   comment: Scalars['String'];
@@ -96,6 +111,26 @@ export type DeleteCategoryResult = {
   user: Maybe<User>;
 };
 
+export type DeletePostInput = {
+  postId: Scalars['ID'];
+};
+
+export type DeletePostResult = {
+  __typename?: 'DeletePostResult';
+  deleted: Scalars['Boolean'];
+  record: Maybe<Record>;
+};
+
+export type DeleteRecordInput = {
+  recordId: Scalars['ID'];
+};
+
+export type DeleteRecordResult = {
+  __typename?: 'DeleteRecordResult';
+  deleted: Scalars['Boolean'];
+  user: Maybe<User>;
+};
+
 export type Episode = {
   __typename?: 'Episode';
   number: Scalars['Int'];
@@ -108,15 +143,26 @@ export type Mutation = {
   __typename?: 'Mutation';
   _empty: Maybe<Scalars['Boolean']>;
   createCategory: CreateCategoryResult;
+  createPost: CreatePostResult;
   createRecord: CreateRecordResult;
   deleteCategory: DeleteCategoryResult;
+  deletePost: DeletePostResult;
+  deleteRecord: DeleteRecordResult;
   renameCategory: RenameCategoryResult;
   updateCategoryOrder: UpdateCategoryOrderResult;
+  updateRecordCategoryId: UpdateRecordCategoryIdResult;
+  updateRecordRating: UpdateRecordRatingResult;
+  updateRecordTitle: UpdateRecordTitleResult;
 };
 
 
 export type MutationCreateCategoryArgs = {
   input: CreateCategoryInput;
+};
+
+
+export type MutationCreatePostArgs = {
+  input: CreatePostInput;
 };
 
 
@@ -130,6 +176,16 @@ export type MutationDeleteCategoryArgs = {
 };
 
 
+export type MutationDeletePostArgs = {
+  input: DeletePostInput;
+};
+
+
+export type MutationDeleteRecordArgs = {
+  input: DeleteRecordInput;
+};
+
+
 export type MutationRenameCategoryArgs = {
   input: RenameCategoryInput;
 };
@@ -137,6 +193,21 @@ export type MutationRenameCategoryArgs = {
 
 export type MutationUpdateCategoryOrderArgs = {
   input: UpdateCategoryOrderInput;
+};
+
+
+export type MutationUpdateRecordCategoryIdArgs = {
+  input: UpdateRecordCategoryIdInput;
+};
+
+
+export type MutationUpdateRecordRatingArgs = {
+  input: UpdateRecordRatingInput;
+};
+
+
+export type MutationUpdateRecordTitleArgs = {
+  input: UpdateRecordTitleInput;
 };
 
 export type Node = {
@@ -364,6 +435,36 @@ export type UpdateCategoryOrderInput = {
 export type UpdateCategoryOrderResult = {
   __typename?: 'UpdateCategoryOrderResult';
   categories: Array<Category>;
+};
+
+export type UpdateRecordCategoryIdInput = {
+  categoryId: InputMaybe<Scalars['ID']>;
+  recordId: Scalars['ID'];
+};
+
+export type UpdateRecordCategoryIdResult = {
+  __typename?: 'UpdateRecordCategoryIdResult';
+  record: Record;
+};
+
+export type UpdateRecordRatingInput = {
+  rating: InputMaybe<Scalars['Float']>;
+  recordId: Scalars['ID'];
+};
+
+export type UpdateRecordRatingResult = {
+  __typename?: 'UpdateRecordRatingResult';
+  record: Record;
+};
+
+export type UpdateRecordTitleInput = {
+  recordId: Scalars['ID'];
+  title: Scalars['String'];
+};
+
+export type UpdateRecordTitleResult = {
+  __typename?: 'UpdateRecordTitleResult';
+  record: Record;
 };
 
 export type User = Node & {

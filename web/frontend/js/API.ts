@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/react';
 import fetch from 'cross-fetch';
-import { PostDTO, PostFetchOptions, RecordDTO, RecordFetchOptions, LegacyStatusType, UserFetchOptions, StatusType } from '../../shared/types';
+import { PostDTO, PostFetchOptions, RecordDTO, RecordFetchOptions, UserFetchOptions, StatusType } from '../../shared/types';
 import * as CSRF from './CSRF';
-import { CategoryDTO, UserDTO } from '../../shared/types';
+import { UserDTO } from '../../shared/types';
 import isString from 'lodash/isString';
 import graphqlRequest, { ClientError } from 'graphql-request';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
@@ -232,26 +232,9 @@ export function createRecord(
   });
 }
 
-export function getRecordPosts(recordID: number): Promise<{posts: PostDTO[]}> {
+export function getRecordPosts(recordID: number | string): Promise<{posts: PostDTO[]}> {
   return get(`/api/v4/records/${recordID}/posts`, {
     options: {},
-  });
-}
-
-export function updateRecordTitle(id: number, title: string, options: RecordFetchOptions): Promise<{ record: RecordDTO }> {
-  return postJSON('/api/v4/UpdateRecord', {
-    id,
-    title,
-    options,
-  });
-}
-
-export function updateRecordCategoryID(id: number, categoryId: number | null, options: RecordFetchOptions): Promise<{ record: RecordDTO }> {
-  return postJSON('/api/v4/UpdateRecord', {
-    id,
-    categoryId,
-    categoryIdIsSet: true,
-    options,
   });
 }
 
@@ -262,40 +245,6 @@ export function updateRecordRating(id: number, rating: number | null, options: R
     ratingIsSet: true,
     options,
   });
-}
-
-export function deleteRecord(id: number): Promise<{ ok: boolean }> {
-  return postJSON('/api/v4/DeleteRecord', { id });
-}
-
-export type CreatePostParams = {
-  status: string;
-  statusType: LegacyStatusType;
-  comment: string;
-  containsSpoiler: boolean;
-  publishTwitter: boolean;
-};
-
-export function createPost(
-  recordId: number,
-  { status, statusType, comment, containsSpoiler, publishTwitter }: CreatePostParams,
-  options?: RecordFetchOptions,
-): Promise<{ post: PostDTO }> {
-  return postJSON('/api/v4/CreatePost', {
-    recordId,
-    status,
-    statusType: statusType.toUpperCase(),
-    comment,
-    containsSpoiler: containsSpoiler || false,
-    publishTwitter: publishTwitter || false,
-    options,
-  });
-}
-
-// Post
-
-export function deletePost(id: number, recordOptions: RecordFetchOptions): Promise<{ record: RecordDTO | null }> {
-  return postJSON('/api/v4/DeletePost', { id, recordOptions });
 }
 
 // User Records

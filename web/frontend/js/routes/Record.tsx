@@ -8,38 +8,23 @@ import { PostComposer, PostComposerResult } from '../ui/PostComposer';
 import * as Typeahead from '../ui/Typeahead';
 import PostComment from '../ui/PostComment';
 import Styles from '../ui/RecordDetail.module.less';
-import {
-  getRecordPosts,
-  updateRecordTitle,
-  updateRecordCategoryID,
-  deleteRecord,
-  deletePost,
-  createPost,
-  updateRecordRating,
-} from '../API';
+import { getRecordPosts } from '../API';
 import connectTwitter from '../connectTwitter';
-import { User } from '../layouts';
+import { GqlUser as User } from '../layouts';
 import { CenteredFullWidth } from '../ui/Layout';
 import ModalStyles from '../ui/Modal.less';
 import { trackEvent } from '../Tracking';
 import { setLastPublishTwitter } from '../Prefs';
 import { RouteComponentProps, RouteHandler } from '../routes';
-import { CategoryDTO, PostDTO, RecordDTO, UserDTO } from '../../../shared/types_generated';
-import { RecordFetchOptions } from '../../../shared/types';
+import { PostDTO } from '../../../shared/types_generated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
 import { Rating } from '../ui/Rating';
+import { RecordRouteDocument, RecordRouteQuery, RecordRoute_CreatePostDocument, RecordRoute_DeletePostDocument, RecordRoute_DeleteRecordDocument, RecordRoute_HeaderFragment, RecordRoute_Header_CategoryFragment, RecordRoute_RecordFragment, RecordRoute_UpdateCategoryDocument, RecordRoute_UpdateRatingDocument, RecordRoute_UpdateTitleDocument } from './__generated__/Record.graphql';
+import { UserLayoutPropsData } from '../ui/GqlUserLayout';
 
-type RecordRouteData = {
-  currentUser: UserDTO | null;
-  user: UserDTO;
-  record: RecordDTO;
-};
-
-const recordFetchOptions: RecordFetchOptions = {
-  user: {
-    stats: true,
-  },
+type RecordRouteData = UserLayoutPropsData & RecordRouteQuery & {
+  record: NonNullable<RecordRouteQuery['record']>;
 };
 
 type TitleEditViewProps = {
@@ -83,8 +68,8 @@ class TitleEditView extends React.Component<TitleEditViewProps> {
 }
 
 type CategoryEditViewProps = {
-  selectedId: number | null;
-  categoryList: CategoryDTO[];
+  selectedId: string | null;
+  categoryList: RecordRoute_Header_CategoryFragment[];
   onChange(categoryId: string): void;
 };
 
@@ -100,10 +85,10 @@ class CategoryEditView extends React.Component<CategoryEditViewProps> {
       <span className={Styles.categoryForm}>
         <label>분류: </label>
         {name} <FontAwesomeIcon icon={faCaretDown} />
-        <select value={String(this.props.selectedId)} onChange={this._onChange}>
+        <select value={this.props.selectedId ?? ''} onChange={this._onChange}>
           <option value="">지정 안함</option>
           {this.props.categoryList.map(category => (
-            <option value={String(category.id)}>{category.name}</option>
+            <option value={category.id}>{category.name}</option>
           ))}
         </select>
       </span>
@@ -117,8 +102,7 @@ class CategoryEditView extends React.Component<CategoryEditViewProps> {
 }
 
 type HeaderViewProps = {
-  record: RecordDTO;
-  currentUser: UserDTO | null;
+  record: RecordRoute_HeaderFragment;
   onCategoryChange(categoryId: string): void;
   onTitleChange(title: string): Promise<void>;
   onRatingChange(rating: number | null): Promise<void>;
@@ -132,12 +116,12 @@ class HeaderView extends React.Component<HeaderViewProps> {
   };
 
   render() {
-    const { record, currentUser } = this.props;
-    const canEdit = currentUser && currentUser.id === record.user!.id;
+    const { record } = this.props;
+    const canEdit = record.user?.isCurrentUser ?? false;
 
     var title = (
       <h1 className={Styles.title}>
-        <Link to={util.getWorkURL(record.title)}>
+        <Link to={util.getWorkURL(record.title!)}>
           {record.title}
         </Link>
       </h1>
@@ -161,7 +145,7 @@ class HeaderView extends React.Component<HeaderViewProps> {
     if (this.state.isEditingTitle) {
       titleEditor = (
         <TitleEditView
-          originalTitle={record.title}
+          originalTitle={record.title!}
           onSave={this._onTitleSave}
           onCancel={() => this.setState({ isEditingTitle: false })}
         />
@@ -192,8 +176,8 @@ class HeaderView extends React.Component<HeaderViewProps> {
           삭제
         </a>
         <CategoryEditView
-          categoryList={currentUser?.categories || []}
-          selectedId={record.category_id}
+          categoryList={record.user?.categories ?? []}
+          selectedId={record.category?.id ?? null}
           onChange={this.props.onCategoryChange}
         />
       </div>
@@ -268,7 +252,7 @@ function PostView({ post, canEdit, canDelete, onDelete }: {
 }
 
 function DeleteRecordModal({ record, onConfirm, onCancel }: {
-  record: RecordDTO;
+  record: RecordRoute_RecordFragment;
   onConfirm(): void;
   onCancel(): void;
 }) {
@@ -326,16 +310,15 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
   };
 
   render() {
-    const { record, currentUser } = this.props.data;
+    const { record } = this.props.data;
     const { posts } = this.state;
-    const canEdit = currentUser ? currentUser.id === record.user?.id : false;
+    const canEdit = record.user?.isCurrentUser ?? false;
     const canDeletePosts = canEdit && posts.length > 1;
     return (
       <CenteredFullWidth>
         <HeaderView
           key={'header' + record.id}
           record={record}
-          currentUser={currentUser}
           onTitleChange={this._updateTitle}
           onCategoryChange={this._updateCategory}
           onRatingChange={this._updateRating}
@@ -344,9 +327,8 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
         {canEdit && (
           <div className={Styles.postComposerContainer}>
             <PostComposer
-              key={'post-composer' + record.id + '/' + record.updated_at}
+              key={`post-composer${record.id}/${record.updatedAt}`}
               record={record}
-              currentUser={currentUser!}
               onSave={this._createPost}
               onTwitterConnect={this._connectTwitter}
             />
@@ -376,35 +358,52 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
   }
 
   _updateTitle = (title: string) => {
-    return updateRecordTitle(this.props.data.record.id, title, recordFetchOptions).then(result => {
+    return this.props.loader.graphql(RecordRoute_UpdateTitleDocument, {
+      input: {
+        recordId: this.props.data.record.id,
+        title
+      }
+    }).then((result) => {
       this.props.writeData(data => {
-        data.record = result.record;
+        data.record = result.updateRecordTitle.record;
       });
     });
   };
 
   _updateCategory = (categoryID: string) => {
-    return updateRecordCategoryID(this.props.data.record.id, categoryID !== '' ? Number(categoryID) : null, recordFetchOptions).then(
+    return this.props.loader.graphql(RecordRoute_UpdateCategoryDocument, {
+      input: {
+        recordId: this.props.data.record.id,
+        categoryId: categoryID !== '' ? categoryID : null,
+      }
+    }).then(
       result => {
         this.props.writeData(data => {
-          data.record = result.record;
+          data.record = result.updateRecordCategoryId.record;
         });
       }
     );
   };
 
   _updateRating = (rating: number | null) => {
-    return updateRecordRating(this.props.data.record.id, rating, recordFetchOptions).then(
+    return this.props.loader.graphql(RecordRoute_UpdateRatingDocument, {
+      input: {
+        recordId: this.props.data.record.id,
+        rating,
+      }
+    }).then(
       result => {
         this.props.writeData(data => {
-          data.record = result.record;
+          data.record = result.updateRecordRating.record;
         });
       }
     )
   }
 
   _deleteRecord = () => {
-    deleteRecord(this.props.data.record.id).then(() => {
+    this.props.loader.graphql(RecordRoute_DeleteRecordDocument, {
+      input: {recordId: this.props.data.record.id}
+    }).then(() => {
       this._redirectToUser();
     });
   };
@@ -415,11 +414,15 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
         '삭제 후에는 복구할 수 없습니다.\n기록을 정말로 삭제하시겠습니까?'
       )
     ) {
-      deletePost(post.id, recordFetchOptions).then(result => {
+      this.props.loader.graphql(RecordRoute_DeletePostDocument, {
+        input: {
+          postId: post.id.toString(),
+        }
+      }).then(result => {
         this.loadPosts(this.props);
         this.props.writeData(data => {
-          data.record = result.record!;
-          data.user = result.record!.user!;
+          data.record = result.deletePost.record!;
+          data.user = result.deletePost.record!.user!;
         });
       });
     }
@@ -427,7 +430,13 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
 
   _createPost = (post: PostComposerResult) => {
     setLastPublishTwitter(post.publishTwitter);
-    return createPost(this.props.data.record.id, post).then(() => {
+    return this.props.loader.graphql(RecordRoute_CreatePostDocument, {
+      input: {
+        recordId: this.props.data.record.id,
+        ...post,
+        rating: null,
+      }
+    }).then(() => {
       trackEvent({
         eventCategory: 'Post',
         eventAction: 'Create',
@@ -446,13 +455,13 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
   _connectTwitter = () => {
     return connectTwitter().then(() => {
       this.props.writeData(data => {
-        data.currentUser!.is_twitter_connected = true;
+        data.currentUser!.isTwitterConnected = true;
       });
     });
   };
 
   _redirectToUser = () => {
-    const basePath = `/users/${encodeURIComponent(this.props.data.user.name)}/`;
+    const basePath = `/users/${encodeURIComponent(this.props.data.record.user!.name!)}/`;
     this.props.controller!.load({
       path: basePath,
       query: {},
@@ -465,21 +474,14 @@ const routeHandler: RouteHandler<RecordRouteData> = {
 
   async load({ loader, params }) {
     const { recordId } = params;
-    const [currentUser, record] = await Promise.all([
-      loader.getCurrentUser({
-        options: {
-          categories: true,
-          twitter: true,
-        },
-      }),
-      loader.callV4(`/records/${recordId}`, {
-        options: recordFetchOptions,
-      }),
-    ]);
+    const data = await loader.graphql(RecordRouteDocument, { recordId });
+    if (!data.record) {
+      // TODO: 404
+    }
     return {
-      currentUser,
-      user: record.user,
-      record,
+      ...data,
+      record: data.record!,
+      user: data.record!.user!, // for layout
     };
   },
 

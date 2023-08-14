@@ -1,0 +1,95 @@
+query RecordRoute($recordId: ID!) {
+  currentUser {
+    id
+    isTwitterConnected
+    ...UserLayout_currentUser
+  }
+  record(id: $recordId) {
+    ...RecordRoute_record
+  }
+}
+
+fragment RecordRoute_record on Record {
+  id
+  user {
+    isCurrentUser
+    name
+    ...UserLayout_user
+  }
+  title
+  updatedAt
+  ...RecordRoute_header
+  ...PostComposer_record
+}
+
+fragment RecordRoute_header on Record {
+  title
+  rating
+  user {
+    isCurrentUser
+    # TODO: load only if user == currentUser
+    categories {
+      ...RecordRoute_header_category
+    }
+  }
+  category { id }
+}
+
+fragment RecordRoute_header_category on Category {
+  id
+  name
+}
+
+query RecordRoute_posts($workId: ID!, $beforeId: ID, $episode: Int) {
+  work(id: $workId) {
+    posts(beforeId: $beforeId, count: 10, episode: $episode) {
+      ...WorkViews_postConnection
+    }
+  }
+}
+
+mutation RecordRoute_updateTitle($input: UpdateRecordTitleInput!) {
+  updateRecordTitle(input: $input) {
+    record {
+      ...RecordRoute_record
+    }
+  }
+}
+
+mutation RecordRoute_updateCategory($input: UpdateRecordCategoryIdInput!) {
+  updateRecordCategoryId(input: $input) {
+    record {
+      ...RecordRoute_record
+    }
+  }
+}
+
+mutation RecordRoute_updateRating($input: UpdateRecordRatingInput!) {
+  updateRecordRating(input: $input) {
+    record {
+      ...RecordRoute_record
+    }
+  }
+}
+
+mutation RecordRoute_createPost($input: CreatePostInput!) {
+  createPost(input: $input) {
+    post {
+      id
+    }
+  }
+}
+
+mutation RecordRoute_deletePost($input: DeletePostInput!) {
+  deletePost(input: $input) {
+    record {
+      ...RecordRoute_record
+    }
+  }
+}
+
+mutation RecordRoute_deleteRecord($input: DeleteRecordInput!) {
+  deleteRecord(input: $input) {
+    deleted
+  }
+}

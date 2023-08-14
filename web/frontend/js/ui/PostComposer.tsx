@@ -2,21 +2,20 @@ import * as React from 'react';
 import * as util from '../util';
 import { StatusInput } from './StatusInput';
 import Styles from './PostComposer.less';
-import { RecordDTO, UserDTO } from '../../../shared/types_generated';
-import { LegacyStatusType } from '../../../shared/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWarning } from '@fortawesome/free-solid-svg-icons';
+import { PostComposer_RecordFragment } from './__generated__/PostComposer.graphql';
+import { StatusType } from '../__generated__/globalTypes';
 
 export type PostComposerProps = {
-  record: RecordDTO;
-  currentUser: UserDTO;
+  record: PostComposer_RecordFragment;
   onTwitterConnect(): Promise<void>;
   onSave(result: PostComposerResult): Promise<any>;
 };
 
 export type PostComposerResult = {
   status: string;
-  statusType: LegacyStatusType;
+  statusType: StatusType;
   comment: string;
   containsSpoiler: boolean;
   publishTwitter: boolean;
@@ -28,8 +27,8 @@ export class PostComposer extends React.Component<PostComposerProps> {
   private _submitting: boolean;
 
   state = {
-    statusType: this.props.record.status_type as LegacyStatusType,
-    status: util.plusOne(this.props.record.status),
+    statusType: this.props.record.statusType ?? StatusType.Finished,
+    status: util.plusOne(this.props.record.status ?? ''),
     comment: '',
     publishTwitter: false,
     containsSpoiler: false,
@@ -51,10 +50,10 @@ export class PostComposer extends React.Component<PostComposerProps> {
             value={this.state.statusType}
             onChange={this._commonOnChange}
           >
-            <option value="watching">보는 중</option>
-            <option value="finished">완료</option>
-            <option value="suspended">중단</option>
-            <option value="interested">볼 예정</option>
+            <option value={StatusType.Watching}>보는 중</option>
+            <option value={StatusType.Finished}>완료</option>
+            <option value={StatusType.Suspended}>중단</option>
+            <option value={StatusType.Interested}>볼 예정</option>
           </select>
           {' @ '}
           {currentStatus}
