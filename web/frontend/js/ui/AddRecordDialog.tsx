@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal } from 'react-overlays';
-import { getCurrentUser, graphql } from '../API';
+import { graphql } from '../API';
 import connectTwitter from '../connectTwitter';
 import * as Typeahead from './Typeahead';
 import { Switch, SwitchItem } from './Switch';
@@ -9,16 +9,16 @@ import { StatusInput } from './StatusInput';
 import ModalStyles from './Modal.less';
 import Styles from './AddRecordDialog.less';
 import { getLastPublishTwitter, setLastPublishTwitter } from '../Prefs';
-import { CategoryDTO, UserDTO, StatusType } from '../../../shared/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimesCircle, faWarning } from '@fortawesome/free-solid-svg-icons';
 import { Rating } from './Rating';
-import { CreateRecordInput, StatusType as GqlStatusType } from '../__generated__/globalTypes';
+import { CreateRecordInput, StatusType } from '../__generated__/globalTypes';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import { AddRecordDialogDocument, AddRecordDialogQuery, AddRecordDialog_CategoryFragment } from './__generated__/AddRecordDialog.graphql';
 
 type CategorySelectProps = {
   selectedId: string;
-  categoryList: CategoryDTO[];
+  categoryList: AddRecordDialog_CategoryFragment[];
   onChange(selectedId: string): any;
 };
 
@@ -48,7 +48,6 @@ type AbstractCreateRecordMutationDocument<T> = TypedDocumentNode<{
 type AddRecordProps<T> = {
   initialTitle?: string;
   initialStatusType?: StatusType;
-  currentUser?: UserDTO;
   createRecordMutation: AbstractCreateRecordMutationDocument<T>;
   onCreate(result: T): any;
   onCancel(): any;
@@ -61,7 +60,7 @@ type AddRecordState = {
   rating: number | null;
   publishTwitter: boolean;
   isRequesting: boolean;
-  currentUser: UserDTO | null;
+  currentUser: AddRecordDialogQuery['currentUser'];
 };
 
 const PUBLISH_TWITTER_DISABLED_MESSAGE = "트위터 API 유료화로 공유 기능 제공을 중단합니다.";
@@ -73,7 +72,7 @@ class AddRecord<T> extends React.Component<AddRecordProps<T>, AddRecordState> {
     super(props);
     this.state = {
       selectedCategoryId: '',
-      statusType: props.initialStatusType || 'WATCHING',
+      statusType: props.initialStatusType ?? StatusType.Watching,
       status: '',
       comment: '',
       rating: null,
@@ -114,13 +113,13 @@ class AddRecord<T> extends React.Component<AddRecordProps<T>, AddRecordState> {
                 value={this.state.statusType}
                 onChange={this._onStatusTypeChange}
               >
-                <SwitchItem value="INTERESTED">볼 예정</SwitchItem>
-                <SwitchItem value="WATCHING">보는 중</SwitchItem>
-                <SwitchItem value="FINISHED">완료</SwitchItem>
-                <SwitchItem value="SUSPENDED">중단</SwitchItem>
+                <SwitchItem value={StatusType.Interested}>볼 예정</SwitchItem>
+                <SwitchItem value={StatusType.Watching}>보는 중</SwitchItem>
+                <SwitchItem value={StatusType.Finished}>완료</SwitchItem>
+                <SwitchItem value={StatusType.Suspended}>중단</SwitchItem>
               </Switch>
             </div>
-            {this.state.statusType !== 'INTERESTED' && (
+            {this.state.statusType !== StatusType.Interested && (
               <>
                 <div className={Styles.field}>
                   <label>진행률 (선택 사항)</label>
@@ -193,8 +192,8 @@ class AddRecord<T> extends React.Component<AddRecordProps<T>, AddRecordState> {
   };
 
   _onStatusTypeChange = (statusType: StatusType) => {
-    const status = statusType === 'INTERESTED' ? '' : this.state.status;
-    const rating = statusType === 'INTERESTED' ? null : this.state.rating;
+    const status = statusType === StatusType.Interested ? '' : this.state.status;
+    const rating = statusType === StatusType.Interested ? null : this.state.rating;
     this.setState({
       statusType,
       status,
@@ -211,11 +210,11 @@ class AddRecord<T> extends React.Component<AddRecordProps<T>, AddRecordState> {
   };
 
   _onPublishTwitterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!this.state.currentUser!.is_twitter_connected) {
+    if (!this.state.currentUser!.isTwitterConnected) {
       connectTwitter().then(() => {
         this.setState((state: AddRecordState) => ({
           publishTwitter: true,
-          currentUser: { ...state.currentUser!, is_twitter_connected: true },
+          currentUser: { ...state.currentUser!, isTwitterConnected: true },
         }));
       });
     } else {
@@ -230,22 +229,13 @@ class AddRecord<T> extends React.Component<AddRecordProps<T>, AddRecordState> {
     setLastPublishTwitter(this.state.publishTwitter);
     graphql(this.props.createRecordMutation, {input: {
       title: this._titleEl!.value,
-      statusType: this.state.statusType as GqlStatusType,
+      statusType: this.state.statusType,
       status: this.state.status,
       categoryId: this.state.selectedCategoryId !== '' ? this.state.selectedCategoryId : null,
       comment: this.state.comment,
       rating: this.state.rating,
       publishTwitter: this.state.publishTwitter,
     }})
-    // createRecord({
-    //   title: this._titleEl!.value,
-    //   statusType: this.state.statusType,
-    //   status: this.state.status,
-    //   categoryId: this.state.selectedCategoryId !== '' ? Number(this.state.selectedCategoryId) : null,
-    //   comment: this.state.comment,
-    //   rating: this.state.rating,
-    //   publishTwitter: this.state.publishTwitter,
-    // })
       .then(result => {
         this.props.onCreate(result.createRecord);
         this.setState({ isRequesting: false });
@@ -256,12 +246,7 @@ class AddRecord<T> extends React.Component<AddRecordProps<T>, AddRecordState> {
 
   async _load() {
     // TODO: cache
-    const currentUser = await getCurrentUser({
-      options: {
-        categories: true,
-        twitter: true,
-      },
-    });
+    const {currentUser} = await graphql(AddRecordDialogDocument)
     if (!currentUser) {
       alert('로그인 후 추가할 수 있습니다.');
       LoginDialog.open();

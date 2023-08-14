@@ -7,7 +7,7 @@ import * as util from '../util';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faPencil, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { TableItem_CreateRecordDocument, TableItem_CreateRecordMutation, TableItem_ItemFragment, TableItem_Item_RecordFragment } from './__generated__/TableItem.graphql';
-import { CreditType, WorkSchedule } from '../__generated__/globalTypes';
+import { CreditType, StatusType, WorkSchedule } from '../__generated__/globalTypes';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -71,7 +71,7 @@ class StatusButton extends React.Component<StatusButtonProps> {
         </Link>
         {this.state.showAddModal && (
           <AddRecordDialog
-            initialStatusType="INTERESTED"
+            initialStatusType={StatusType.Interested}
             initialTitle={this.props.item.title}
             onCancel={this._closeAddModal}
             onCreate={this._recordAdded}

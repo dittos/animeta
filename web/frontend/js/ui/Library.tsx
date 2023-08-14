@@ -17,7 +17,7 @@ import { faCaretDown, faCaretUp, faPlus, faStar } from '@fortawesome/free-solid-
 import { Library_CreateRecordDocument, Library_UserFragment } from './__generated__/Library.graphql';
 import { LibraryFilter } from './LibraryFilter';
 import { NormalizedUserRouteQuery, serializeUserRouteQuery } from '../UserRouteUtils';
-import { RecordOrder } from '../__generated__/globalTypes';
+import { RecordOrder, StatusType } from '../__generated__/globalTypes';
 
 const ENABLE_NEW_ADD_RECORD = false;
 
@@ -156,7 +156,7 @@ class Library extends React.Component<LibraryProps> {
               {this.state.showAddModal && (
                 /* TODO: automatically set selected filter state */
                 <AddRecordDialog
-                  initialStatusType="FINISHED"
+                  initialStatusType={StatusType.Finished}
                   onCancel={() => this.setState({ showAddModal: false })}
                   onCreate={this._recordCreated}
                   createRecordMutation={Library_CreateRecordDocument}

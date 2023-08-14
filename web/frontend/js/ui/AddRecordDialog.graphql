@@ -1,0 +1,13 @@
+query AddRecordDialog {
+  currentUser {
+    isTwitterConnected
+    categories {
+      ...AddRecordDialog_category
+    }
+  }
+}
+
+fragment AddRecordDialog_category on Category {
+  id
+  name
+}
