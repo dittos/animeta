@@ -54,6 +54,13 @@ export type Record = Node & {
   updatedAt: Maybe<Scalars['GraphQLTimestamp']>;
   rating: Maybe<Scalars['Float']>;
   hasNewerEpisode: Maybe<Scalars['Boolean']>;
+  posts: PostConnection;
+};
+
+
+export type RecordPostsArgs = {
+  beforeId: InputMaybe<Scalars['ID']>;
+  count: InputMaybe<Scalars['Int']>;
 };
 
 export type RecordConnection = {
@@ -201,6 +208,196 @@ export enum StatusType {
   Suspended = 'SUSPENDED',
   Interested = 'INTERESTED'
 }
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  _empty: Maybe<Scalars['Boolean']>;
+  createCategory: CreateCategoryResult;
+  createPost: CreatePostResult;
+  deleteCategory: DeleteCategoryResult;
+  createRecord: CreateRecordResult;
+  deletePost: DeletePostResult;
+  renameCategory: RenameCategoryResult;
+  deleteRecord: DeleteRecordResult;
+  updateCategoryOrder: UpdateCategoryOrderResult;
+  updateRecordCategoryId: UpdateRecordCategoryIdResult;
+  updateRecordRating: UpdateRecordRatingResult;
+  updateRecordTitle: UpdateRecordTitleResult;
+};
+
+
+export type MutationCreateCategoryArgs = {
+  input: CreateCategoryInput;
+};
+
+
+export type MutationCreatePostArgs = {
+  input: CreatePostInput;
+};
+
+
+export type MutationDeleteCategoryArgs = {
+  input: DeleteCategoryInput;
+};
+
+
+export type MutationCreateRecordArgs = {
+  input: CreateRecordInput;
+};
+
+
+export type MutationDeletePostArgs = {
+  input: DeletePostInput;
+};
+
+
+export type MutationRenameCategoryArgs = {
+  input: RenameCategoryInput;
+};
+
+
+export type MutationDeleteRecordArgs = {
+  input: DeleteRecordInput;
+};
+
+
+export type MutationUpdateCategoryOrderArgs = {
+  input: UpdateCategoryOrderInput;
+};
+
+
+export type MutationUpdateRecordCategoryIdArgs = {
+  input: UpdateRecordCategoryIdInput;
+};
+
+
+export type MutationUpdateRecordRatingArgs = {
+  input: UpdateRecordRatingInput;
+};
+
+
+export type MutationUpdateRecordTitleArgs = {
+  input: UpdateRecordTitleInput;
+};
+
+export type CreateCategoryInput = {
+  name: Scalars['String'];
+};
+
+export type CreateCategoryResult = {
+  __typename?: 'CreateCategoryResult';
+  category: Category;
+};
+
+export type CreatePostInput = {
+  recordId: Scalars['ID'];
+  status: Scalars['String'];
+  statusType: StatusType;
+  comment: Scalars['String'];
+  containsSpoiler: InputMaybe<Scalars['Boolean']>;
+  publishTwitter: InputMaybe<Scalars['Boolean']>;
+  rating: InputMaybe<Scalars['Float']>;
+};
+
+export type CreatePostResult = {
+  __typename?: 'CreatePostResult';
+  post: Post;
+};
+
+export type DeleteCategoryInput = {
+  categoryId: Scalars['ID'];
+};
+
+export type DeleteCategoryResult = {
+  __typename?: 'DeleteCategoryResult';
+  deleted: Scalars['Boolean'];
+  user: Maybe<User>;
+};
+
+export type CreateRecordInput = {
+  title: Scalars['String'];
+  categoryId: InputMaybe<Scalars['ID']>;
+  status: Scalars['String'];
+  statusType: StatusType;
+  comment: Scalars['String'];
+  publishTwitter: InputMaybe<Scalars['Boolean']>;
+  rating: InputMaybe<Scalars['Float']>;
+};
+
+export type CreateRecordResult = {
+  __typename?: 'CreateRecordResult';
+  record: Record;
+  post: Maybe<Post>;
+};
+
+export type DeletePostInput = {
+  postId: Scalars['ID'];
+};
+
+export type DeletePostResult = {
+  __typename?: 'DeletePostResult';
+  deleted: Scalars['Boolean'];
+  record: Maybe<Record>;
+};
+
+export type RenameCategoryInput = {
+  categoryId: Scalars['ID'];
+  name: Scalars['String'];
+};
+
+export type RenameCategoryResult = {
+  __typename?: 'RenameCategoryResult';
+  category: Category;
+};
+
+export type DeleteRecordInput = {
+  recordId: Scalars['ID'];
+};
+
+export type DeleteRecordResult = {
+  __typename?: 'DeleteRecordResult';
+  deleted: Scalars['Boolean'];
+  user: Maybe<User>;
+};
+
+export type UpdateCategoryOrderInput = {
+  categoryIds: Array<Scalars['ID']>;
+};
+
+export type UpdateCategoryOrderResult = {
+  __typename?: 'UpdateCategoryOrderResult';
+  categories: Array<Category>;
+};
+
+export type UpdateRecordCategoryIdInput = {
+  recordId: Scalars['ID'];
+  categoryId: InputMaybe<Scalars['ID']>;
+};
+
+export type UpdateRecordCategoryIdResult = {
+  __typename?: 'UpdateRecordCategoryIdResult';
+  record: Record;
+};
+
+export type UpdateRecordRatingInput = {
+  recordId: Scalars['ID'];
+  rating: InputMaybe<Scalars['Float']>;
+};
+
+export type UpdateRecordRatingResult = {
+  __typename?: 'UpdateRecordRatingResult';
+  record: Record;
+};
+
+export type UpdateRecordTitleInput = {
+  recordId: Scalars['ID'];
+  title: Scalars['String'];
+};
+
+export type UpdateRecordTitleResult = {
+  __typename?: 'UpdateRecordTitleResult';
+  record: Record;
+};
 
 export type Query = {
   __typename?: 'Query';
@@ -371,196 +568,6 @@ export type WorksChartItem = {
   work: Work;
   diff: Maybe<Scalars['Int']>;
   sign: Maybe<Scalars['Int']>;
-};
-
-export type Mutation = {
-  __typename?: 'Mutation';
-  createCategory: CreateCategoryResult;
-  createPost: CreatePostResult;
-  _empty: Maybe<Scalars['Boolean']>;
-  createRecord: CreateRecordResult;
-  deleteCategory: DeleteCategoryResult;
-  deleteRecord: DeleteRecordResult;
-  renameCategory: RenameCategoryResult;
-  deletePost: DeletePostResult;
-  updateCategoryOrder: UpdateCategoryOrderResult;
-  updateRecordCategoryId: UpdateRecordCategoryIdResult;
-  updateRecordRating: UpdateRecordRatingResult;
-  updateRecordTitle: UpdateRecordTitleResult;
-};
-
-
-export type MutationCreateCategoryArgs = {
-  input: CreateCategoryInput;
-};
-
-
-export type MutationCreatePostArgs = {
-  input: CreatePostInput;
-};
-
-
-export type MutationCreateRecordArgs = {
-  input: CreateRecordInput;
-};
-
-
-export type MutationDeleteCategoryArgs = {
-  input: DeleteCategoryInput;
-};
-
-
-export type MutationDeleteRecordArgs = {
-  input: DeleteRecordInput;
-};
-
-
-export type MutationRenameCategoryArgs = {
-  input: RenameCategoryInput;
-};
-
-
-export type MutationDeletePostArgs = {
-  input: DeletePostInput;
-};
-
-
-export type MutationUpdateCategoryOrderArgs = {
-  input: UpdateCategoryOrderInput;
-};
-
-
-export type MutationUpdateRecordCategoryIdArgs = {
-  input: UpdateRecordCategoryIdInput;
-};
-
-
-export type MutationUpdateRecordRatingArgs = {
-  input: UpdateRecordRatingInput;
-};
-
-
-export type MutationUpdateRecordTitleArgs = {
-  input: UpdateRecordTitleInput;
-};
-
-export type CreateCategoryInput = {
-  name: Scalars['String'];
-};
-
-export type CreateCategoryResult = {
-  __typename?: 'CreateCategoryResult';
-  category: Category;
-};
-
-export type CreatePostInput = {
-  recordId: Scalars['ID'];
-  status: Scalars['String'];
-  statusType: StatusType;
-  comment: Scalars['String'];
-  containsSpoiler: InputMaybe<Scalars['Boolean']>;
-  publishTwitter: InputMaybe<Scalars['Boolean']>;
-  rating: InputMaybe<Scalars['Float']>;
-};
-
-export type CreatePostResult = {
-  __typename?: 'CreatePostResult';
-  post: Post;
-};
-
-export type CreateRecordInput = {
-  title: Scalars['String'];
-  categoryId: InputMaybe<Scalars['ID']>;
-  status: Scalars['String'];
-  statusType: StatusType;
-  comment: Scalars['String'];
-  publishTwitter: InputMaybe<Scalars['Boolean']>;
-  rating: InputMaybe<Scalars['Float']>;
-};
-
-export type CreateRecordResult = {
-  __typename?: 'CreateRecordResult';
-  record: Record;
-  post: Maybe<Post>;
-};
-
-export type DeleteCategoryInput = {
-  categoryId: Scalars['ID'];
-};
-
-export type DeleteCategoryResult = {
-  __typename?: 'DeleteCategoryResult';
-  deleted: Scalars['Boolean'];
-  user: Maybe<User>;
-};
-
-export type DeleteRecordInput = {
-  recordId: Scalars['ID'];
-};
-
-export type DeleteRecordResult = {
-  __typename?: 'DeleteRecordResult';
-  deleted: Scalars['Boolean'];
-  user: Maybe<User>;
-};
-
-export type RenameCategoryInput = {
-  categoryId: Scalars['ID'];
-  name: Scalars['String'];
-};
-
-export type RenameCategoryResult = {
-  __typename?: 'RenameCategoryResult';
-  category: Category;
-};
-
-export type DeletePostInput = {
-  postId: Scalars['ID'];
-};
-
-export type DeletePostResult = {
-  __typename?: 'DeletePostResult';
-  deleted: Scalars['Boolean'];
-  record: Maybe<Record>;
-};
-
-export type UpdateCategoryOrderInput = {
-  categoryIds: Array<Scalars['ID']>;
-};
-
-export type UpdateCategoryOrderResult = {
-  __typename?: 'UpdateCategoryOrderResult';
-  categories: Array<Category>;
-};
-
-export type UpdateRecordCategoryIdInput = {
-  recordId: Scalars['ID'];
-  categoryId: InputMaybe<Scalars['ID']>;
-};
-
-export type UpdateRecordCategoryIdResult = {
-  __typename?: 'UpdateRecordCategoryIdResult';
-  record: Record;
-};
-
-export type UpdateRecordRatingInput = {
-  recordId: Scalars['ID'];
-  rating: InputMaybe<Scalars['Float']>;
-};
-
-export type UpdateRecordRatingResult = {
-  __typename?: 'UpdateRecordRatingResult';
-  record: Record;
-};
-
-export type UpdateRecordTitleInput = {
-  recordId: Scalars['ID'];
-  title: Scalars['String'];
-};
-
-export type UpdateRecordTitleResult = {
-  __typename?: 'UpdateRecordTitleResult';
-  record: Record;
 };
 
 export type WorkDtoFragment = { __typename?: 'Work', id: string, title: string | null, imageUrl: string | null, recordCount: number | null, record: { __typename?: 'Record', id: string } | null, metadata: { __typename?: 'WorkMetadata', periods: Array<string> | null, studioNames: Array<string> | null, source: SourceType | null, websiteUrl: string | null, namuwikiUrl: string | null, annUrl: string | null, durationMinutes: number | null, schedules: Array<{ __typename?: 'WorkSchedule', country: string, date: any | null, datePrecision: DatePrecision | null, broadcasts: Array<string> | null }> | null } | null };

@@ -9,6 +9,7 @@ type Record implements Node {
   updatedAt: GraphQLTimestamp
   rating: Float
   hasNewerEpisode: Boolean
+  posts(beforeId: ID, count: Int): PostConnection!
 }
 
 type RecordConnection {

@@ -5,6 +5,7 @@ import { getUser } from "src2/services/user"
 import { getWork } from "src2/services/work"
 import { getCategory } from "src2/services/category";
 import { hasNewerEpisode } from "src2/services/record";
+import { getRecordPosts } from "src2/services/post";
 
 export const Record: RecordResolvers = {
   async user(record, _, _2, info) {
@@ -27,4 +28,10 @@ export const Record: RecordResolvers = {
   statusType: (record) => StatusType[record.status_type] as keyof typeof StatusType,
   updatedAt: (record) => record.updated_at,
   hasNewerEpisode: (record, _, ctx) => record.user_id === ctx.currentUser?.id ? hasNewerEpisode(record) : null,
+
+  posts: (record, { beforeId, count }) =>
+    getRecordPosts(record, {
+      beforeId: beforeId != null ? Number(beforeId) : null,
+      count,
+    }),
 }

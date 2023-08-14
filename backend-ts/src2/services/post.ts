@@ -1,4 +1,5 @@
 import { History } from "src/entities/history.entity";
+import { Record } from "src/entities/record.entity";
 import { User } from "src/entities/user.entity";
 import { Work } from "src/entities/work.entity";
 import { db } from "src2/database";
@@ -49,5 +50,24 @@ export async function getUserPosts(user: User, { beforeId, count }: {
   return {
     nodes: nodes.slice(0, count),
     hasMore: nodes.length > count,
+  }
+}
+
+// 이게 여기있는게 맞나...
+export async function getRecordPosts(record: Record, { beforeId, count }: {
+  beforeId?: number | null;
+  count?: number | null;
+}) {
+  const nodes = await db.find(History, {
+    where: {
+      record,
+      ...beforeId ? { id: LessThan(beforeId) } : {},
+    },
+    order: { id: 'DESC' },
+    ...count ? { take: count + 1 } : {},
+  })
+  return {
+    nodes: count ? nodes.slice(0, count) : nodes,
+    hasMore: count ? nodes.length > count : false,
   }
 }
