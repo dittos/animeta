@@ -170,6 +170,22 @@ export async function addRecordHistory(em: EntityManager, record: Record, params
   return history
 }
 
+export async function deleteRecordHistory(em: EntityManager, history: History) {
+  const record = history.record
+  if (await em.count(History, { where: { record } }) === 1)
+    throw new ValidationError('등록된 작품마다 최소 1개의 기록이 필요합니다.')
+  await em.remove(history)
+
+  const latestHistory = (await em.find(History, {
+    where: {record},
+    order: {id: 'DESC'},
+    take: 1,
+  }))[0]
+  record.status = latestHistory.status
+  record.status_type = latestHistory.status_type
+  await em.save(record)
+}
+
 function isValidRating(rating: number) {
   return [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].includes(rating)
 }
