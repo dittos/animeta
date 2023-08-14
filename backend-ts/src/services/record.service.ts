@@ -191,7 +191,14 @@ function isValidRating(rating: number) {
 }
 
 export async function updateRecordWorkAndTitle(em: EntityManager, record: Record, work: Work, title: string) {
-  record.work_id = work.id
+  if (record.work_id !== work.id) {
+    const existingRecord = await em.findOne(Record, { where: {user_id: record.user_id, work_id: work.id} })
+    if (existingRecord != null)
+      throw new ValidationError(`이미 등록된 작품입니다. (${existingRecord.title})`)
+
+    record.work_id = work.id
+  }
+
   record.title = title
   await em.save(record)
   await em.update(History, {record}, {work_id: work.id})
