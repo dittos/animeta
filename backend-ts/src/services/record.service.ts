@@ -91,8 +91,7 @@ export class RecordService {
   }
 
   async delete(em: EntityManager, record: Record) {
-    await em.delete(History, {record})
-    await em.remove(record)
+    return deleteRecord(em, record)
   }
 }
 
@@ -193,4 +192,9 @@ export async function updateRecordRating(record: Record, rating: number | null):
   }
   record.rating = rating
   await db.save(record)
+}
+
+export async function deleteRecord(em: EntityManager, record: Record) {
+  await em.delete(History, {record})
+  await em.remove(record)
 }

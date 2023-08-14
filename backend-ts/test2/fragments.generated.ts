@@ -61,6 +61,17 @@ export type RecordConnection = {
   nodes: Array<Record>;
 };
 
+export type Node = {
+  id: Scalars['ID'];
+};
+
+export enum StatusType {
+  Finished = 'FINISHED',
+  Watching = 'WATCHING',
+  Suspended = 'SUSPENDED',
+  Interested = 'INTERESTED'
+}
+
 export type User = Node & {
   __typename?: 'User';
   id: Scalars['ID'];
@@ -191,17 +202,6 @@ export enum DatePrecision {
   DateTime = 'DATE_TIME'
 }
 
-export type Node = {
-  id: Scalars['ID'];
-};
-
-export enum StatusType {
-  Finished = 'FINISHED',
-  Watching = 'WATCHING',
-  Suspended = 'SUSPENDED',
-  Interested = 'INTERESTED'
-}
-
 export type Mutation = {
   __typename?: 'Mutation';
   _empty: Maybe<Scalars['Boolean']>;
@@ -209,9 +209,10 @@ export type Mutation = {
   createRecord: CreateRecordResult;
   deleteCategory: DeleteCategoryResult;
   renameCategory: RenameCategoryResult;
+  deleteRecord: DeleteRecordResult;
   updateCategoryOrder: UpdateCategoryOrderResult;
-  updateRecordCategoryId: UpdateRecordCategoryIdResult;
   updateRecordRating: UpdateRecordRatingResult;
+  updateRecordCategoryId: UpdateRecordCategoryIdResult;
   updateRecordTitle: UpdateRecordTitleResult;
 };
 
@@ -236,18 +237,23 @@ export type MutationRenameCategoryArgs = {
 };
 
 
+export type MutationDeleteRecordArgs = {
+  input: DeleteRecordInput;
+};
+
+
 export type MutationUpdateCategoryOrderArgs = {
   input: UpdateCategoryOrderInput;
 };
 
 
-export type MutationUpdateRecordCategoryIdArgs = {
-  input: UpdateRecordCategoryIdInput;
+export type MutationUpdateRecordRatingArgs = {
+  input: UpdateRecordRatingInput;
 };
 
 
-export type MutationUpdateRecordRatingArgs = {
-  input: UpdateRecordRatingInput;
+export type MutationUpdateRecordCategoryIdArgs = {
+  input: UpdateRecordCategoryIdInput;
 };
 
 
@@ -300,6 +306,16 @@ export type RenameCategoryResult = {
   category: Category;
 };
 
+export type DeleteRecordInput = {
+  recordId: Scalars['ID'];
+};
+
+export type DeleteRecordResult = {
+  __typename?: 'DeleteRecordResult';
+  deleted: Scalars['Boolean'];
+  user: Maybe<User>;
+};
+
 export type UpdateCategoryOrderInput = {
   categoryIds: Array<Scalars['ID']>;
 };
@@ -307,6 +323,16 @@ export type UpdateCategoryOrderInput = {
 export type UpdateCategoryOrderResult = {
   __typename?: 'UpdateCategoryOrderResult';
   categories: Array<Category>;
+};
+
+export type UpdateRecordRatingInput = {
+  recordId: Scalars['ID'];
+  rating: InputMaybe<Scalars['Float']>;
+};
+
+export type UpdateRecordRatingResult = {
+  __typename?: 'UpdateRecordRatingResult';
+  record: Record;
 };
 
 export type UpdateRecordCategoryIdInput = {
@@ -319,13 +345,13 @@ export type UpdateRecordCategoryIdResult = {
   record: Record;
 };
 
-export type UpdateRecordRatingInput = {
+export type UpdateRecordTitleInput = {
   recordId: Scalars['ID'];
-  rating: InputMaybe<Scalars['Float']>;
+  title: Scalars['String'];
 };
 
-export type UpdateRecordRatingResult = {
-  __typename?: 'UpdateRecordRatingResult';
+export type UpdateRecordTitleResult = {
+  __typename?: 'UpdateRecordTitleResult';
   record: Record;
 };
 
@@ -339,9 +365,9 @@ export type Query = {
   workByTitle: Maybe<Work>;
   post: Maybe<Post>;
   record: Maybe<Record>;
+  searchWorks: Maybe<SearchWorksResult>;
   curatedLists: Array<CuratedList>;
   curatedList: Maybe<CuratedList>;
-  searchWorks: Maybe<SearchWorksResult>;
   tablePeriod: Maybe<TablePeriod>;
   currentTablePeriod: TablePeriod;
   tablePeriods: Array<TablePeriod>;
@@ -385,13 +411,13 @@ export type QueryRecordArgs = {
 };
 
 
-export type QueryCuratedListArgs = {
-  id: Scalars['ID'];
+export type QuerySearchWorksArgs = {
+  query: Scalars['String'];
 };
 
 
-export type QuerySearchWorksArgs = {
-  query: Scalars['String'];
+export type QueryCuratedListArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -404,14 +430,15 @@ export type QueryWeeklyWorksChartArgs = {
   limit: Scalars['Int'];
 };
 
-export type UpdateRecordTitleInput = {
-  recordId: Scalars['ID'];
-  title: Scalars['String'];
+export type SearchWorksResult = {
+  __typename?: 'SearchWorksResult';
+  edges: Array<SearchWorksResultEdge>;
 };
 
-export type UpdateRecordTitleResult = {
-  __typename?: 'UpdateRecordTitleResult';
-  record: Record;
+export type SearchWorksResultEdge = {
+  __typename?: 'SearchWorksResultEdge';
+  node: Work;
+  recordCount: Maybe<Scalars['Int']>;
 };
 
 export type CuratedList = {
@@ -430,17 +457,6 @@ export type CuratedListWorkConnection = {
 export type CuratedListWorkEdge = {
   __typename?: 'CuratedListWorkEdge';
   node: Maybe<Work>;
-};
-
-export type SearchWorksResult = {
-  __typename?: 'SearchWorksResult';
-  edges: Array<SearchWorksResultEdge>;
-};
-
-export type SearchWorksResultEdge = {
-  __typename?: 'SearchWorksResultEdge';
-  node: Work;
-  recordCount: Maybe<Scalars['Int']>;
 };
 
 export type TablePeriod = {
