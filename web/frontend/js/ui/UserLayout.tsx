@@ -2,9 +2,9 @@ import * as React from 'react';
 import { Link } from 'nuri';
 import Styles from './UserLayout.less';
 import * as Grid from './Grid';
-import { UserDTO } from '../../../shared/types_generated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
+import { UserLayout_CurrentUserFragment, UserLayout_UserFragment } from './__generated__/UserLayout.graphql';
 
 export interface UserLayoutProps {
   data: UserLayoutPropsData;
@@ -13,15 +13,14 @@ export interface UserLayoutProps {
 }
 
 export interface UserLayoutPropsData {
-  currentUser: UserDTO | null;
-  user: UserDTO;
+  currentUser: UserLayout_CurrentUserFragment | null;
+  user: UserLayout_UserFragment;
 }
 
 export default function UserLayout(props: UserLayoutProps) {
-  const { user, currentUser } = props.data;
-  const basePath = `/users/${encodeURIComponent(user.name)}/`;
-  const joinedDate = new Date(user.date_joined);
-  const isCurrentUser = currentUser && currentUser.id === user.id;
+  const { user } = props.data;
+  const basePath = `/users/${encodeURIComponent(user.name!)}/`;
+  const joinedDate = new Date(user.joinedAt);
   return (
     <div>
       <div className={Styles.header}>
@@ -40,14 +39,14 @@ export default function UserLayout(props: UserLayoutProps) {
           <Grid.Column size={9} pull="left" className={Styles.nav}>
             <Link to={basePath} className={Styles.navItem}>
               작품{' '}
-              <span className={Styles.navItemCount}>{user.record_count}</span>
+              <span className={Styles.navItemCount}>{user.recordCount}</span>
             </Link>
             <Link to={`${basePath}history/`} className={Styles.navItem}>
               기록{' '}
-              <span className={Styles.navItemCount}>{user.history_count}</span>
+              <span className={Styles.navItemCount}>{user.postCount}</span>
             </Link>
             <div style={{ flex: 1 }} />
-            {isCurrentUser && (
+            {user.isCurrentUser && (
               <Link to={`/settings/`} className={Styles.settingsNavItem}>
                 <FontAwesomeIcon icon={faCog} />
                 설정

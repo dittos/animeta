@@ -10,7 +10,7 @@ import PostComment from '../ui/PostComment';
 import Styles from '../ui/RecordDetail.module.less';
 import { getRecordPosts } from '../API';
 import connectTwitter from '../connectTwitter';
-import { GqlUser as User } from '../layouts';
+import { User } from '../layouts';
 import { CenteredFullWidth } from '../ui/Layout';
 import ModalStyles from '../ui/Modal.less';
 import { trackEvent } from '../Tracking';
@@ -21,7 +21,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
 import { Rating } from '../ui/Rating';
 import { RecordRouteDocument, RecordRouteQuery, RecordRoute_CreatePostDocument, RecordRoute_DeletePostDocument, RecordRoute_DeleteRecordDocument, RecordRoute_HeaderFragment, RecordRoute_Header_CategoryFragment, RecordRoute_RecordFragment, RecordRoute_UpdateCategoryDocument, RecordRoute_UpdateRatingDocument, RecordRoute_UpdateTitleDocument } from './__generated__/Record.graphql';
-import { UserLayoutPropsData } from '../ui/GqlUserLayout';
+import { UserLayoutPropsData } from '../ui/UserLayout';
 
 type RecordRouteData = UserLayoutPropsData & RecordRouteQuery & {
   record: NonNullable<RecordRouteQuery['record']>;

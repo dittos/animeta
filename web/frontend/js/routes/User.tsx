@@ -1,11 +1,11 @@
 import { RouteComponentProps, RouteHandler } from '../routes';
 import React from 'react';
-import { GqlUser as UserLayout } from '../layouts';
+import { User as UserLayout } from '../layouts';
 import { RecordDTO } from '../../../shared/types';
 import Library from '../ui/Library';
 import { UserRouteDocument, UserRouteQuery } from './__generated__/User.graphql';
 import { NormalizedUserRouteQuery, normalizeUserRouteQuery } from '../UserRouteUtils';
-import { UserLayoutPropsData } from '../ui/GqlUserLayout';
+import { UserLayoutPropsData } from '../ui/UserLayout';
 
 type UserRouteData = UserLayoutPropsData & UserRouteQuery & {
   query: NormalizedUserRouteQuery;

@@ -3,7 +3,6 @@ import React from 'react';
 import { UserDTO } from '../../shared/types';
 import { GlobalHeader, GlobalHeaderProps } from './ui/GlobalHeader';
 import UserLayout, { UserLayoutProps, UserLayoutPropsData } from './ui/UserLayout';
-import GqlUserLayout, { UserLayoutProps as GqlUserLayoutProps, UserLayoutPropsData as GqlUserLayoutPropsData } from './ui/GqlUserLayout';
 import * as Sentry from '@sentry/react';
 
 function ErrorFallback() {
@@ -42,8 +41,7 @@ export function User<Data extends UserLayoutPropsData>(
       <GlobalHeader
         currentUsername={props.data.currentUser?.name}
         activeMenu={
-          props.data.currentUser &&
-          props.data.currentUser.id === props.data.user.id
+          props.data.user.isCurrentUser
             ? 'user'
             : null
         }
@@ -52,29 +50,6 @@ export function User<Data extends UserLayoutPropsData>(
       <UserLayout {...props} {...layoutProps}>
         <Component {...props} />
       </UserLayout>
-    </Sentry.ErrorBoundary>
-  );
-}
-
-export function GqlUser<Data extends GqlUserLayoutPropsData>(
-  Component: React.JSXElementConstructor<RouteComponentProps<Data>>,
-  layoutProps: Partial<GqlUserLayoutProps> = {},
-  globalHeaderProps: Partial<GlobalHeaderProps> = {}
-) {
-  return (props: RouteComponentProps<Data>) => (
-    <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
-      <GlobalHeader
-        currentUsername={props.data.currentUser?.name}
-        activeMenu={
-          props.data.user.isCurrentUser
-            ? 'user'
-            : null
-        }
-        {...globalHeaderProps}
-      />
-      <GqlUserLayout {...props} {...layoutProps}>
-        <Component {...props} />
-      </GqlUserLayout>
     </Sentry.ErrorBoundary>
   );
 }

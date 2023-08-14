@@ -1,11 +1,11 @@
 import { RouteComponentProps, RouteHandler } from '../routes';
 import React, { useState } from 'react';
-import { GqlUser as User } from '../layouts';
+import { User } from '../layouts';
 import * as Layout from '../ui/Layout';
 import { LoadMore } from '../ui/LoadMore';
 import { Post } from '../ui/Post';
 import Styles from './UserHistory.less';
-import { UserLayoutPropsData } from '../ui/GqlUserLayout';
+import { UserLayoutPropsData } from '../ui/UserLayout';
 import { UserHistoryRouteDocument, UserHistoryRouteQuery, UserHistoryRoute_MorePostsDocument } from './__generated__/UserHistory.graphql';
 import { Post_PostFragment } from '../ui/__generated__/Post.graphql';
 

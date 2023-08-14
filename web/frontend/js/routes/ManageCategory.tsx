@@ -1,12 +1,12 @@
 /* global confirm */
 import React from 'react';
-import { GqlUser as User } from '../layouts';
+import { User } from '../layouts';
 import { Sortable } from '../ui/Sortable';
 import { CenteredFullWidth } from '../ui/Layout';
 import { graphql } from '../API';
 import Styles from './ManageCategory.less';
 import { RouteComponentProps, RouteHandler } from '../routes';
-import { UserLayoutPropsData } from '../ui/GqlUserLayout';
+import { UserLayoutPropsData } from '../ui/UserLayout';
 import { ManageCategoryRouteDocument, ManageCategoryRouteQuery, ManageCategory_CategoryFragment, ManageCategory_CreateCategoryDocument, ManageCategory_DeleteCategoryDocument, ManageCategory_RenameCategoryDocument, ManageCategory_UpdateCategoryOrderDocument } from './__generated__/ManageCategory.graphql';
 
 type ManageCategoryRouteData = UserLayoutPropsData & ManageCategoryRouteQuery & {

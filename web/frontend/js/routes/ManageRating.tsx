@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
-import { GqlUser as User } from "../layouts";
+import { User } from "../layouts";
 import { RouteComponentProps, RouteHandler } from "../routes";
-import { UserLayoutPropsData } from "../ui/GqlUserLayout";
+import { UserLayoutPropsData } from "../ui/UserLayout";
 import Styles from "./ManageRating.module.less";
 import * as Grid from "../ui/Grid";
 import { Rating } from "../ui/Rating";

@@ -1,13 +1,13 @@
 import { RouteComponentProps, RouteHandler } from '../routes';
 import React, { useRef } from 'react';
-import { GqlUser as UserLayout } from '../layouts';
+import { User as UserLayout } from '../layouts';
 import * as Layout from '../ui/Layout';
 import * as Grid from '../ui/Grid';
 import Styles from '../../less/table-period.less';
 import { TableItem } from '../ui/TableItem';
 import { formatPeriod } from '../util';
 import { Link } from 'nuri';
-import { UserLayoutPropsData } from '../ui/GqlUserLayout';
+import { UserLayoutPropsData } from '../ui/UserLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { UserTableRouteDocument, UserTableRouteQuery } from './__generated__/UserTable.graphql';

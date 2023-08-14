@@ -1,11 +1,11 @@
 import React from 'react';
-import { GqlUser as User, Stackable, StackablePropsData } from '../layouts';
+import { User, Stackable, StackablePropsData } from '../layouts';
 import AddRecordDialog from '../ui/AddRecordDialog';
 import { trackEvent } from '../Tracking';
 import * as Mutations from '../Mutations';
 import { RouteComponentProps, RouteHandler } from '../routes';
 import { AddRecordRouteDocument, AddRecord_CreateRecordDocument, AddRecord_CreateRecordMutation } from './__generated__/AddRecord.graphql';
-import { UserLayoutPropsData } from '../ui/GqlUserLayout';
+import { UserLayoutPropsData } from '../ui/UserLayout';
 
 type AddRecordRouteData = StackablePropsData & UserLayoutPropsData & {
   title?: string;
