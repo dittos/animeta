@@ -1,8 +1,7 @@
 import * as Sentry from '@sentry/react';
 import fetch from 'cross-fetch';
-import { PostDTO, PostFetchOptions, RecordDTO, RecordFetchOptions, UserFetchOptions, StatusType } from '../../shared/types';
+import { RecordDTO, RecordFetchOptions, UserDTO, UserFetchOptions } from '../../shared/types';
 import * as CSRF from './CSRF';
-import { UserDTO } from '../../shared/types';
 import isString from 'lodash/isString';
 import graphqlRequest, { ClientError } from 'graphql-request';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
@@ -205,32 +204,6 @@ export function disconnectTwitter() {
 }
 
 // Record
-
-export function createRecord(
-  { title, statusType, status, categoryId, comment, rating, publishTwitter }: {
-    title: string;
-    statusType: StatusType;
-    status: string;
-    categoryId: number | null;
-    comment: string;
-    rating: number | null;
-    publishTwitter: boolean;
-  },
-  options: RecordFetchOptions | null = {},
-  postOptions: PostFetchOptions | null = null
-): Promise<{ record: RecordDTO | null; post: PostDTO | null }> {
-  return postJSON('/api/v4/CreateRecord', {
-    title,
-    categoryId,
-    status,
-    statusType,
-    comment,
-    rating,
-    publishTwitter,
-    options,
-    postOptions,
-  });
-}
 
 export function updateRecordRating(id: number, rating: number | null, options: RecordFetchOptions): Promise<{ record: RecordDTO }> {
   return postJSON('/api/v4/UpdateRecord', {
