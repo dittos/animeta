@@ -1,6 +1,6 @@
 type Post implements Node {
   id: ID!
-  databaseId: ID!
+  databaseId: String!
   record: Record
   statusType: StatusType
   status: String

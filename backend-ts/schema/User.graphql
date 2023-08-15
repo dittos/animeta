@@ -1,6 +1,6 @@
 type User implements Node {
   id: ID!
-  databaseId: ID!
+  databaseId: String!
   name: String
   joinedAt: GraphQLTimestamp
   isTwitterConnected: Boolean
