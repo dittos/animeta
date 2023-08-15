@@ -1,5 +1,6 @@
 type Work implements Node {
   id: ID!
+  databaseId: ID!
   title: String
   imageUrl: String
   record: Record

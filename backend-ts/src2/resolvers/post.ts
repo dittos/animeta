@@ -6,6 +6,7 @@ import { isIdOnly } from "./utils"
 import { getWork, getWorkEpisode } from "src2/services/work"
 
 export const Post: PostResolvers = {
+  databaseId: (entity) => entity.id.toString(),
   async user(history, _, _2, info) {
     const id = history.user_id
     if (isIdOnly(info)) return { id }

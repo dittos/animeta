@@ -10,6 +10,8 @@ import { getRecordByUserAndWork } from "src2/services/record"
 import { getWorkPosts } from "src2/services/post"
 
 export const Work: WorkResolvers = {
+  databaseId: (entity) => entity.id.toString(),
+  
   imageUrl: (work) => getWorkImageUrl(work),
   record: (work, _, ctx) => ctx.currentUser ? getRecordByUserAndWork(ctx.currentUser, work) : null,
   recordCount: async (work) => {

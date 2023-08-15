@@ -1,5 +1,6 @@
 type Category implements Node {
   id: ID!
+  databaseId: ID!
   user: User
   name: String!
 }

@@ -9,6 +9,8 @@ import { getUserPosts } from "src2/services/post";
 import { countRecordsForFilter, getUserRecords } from "src2/services/record";
 
 export const User: UserResolvers = {
+  databaseId: (entity) => entity.id.toString(),
+  
   name: (user) => user.username,
   joinedAt: (user) => user.date_joined,
   isCurrentUser: (user, _, { currentUser }) => user.id === currentUser?.id,

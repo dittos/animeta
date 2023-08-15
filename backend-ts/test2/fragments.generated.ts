@@ -14,16 +14,10 @@ export type Scalars = {
   GraphQLTimestamp: any;
 };
 
-export type Category = Node & {
-  __typename?: 'Category';
-  id: Scalars['ID'];
-  user: Maybe<User>;
-  name: Scalars['String'];
-};
-
 export type Post = Node & {
   __typename?: 'Post';
   id: Scalars['ID'];
+  databaseId: Scalars['ID'];
   record: Maybe<Record>;
   statusType: Maybe<StatusType>;
   status: Maybe<Scalars['String']>;
@@ -45,6 +39,7 @@ export type PostConnection = {
 export type Record = Node & {
   __typename?: 'Record';
   id: Scalars['ID'];
+  databaseId: Scalars['ID'];
   title: Maybe<Scalars['String']>;
   statusType: Maybe<StatusType>;
   status: Maybe<Scalars['String']>;
@@ -68,9 +63,18 @@ export type RecordConnection = {
   nodes: Array<Record>;
 };
 
+export type Category = Node & {
+  __typename?: 'Category';
+  id: Scalars['ID'];
+  databaseId: Scalars['ID'];
+  user: Maybe<User>;
+  name: Scalars['String'];
+};
+
 export type User = Node & {
   __typename?: 'User';
   id: Scalars['ID'];
+  databaseId: Scalars['ID'];
   name: Maybe<Scalars['String']>;
   joinedAt: Maybe<Scalars['GraphQLTimestamp']>;
   isTwitterConnected: Maybe<Scalars['Boolean']>;
@@ -132,6 +136,7 @@ export type RecordFilterItem = {
 export type Work = Node & {
   __typename?: 'Work';
   id: Scalars['ID'];
+  databaseId: Scalars['ID'];
   title: Maybe<Scalars['String']>;
   imageUrl: Maybe<Scalars['String']>;
   record: Maybe<Record>;
@@ -198,36 +203,20 @@ export enum DatePrecision {
   DateTime = 'DATE_TIME'
 }
 
-export type Node = {
-  id: Scalars['ID'];
-};
-
-export enum StatusType {
-  Finished = 'FINISHED',
-  Watching = 'WATCHING',
-  Suspended = 'SUSPENDED',
-  Interested = 'INTERESTED'
-}
-
 export type Mutation = {
   __typename?: 'Mutation';
   _empty: Maybe<Scalars['Boolean']>;
-  createCategory: CreateCategoryResult;
   createPost: CreatePostResult;
-  deleteCategory: DeleteCategoryResult;
-  createRecord: CreateRecordResult;
   deletePost: DeletePostResult;
-  renameCategory: RenameCategoryResult;
+  createRecord: CreateRecordResult;
+  deleteCategory: DeleteCategoryResult;
+  createCategory: CreateCategoryResult;
   deleteRecord: DeleteRecordResult;
   updateCategoryOrder: UpdateCategoryOrderResult;
+  renameCategory: RenameCategoryResult;
   updateRecordCategoryId: UpdateRecordCategoryIdResult;
   updateRecordRating: UpdateRecordRatingResult;
   updateRecordTitle: UpdateRecordTitleResult;
-};
-
-
-export type MutationCreateCategoryArgs = {
-  input: CreateCategoryInput;
 };
 
 
@@ -236,8 +225,8 @@ export type MutationCreatePostArgs = {
 };
 
 
-export type MutationDeleteCategoryArgs = {
-  input: DeleteCategoryInput;
+export type MutationDeletePostArgs = {
+  input: DeletePostInput;
 };
 
 
@@ -246,13 +235,13 @@ export type MutationCreateRecordArgs = {
 };
 
 
-export type MutationDeletePostArgs = {
-  input: DeletePostInput;
+export type MutationDeleteCategoryArgs = {
+  input: DeleteCategoryInput;
 };
 
 
-export type MutationRenameCategoryArgs = {
-  input: RenameCategoryInput;
+export type MutationCreateCategoryArgs = {
+  input: CreateCategoryInput;
 };
 
 
@@ -263,6 +252,11 @@ export type MutationDeleteRecordArgs = {
 
 export type MutationUpdateCategoryOrderArgs = {
   input: UpdateCategoryOrderInput;
+};
+
+
+export type MutationRenameCategoryArgs = {
+  input: RenameCategoryInput;
 };
 
 
@@ -280,14 +274,16 @@ export type MutationUpdateRecordTitleArgs = {
   input: UpdateRecordTitleInput;
 };
 
-export type CreateCategoryInput = {
-  name: Scalars['String'];
+export type Node = {
+  id: Scalars['ID'];
 };
 
-export type CreateCategoryResult = {
-  __typename?: 'CreateCategoryResult';
-  category: Category;
-};
+export enum StatusType {
+  Finished = 'FINISHED',
+  Watching = 'WATCHING',
+  Suspended = 'SUSPENDED',
+  Interested = 'INTERESTED'
+}
 
 export type CreatePostInput = {
   recordId: Scalars['ID'];
@@ -304,14 +300,14 @@ export type CreatePostResult = {
   post: Post;
 };
 
-export type DeleteCategoryInput = {
-  categoryId: Scalars['ID'];
+export type DeletePostInput = {
+  postId: Scalars['ID'];
 };
 
-export type DeleteCategoryResult = {
-  __typename?: 'DeleteCategoryResult';
+export type DeletePostResult = {
+  __typename?: 'DeletePostResult';
   deleted: Scalars['Boolean'];
-  user: Maybe<User>;
+  record: Maybe<Record>;
 };
 
 export type CreateRecordInput = {
@@ -330,23 +326,22 @@ export type CreateRecordResult = {
   post: Maybe<Post>;
 };
 
-export type DeletePostInput = {
-  postId: Scalars['ID'];
-};
-
-export type DeletePostResult = {
-  __typename?: 'DeletePostResult';
-  deleted: Scalars['Boolean'];
-  record: Maybe<Record>;
-};
-
-export type RenameCategoryInput = {
+export type DeleteCategoryInput = {
   categoryId: Scalars['ID'];
+};
+
+export type DeleteCategoryResult = {
+  __typename?: 'DeleteCategoryResult';
+  deleted: Scalars['Boolean'];
+  user: Maybe<User>;
+};
+
+export type CreateCategoryInput = {
   name: Scalars['String'];
 };
 
-export type RenameCategoryResult = {
-  __typename?: 'RenameCategoryResult';
+export type CreateCategoryResult = {
+  __typename?: 'CreateCategoryResult';
   category: Category;
 };
 
@@ -367,6 +362,16 @@ export type UpdateCategoryOrderInput = {
 export type UpdateCategoryOrderResult = {
   __typename?: 'UpdateCategoryOrderResult';
   categories: Array<Category>;
+};
+
+export type RenameCategoryInput = {
+  categoryId: Scalars['ID'];
+  name: Scalars['String'];
+};
+
+export type RenameCategoryResult = {
+  __typename?: 'RenameCategoryResult';
+  category: Category;
 };
 
 export type UpdateRecordCategoryIdInput = {
@@ -401,6 +406,9 @@ export type UpdateRecordTitleResult = {
 
 export type Query = {
   __typename?: 'Query';
+  curatedLists: Array<CuratedList>;
+  curatedList: Maybe<CuratedList>;
+  searchWorks: Maybe<SearchWorksResult>;
   currentUser: Maybe<User>;
   user: Maybe<User>;
   userByName: Maybe<User>;
@@ -409,13 +417,20 @@ export type Query = {
   workByTitle: Maybe<Work>;
   post: Maybe<Post>;
   record: Maybe<Record>;
-  curatedLists: Array<CuratedList>;
-  curatedList: Maybe<CuratedList>;
-  searchWorks: Maybe<SearchWorksResult>;
   tablePeriod: Maybe<TablePeriod>;
   currentTablePeriod: TablePeriod;
   tablePeriods: Array<TablePeriod>;
   weeklyWorksChart: Array<WorksChartItem>;
+};
+
+
+export type QueryCuratedListArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QuerySearchWorksArgs = {
+  query: Scalars['String'];
 };
 
 
@@ -452,16 +467,6 @@ export type QueryPostArgs = {
 
 export type QueryRecordArgs = {
   id: Scalars['ID'];
-};
-
-
-export type QueryCuratedListArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QuerySearchWorksArgs = {
-  query: Scalars['String'];
 };
 
 

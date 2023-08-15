@@ -1,5 +1,6 @@
 type Record implements Node {
   id: ID!
+  databaseId: ID!
   title: String
   statusType: StatusType
   status: String

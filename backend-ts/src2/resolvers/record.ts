@@ -8,6 +8,8 @@ import { hasNewerEpisode } from "src2/services/record";
 import { getRecordPosts } from "src2/services/post";
 
 export const Record: RecordResolvers = {
+  databaseId: (entity) => entity.id.toString(),
+  
   async user(record, _, _2, info) {
     const id = record.user_id
     if (isIdOnly(info)) return { id }
