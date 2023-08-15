@@ -29,7 +29,7 @@ class CategorySelect extends React.Component<CategorySelectProps> {
       <select {...props} value={selectedId} onChange={this._onChange}>
         <option value="">지정 안함</option>
         {categoryList.map(category => (
-          <option value={category.id}>{category.name}</option>
+          <option value={category.databaseId}>{category.name}</option>
         ))}
       </select>
     );

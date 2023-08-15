@@ -15,6 +15,6 @@ fragment LibraryFilter_recordFilter on RecordFilter {
 }
 
 fragment LibraryFilter_category on Category {
-  id
+  databaseId
   name
 }

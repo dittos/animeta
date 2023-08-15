@@ -3,7 +3,7 @@ query UserHistoryRoute($username: String!) {
     ...UserLayout_currentUser
   }
   user: userByName(name: $username) {
-    id
+    databaseId
     name
     ...UserLayout_user
     posts(count: 32) {
@@ -22,6 +22,7 @@ query UserHistoryRoute_morePosts($userId: ID!, $beforeId: ID) {
 
 fragment UserHistoryRoute_postConnection on PostConnection {
   nodes {
+    databaseId
     ...Post_post
   }
   hasMore

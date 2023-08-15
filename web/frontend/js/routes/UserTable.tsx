@@ -43,7 +43,7 @@ const UserTable: React.FC<RouteComponentProps<UserTableRouteData>> = ({ data }) 
           {items.map((item, i) => (
             <>
               <Grid.Column size={6} midSize={12} pull="left">
-                <TableItem key={item.work.id} item={item} onAddRecord={() => {}} />
+                <TableItem key={item.work.databaseId} item={item} onAddRecord={() => {}} />
               </Grid.Column>
               {i % 2 === 1 && <div style={{ clear: 'both' }} />}
             </>

@@ -31,9 +31,9 @@ class AddRecord extends React.Component<RouteComponentProps<AddRecordRouteData>>
       eventLabel: this.props.data.referrer,
     });
     Mutations.records.next({
-      id: result.record.id,
-      userId: result.record.user!.id,
-      workId: result.record.work!.id,
+      id: result.record.databaseId,
+      userId: result.record.user!.databaseId,
+      workId: result.record.work!.databaseId,
     });
     this._returnToUser();
   };

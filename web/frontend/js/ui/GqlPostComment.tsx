@@ -14,7 +14,7 @@ export default function GqlPostComment(props: Props) {
   const [showSpoiler, setShowSpoiler] = useState(false);
 
   // Reset showSpoiler state when post ID changes
-  useEffect(() => setShowSpoiler(false), [props.post.id]);
+  useEffect(() => setShowSpoiler(false), [props.post.databaseId]);
   
   const { comment, containsSpoiler } = props.post;
   if (!comment) return null;

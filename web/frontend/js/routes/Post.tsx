@@ -25,12 +25,12 @@ function Post({ data, writeData, loader }: RouteComponentProps<PostRouteData>) {
 
   useEffect(() => {
     loadMorePosts()
-  }, [post.id])
+  }, [post.databaseId])
 
   async function loadMorePosts() {
     const result = await loader.graphql(PostRoute_PostsDocument, {
-      workId: work!.id,
-      beforeId: posts?.length ? posts[posts.length - 1]?.id : null,
+      workId: work!.databaseId,
+      beforeId: posts?.length ? posts[posts.length - 1]?.databaseId : null,
       episode: episode?.number ?? null,
     })
     writeData(data => {
@@ -44,7 +44,7 @@ function Post({ data, writeData, loader }: RouteComponentProps<PostRouteData>) {
   }
 
   async function reload() {
-    const newData = await loader.graphql(PostRoute_RefetchDocument, { postId: post!.id })
+    const newData = await loader.graphql(PostRoute_RefetchDocument, { postId: post!.databaseId })
     writeData(data => {
       Object.assign(data, newData)
     });
@@ -67,7 +67,7 @@ function Post({ data, writeData, loader }: RouteComponentProps<PostRouteData>) {
         <WorkViews.WorkIndex
           postConnection={postConnection}
           loadMorePosts={loadMorePosts}
-          excludePostID={post.id}
+          excludePostID={post.databaseId}
         />
       </> : <>
         <div className={Styles.postOnly}>
@@ -110,10 +110,10 @@ const routeHandler: RouteHandler<PostRouteData> = {
     if (!post) return {};
     const { work } = post
     return {
-      og_url: `/-${post.id}`,
+      og_url: `/-${post.databaseId}`,
       og_type: 'article',
       og_image: work?.imageUrl,
-      tw_url: `/-${post.id}`,
+      tw_url: `/-${post.databaseId}`,
       tw_image: work?.imageUrl,
     };
   },

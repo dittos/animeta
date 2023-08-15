@@ -12,6 +12,6 @@ query IndexRoute_moreTimeline($timelineBeforeId: ID, $count: Int) {
 }
 
 fragment IndexRoute_timelinePost on Post {
-  id
+  databaseId
   ...Post_post
 }

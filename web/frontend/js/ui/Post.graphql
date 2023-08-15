@@ -1,5 +1,5 @@
 fragment Post_post on Post {
-  id
+  databaseId
   user {
     name
   }

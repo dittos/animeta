@@ -2,7 +2,7 @@ fragment WeeklyChart on Query {
   weeklyWorksChart(limit: 5) {
     rank
     work {
-      id
+      databaseId
       title
       imageUrl
     }

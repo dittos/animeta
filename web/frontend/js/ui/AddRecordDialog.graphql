@@ -8,6 +8,6 @@ query AddRecordDialog {
 }
 
 fragment AddRecordDialog_category on Category {
-  id
+  databaseId
   name
 }

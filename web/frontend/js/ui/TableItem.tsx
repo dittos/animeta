@@ -50,7 +50,7 @@ class StatusButton extends React.Component<StatusButtonProps> {
       return (
         <Link
           className={Styles.favoriteButtonActive}
-          to={`/records/${record.id}/`}
+          to={`/records/${record.databaseId}/`}
         >
           <FontAwesomeIcon icon={faPencil} />
           {record.statusType && util.GQL_STATUS_TYPE_TEXT[record.statusType]}

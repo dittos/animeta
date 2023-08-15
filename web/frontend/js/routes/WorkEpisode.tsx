@@ -21,8 +21,8 @@ function WorkEpisode({ data, writeData, loader }: RouteComponentProps<WorkEpisod
 
   async function loadMorePosts() {
     const result = await loader.graphql(WorkEpisodeRoute_MorePostsDocument, {
-      workId: work!.id,
-      beforeId: posts?.length ? posts[posts.length - 1]?.id : null,
+      workId: work!.databaseId,
+      beforeId: posts?.length ? posts[posts.length - 1]?.databaseId : null,
       episode: episode!.number,
     })
     writeData(data => {
@@ -32,7 +32,7 @@ function WorkEpisode({ data, writeData, loader }: RouteComponentProps<WorkEpisod
   }
 
   async function reload() {
-    const newData = await loader.graphql(WorkEpisodeRoute_RefetchDocument, { id: work!.id, episode: episode!.number })
+    const newData = await loader.graphql(WorkEpisodeRoute_RefetchDocument, { id: work!.databaseId, episode: episode!.number })
     writeData(data => {
       Object.assign(data, newData)
     });

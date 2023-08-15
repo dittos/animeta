@@ -14,7 +14,7 @@ fragment Library_user on User {
 mutation Library_createRecord($input: CreateRecordInput!) {
   createRecord(input: $input) {
     record {
-      id
+      databaseId
     }
   }
 }

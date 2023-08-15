@@ -70,22 +70,22 @@ export function LibraryFilter({
             전체 ({filters.categoryId.allCount})
           </Link>
         </div>
-        {[{ id: '0', name: '지정 안함' }]
+        {[{ databaseId: '0', name: '지정 안함' }]
           .concat(categoryList)
           .map(category => (
             <div
               className={
-                query.categoryId === category.id
+                query.categoryId === category.databaseId
                   ? Styles.filterGroupItemActive
                   : Styles.filterGroupItem
               }
             >
               <Link
                 {...getLinkParams({
-                  categoryId: category.id,
+                  categoryId: category.databaseId,
                 })}
               >
-                {category.name} ({categoryStats[category.id] || 0})
+                {category.name} ({categoryStats[category.databaseId] || 0})
               </Link>
             </div>
           ))}{' '}

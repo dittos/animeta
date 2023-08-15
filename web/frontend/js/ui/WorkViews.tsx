@@ -101,7 +101,7 @@ export class Work extends React.Component<{
     // TODO: move subscription up to route
     if (this.props.currentUser) {
       this._subscription = Mutations.records
-        .pipe(filter(it => it.workId === this.props.work.id && it.userId === this.props.currentUser?.id?.toString()))
+        .pipe(filter(it => it.workId === this.props.work.databaseId && it.userId === this.props.currentUser?.id?.toString()))
         .subscribe(it => {
           this.props.onRecordChange(it.id);
         });
@@ -187,12 +187,12 @@ export class WorkIndex extends React.Component<{
     const hasMorePosts = postConnection?.hasMore;
 
     if (posts && excludePostID) {
-      posts = posts.filter(post => post.id !== excludePostID);
+      posts = posts.filter(post => post.databaseId !== excludePostID);
     }
     return posts && posts.length > 0 ? (
       <div className={Styles.postsSection}>
         {posts.map(post => (
-          <Post key={post.id} post={post} showTitle={false} />
+          <Post key={post.databaseId} post={post} showTitle={false} />
         ))}
         {hasMorePosts && (
           <LoadMore

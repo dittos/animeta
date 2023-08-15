@@ -1,6 +1,6 @@
 query RecordRoute($recordId: ID!) {
   currentUser {
-    id
+    databaseId
     isTwitterConnected
     ...UserLayout_currentUser
   }
@@ -10,7 +10,7 @@ query RecordRoute($recordId: ID!) {
 }
 
 fragment RecordRoute_record on Record {
-  id
+  databaseId
   user {
     isCurrentUser
     name
@@ -32,11 +32,11 @@ fragment RecordRoute_header on Record {
       ...RecordRoute_header_category
     }
   }
-  category { id }
+  category { databaseId }
 }
 
 fragment RecordRoute_header_category on Category {
-  id
+  databaseId
   name
 }
 
@@ -51,7 +51,7 @@ query RecordRoute_posts($recordId: ID!) {
 }
 
 fragment RecordRoute_post on Post {
-  id
+  databaseId
   statusType
   status
   comment
@@ -87,7 +87,7 @@ mutation RecordRoute_updateRating($input: UpdateRecordRatingInput!) {
 mutation RecordRoute_createPost($input: CreatePostInput!) {
   createPost(input: $input) {
     post {
-      id
+      databaseId
     }
   }
 }

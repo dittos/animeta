@@ -1,5 +1,4 @@
 fragment PostComposer_record on Record {
-  id
   statusType
   status
 }

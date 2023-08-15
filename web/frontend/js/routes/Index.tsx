@@ -32,7 +32,7 @@ const Index: React.FC<RouteComponentProps<IndexRouteData>> = ({ data, writeData,
     return (
       <div className={Styles.timeline}>
         <h2 className={Styles.sectionTitle}>최근 감상평</h2>
-        {timeline.map(post => <Post key={post!.id} post={post!} />)}
+        {timeline.map(post => <Post key={post!.databaseId} post={post!} />)}
         <LoadMore onClick={_loadMore} isLoading={isLoading} />
       </div>
     );
@@ -41,7 +41,7 @@ const Index: React.FC<RouteComponentProps<IndexRouteData>> = ({ data, writeData,
   async function _loadMore() {
     setIsLoading(true)
     const result = await loader.graphql(IndexRoute_MoreTimelineDocument, {
-      timelineBeforeId: data?.timeline?.length ? data.timeline[data.timeline.length - 1]!.id : null,
+      timelineBeforeId: data?.timeline?.length ? data.timeline[data.timeline.length - 1]!.databaseId : null,
       count: 32,
     })
     writeData(data => {

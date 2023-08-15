@@ -18,9 +18,9 @@ query UserTableRoute($period: String!, $username: String!, $withRecommendations:
 
 fragment UserTableRoute_item on TablePeriodItem {
   work {
-    id
+    databaseId
   }
   record {
-    id
+    databaseId
   }
 }

@@ -1,7 +1,7 @@
 fragment TableItem_item on TablePeriodItem {
   title
   work {
-    id
+    databaseId
     title
     imageUrl
     recordCount
@@ -43,7 +43,7 @@ fragment TableItem_item on TablePeriodItem {
 }
 
 fragment TableItem_item_record on Record {
-  id
+  databaseId
   status
   statusType
 }

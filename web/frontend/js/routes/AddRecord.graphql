@@ -8,9 +8,9 @@ query AddRecordRoute {
 mutation AddRecord_createRecord($input: CreateRecordInput!) {
   createRecord(input: $input) {
     record {
-      id
-      work { id }
-      user { id }
+      databaseId
+      work { databaseId }
+      user { databaseId }
     }
   }
 }

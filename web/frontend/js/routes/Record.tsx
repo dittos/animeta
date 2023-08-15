@@ -76,7 +76,7 @@ class CategoryEditView extends React.Component<CategoryEditViewProps> {
     var name = '지정 안함';
     if (this.props.selectedId) {
       name = this.props.categoryList.filter(
-        category => category.id == this.props.selectedId
+        category => category.databaseId == this.props.selectedId
       )[0].name;
     }
     return (
@@ -86,7 +86,7 @@ class CategoryEditView extends React.Component<CategoryEditViewProps> {
         <select value={this.props.selectedId ?? ''} onChange={this._onChange}>
           <option value="">지정 안함</option>
           {this.props.categoryList.map(category => (
-            <option value={category.id}>{category.name}</option>
+            <option value={category.databaseId}>{category.name}</option>
           ))}
         </select>
       </span>
@@ -175,7 +175,7 @@ class HeaderView extends React.Component<HeaderViewProps> {
         </a>
         <CategoryEditView
           categoryList={record.user?.categories ?? []}
-          selectedId={record.category?.id ?? null}
+          selectedId={record.category?.databaseId ?? null}
           onChange={this.props.onCategoryChange}
         />
       </div>
@@ -282,7 +282,7 @@ function DeleteRecordModal({ record, onConfirm, onCancel }: {
 }
 
 function Record(props: RouteComponentProps<RecordRouteData>) {
-  return <RecordBase key={props.data.record.id} {...props} />;
+  return <RecordBase key={props.data.record.databaseId} {...props} />;
 }
 
 class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
@@ -300,7 +300,7 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
       posts: [],
       showDeleteModal: false,
     });
-    props.loader.graphql(RecordRoute_PostsDocument, {recordId: props.data.record.id}).then(data => {
+    props.loader.graphql(RecordRoute_PostsDocument, {recordId: props.data.record.databaseId}).then(data => {
       this.setState({
         posts: data.record?.posts.nodes ?? [],
       });
@@ -315,7 +315,7 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
     return (
       <CenteredFullWidth>
         <HeaderView
-          key={'header' + record.id}
+          key={'header' + record.databaseId}
           record={record}
           onTitleChange={this._updateTitle}
           onCategoryChange={this._updateCategory}
@@ -325,7 +325,7 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
         {canEdit && (
           <div className={Styles.postComposerContainer}>
             <PostComposer
-              key={`post-composer${record.id}/${record.updatedAt}`}
+              key={`post-composer${record.databaseId}/${record.updatedAt}`}
               record={record}
               onSave={this._createPost}
               onTwitterConnect={this._connectTwitter}
@@ -335,7 +335,7 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
         <div className={Styles.posts}>
           {posts.map(post => (
             <PostView
-              key={post.id}
+              key={post.databaseId}
               post={post}
               canEdit={canEdit}
               canDelete={canDeletePosts}
@@ -358,7 +358,7 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
   _updateTitle = (title: string) => {
     return this.props.loader.graphql(RecordRoute_UpdateTitleDocument, {
       input: {
-        recordId: this.props.data.record.id,
+        recordId: this.props.data.record.databaseId,
         title
       }
     }).then((result) => {
@@ -371,7 +371,7 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
   _updateCategory = (categoryID: string) => {
     return this.props.loader.graphql(RecordRoute_UpdateCategoryDocument, {
       input: {
-        recordId: this.props.data.record.id,
+        recordId: this.props.data.record.databaseId,
         categoryId: categoryID !== '' ? categoryID : null,
       }
     }).then(
@@ -386,7 +386,7 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
   _updateRating = (rating: number | null) => {
     return this.props.loader.graphql(RecordRoute_UpdateRatingDocument, {
       input: {
-        recordId: this.props.data.record.id,
+        recordId: this.props.data.record.databaseId,
         rating,
       }
     }).then(
@@ -400,13 +400,13 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
 
   _deleteRecord = () => {
     this.props.loader.graphql(RecordRoute_DeleteRecordDocument, {
-      input: {recordId: this.props.data.record.id}
+      input: {recordId: this.props.data.record.databaseId}
     }).then(() => {
       this._redirectToUser();
     });
   };
 
-  _deletePost = (post: { id: string }) => {
+  _deletePost = (post: { databaseId: string }) => {
     if (
       confirm(
         '삭제 후에는 복구할 수 없습니다.\n기록을 정말로 삭제하시겠습니까?'
@@ -414,7 +414,7 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
     ) {
       this.props.loader.graphql(RecordRoute_DeletePostDocument, {
         input: {
-          postId: post.id,
+          postId: post.databaseId,
         }
       }).then(result => {
         this.loadPosts(this.props);
@@ -430,7 +430,7 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
     setLastPublishTwitter(post.publishTwitter);
     return this.props.loader.graphql(RecordRoute_CreatePostDocument, {
       input: {
-        recordId: this.props.data.record.id,
+        recordId: this.props.data.record.databaseId,
         ...post,
         rating: null,
       }

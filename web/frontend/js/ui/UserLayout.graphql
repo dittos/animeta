@@ -12,7 +12,6 @@ fragment UserLayout_currentUser on User {
 }
 
 fragment UserLayout_user on User {
-  id
   name
   joinedAt
   isCurrentUser

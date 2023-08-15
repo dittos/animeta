@@ -9,7 +9,7 @@ query ManageCategoryRoute {
 }
 
 fragment ManageCategory_category on Category {
-  id
+  databaseId
   name
 }
 

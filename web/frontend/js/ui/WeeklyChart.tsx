@@ -30,7 +30,7 @@ export function WeeklyChart({ data }: {
         }
         var work = item.work;
         return (
-          <Link key={work.id} to={getWorkURL(work.title!)} className={Styles.item}>
+          <Link key={work.databaseId} to={getWorkURL(work.title!)} className={Styles.item}>
             {work.imageUrl && (
               <div className={Styles.poster}>
                 <img src={work.imageUrl} className={Styles.posterImage} />

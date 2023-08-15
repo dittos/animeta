@@ -23,9 +23,9 @@ fragment TableRoute_pageTitle on TablePeriod {
 
 fragment TableRoute_item on TablePeriodItem {
   work {
-    id
+    databaseId
   }
   record {
-    id
+    databaseId
   }
 }

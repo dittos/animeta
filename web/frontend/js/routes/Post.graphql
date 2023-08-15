@@ -1,5 +1,6 @@
 query PostRoute($postId: ID!) {
   post(id: $postId) {
+    databaseId
     ...Post_post
     work {
       ...WorkViews

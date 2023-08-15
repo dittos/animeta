@@ -47,8 +47,8 @@ function UserHistory({ data, writeData, loader }: RouteComponentProps<UserHistor
   async function _loadMore() {
     setIsLoading(true)
     const result = await loader.graphql(UserHistoryRoute_MorePostsDocument, {
-      userId: data.user.id,
-      beforeId: posts?.length ? posts[posts.length - 1]?.id : null,
+      userId: data.user.databaseId,
+      beforeId: posts?.length ? posts[posts.length - 1]?.databaseId : null,
     })
     writeData(data => {
       data.user!.posts.nodes = data.user!.posts.nodes.concat(result.user!.posts!.nodes);

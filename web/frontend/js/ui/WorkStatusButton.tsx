@@ -15,7 +15,7 @@ export function WorkStatusButton({ work, record, currentUser }: {
 }) {
   if (record) {
     return (
-      <Link className={Styles.editButton} to={`/records/${record.id}/`}>
+      <Link className={Styles.editButton} to={`/records/${record.databaseId}/`}>
         <FontAwesomeIcon icon={faPencil} />
         {record.statusType && util.GQL_STATUS_TYPE_TEXT[record.statusType]}
         {record.status && (

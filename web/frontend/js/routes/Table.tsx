@@ -303,7 +303,7 @@ const Table: React.FC<RouteComponentProps<TableRouteData>> = ({
         {filteredItems.map((item, i) => (
           <>
             <Grid.Column size={6} midSize={12} pull="left">
-              <TableItem key={item.work.id} item={item} onAddRecord={recordAdded} />
+              <TableItem key={item.work.databaseId} item={item} onAddRecord={recordAdded} />
             </Grid.Column>
             {i % 2 === 1 && <div style={{ clear: 'both' }} />}
           </>

@@ -120,8 +120,8 @@ export function getPostURL(post: PostDTO): string {
   return '/-' + post.id;
 }
 
-export function getPostURLGql(post: { id: string }): string {
-  return '/-' + post.id;
+export function getPostURLGql(post: { databaseId: string } | { id: string }): string {
+  return '/-' + ('databaseId' in post ? post.databaseId : post.id);
 }
 
 export const SOURCE_TYPE_MAP: {[K in WorkMetadata$SourceType]: string} = {

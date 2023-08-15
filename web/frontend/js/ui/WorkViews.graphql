@@ -1,5 +1,5 @@
 fragment WorkViews on Work {
-  id
+  databaseId
   title
   imageUrl
   ...WorkStatusButton_work
@@ -27,7 +27,7 @@ fragment WorkViews on Work {
 
 fragment WorkViews_postConnection on PostConnection {
   nodes {
-    id
+    databaseId
     ...Post_post
   }
   hasMore

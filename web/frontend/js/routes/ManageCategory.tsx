@@ -138,7 +138,7 @@ class ManageCategory extends React.Component<RouteComponentProps<ManageCategoryR
     const isSorting = this.state.sortingCategories != null;
     return (
       <CategoryItem
-        key={category.id}
+        key={category.databaseId}
         category={category}
         isSorting={isSorting}
         onRemove={() => this._removeCategory(category)}
@@ -152,7 +152,7 @@ class ManageCategory extends React.Component<RouteComponentProps<ManageCategoryR
   };
 
   _endSorting = () => {
-    const categoryIds = this.state.sortingCategories!.map(c => c.id);
+    const categoryIds = this.state.sortingCategories!.map(c => c.databaseId);
     graphql(ManageCategory_UpdateCategoryOrderDocument, {input: {categoryIds}}).then(
       result => {
         this.setState({ sortingCategories: null });
@@ -188,16 +188,16 @@ class ManageCategory extends React.Component<RouteComponentProps<ManageCategoryR
         '분류를 삭제해도 기록은 삭제되지 않습니다.\n분류를 삭제하시려면 [확인]을 누르세요.'
       )
     ) {
-      graphql(ManageCategory_DeleteCategoryDocument, {input: {categoryId: category.id}}).then(() => {
+      graphql(ManageCategory_DeleteCategoryDocument, {input: {categoryId: category.databaseId}}).then(() => {
         this.props.writeData(data => {
-          data.categories = data.categories.filter(c => c.id !== category.id);
+          data.categories = data.categories.filter(c => c.databaseId !== category.databaseId);
         });
       });
     }
   };
 
   _renameCategory = (category: ManageCategory_CategoryFragment, name: string) => {
-    return graphql(ManageCategory_RenameCategoryDocument, {input: {categoryId: category.id, name}}).then(() => {
+    return graphql(ManageCategory_RenameCategoryDocument, {input: {categoryId: category.databaseId, name}}).then(() => {
       this.props.writeData(() => {
         category.name = name;
       });
