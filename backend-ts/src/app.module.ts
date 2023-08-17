@@ -26,7 +26,6 @@ import { RecordPostsController } from './controllers/record_posts.controller';
 import { UserPostsController } from './controllers/user_posts.controller';
 import { UserRecordsService } from './services/user_records.service';
 import { UserRecordsController } from './controllers/user_records.controller';
-import { WorkSerializer } from './serializers/work.serializer';
 import { TitleMapping } from './entities/title_mapping.entity';
 import { WorkStaff } from './entities/work_staff.entity';
 import { Person } from './entities/person.entity';
@@ -132,7 +131,6 @@ import { BackupService } from './services/backup.service';
     CategorySerializer,
     PostSerializer,
     RecordSerializer,
-    WorkSerializer,
 
     {
       provide: APP_INTERCEPTOR,
