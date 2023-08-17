@@ -3,6 +3,7 @@ import { History } from "src/entities/history.entity"
 import { db } from "src2/database"
 import { LessThan, Not } from "typeorm"
 import { getWorkIndex } from "src2/services/work"
+import { PostId } from "../id"
 
 export const timeline: QueryResolvers['timeline'] = async (_, { beforeId, count }) => {
   const limit = Math.min(count ?? 32, 128)
@@ -10,7 +11,7 @@ export const timeline: QueryResolvers['timeline'] = async (_, { beforeId, count 
   let posts: History[]
   if (minRecordCount != null) {
     const filteredPosts: History[] = []
-    let batchBeforeId = Number(beforeId)
+    let batchBeforeId = beforeId != null ? PostId.toDatabaseId(beforeId) : null
     let queryCount = 0
     while (filteredPosts.length < limit && queryCount < 5) {
       const maxBatchSize = Math.max(32, limit - filteredPosts.length)

@@ -4,16 +4,17 @@ import { permissionDeniedException, requireUser } from "../utils";
 import { Record } from "src/entities/record.entity";
 import { updateRecordCategory } from "src/services/record.service";
 import { Category } from "src/entities/category.entity";
+import { CategoryId, RecordId } from "../id";
 
 export const updateRecordCategoryId: MutationResolvers['updateRecordCategoryId'] = async (_, { input }, ctx) => {
   const currentUser = requireUser(ctx)
-  const record = await db.findOneOrFail(Record, input.recordId)
+  const record = await db.findOneOrFail(Record, RecordId.toDatabaseId(input.recordId))
   if (currentUser.id !== record.user_id)
     throw permissionDeniedException()
 
   let category: Category | null
   if (input.categoryId != null) {
-    category = await db.findOne(Category, input.categoryId) ?? null
+    category = await db.findOne(Category, CategoryId.toDatabaseId(input.categoryId)) ?? null
     if (category?.user_id !== record.user_id)
       throw permissionDeniedException()
   } else {

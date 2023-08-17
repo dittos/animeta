@@ -6,6 +6,7 @@ import { StatusType } from "src/entities/status_type";
 import { requireUser } from "../utils";
 import { updateStatus } from "src2/services/twitter";
 import { formatTweet } from "src/utils/tweet";
+import { CategoryId } from "../id";
 
 export const createRecord: MutationResolvers['createRecord'] = async (_, { input }, ctx) => {
   const currentUser = requireUser(ctx)
@@ -13,7 +14,7 @@ export const createRecord: MutationResolvers['createRecord'] = async (_, { input
   const {record, history} = await db.transaction(async em => {
     return _createRecord(em, currentUser, work, {
       title: input.title,
-      categoryId: input.categoryId ? Number(input.categoryId) : null,
+      categoryId: input.categoryId ? CategoryId.toDatabaseId(input.categoryId) : null,
       status: input.status,
       statusType: StatusType[input.statusType],
       comment: input.comment,

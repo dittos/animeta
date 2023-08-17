@@ -6,8 +6,10 @@ import { getWork } from "src2/services/work"
 import { getCategory } from "src2/services/category";
 import { hasNewerEpisode } from "src2/services/record";
 import { getRecordPosts } from "src2/services/post";
+import { PostId, RecordId } from "./id";
 
 export const Record: RecordResolvers = {
+  id: RecordId.resolver,
   databaseId: (entity) => entity.id.toString(),
   
   async user(record, _, _2, info) {
@@ -33,7 +35,7 @@ export const Record: RecordResolvers = {
 
   posts: (record, { beforeId, count }) =>
     getRecordPosts(record, {
-      beforeId: beforeId != null ? Number(beforeId) : null,
+      beforeId: beforeId != null ? PostId.toDatabaseId(beforeId) : null,
       count,
     }),
 }

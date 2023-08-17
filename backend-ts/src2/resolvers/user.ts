@@ -7,8 +7,10 @@ import { CountByCriteria } from "src/services/user_records.service";
 import { db } from "src2/database";
 import { getUserPosts } from "src2/services/post";
 import { countRecordsForFilter, getUserRecords } from "src2/services/record";
+import { CategoryId, PostId, UserId } from "./id";
 
 export const User: UserResolvers = {
+  id: UserId.resolver,
   databaseId: (entity) => entity.id.toString(),
   
   name: (user) => user.username,
@@ -20,14 +22,14 @@ export const User: UserResolvers = {
 
   posts: (user, { beforeId, count }) =>
     getUserPosts(user, {
-      beforeId: beforeId != null ? Number(beforeId) : null,
+      beforeId: beforeId != null ? PostId.toDatabaseId(beforeId) : null,
       count,
     }),
   
   records: (user, { statusType, categoryId, orderBy, first }) =>
     getUserRecords(user, {
       statusType: statusType ? StatusType[statusType] : null,
-      categoryId: categoryId != null ? Number(categoryId) : null,
+      categoryId: categoryId != null ? CategoryId.toDatabaseId(categoryId) : null,
       orderBy: orderBy ?? null,
       limit: first ?? null,
     }),
@@ -35,7 +37,7 @@ export const User: UserResolvers = {
   async recordFilters(user, { statusType, categoryId }) {
     const counts = await countRecordsForFilter(user, {
       statusType: statusType ? StatusType[statusType] : null,
-      categoryId: categoryId != null ? Number(categoryId) : null,
+      categoryId: categoryId != null ? CategoryId.toDatabaseId(categoryId) : null,
     })
     return {
       totalCount: counts.total,

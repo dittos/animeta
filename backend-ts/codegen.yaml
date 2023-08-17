@@ -36,3 +36,5 @@ generates:
       enumsAsTypes: true
       # end custom
       namingConvention: keep
+      scalars:
+        ID: src2/resolvers/id#NodeId

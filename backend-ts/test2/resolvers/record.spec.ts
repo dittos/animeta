@@ -1,3 +1,4 @@
+import { RecordId } from 'src2/resolvers/id'
 import { RecordDtoFragment, RecordDtoFragmentDoc } from '../fragments.generated'
 import { getTestUtils, gql, TestUtils } from '../utils'
 
@@ -34,6 +35,23 @@ test('get', async () => {
   `, {
     variables: {
       id: record.id,
+    }
+  })
+  expect(data.record.id).toBe(record.id.toString())
+})
+
+test('get by node id', async () => {
+  const { record } = await utils.factory.newRecord()
+  const { data } = await utils.getHttpClient().query<{record: RecordDtoFragment}, any>(gql`
+    query($id: ID!) {
+      record(id: $id) {
+        ...RecordDTO
+      }
+    }
+    ${RecordDtoFragmentDoc}
+  `, {
+    variables: {
+      id: RecordId.fromDatabaseId(record.id),
     }
   })
   expect(data.record.id).toBe(record.id.toString())

@@ -11,7 +11,7 @@ import { getWork } from "./work";
 export type WorkChartItem = {
   rank: number;
   work: {
-    id: string;
+    id: number;
     title: string;
     imageUrl: string | null;
   };
@@ -56,7 +56,7 @@ async function getPopularWorksUncached(range: ChartRange): Promise<Array<WorkCha
     const newItem: WorkChartItem = {
       ...item,
       work: {
-        id: work.id.toString(),
+        id: work.id,
         title: work.title,
         imageUrl: getWorkImageUrl(work),
       }

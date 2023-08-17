@@ -4,9 +4,12 @@ import { getUser } from "src2/services/user"
 import { PostResolvers, StatusType as GqlStatusType } from "src/graphql/generated"
 import { isIdOnly } from "./utils"
 import { getWork, getWorkEpisode } from "src2/services/work"
+import { PostId } from "./id"
 
 export const Post: PostResolvers = {
+  id: PostId.resolver,
   databaseId: (entity) => entity.id.toString(),
+
   async user(history, _, _2, info) {
     const id = history.user_id
     if (isIdOnly(info)) return { id }

@@ -1,10 +1,10 @@
 fragment WorkDTO on Work {
-  id
+  id: databaseId
   title
   imageUrl
   recordCount
   record {
-    id
+    id: databaseId
   }
   metadata {
     periods
@@ -24,14 +24,14 @@ fragment WorkDTO on Work {
 }
 
 fragment UserDTO on User {
-  id
+  id: databaseId
   name
   joinedAt
 }
 
 fragment PostDTO on Post {
-  id
-  record { id }
+  id: databaseId
+  record { id: databaseId }
   statusType
   status
   comment
@@ -49,18 +49,18 @@ fragment EpisodeDTO on Episode {
 }
 
 fragment RecordDTO on Record {
-  id
+  id: databaseId
   title
   statusType
   status
-  user { id }
-  work { id }
-  category { id }
+  user { id: databaseId }
+  work { id: databaseId }
+  category { id: databaseId }
   rating
   updatedAt
 }
 
 fragment CategoryDTO on Category {
-  id
+  id: databaseId
   name
 }

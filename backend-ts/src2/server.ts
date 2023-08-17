@@ -7,6 +7,7 @@ import { HttpException } from '@nestjs/common'
 import { resolvers } from './resolvers'
 import { getCurrentUser } from './auth'
 import { glob } from 'glob'
+import { GraphQLID } from './resolvers/scalars/id'
 
 // TODO: dotenv
 
@@ -24,6 +25,9 @@ export const server = fastify({
 async function buildContext(req: FastifyRequest, _reply: FastifyReply) {
   return {
     currentUser: await getCurrentUser(req),
+    useNewId: req.headers['x-graphql-use-new-id'] === 'true',
+
+    _legacyIdWarned: false, // mutable
   }
 }
 
@@ -35,7 +39,10 @@ declare module 'mercurius' {
 
 server.register(mercurius, {
   schema: glob.sync('schema/**/*.graphql').map(it => fs.readFileSync(it, {encoding: 'utf-8'})),
-  resolvers: resolvers as any,
+  resolvers: {
+    ...resolvers as any,
+    ID: GraphQLID,
+  },
   context: buildContext,
   graphiql: process.env.NODE_ENV !== 'production',
 })

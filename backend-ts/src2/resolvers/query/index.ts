@@ -9,20 +9,21 @@ import { searchWorks } from "./searchWorks"
 import { tablePeriod } from "./tablePeriod"
 import { timeline } from "./timeline"
 import { weeklyWorksChart } from "./weeklyWorksChart"
+import { PostId, RecordId, UserId, WorkId } from "../id"
 
 export const Query: QueryResolvers = {
   currentUser: (_, _2, { currentUser }) => currentUser,
-  user: (_, { id }) => getUser(Number(id)),
+  user: (_, { id }) => getUser(UserId.toDatabaseId(id)),
   userByName: (_, { name }) => getUserByName(name),
   timeline,
   curatedLists: getAllCuratedLists,
-  curatedList: (_, { id }) => getCuratedList(id),
+  curatedList: (_, { id }) => getCuratedList(id.__id),
   searchWorks,
   weeklyWorksChart,
-  work: (_, { id }) => getWork(Number(id)),
+  work: (_, { id }) => getWork(WorkId.toDatabaseId(id)),
   workByTitle: (_, { title }) => getWorkByTitle(title),
-  post: (_, { id }) => getPost(Number(id)),
-  record: (_, { id }) => getRecord(Number(id)),
+  post: (_, { id }) => getPost(PostId.toDatabaseId(id)),
+  record: (_, { id }) => getRecord(RecordId.toDatabaseId(id)),
   tablePeriod,
   currentTablePeriod: () => Periods.current,
   tablePeriods: () => getValidPeriods(),

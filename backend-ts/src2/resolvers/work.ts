@@ -8,8 +8,10 @@ import { db } from "src2/database"
 import { Record } from "src/entities/record.entity"
 import { getRecordByUserAndWork } from "src2/services/record"
 import { getWorkPosts } from "src2/services/post"
+import { PostId, WorkId } from "./id"
 
 export const Work: WorkResolvers = {
+  id: WorkId.resolver,
   databaseId: (entity) => entity.id.toString(),
   
   imageUrl: (work) => getWorkImageUrl(work),
@@ -23,7 +25,7 @@ export const Work: WorkResolvers = {
   episode: (work, { episode }) => getWorkEpisode(work, episode),
   posts: (work, { beforeId, count, episode }) =>
     getWorkPosts(work, {
-      beforeId: beforeId != null ? Number(beforeId) : null,
+      beforeId: beforeId != null ? PostId.toDatabaseId(beforeId) : null,
       count,
       episode,
     })
