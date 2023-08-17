@@ -1,5 +1,6 @@
 import { GraphQLResolveInfo, print } from "graphql";
 import { MercuriusContext } from "mercurius";
+import * as Sentry from '@sentry/node';
 import { Category } from "src/entities/category.entity";
 import { History } from "src/entities/history.entity";
 import { Record } from "src/entities/record.entity";
@@ -54,7 +55,7 @@ function createIdUtil<T extends {id: number}>(
       }
       if (!ctx._legacyIdWarned) {
         ctx._legacyIdWarned = true
-        console.warn("legacy id access:", print(info.operation))
+        Sentry.captureMessage("legacy id access: " + print(info.operation))
       }
       return entityIdToLegacyNodeId(entity.id)
     },
