@@ -29,10 +29,8 @@ fragment TableItem_item on TablePeriodItem {
       credit {
         type
         name
-        personId
       }
       related {
-        workId
         workTitle
         type
       }

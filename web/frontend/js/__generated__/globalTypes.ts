@@ -15,7 +15,7 @@ export type Scalars = {
 
 export type Category = Node & {
   __typename?: 'Category';
-  databaseId: Scalars['ID'];
+  databaseId: Scalars['String'];
   id: Scalars['ID'];
   name: Scalars['String'];
   user: Maybe<User>;
@@ -219,7 +219,7 @@ export type Post = Node & {
   __typename?: 'Post';
   comment: Maybe<Scalars['String']>;
   containsSpoiler: Maybe<Scalars['Boolean']>;
-  databaseId: Scalars['ID'];
+  databaseId: Scalars['String'];
   episode: Maybe<Episode>;
   id: Scalars['ID'];
   rating: Maybe<Scalars['Float']>;
@@ -324,7 +324,7 @@ export type RecommendationByCredit = {
 export type Record = Node & {
   __typename?: 'Record';
   category: Maybe<Category>;
-  databaseId: Scalars['ID'];
+  databaseId: Scalars['String'];
   hasNewerEpisode: Maybe<Scalars['Boolean']>;
   id: Scalars['ID'];
   posts: PostConnection;
@@ -480,7 +480,7 @@ export type UpdateRecordTitleResult = {
 export type User = Node & {
   __typename?: 'User';
   categories: Array<Category>;
-  databaseId: Scalars['ID'];
+  databaseId: Scalars['String'];
   id: Scalars['ID'];
   isCurrentUser: Scalars['Boolean'];
   isTwitterConnected: Maybe<Scalars['Boolean']>;
@@ -515,7 +515,7 @@ export type UserRecordsArgs = {
 
 export type Work = Node & {
   __typename?: 'Work';
-  databaseId: Scalars['ID'];
+  databaseId: Scalars['String'];
   episode: Maybe<Episode>;
   episodes: Maybe<Array<Episode>>;
   id: Scalars['ID'];
