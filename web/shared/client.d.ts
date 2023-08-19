@@ -195,6 +195,7 @@ export interface Client<TOptions = any> {
   call(path: "/api/v5/getCurrentUser", params: {
   options?: UserSerializerOptions,
 }, options?: TOptions): Promise<UserDto>
+  call(path: "/api/v5/resolveSlug", params: {slug: string}, options?: TOptions): Promise<{type: 'USER' | null}>
   call(path: "/api/v5/ManageRating/getUnratedRecords", params: {
   cursor: string | null,
 }, options?: TOptions): Promise<{

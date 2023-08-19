@@ -341,17 +341,15 @@ Disallow: /
     if (path.match(/^\/[\w.@+-]+$/) && !path.match(/^\/apple-touch-icon/)) {
       const username = path.substring(1);
       backend
-        .callV4(req, `/users/${username}`)
-        .then(user => {
-          res.redirect(`/users/${user.name}/`);
-        })
-        .catch(err => {
-          if (err === HttpNotFound) {
-            next();
+        .callV5(req, '/api/v5/resolveSlug', {slug: username})
+        .then(result => {
+          if (result.type === 'USER') {
+            res.redirect(`/users/${username}/`);
           } else {
-            next(err);
+            next();
           }
-        });
+        })
+        .catch(next);
       return;
     }
     next();
