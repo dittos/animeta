@@ -66,7 +66,7 @@ test('create post with invalid rating', async () => {
     publishTwitter: false,
     rating: 100,
   }
-  const { errors } = await utils.getHttpClientForUser(user).query<{createPost: CreatePostResult}, any>(gql`
+  const { errors } = await utils.getHttpClientForUser(user).rawQuery<{createPost: CreatePostResult}, any>(gql`
     mutation($input: CreatePostInput!) {
       createPost(input: $input) {
         post {

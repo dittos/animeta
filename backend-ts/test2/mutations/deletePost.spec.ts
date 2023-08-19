@@ -11,7 +11,7 @@ test(`deleting last post fails`, async () => {
   const {history} = await utils.factory.newRecord({ user })
 
   const input: DeletePostInput = {postId: history.id.toString()}
-  const { data, errors } = await utils.getHttpClientForUser(user).query<{deletePost: DeletePostResult}, any>(gql`
+  const { errors } = await utils.getHttpClientForUser(user).rawQuery<{deletePost: DeletePostResult}, any>(gql`
     mutation($input: DeletePostInput!) {
       deletePost(input: $input) {
         deleted

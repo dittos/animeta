@@ -101,7 +101,7 @@ test(`update record title to the already added work should fail`, async () => {
     recordId: record.id.toString(),
     title: existingRecord.title,
   }
-  const { errors } = await utils.getHttpClientForUser(user).query<{}, any>(gql`
+  const { errors } = await utils.getHttpClientForUser(user).rawQuery<{}, any>(gql`
     mutation($input: UpdateRecordTitleInput!) {
       updateRecordTitle(input: $input) {
         record { ...RecordDTO }

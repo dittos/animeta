@@ -36,10 +36,19 @@ export class GraphQLTestClient {
     this.client = createMercuriusTestClient(app, options)
   }
 
-  query<TData extends Record<string, unknown> = Record<string, any>, TVariables extends Record<string, unknown> | undefined = undefined>(
+  async query<TData extends Record<string, unknown> = Record<string, any>, TVariables extends Record<string, unknown> | undefined = undefined>(
     query: TypedDocumentNode<TData, TVariables> | DocumentNode | string,
     queryOptions?: QueryOptions<TVariables>
   ): Promise<GQLResponse<TData>> {
-    return this.client.query(query, queryOptions)
+    const response = await this.client.query(query, queryOptions)
+    expect(response.errors).toBeFalsy()
+    return response
+  }
+
+  async rawQuery<TData extends Record<string, unknown> = Record<string, any>, TVariables extends Record<string, unknown> | undefined = undefined>(
+    query: TypedDocumentNode<TData, TVariables> | DocumentNode | string,
+    queryOptions?: QueryOptions<TVariables>
+  ): Promise<GQLResponse<TData>> {
+    return await this.client.query(query, queryOptions)
   }
 }
