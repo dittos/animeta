@@ -2,14 +2,14 @@ import { User } from "src/entities/user.entity";
 import { Period } from "src/utils/period";
 import { Work } from "src/entities/work.entity";
 import { Record } from "src/entities/record.entity";
-import { createRecommendationContext, generateRecommendations } from "src2/services/recommendation";
+import { createRecommendationContext, generateRecommendations, Recommendation } from "src2/services/recommendation";
 import { db } from "src2/database";
 import { getRecordByUserAndWork } from "src2/services/record";
 
 export const Periods = {
   current: Period.parseOrThrow("2023Q3"),
   min: Period.parseOrThrow("2014Q2"),
-  upcoming: Period.parseOrThrow("2023Q3"),
+  upcoming: Period.parseOrThrow("2022Q1"),//
 }
 
 export function getValidPeriods(): Period[] {
@@ -36,7 +36,13 @@ export async function getTablePeriodItems(
   username: string | null,
   withRecommendations: boolean,
   currentUser: User | null,
-) {
+): Promise<{
+  title: string;
+  work: Work;
+  record?: Record | null;
+  recommendations?: Recommendation[];
+  recommendationScore?: number;
+}[]> {
   const works = await db.find(Work, { where: {first_period: period.toString()} })
   const user = username ? await db.findOne(User, { where: {username} }) : currentUser
   if (!user) return works.map(work => ({ title: work.metadata?.title ?? work.title, work }))

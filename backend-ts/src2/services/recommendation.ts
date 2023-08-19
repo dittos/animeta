@@ -1,18 +1,46 @@
 import { caching } from "cache-manager";
 import { sortBy } from "lodash";
-import { Credit, CreditType, Recommendation } from "shared/types_generated";
 import { Record } from "src/entities/record.entity";
 import { StatusType } from "src/entities/status_type";
 import { User } from "src/entities/user.entity";
 import { WorkStaff } from "src/entities/work_staff.entity";
 import { db } from "src2/database";
 
+export type CreditType =
+  | 'ORIGINAL_WORK'
+  | 'CHIEF_DIRECTOR'
+  | 'SERIES_DIRECTOR'
+  | 'DIRECTOR'
+  | 'SERIES_COMPOSITION'
+  | 'CHARACTER_DESIGN'
+  | 'MUSIC';
+
+export interface Credit {
+  type: CreditType;
+  name: string;
+  personId: number;
+}
+
+export type Recommendation$ByCredit = {
+  credit: Credit;
+  related: WorkCredit[];
+  score: number;
+};
+
+export type Recommendation = Recommendation$ByCredit;
+
+export interface WorkCredit {
+  workId: number;
+  workTitle: string;
+  type: CreditType;
+}
+
 type RelatedStaffRow = {
   personId: number;
   staffTask: string;
   workId: number;
   workTitle: string;
-}
+};
 
 export type RecommendationContext = {
   relatedStaffs: Map<number, RelatedStaffRow[]>;
@@ -111,13 +139,15 @@ export async function generateRecommendations(workId: number, context: Recommend
     let related0 = staffs.map((it, index) => {
       const creditType = taskToCreditType[it.staffTask.toLowerCase()]
       return creditType && isCompatible(creditType, credit.type) ?
-        [[creditTypeOrder.indexOf(creditType), index],
-          { workId: it.workId, workTitle: it.workTitle, creditType }]
+        {
+          score: [creditTypeOrder.indexOf(creditType), index],
+          value: { workId: it.workId, workTitle: it.workTitle, type: creditType }
+        }
         : null
     })
       .filter(it => it).map(it => it!)
-    related0 = sortBy(related0, ([score, ]) => score)
-    const related = related0.map(([, value]) => value)
+    related0 = sortBy(related0, it => it.score)
+    const related = related0.map(it => it.value)
     return {
       credit,
       related: related.slice(0, 2),

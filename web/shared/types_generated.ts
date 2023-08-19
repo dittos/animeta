@@ -7,12 +7,6 @@ export interface CategoryDTO {
     name: string;
 }
 
-export interface Credit {
-    type: CreditType;
-    name: string;
-    personId: number;
-}
-
 export interface Episode {
     number: number;
     post_count: number | null;
@@ -34,15 +28,6 @@ export interface PostDTO {
     record: RecordDTO | null;
     user: UserDTO | null;
     rating: number | null;
-}
-
-export interface Recommendation {
-}
-
-export interface Recommendation$ByCredit extends Recommendation {
-    credit: Credit;
-    related: WorkCredit[];
-    score: number;
 }
 
 export interface RecordDTO {
@@ -69,25 +54,6 @@ export interface UserDTO {
     is_twitter_connected: boolean | null;
 }
 
-export interface WorkCredit {
-    workId: number;
-    workTitle: string;
-    type: CreditType;
-}
-
-export interface WorkDTO {
-    id: number;
-    title: string;
-    image_url: string | null;
-    image_center_y: number;
-    episodes: Episode[] | null;
-    record_count: number;
-    record: RecordDTO | null;
-    metadata: WorkMetadataDTO | null;
-    recommendations: Recommendation[] | null;
-    recommendationScore: number;
-}
-
 export interface WorkLinks {
     website: string | null;
     namu: string | null;
@@ -108,7 +74,5 @@ export interface WorkSchedule {
     date_only: boolean | null;
     broadcasts: string[] | null;
 }
-
-export type CreditType = "ORIGINAL_WORK" | "CHIEF_DIRECTOR" | "SERIES_DIRECTOR" | "DIRECTOR" | "SERIES_COMPOSITION" | "CHARACTER_DESIGN" | "MUSIC";
 
 export type WorkMetadata$SourceType = "MANGA" | "ORIGINAL" | "LIGHT_NOVEL" | "GAME" | "FOUR_KOMA" | "VISUAL_NOVEL" | "NOVEL";

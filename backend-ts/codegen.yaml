@@ -32,6 +32,8 @@ generates:
         Episode: src/entities/episode.entity#Episode
         Category: src/entities/category.entity#Category
         TablePeriod: src/utils/period#Period
+        Credit: src2/services/recommendation#Credit
+        WorkCredit: src2/services/recommendation#WorkCredit
         CuratedList: src2/services/curatedList#CuratedListMetadata
       enumsAsTypes: true
       # end custom
