@@ -236,14 +236,11 @@ Disallow: /
 
   server.get('/users/:username/feed/', (req, res, next) => {
     const { username } = req.params;
-    Promise.all([
-      backend.callV4(req, `/users/${username}`),
-      backend.callV4(req, `/users/${username}/posts`),
-    ])
-      .then(([owner, posts]) => {
+    backend.callV5(req, '/api/v5/UserFeed', {username})
+      .then(data => {
         res
           .type('application/atom+xml; charset=UTF-8')
-          .end(renderFeed(owner, posts));
+          .end(renderFeed(data.user, data.entries));
       })
       .catch(next);
   });
