@@ -1,0 +1,7 @@
+mutation ManageRatingRoute_updateRating($input: UpdateRecordRatingInput!) {
+  updateRecordRating(input: $input) {
+    record {
+      databaseId
+    }
+  }
+}

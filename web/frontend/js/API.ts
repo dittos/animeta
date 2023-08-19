@@ -203,17 +203,6 @@ export function disconnectTwitter() {
   return postJSON('/api/v4/DisconnectTwitter');
 }
 
-// Record
-
-export function updateRecordRating(id: number, rating: number | null, options: RecordFetchOptions): Promise<{ record: RecordDTO }> {
-  return postJSON('/api/v4/UpdateRecord', {
-    id,
-    rating,
-    ratingIsSet: true,
-    options,
-  });
-}
-
 // User Records
 
 export function getUserRecords(username: string, params: {}): Promise<RecordDTO[]> {

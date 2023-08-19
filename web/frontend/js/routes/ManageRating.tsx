@@ -8,10 +8,11 @@ import { Rating } from "../ui/Rating";
 import { chunk } from "lodash";
 import { RatingSummary, UnratedRecord } from "../../../shared/client";
 import { AutoLoadMore } from "../ui/LoadMore";
-import { updateRecordRating } from "../API";
+import { graphql } from "../API";
 import { Link } from "nuri";
 import useIntersectionObserver from "../ui/useIntersectionObserver";
 import { UserLayout_CommonPrivateDocument } from "../ui/__generated__/UserLayout.graphql";
+import { ManageRatingRoute_UpdateRatingDocument } from "./__generated__/ManageRating.graphql";
 
 type ClientUnratedRecord = UnratedRecord & {
   rating?: number;
@@ -36,7 +37,12 @@ const RatingEntry: React.FC<{
   const updateRating = async (_: any, rating: number | null) => {
     setIsSaving(true);
     try {
-      await updateRecordRating(Number(record.id), rating, {});
+      await graphql(ManageRatingRoute_UpdateRatingDocument, {
+        input: {
+          recordId: record.id,
+          rating,
+        }
+      });
     } finally {
       setIsSaving(false);
     }
