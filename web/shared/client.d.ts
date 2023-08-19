@@ -101,6 +101,7 @@ type RatingSummary = {
   rating: number;
   recordCount: number;
 }
+export type StatusType = 'WATCHING' | 'FINISHED' | 'INTERESTED' | 'SUSPENDED';
 
 
 export interface Client<TOptions = any> {
@@ -203,5 +204,18 @@ export interface Client<TOptions = any> {
   call(path: "/api/v5/ManageRating/", params: {}, options?: TOptions): Promise<{
   ratingSummaries: RatingSummary[];
   unratedRecordCount: number;
+}>
+  call(path: "/api/v5/UserFeed/", params: {
+  username: string;
+}, options?: TOptions): Promise<{
+  user: UserDto,
+  entries: {
+    id: string,
+    title: string,
+    statusType: StatusType,
+    status: string,
+    comment: string,
+    updatedAt: number, // TODO: Date
+  }[]
 }>
 }
