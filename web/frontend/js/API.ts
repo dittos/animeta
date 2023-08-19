@@ -203,12 +203,6 @@ export function disconnectTwitter() {
   return postJSON('/api/v4/DisconnectTwitter');
 }
 
-// User Records
-
-export function getUserRecords(username: string, params: {}): Promise<RecordDTO[]> {
-  return get(`/api/v4/users/${username}/records`, params);
-}
-
 // GraphQL
 
 export async function graphql<Result, Variables>(doc: TypedDocumentNode<Result, Variables>, variables?: Variables, customErrorHandling: boolean = false): Promise<Result> {

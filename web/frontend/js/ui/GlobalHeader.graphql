@@ -1,0 +1,16 @@
+query GlobalHeader_quickRecords {
+  currentUser {
+    records(statusType: WATCHING, orderBy: DATE, first: 10) {
+      nodes {
+        ...GlobalHeader_quickRecords_record
+      }
+    }
+  }
+}
+
+fragment GlobalHeader_quickRecords_record on Record {
+  databaseId
+  title
+  statusType
+  status
+}

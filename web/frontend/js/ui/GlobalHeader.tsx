@@ -5,42 +5,43 @@ import LoginDialog from './LoginDialog';
 import SearchInput from './SearchInput';
 import { Dropdown } from './Dropdown';
 import Styles from './GlobalHeader.less';
-import { getStatusDisplay } from '../util';
-import { RecordDTO } from '../../../shared/types_generated';
+import { getStatusDisplayGql } from '../util';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faHome, faSearch, faUser } from '@fortawesome/free-solid-svg-icons';
-import { getUserRecords } from '../API';
+import { graphql } from '../API';
+import { GlobalHeader_QuickRecordsDocument, GlobalHeader_QuickRecords_RecordFragment } from './__generated__/GlobalHeader.graphql';
+
+type DropdownUserMenuState = {
+  records: GlobalHeader_QuickRecords_RecordFragment[] | null,
+}
 
 class DropdownUserMenu extends React.Component<{
   username: string;
-}> {
-  state = {
-    records: null as RecordDTO[] | null,
+}, DropdownUserMenuState> {
+  state: DropdownUserMenuState = {
+    records: null,
   };
 
   componentDidMount() {
-    getUserRecords(this.props.username, {
-      sort: 'date',
-      status_type: 'watching',
-      limit: 10,
-    }).then(records => {
-      this.setState({ records });
+    graphql(GlobalHeader_QuickRecordsDocument).then(result => {
+      this.setState({ records: result.currentUser?.records.nodes ?? null });
     });
   }
 
   render() {
+    const records = this.state.records
     return (
       <>
         <Link to={`/users/${this.props.username}/`}>내 기록</Link>
         <Link to="/settings/">설정</Link>
-        {this.state.records && (
+        {records && (
           <div>
             <div className={Styles.userMenuSeparator}>바로가기</div>
-            {this.state.records.map(record => (
-              <Link to={`/records/${record.id}/`}>
+            {records.map(record => (
+              <Link to={`/records/${record.databaseId}/`}>
                 {record.title}
                 <span className={Styles.quickRecordStatus}>
-                  {getStatusDisplay(record)}
+                  {getStatusDisplayGql(record)}
                 </span>
               </Link>
             ))}
