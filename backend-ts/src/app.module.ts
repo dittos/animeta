@@ -21,8 +21,6 @@ import { AppController } from './app.controller';
 import { PostSerializer } from './serializers/post.serializer';
 import { RecordSerializer } from './serializers/record.serializer';
 import { UserService } from './services/user.service';
-import { RecordController } from './controllers/record.controller';
-import { RecordPostsController } from './controllers/record_posts.controller';
 import { UserPostsController } from './controllers/user_posts.controller';
 import { UserRecordsService } from './services/user_records.service';
 import { UserRecordsController } from './controllers/user_records.controller';
@@ -32,14 +30,9 @@ import { Person } from './entities/person.entity';
 import { ExternalServicesController } from './controllers/external_services.controller';
 import { TwitterService } from './services/twitter.service';
 import { TwitterApiService } from './services/twitter_api.service';
-import { CreatePostController } from './controllers/create_post.controller';
-import { DeletePostController } from './controllers/delete_post.controller';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ServiceExceptionInterceptor } from './controllers/service_exception.interceptor';
-import { CreateRecordController } from './controllers/create_record.controller';
 import { CategoryService } from './services/category.service';
-import { UpdateRecordController } from './controllers/update_record.controller';
-import { DeleteRecordController } from './controllers/delete_record.controller';
 import { AuthService } from './services/auth.service';
 import { AuthenticateController } from './controllers/authenticate.controller';
 import { ChangePasswordController } from './controllers/change_password.controller';
@@ -50,10 +43,6 @@ import { WorkPeriodIndex } from './entities/work_period_index.entity';
 import { Company } from './entities/company.entity';
 import { WorkCompany } from './entities/work_company.entity';
 import { CompanyAnnIds } from './entities/company_ann_ids.entity';
-import { CreateCategoryController } from './controllers/create_category.controller';
-import { UpdateCategoryOrderController } from './controllers/update_category_order.controller';
-import { DeleteCategoryController } from './controllers/delete_category.controller';
-import { UpdateCategoryController } from './controllers/update_category.controller';
 import { DisconnectTwitterController } from './controllers/disconnect_twitter.controller';
 import { CreateBackupController } from './controllers/create_backup.controller';
 import { BackupService } from './services/backup.service';
@@ -95,23 +84,12 @@ import { BackupService } from './services/backup.service';
     SearchController,
     UserController,
     CurrentUserController,
-    RecordController,
-    RecordPostsController,
     UserPostsController,
     UserRecordsController,
     ExternalServicesController,
-    CreatePostController,
-    DeletePostController,
-    CreateRecordController,
-    UpdateRecordController,
-    DeleteRecordController,
     AuthenticateController,
     ChangePasswordController,
     CreateAccountController,
-    CreateCategoryController,
-    UpdateCategoryController,
-    DeleteCategoryController,
-    UpdateCategoryOrderController,
     DisconnectTwitterController,
     CreateBackupController,
   ],
