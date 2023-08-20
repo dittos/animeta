@@ -9,6 +9,21 @@ fragment Library_user on User {
     filteredCount
     ...LibraryFilter_recordFilters
   }
+  records(statusType: $statusTypeFilter, categoryId: $categoryIdFilter, orderBy: $recordOrder) {
+    nodes {
+      ...Library_record
+    }
+  }
+}
+
+fragment Library_record on Record {
+  databaseId
+  title
+  statusType
+  status
+  rating
+  updatedAt
+  hasNewerEpisode
 }
 
 mutation Library_createRecord($input: CreateRecordInput!) {

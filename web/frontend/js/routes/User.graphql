@@ -1,7 +1,8 @@
 query UserRoute(
   $username: String!,
   $statusTypeFilter: StatusType,
-  $categoryIdFilter: ID
+  $categoryIdFilter: ID,
+  $recordOrder: RecordOrder!,
 ) {
   currentUser {
     ...UserLayout_currentUser

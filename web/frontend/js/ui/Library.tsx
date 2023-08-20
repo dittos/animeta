@@ -1,4 +1,4 @@
-import sortBy from 'lodash/sortBy';
+import orderBy from 'lodash/orderBy';
 import React from 'react';
 import formatDate from 'date-fns/format';
 import diffDays from 'date-fns/difference_in_calendar_days';
@@ -11,33 +11,32 @@ import * as Grid from './Grid';
 import { Switch, SwitchItem } from './Switch';
 import AddRecordDialog from './AddRecordDialog';
 import { trackEvent } from '../Tracking';
-import { RecordDTO } from '../../../shared/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faCaretUp, faPlus, faStar } from '@fortawesome/free-solid-svg-icons';
-import { Library_CreateRecordDocument, Library_UserFragment } from './__generated__/Library.graphql';
+import { Library_CreateRecordDocument, Library_RecordFragment, Library_UserFragment } from './__generated__/Library.graphql';
 import { LibraryFilter } from './LibraryFilter';
 import { NormalizedUserRouteQuery, serializeUserRouteQuery } from '../UserRouteUtils';
 import { RecordOrder, StatusType } from '../__generated__/globalTypes';
 
 const ENABLE_NEW_ADD_RECORD = false;
 
-function getDateHeader(record: RecordDTO): string {
+function getDateHeader(record: Library_RecordFragment): string {
   const now = new Date();
-  if (!record.updated_at) {
+  if (!record.updatedAt) {
     return '?';
   }
-  var days = diffDays(now, record.updated_at);
+  var days = diffDays(now, record.updatedAt);
   if (days <= 60) {
     if (days < 1) return '오늘';
     else if (days < 2) return '어제';
     else if (days < 3) return '그저께';
     else if (days < 4) return '그끄저께';
-    else if (diffWeeks(now, record.updated_at) === 0) return '이번 주';
-    else if (diffWeeks(now, record.updated_at) === 1) return '지난 주';
-    else if (diffMonths(now, record.updated_at) === 0) return '이번 달';
-    else if (diffMonths(now, record.updated_at) === 1) return '지난 달';
+    else if (diffWeeks(now, record.updatedAt) === 0) return '이번 주';
+    else if (diffWeeks(now, record.updatedAt) === 1) return '지난 주';
+    else if (diffMonths(now, record.updatedAt) === 0) return '이번 달';
+    else if (diffMonths(now, record.updatedAt) === 1) return '지난 달';
   }
-  return formatDate(record.updated_at, 'YYYY/MM');
+  return formatDate(record.updatedAt, 'YYYY/MM');
 }
 
 function getIndexChar(s: string): string {
@@ -59,13 +58,13 @@ function getIndexChar(s: string): string {
   }
 }
 
-type RecordGroup = { key: string, items: RecordDTO[], index?: number };
+type RecordGroup = { key: string, items: Library_RecordFragment[], index?: number };
 
-function groupRecords(records: RecordDTO[], keyFn: (record: RecordDTO) => string | null): RecordGroup[] {
+function groupRecords(records: Library_RecordFragment[], keyFn: (record: Library_RecordFragment) => string | null): RecordGroup[] {
   var groups: RecordGroup[] = [];
-  var unknownGroup: RecordDTO[] = [];
+  var unknownGroup: Library_RecordFragment[] = [];
   var lastKey: string | null = null;
-  var group: RecordDTO[] = [];
+  var group: Library_RecordFragment[] = [];
   records.forEach(record => {
     const key = keyFn(record);
     if (key == null) {
@@ -85,28 +84,28 @@ function groupRecords(records: RecordDTO[], keyFn: (record: RecordDTO) => string
   return groups;
 }
 
-function groupRecordsByTitle(records: RecordDTO[]): RecordGroup[] {
-  records = sortBy(records, record => getIndexChar(record.title));
-  return groupRecords(records, record => getIndexChar(record.title));
+function groupRecordsByTitle(records: Library_RecordFragment[]): RecordGroup[] {
+  records = orderBy(records, record => getIndexChar(record.title!));
+  return groupRecords(records, record => getIndexChar(record.title!));
 }
 
-function groupRecordsByDate(records: RecordDTO[]): RecordGroup[] {
-  records = sortBy(records, record => -(record.updated_at || 0));
-  return groupRecords(records, record => record.updated_at ? getDateHeader(record) : null);
+function groupRecordsByDate(records: Library_RecordFragment[]): RecordGroup[] {
+  records = orderBy(records, record => record.updatedAt || '', 'desc');
+  return groupRecords(records, record => record.updatedAt ? getDateHeader(record) : null);
 }
 
-function groupRecordsByRating(records: RecordDTO[]): RecordGroup[] {
-  records = sortBy(records, record => -(record.rating || 0));
+function groupRecordsByRating(records: Library_RecordFragment[]): RecordGroup[] {
+  records = orderBy(records, record => record.rating || 0, 'desc');
   return groupRecords(records, record => record.rating ? `${record.rating}점` : '별점 없음');
 }
 
-function LibraryItem({ record }: { record: RecordDTO }) {
+function LibraryItem({ record }: { record: Library_RecordFragment }) {
   return (
-    <div className={`${Styles.groupItem} item-${record.status_type}`}>
-      <Link to={`/records/${record.id}/`}>
+    <div className={`${Styles.groupItem} item-${record.statusType?.toLowerCase()}`}>
+      <Link to={`/records/${record.databaseId}/`}>
         <span className="item-title">{record.title}</span>
-        <span className="item-status">{util.getStatusText(record)}</span>
-        {record.has_newer_episode && <span className="item-updated">up!</span>}
+        <span className="item-status">{util.getStatusTextGql(record)}</span>
+        {record.hasNewerEpisode && <span className="item-updated">up!</span>}
       </Link>
     </div>
   );
@@ -114,7 +113,6 @@ function LibraryItem({ record }: { record: RecordDTO }) {
 
 type LibraryProps = {
   query: NormalizedUserRouteQuery;
-  records: RecordDTO[];
   onAddRecord(): any;
   user: Library_UserFragment;
 };
@@ -127,9 +125,7 @@ class Library extends React.Component<LibraryProps> {
 
   render() {
     const { orderBy } = this.props.query;
-    const {
-      records,
-    } = this.props;
+    const records = this.props.user.records.nodes;
     var groups: RecordGroup[] = [];
     if (orderBy === RecordOrder.Date) {
       groups = groupRecordsByDate(records);
@@ -263,7 +259,7 @@ class Library extends React.Component<LibraryProps> {
                   <h2 className={Styles.groupTitle}>{group.key}</h2>
                   <div className={Styles.groupItems}>
                     {group.items.map(record => (
-                      <LibraryItem key={record.id} record={record} />
+                      <LibraryItem key={record.databaseId} record={record} />
                     ))}
                   </div>
                 </div>
