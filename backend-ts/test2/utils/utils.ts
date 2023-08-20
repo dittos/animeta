@@ -10,18 +10,12 @@ export class TestUtils {
 
   constructor(
     public app: FastifyInstance,
-    // private configService: ConfigService,
     // public factory: TestFactoryUtils,
-    // private authService: AuthService,
   ) {}
 
   generateAccessToken(user: User) {
     const secretKey = process.env.ANIMETA_SECURITY_SECRET_KEY as string
     return Signing.toString({ _auth_user_id: user.id }, secretKey, "django.contrib.sessions.backends.signed_cookies", jsonSerializer, true)
-  }
-
-  async changePassword(user: User, password: string) {
-    // await this.authService.changePassword(user, password)
   }
 
   getHttpClient() {

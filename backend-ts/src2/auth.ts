@@ -1,6 +1,8 @@
+import { HttpStatus } from "@nestjs/common";
 import { FastifyRequest } from "fastify";
 import { Signing } from "src/auth/django/signing";
 import { jsonSerializer } from "src/auth/serializer";
+import { ApiException } from "src/controllers/exceptions";
 import { User } from "src/entities/user.entity";
 import { db } from "src2/database";
 
@@ -30,4 +32,12 @@ export async function getCurrentUser(req: FastifyRequest): Promise<User | null> 
   } catch (e) {
     return null
   }
+}
+
+export async function requireUser(req: FastifyRequest): Promise<User> {
+  const currentUser = await getCurrentUser(req)
+  if (!currentUser) {
+    throw new ApiException("Login required.", HttpStatus.UNAUTHORIZED)
+  }
+  return currentUser
 }

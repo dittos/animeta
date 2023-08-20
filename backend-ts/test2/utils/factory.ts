@@ -19,7 +19,7 @@ export class TestFactoryUtils {
   ) {}
 
   async newUser(): Promise<User> {
-    return await db.save(User, {
+    return await db.save(db.create(User, {
       username: cuid(),
       first_name: '',
       last_name: '',
@@ -30,7 +30,7 @@ export class TestFactoryUtils {
       is_superuser: false,
       last_login: new Date(),
       date_joined: new Date(),
-    });
+    }))
   }
 
   async newCategory({
