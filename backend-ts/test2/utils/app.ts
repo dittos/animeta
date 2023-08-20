@@ -1,13 +1,7 @@
 import { FastifyInstance } from 'fastify';
-import * as dotenv from 'dotenv'
-import { createConnection } from 'typeorm'
+import { createConnection } from 'typeorm';
 
 export async function getApp(): Promise<FastifyInstance> {
-  dotenv.config({
-    path: __dirname + '/../.env.test',
-    debug: true,
-  })
-  
   await createConnection({
     "type": "postgres",
     "url": process.env.DATABASE_URL,
