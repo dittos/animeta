@@ -1,3 +1,4 @@
+import { Temporal } from "@js-temporal/polyfill";
 import * as DataLoader from "dataloader";
 import { History } from "src/entities/history.entity";
 import { Record } from "src/entities/record.entity";
@@ -104,6 +105,8 @@ export async function countRecordsForFilter(user: User, {
   )
 }
 
+const HAS_NEWER_EPISODE_AGE_THRESHOLD = Temporal.Duration.from({days: 100})
+
 export async function hasNewerEpisode(record: Record): Promise<boolean> {
   if (record.status_type !== StatusType.WATCHING)
     return false
@@ -113,6 +116,11 @@ export async function hasNewerEpisode(record: Record): Promise<boolean> {
   const episode = Number(record.status)
 
   if (!record.updated_at)
+    return false
+  
+  const updatedAt = Temporal.Instant.fromEpochMilliseconds(record.updated_at.getTime())
+  const age = Temporal.Now.instant().since(updatedAt)
+  if (Temporal.Duration.compare(age, HAS_NEWER_EPISODE_AGE_THRESHOLD) >= 0)
     return false
 
   return (await db.count(History, {
