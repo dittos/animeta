@@ -1,5 +1,4 @@
 import React from 'react';
-import connectTwitter from '../connectTwitter';
 import { changePassword, disconnectTwitter, createBackup, deleteFrontendSession } from '../API';
 import * as Layout from '../ui/Layout';
 import { App } from '../layouts';
@@ -117,9 +116,7 @@ class SettingsRoute extends React.Component<RouteComponentProps<SettingsRouteDat
                 연결 끊기
               </a>
             </> : <>
-              <a href="#" onClick={this._connectTwitter}>
-                연결하기
-              </a>
+              트위터 API 유료화로 연동 기능 제공을 중단합니다.
             </>}
           </div>
         </div>
@@ -148,15 +145,6 @@ class SettingsRoute extends React.Component<RouteComponentProps<SettingsRouteDat
       </Layout.CenteredFullWidth>
     );
   }
-
-  _connectTwitter = (event: React.MouseEvent) => {
-    event.preventDefault();
-    connectTwitter().then(() => {
-      this.props.writeData(data => {
-        data.currentUser.is_twitter_connected = true;
-      });
-    });
-  };
 
   _disconnectTwitter = (event: React.MouseEvent) => {
     event.preventDefault();
