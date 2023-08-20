@@ -1,7 +1,7 @@
 import ts from 'typescript'
 import { RootType } from "./root_type_collector"
 
-type JSONSchema = {}
+type JSONSchema = any // TODO
 
 export function writeJsonSchema(roots: Map<string, RootType>, typeChecker: ts.TypeChecker): Map<string, JSONSchema> {
   const schemas = new Map<string, JSONSchema>()
@@ -82,9 +82,15 @@ function createVisitor(roots: Map<string, RootType>, typeChecker: ts.TypeChecker
         }
       }
     } else if (ts.isUnionTypeNode(type)) {
+      const subTypes = type.types.map(t => visitType(t, undefined))
+      const nullSubTypes = subTypes.filter(it => it.type === 'null')
+      const nonNullSubTypes = subTypes.filter(it => it.type !== 'null')
       return {
         ...options,
-        anyOf: type.types.map(t => visitType(t, undefined))
+        // always put null subtypes in the front
+        // because ajv's coercion relies on the order of types.
+        // (e.g. null could be coerced to 0 if type is `number | null`)
+        anyOf: nullSubTypes.concat(nonNullSubTypes),
       }
     }
     throw new Error('??? - ' + type.getText())
