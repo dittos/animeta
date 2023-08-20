@@ -26,7 +26,7 @@ export function gql(literals: TemplateStringsArray, ...args: any[]): string {
   return result
 }
 
-export class GraphQLTestClient {
+export class TestClient {
   private readonly client: ReturnType<typeof createMercuriusTestClient>
 
   constructor(
@@ -34,6 +34,10 @@ export class GraphQLTestClient {
     options?: Parameters<typeof createMercuriusTestClient>[1],
   ) {
     this.client = createMercuriusTestClient(app, options)
+  }
+
+  call(path: string, params: any) {
+    return this.app.inject().headers(this.client.headers).post(path).payload(params)
   }
 
   async query<TData extends Record<string, unknown> = Record<string, any>, TVariables extends Record<string, unknown> | undefined = undefined>(

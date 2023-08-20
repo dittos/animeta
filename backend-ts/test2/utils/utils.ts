@@ -3,7 +3,7 @@ import { Signing } from "src/auth/django/signing";
 import { jsonSerializer } from "src/auth/serializer";
 import { User } from "src/entities/user.entity";
 import { TestFactoryUtils } from "./factory";
-import { GraphQLTestClient } from "./graphql";
+import { TestClient } from "./testClient";
 
 export class TestUtils {
   public readonly factory = new TestFactoryUtils()
@@ -25,11 +25,11 @@ export class TestUtils {
   }
 
   getHttpClient() {
-    return new GraphQLTestClient(this.app)
+    return new TestClient(this.app)
   }
 
   getHttpClientWithSessionKey(sessionKey: string) {
-    return new GraphQLTestClient(this.app, {
+    return new TestClient(this.app, {
       headers: {
         'x-animeta-session-key': sessionKey,
       }
