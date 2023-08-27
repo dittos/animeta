@@ -1,9 +1,11 @@
 import React from 'react';
 import { App } from '../layouts';
-import { AuthResult, createAccount, createFrontendSession } from '../API';
+import { createFrontendSession } from '../API';
 import { trackEvent } from '../Tracking';
 import { RouteComponentProps } from '../routes';
 import Styles from './Signup.module.less';
+import { API } from '../ApiClient';
+import { AuthResult } from '../../../shared/client';
 
 class Signup extends React.Component<RouteComponentProps<any>> {
   state = {
@@ -93,7 +95,7 @@ class Signup extends React.Component<RouteComponentProps<any>> {
 
     this.setState({ submitted: true });
     try {
-      const result = await createAccount({
+      const result = await API.call('/api/v5/Signup/createAccount', {
         username: this.state.username,
         password1: this.state.password,
         password2: this.state.passwordCheck,

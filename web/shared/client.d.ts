@@ -93,6 +93,10 @@ export type UserDto = {
   historyCount: number | null;
   isTwitterConnected: boolean | null;
 }
+export type AuthResult = {
+  sessionKey: string;
+  expiryMs: number | null;
+};
 type UnratedRecord = {
   id: string;
   title: string;
@@ -101,6 +105,13 @@ type RatingSummary = {
   rating: number;
   recordCount: number;
 }
+type Params = {
+  oldPassword: string;
+  newPassword: string;
+};
+type Result = {
+  ok: boolean;
+};
 export type StatusType = 'WATCHING' | 'FINISHED' | 'INTERESTED' | 'SUSPENDED';
 
 
@@ -196,6 +207,11 @@ export interface Client<TOptions = any> {
   options?: UserSerializerOptions,
 }, options?: TOptions): Promise<UserDto>
   call(path: "/api/v5/resolveSlug", params: {slug: string}, options?: TOptions): Promise<{type: 'USER' | null}>
+  call(path: "/api/v5/LoginForm/authenticate", params: {
+  username: string;
+  password: string;
+  persistent: boolean;
+}, options?: TOptions): Promise<AuthResult>
   call(path: "/api/v5/ManageRating/getUnratedRecords", params: {
   cursor: string | null,
 }, options?: TOptions): Promise<{
@@ -205,6 +221,18 @@ export interface Client<TOptions = any> {
   call(path: "/api/v5/ManageRating/", params: {}, options?: TOptions): Promise<{
   ratingSummaries: RatingSummary[];
   unratedRecordCount: number;
+}>
+  call(path: "/api/v5/Settings/changePassword", params: Params, options?: TOptions): Promise<Result>
+  call(path: "/api/v5/Settings/createBackup", params: {}, options?: TOptions): Promise<{
+  downloadUrl: string;
+}>
+  call(path: "/api/v5/Settings/disconnectTwitter", params: {}, options?: TOptions): Promise<{ok: boolean}>
+  call(path: "/api/v5/Signup/createAccount", params: {
+  username: string;
+  password1: string;
+  password2: string;
+}, options?: TOptions): Promise<{
+  authResult: AuthResult;
 }>
   call(path: "/api/v5/UserFeed/", params: {
   username: string;

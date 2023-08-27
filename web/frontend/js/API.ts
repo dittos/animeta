@@ -146,16 +146,8 @@ export function doDelete(url: string) {
 
 export type AuthResult = {
   sessionKey: string;
-  expiryMs: number;
+  expiryMs: number | null;
 };
-
-export function authenticate(params: {
-  username: string;
-  password: string;
-  persistent: boolean;
-}): Promise<AuthResult> {
-  return postJSON('/api/v4/Authenticate', params);
-}
 
 export function createFrontendSession(params: { authResult: AuthResult }) {
   return postJSON('/api/fe/sessions', params);
@@ -174,33 +166,6 @@ export async function getCurrentUser(params?: {
     if (e.status && 400 <= e.status && e.status < 500) return null;
     else throw e;
   }
-}
-
-// Account
-
-export function createAccount(params: {
-  username: string;
-  password1: string;
-  password2: string;
-}, customErrorHandling = false): Promise<{ authResult: AuthResult }> {
-  return postJSON('/api/v4/CreateAccount', params, customErrorHandling);
-}
-
-export function changePassword(params: {
-  oldPassword: string;
-  newPassword: string;
-}) {
-  return postJSON('/api/v4/ChangePassword', params);
-}
-
-export function createBackup(): Promise<{ downloadUrl: string }> {
-  return postJSON('/api/v4/CreateBackup');
-}
-
-// External Services
-
-export function disconnectTwitter() {
-  return postJSON('/api/v4/DisconnectTwitter');
 }
 
 // GraphQL

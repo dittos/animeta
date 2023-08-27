@@ -1,7 +1,8 @@
 import React from 'react';
 import Styles from './LoginForm.less';
 import ModalStyles from './Modal.less';
-import * as API from '../API';
+import {createFrontendSession} from '../API';
+import {API} from '../ApiClient';
 
 class LoginForm extends React.Component<{
   next?: string | { redirectToUser: true };
@@ -61,12 +62,12 @@ class LoginForm extends React.Component<{
     event.preventDefault();
     this.setState({ submitted: true });
     const username = this.usernameInput.current!.value;
-    API.authenticate({
+    API.call('/api/v5/LoginForm/authenticate', {
       username: username,
       password: this.passwordInput.current!.value,
       persistent: this.state.isPersistent,
     }).then(
-      authResult => API.createFrontendSession({ authResult }).then(() => {
+      authResult => createFrontendSession({ authResult }).then(() => {
         if (this.props.next) {
           location.href = (this.props.next as any).redirectToUser
             ? `/users/${username}/`

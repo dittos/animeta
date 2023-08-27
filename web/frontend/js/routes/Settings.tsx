@@ -1,10 +1,11 @@
 import React from 'react';
-import { changePassword, disconnectTwitter, createBackup, deleteFrontendSession } from '../API';
+import { deleteFrontendSession } from '../API';
 import * as Layout from '../ui/Layout';
 import { App } from '../layouts';
 import Styles from './Settings.less';
 import { RouteComponentProps, RouteHandler } from '../routes';
 import { UserDTO } from '../../../shared/types_generated';
+import { API } from '../ApiClient';
 
 type SettingsRouteData = {
   currentUser: UserDTO;
@@ -82,7 +83,7 @@ class ChangePassword extends React.Component {
     }
 
     this.setState({ isChangingPassword: true });
-    changePassword({
+    API.call('/api/v5/Settings/changePassword', {
       oldPassword: this.oldPasswordInput.current!.value,
       newPassword: this.newPassword1Input.current!.value
     })
@@ -148,7 +149,7 @@ class SettingsRoute extends React.Component<RouteComponentProps<SettingsRouteDat
 
   _disconnectTwitter = (event: React.MouseEvent) => {
     event.preventDefault();
-    disconnectTwitter().then(() => {
+    API.call('/api/v5/Settings/disconnectTwitter', {}).then(() => {
       this.props.writeData(data => {
         data.currentUser.is_twitter_connected = false;
       });
@@ -158,7 +159,7 @@ class SettingsRoute extends React.Component<RouteComponentProps<SettingsRouteDat
   _downloadBackup = (event: React.MouseEvent) => {
     event.preventDefault();
     this.setState({ backupState: 'preparing' });
-    createBackup().then(
+    API.call('/api/v5/Settings/createBackup', {}).then(
       (result) => {
         location.href = result.downloadUrl;
         this.setState({ backupState: 'completed' });
