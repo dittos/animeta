@@ -1,6 +1,7 @@
 import throttle from 'lodash/throttle';
 import { SearchResultItem } from '../../../shared/types';
 import { loadTypeahead } from '../typeahead';
+import { API } from '../ApiClient';
 
 let $: JQueryStatic | null = null
 
@@ -32,7 +33,7 @@ function cachingSource(source: TypeaheadSource, maxSize: number): TypeaheadSourc
 
 export const searchSource = cachingSource(
   throttle(function(q, cb) {
-    $!.getJSON('/api/v4/search', { q: q }, cb)
+    API.call("/api/v5/Typeahead/search", {query: q}).then(cb)
   }, 200),
   20
 );
@@ -45,7 +46,7 @@ export function initSuggest(node: Element) {
   return init(node, null, {
     source: cachingSource(
       throttle(function(q, cb) {
-        $!.getJSON('/api/v4/search/suggest', { q: q }, cb);
+        API.call("/api/v5/Typeahead/suggest", {query: q}).then(cb)
       }, 200),
       20
     ),

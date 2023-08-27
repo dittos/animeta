@@ -70,10 +70,3 @@ export async function login(username: string, password: string) {
 export function getCurrentUser() {
   return fetchWithSession('/api/v4/me');
 }
-
-export function searchWork(q: string, { minRecordCount = 2 }: { minRecordCount: number }) {
-  const params = new URLSearchParams();
-  params.append('q', q);
-  params.append('min_record_count', '' + minRecordCount);
-  return fetchWithSession(`/api/v4/search?${params}`);
-}

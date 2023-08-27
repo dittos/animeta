@@ -19,6 +19,11 @@ export type PersonDto = {
   staffs?: PersonWorkDto[],
   casts?: PersonWorkDto[],
 }
+export type SearchResultItem = {
+  id: number;
+  title: string;
+  recordCount: number;
+};
 export type SourceType =
   | 'MANGA'
   | 'ORIGINAL'
@@ -146,6 +151,7 @@ export interface Client<TOptions = any> {
   recommendedTransliteration: string | null;
   count: number;
 }[]>
+  call(path: "/api/admin/v1/TitleAutosuggest/search", params: {query: string}, options?: TOptions): Promise<SearchResultItem[]>
   call(path: "/api/admin/v1/WorkAddForm/createWork", params: {
   title: string,
   namuRef: string | null,
@@ -234,6 +240,8 @@ export interface Client<TOptions = any> {
 }, options?: TOptions): Promise<{
   authResult: AuthResult;
 }>
+  call(path: "/api/v5/Typeahead/search", params: {query: string}, options?: TOptions): Promise<SearchResultItem[]>
+  call(path: "/api/v5/Typeahead/suggest", params: {query: string}, options?: TOptions): Promise<SearchResultItem[]>
   call(path: "/api/v5/UserFeed/", params: {
   username: string;
 }, options?: TOptions): Promise<{

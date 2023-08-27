@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormControl } from 'react-bootstrap';
 import { loadTypeahead } from '../typeahead';
-import * as API from './API';
+import { API } from './ApiClient';
 import './TitleAutosuggest.css';
 import { SearchResultItem } from '../../../shared/types';
 import throttle from 'lodash/throttle';
@@ -29,7 +29,7 @@ function cachingSource(source: TypeaheadSource, maxSize: number): TypeaheadSourc
 
 const source = cachingSource(
   throttle((q, cb) => {
-    API.searchWork(q, { minRecordCount: 0 }).then(cb);
+    API.call("/api/admin/v1/TitleAutosuggest/search", {query: q}).then(cb)
   }, 200),
   20
 );
