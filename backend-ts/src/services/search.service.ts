@@ -13,19 +13,19 @@ export type SearchResultItem = {
 export class SearchService {
   constructor(@InjectEntityManager() private em: EntityManager) {}
 
-  async search(query: string, limit: number): Promise<SearchResultItem[]> {
-    return this.doSearch(`%${makeKey(query).join('%')}%`, limit)
+  async search(query: string, limit: number, minRecordCount: number = 2): Promise<SearchResultItem[]> {
+    return this.doSearch(`%${makeKey(query).join('%')}%`, limit, minRecordCount)
   }
 
   async suggest(query: string, limit: number): Promise<SearchResultItem[]> {
     return this.doSearch(`${makeKey(query).join('')}%`, limit)
   }
 
-  private async doSearch(pattern: string, limit: number): Promise<SearchResultItem[]> {
+  private async doSearch(pattern: string, limit: number, minRecordCount: number = 2): Promise<SearchResultItem[]> {
     const result = await this.em.createQueryBuilder(WorkIndex, 'wi')
       .innerJoin('search_worktitleindex', 'wti', 'wti.work_id = wi.work_id')
       .where('wti.key LIKE :pattern', { pattern })
-      .andWhere('(wi.verified = true OR wi.record_count >= :minRecordCount)', { minRecordCount: 2 })
+      .andWhere('(wi.verified = true OR wi.record_count >= :minRecordCount)', { minRecordCount })
       .andWhere('wi.blacklisted = false')
       .orderBy('wi.verified', 'DESC')
       .addOrderBy('wi.record_count', 'DESC')

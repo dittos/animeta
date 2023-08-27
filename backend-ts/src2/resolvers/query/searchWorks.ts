@@ -1,10 +1,9 @@
 import { QueryResolvers } from "src/graphql/generated";
-import { SearchService } from "src/services/search.service";
-import { db } from "src2/database";
+import { searchWorks as _searchWorks } from "src2/services/search";
 import { getWork } from "src2/services/work";
 
 export const searchWorks: QueryResolvers['searchWorks'] = async (_, { query }) => {
-  const result = await new SearchService(db).search(query, 30)
+  const result = await _searchWorks(query, 30)
   const edges = await Promise.all(
     result.map(async it => ({
       node: await getWork(it.id),
