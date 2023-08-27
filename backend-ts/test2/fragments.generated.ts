@@ -417,10 +417,10 @@ export type Query = {
   curatedLists: Array<CuratedList>;
   curatedList: Maybe<CuratedList>;
   searchWorks: Maybe<SearchWorksResult>;
-  weeklyWorksChart: Array<WorksChartItem>;
   tablePeriod: Maybe<TablePeriod>;
   currentTablePeriod: TablePeriod;
   tablePeriods: Array<TablePeriod>;
+  weeklyWorksChart: Array<WorksChartItem>;
 };
 
 
@@ -470,13 +470,13 @@ export type QuerySearchWorksArgs = {
 };
 
 
-export type QueryWeeklyWorksChartArgs = {
-  limit: Scalars['Int'];
+export type QueryTablePeriodArgs = {
+  period: Scalars['String'];
 };
 
 
-export type QueryTablePeriodArgs = {
-  period: Scalars['String'];
+export type QueryWeeklyWorksChartArgs = {
+  limit: Scalars['Int'];
 };
 
 export type CuratedList = {
@@ -506,14 +506,6 @@ export type SearchWorksResultEdge = {
   __typename?: 'SearchWorksResultEdge';
   node: Work;
   recordCount: Maybe<Scalars['Int']>;
-};
-
-export type WorksChartItem = {
-  __typename?: 'WorksChartItem';
-  rank: Scalars['Int'];
-  work: Work;
-  diff: Maybe<Scalars['Int']>;
-  sign: Maybe<Scalars['Int']>;
 };
 
 export type TablePeriod = {
@@ -574,6 +566,14 @@ export enum CreditType {
   CharacterDesign = 'CHARACTER_DESIGN',
   Music = 'MUSIC'
 }
+
+export type WorksChartItem = {
+  __typename?: 'WorksChartItem';
+  rank: Scalars['Int'];
+  work: Work;
+  diff: Maybe<Scalars['Int']>;
+  sign: Maybe<Scalars['Int']>;
+};
 
 export type WorkDtoFragment = { __typename?: 'Work', title: string | null, imageUrl: string | null, recordCount: number | null, id: string, record: { __typename?: 'Record', id: string } | null, metadata: { __typename?: 'WorkMetadata', periods: Array<string> | null, studioNames: Array<string> | null, source: SourceType | null, websiteUrl: string | null, namuwikiUrl: string | null, annUrl: string | null, durationMinutes: number | null, schedules: Array<{ __typename?: 'WorkSchedule', country: string, date: any | null, datePrecision: DatePrecision | null, broadcasts: Array<string> | null }> | null } | null };
 

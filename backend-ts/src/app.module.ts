@@ -21,7 +21,6 @@ import { AppController } from './app.controller';
 import { PostSerializer } from './serializers/post.serializer';
 import { RecordSerializer } from './serializers/record.serializer';
 import { UserService } from './services/user.service';
-import { UserPostsController } from './controllers/user_posts.controller';
 import { UserRecordsService } from './services/user_records.service';
 import { UserRecordsController } from './controllers/user_records.controller';
 import { TitleMapping } from './entities/title_mapping.entity';
@@ -84,7 +83,6 @@ import { BackupService } from './services/backup.service';
     SearchController,
     UserController,
     CurrentUserController,
-    UserPostsController,
     UserRecordsController,
     ExternalServicesController,
     AuthenticateController,
