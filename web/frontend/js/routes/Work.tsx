@@ -54,7 +54,14 @@ const routeHandler = AppLayout.wrap({
 
   async load({ params, loader }) {
     const { title } = params;
-    return loader.graphql(WorkRouteDocument, { title })
+    const data = await loader.graphql(WorkRouteDocument, { title })
+    if (!data.work) {
+      // TODO: 404
+    }
+    return {
+      ...data,
+      work: data.work!,
+    }
   },
 
   renderTitle({ work }) {
