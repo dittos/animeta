@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react';
 import { bootstrap } from 'nuri/client';
 import nprogress from 'nprogress';
 import app from './routes';
-import { getCurrentUser, get, graphql } from './API';
+import { graphql } from './API';
 import { trackPageView } from './Tracking';
 import { Loader } from '../../shared/loader';
 import '../less/nprogress.less';
@@ -26,13 +26,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const loader: Loader = {
-  callV4(path: string, params?: any) {
-    return get('/api/v4' + path, params)
-  },
-
   v5: API,
-
-  getCurrentUser,
 
   graphql,
 };

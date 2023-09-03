@@ -4,7 +4,6 @@ import cookieParser from 'cookie-parser';
 import csurf from 'csurf';
 import httpProxy from 'http-proxy';
 import serializeJS from 'serialize-javascript';
-import isString from 'lodash/isString';
 import * as Sentry from '@sentry/node';
 import Backend, { HttpNotFound } from './backend';
 import renderFeed from './renderFeed';
@@ -15,18 +14,6 @@ import * as ejs from 'ejs';
 
 const DEBUG = process.env.NODE_ENV !== 'production';
 const MAINTENANCE = process.env.MAINTENANCE;
-
-function serializeParams(params: any) {
-  if (!params) {
-    return params;
-  }
-  const result: {[key: string]: string} = {};
-  for (var k in params) {
-    const v = params[k];
-    result[k] = isString(v) ? v : JSON.stringify(v);
-  }
-  return result;
-}
 
 export function createServer({ config, server = express(), appProvider, getAssets, staticDir }: {
   config: any;
@@ -39,16 +26,10 @@ export function createServer({ config, server = express(), appProvider, getAsset
 
   function loaderFactory(serverRequest: ServerRequest): Loader {
     return {
-      callV4(path, params) {
-        return backend.callV4(serverRequest, path, serializeParams(params));
-      },
       v5: {
         call(path: string, params: any, options: any) {
           return backend.callV5(serverRequest, path, params);
         }
-      },
-      getCurrentUser(params) {
-        return backend.getCurrentUser(serverRequest, serializeParams(params));
       },
       graphql(doc, variables) {
         return backend.graphql(serverRequest, doc, variables);

@@ -1,6 +1,5 @@
 import * as Sentry from '@sentry/react';
 import fetch from 'cross-fetch';
-import { RecordDTO, RecordFetchOptions, UserDTO, UserFetchOptions } from '../../shared/types';
 import * as CSRF from './CSRF';
 import isString from 'lodash/isString';
 import graphqlRequest, { ClientError } from 'graphql-request';
@@ -155,17 +154,6 @@ export function createFrontendSession(params: { authResult: AuthResult }) {
 
 export function deleteFrontendSession() {
   return doDelete('/api/fe/sessions');
-}
-
-export async function getCurrentUser(params?: {
-  options?: UserFetchOptions
-}): Promise<UserDTO | null> {
-  try {
-    return await get('/api/v4/me', params, true);
-  } catch (e) {
-    if (e.status && 400 <= e.status && e.status < 500) return null;
-    else throw e;
-  }
 }
 
 // GraphQL
