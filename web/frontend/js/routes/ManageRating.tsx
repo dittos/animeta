@@ -4,7 +4,7 @@ import { RouteComponentProps } from "../routes";
 import Styles from "./ManageRating.module.less";
 import * as Grid from "../ui/Grid";
 import { Rating } from "../ui/Rating";
-import { chunk } from "lodash";
+import chunk from "lodash/chunk";
 import { RatingSummary, UnratedRecord } from "../../../shared/client";
 import { AutoLoadMore } from "../ui/LoadMore";
 import { graphql } from "../API";
@@ -17,7 +17,6 @@ type ClientUnratedRecord = UnratedRecord & {
 };
 
 type ManageRatingRouteData = {
-  // currentUser: NonNullable<UserLayoutPropsData['currentUser']>;
   ratingSummaries: RatingSummary[];
   unratedRecordCount: number;
   unratedRecords: {
