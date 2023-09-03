@@ -1,0 +1,5 @@
+query AppLayout {
+  currentUser {
+    name
+  }
+}

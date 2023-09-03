@@ -1,0 +1,8 @@
+query UserLayout($username: String!) {
+  currentUser {
+    ...UserLayout_currentUser
+  }
+  user: userByName(name: $username) {
+    ...UserLayout_user
+  }
+}

@@ -1,0 +1,8 @@
+query CurrentUserLayout {
+  currentUser {
+    ...UserLayout_currentUser
+  }
+  user: currentUser {
+    ...UserLayout_user
+  }
+}
