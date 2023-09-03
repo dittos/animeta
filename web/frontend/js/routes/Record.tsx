@@ -9,19 +9,20 @@ import * as Typeahead from '../ui/Typeahead';
 import PostComment from '../ui/GqlPostComment';
 import Styles from '../ui/RecordDetail.module.less';
 import connectTwitter from '../connectTwitter';
-import { User } from '../layouts';
+import { UserLayout } from '../layouts/UserLayout';
 import { CenteredFullWidth } from '../ui/Layout';
 import ModalStyles from '../ui/Modal.less';
 import { trackEvent } from '../Tracking';
 import { setLastPublishTwitter } from '../Prefs';
-import { RouteComponentProps, RouteHandler } from '../routes';
+import { RouteComponentProps } from '../routes';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
 import { Rating } from '../ui/Rating';
 import { RecordRouteDocument, RecordRouteQuery, RecordRoute_CreatePostDocument, RecordRoute_DeletePostDocument, RecordRoute_DeleteRecordDocument, RecordRoute_HeaderFragment, RecordRoute_Header_CategoryFragment, RecordRoute_PostFragment, RecordRoute_PostsDocument, RecordRoute_RecordFragment, RecordRoute_UpdateCategoryDocument, RecordRoute_UpdateRatingDocument, RecordRoute_UpdateTitleDocument } from './__generated__/Record.graphql';
+import { RouteWithLayoutComponentProps } from '../LayoutWrapper';
 import { UserLayoutPropsData } from '../ui/UserLayout';
 
-type RecordRouteData = UserLayoutPropsData & RecordRouteQuery & {
+type RecordRouteData = RecordRouteQuery & {
   record: NonNullable<RecordRouteQuery['record']>;
 };
 
@@ -281,11 +282,11 @@ function DeleteRecordModal({ record, onConfirm, onCancel }: {
   );
 }
 
-function Record(props: RouteComponentProps<RecordRouteData>) {
+function Record(props: RouteWithLayoutComponentProps<UserLayoutPropsData, RecordRouteData>) {
   return <RecordBase key={props.data.record.databaseId} {...props} />;
 }
 
-class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
+class RecordBase extends React.Component<RouteWithLayoutComponentProps<UserLayoutPropsData, RecordRouteData>> {
   state = {
     posts: [] as RecordRoute_PostFragment[],
     showDeleteModal: false,
@@ -420,7 +421,9 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
         this.loadPosts(this.props);
         this.props.writeData(data => {
           data.record = result.deletePost.record!;
-          data.user = result.deletePost.record!.user!;
+        });
+        this.props.writeLayoutData(data => {
+          data.user = result.deletePost.record!.layoutUser!;
         });
       });
     }
@@ -467,8 +470,8 @@ class RecordBase extends React.Component<RouteComponentProps<RecordRouteData>> {
   };
 }
 
-const routeHandler: RouteHandler<RecordRouteData> = {
-  component: User(Record),
+const routeHandler = UserLayout.wrap({
+  component: Record,
 
   async load({ loader, params }) {
     const { recordId } = params;
@@ -479,12 +482,18 @@ const routeHandler: RouteHandler<RecordRouteData> = {
     return {
       ...data,
       record: data.record!,
-      user: data.record!.user!, // for layout
     };
   },
 
-  renderTitle({ user, record }) {
-    return `${user.name} 사용자 > ${record.title}`;
+  extractLayoutData(data) {
+    return {
+      currentUser: data.layoutCurrentUser,
+      user: data.record.layoutUser!
+    }
   },
-};
+
+  renderTitle({ record }, parentTitle) {
+    return `${parentTitle} > ${record.title}`;
+  },
+});
 export default routeHandler;

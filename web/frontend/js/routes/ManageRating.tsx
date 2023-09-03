@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
-import { User } from "../layouts";
-import { RouteComponentProps, RouteHandler } from "../routes";
-import { UserLayoutPropsData } from "../ui/UserLayout";
+import { CurrentUserLayout } from "../layouts/CurrentUserLayout";
+import { RouteComponentProps } from "../routes";
 import Styles from "./ManageRating.module.less";
 import * as Grid from "../ui/Grid";
 import { Rating } from "../ui/Rating";
@@ -11,15 +10,14 @@ import { AutoLoadMore } from "../ui/LoadMore";
 import { graphql } from "../API";
 import { Link } from "nuri";
 import useIntersectionObserver from "../ui/useIntersectionObserver";
-import { UserLayout_CommonPrivateDocument } from "../ui/__generated__/UserLayout.graphql";
 import { ManageRatingRoute_UpdateRatingDocument } from "./__generated__/ManageRating.graphql";
 
 type ClientUnratedRecord = UnratedRecord & {
   rating?: number;
 };
 
-type ManageRatingRouteData = UserLayoutPropsData & {
-  currentUser: NonNullable<UserLayoutPropsData['currentUser']>;
+type ManageRatingRouteData = {
+  // currentUser: NonNullable<UserLayoutPropsData['currentUser']>;
   ratingSummaries: RatingSummary[];
   unratedRecordCount: number;
   unratedRecords: {
@@ -221,15 +219,10 @@ const ManageRating: React.FC<RouteComponentProps<ManageRatingRouteData>> = ({
   );
 };
 
-const routeHandler: RouteHandler<ManageRatingRouteData> = {
-  component: User(ManageRating),
+const routeHandler = CurrentUserLayout.wrap({
+  component: ManageRating,
 
   async load({ loader }) {
-    const {currentUser, user, ...layoutData} = await loader.graphql(UserLayout_CommonPrivateDocument);
-    // TODO: redirect to login page
-    if (!currentUser) {
-      throw new Error("Login required.");
-    }
     const [data, unratedRecords] = await Promise.all([
       loader.v5.call("/api/v5/ManageRating/", {}),
       loader.v5.call("/api/v5/ManageRating/getUnratedRecords", {
@@ -237,16 +230,9 @@ const routeHandler: RouteHandler<ManageRatingRouteData> = {
       }),
     ]);
     return {
-      currentUser,
-      user: user!, // for layout
-      ...layoutData,
       ...data,
       unratedRecords,
     };
   },
-
-  renderTitle({ currentUser }) {
-    return `${currentUser.name} 사용자`;
-  },
-};
+});
 export default routeHandler;

@@ -1,11 +1,7 @@
 query UserHistoryRoute($username: String!) {
-  currentUser {
-    ...UserLayout_currentUser
-  }
   user: userByName(name: $username) {
     databaseId
     name
-    ...UserLayout_user
     posts(count: 32) {
       ...UserHistoryRoute_postConnection
     }

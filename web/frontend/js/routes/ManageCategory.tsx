@@ -1,17 +1,15 @@
 /* global confirm */
 import React from 'react';
-import { User } from '../layouts';
+import { CurrentUserLayout } from '../layouts/CurrentUserLayout';
 import { Sortable } from '../ui/Sortable';
 import { CenteredFullWidth } from '../ui/Layout';
 import { graphql } from '../API';
 import Styles from './ManageCategory.less';
-import { RouteComponentProps, RouteHandler } from '../routes';
-import { UserLayoutPropsData } from '../ui/UserLayout';
+import { RouteComponentProps } from '../routes';
 import { ManageCategoryRouteDocument, ManageCategoryRouteQuery, ManageCategory_CategoryFragment, ManageCategory_CreateCategoryDocument, ManageCategory_DeleteCategoryDocument, ManageCategory_RenameCategoryDocument, ManageCategory_UpdateCategoryOrderDocument } from './__generated__/ManageCategory.graphql';
 
-type ManageCategoryRouteData = UserLayoutPropsData & ManageCategoryRouteQuery & {
+type ManageCategoryRouteData = ManageCategoryRouteQuery & {
   currentUser: NonNullable<ManageCategoryRouteQuery['currentUser']>;
-  categories: ManageCategory_CategoryFragment[];
 };
 
 class CategoryItem extends React.Component<{
@@ -103,7 +101,7 @@ class ManageCategory extends React.Component<RouteComponentProps<ManageCategoryR
             {this.state.sortingCategories!.map(this._renderItem)}
           </Sortable>
         ) : (
-          this.props.data.categories.map(this._renderItem)
+          this.props.data.currentUser.categories.map(this._renderItem)
         )}
 
         <div className={Styles.sort}>
@@ -148,7 +146,7 @@ class ManageCategory extends React.Component<RouteComponentProps<ManageCategoryR
   };
 
   _beginSorting = () => {
-    this.setState({ sortingCategories: this.props.data.categories });
+    this.setState({ sortingCategories: this.props.data.currentUser.categories });
   };
 
   _endSorting = () => {
@@ -157,7 +155,7 @@ class ManageCategory extends React.Component<RouteComponentProps<ManageCategoryR
       result => {
         this.setState({ sortingCategories: null });
         this.props.writeData(data => {
-          data.categories = result.updateCategoryOrder.categories;
+          data.currentUser.categories = result.updateCategoryOrder.categories;
         });
       }
     );
@@ -177,7 +175,7 @@ class ManageCategory extends React.Component<RouteComponentProps<ManageCategoryR
     graphql(ManageCategory_CreateCategoryDocument, {input: {name: input.value}}).then(result => {
       input.value = '';
       this.props.writeData(data => {
-        data.categories.push(result.createCategory.category);
+        data.currentUser.categories.push(result.createCategory.category);
       });
     });
   };
@@ -190,7 +188,7 @@ class ManageCategory extends React.Component<RouteComponentProps<ManageCategoryR
     ) {
       graphql(ManageCategory_DeleteCategoryDocument, {input: {categoryId: category.databaseId}}).then(() => {
         this.props.writeData(data => {
-          data.categories = data.categories.filter(c => c.databaseId !== category.databaseId);
+          data.currentUser.categories = data.currentUser.categories.filter(c => c.databaseId !== category.databaseId);
         });
       });
     }
@@ -205,8 +203,8 @@ class ManageCategory extends React.Component<RouteComponentProps<ManageCategoryR
   };
 }
 
-const routeHandler: RouteHandler<ManageCategoryRouteData> = {
-  component: User(ManageCategory),
+const routeHandler = CurrentUserLayout.wrap({
+  component: ManageCategory,
 
   async load({ loader }) {
     const {currentUser, ...data} = await loader.graphql(ManageCategoryRouteDocument);
@@ -217,13 +215,7 @@ const routeHandler: RouteHandler<ManageCategoryRouteData> = {
     return {
       ...data,
       currentUser,
-      user: currentUser, // for layout
-      categories: currentUser.categories!,
     };
   },
-
-  renderTitle({ currentUser }) {
-    return `${currentUser.name} 사용자`;
-  },
-};
+});
 export default routeHandler;

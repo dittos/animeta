@@ -1,9 +1,6 @@
 query UserTableRoute($period: String!, $username: String!, $withRecommendations: Boolean!) {
-  currentUser {
-    ...UserLayout_currentUser
-  }
   user: userByName(name: $username) {
-    ...UserLayout_user
+    name
   }
   tablePeriod(period: $period) {
     period

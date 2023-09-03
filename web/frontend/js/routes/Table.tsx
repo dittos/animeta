@@ -8,13 +8,12 @@ import * as Layout from '../ui/Layout';
 import * as Grid from '../ui/Grid';
 import LoginDialog from '../ui/LoginDialog';
 import SearchInput from '../ui/SearchInput';
-import { App } from '../layouts';
-import { RouteComponentProps, RouteHandler } from '../routes';
+import { AppLayout } from '../layouts/AppLayout';
+import { RouteComponentProps } from '../routes';
 import { Popover } from '../ui/Popover';
 import { TableShareDialog } from '../ui/TableShareDialog';
 import { TableItem } from '../ui/TableItem';
 import { formatPeriod } from '../util';
-import { UserDTO } from '../../../shared/types_generated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faShareSquare } from '@fortawesome/free-solid-svg-icons';
 import { TableRouteDocument, TableRouteQuery, TableRoute_PageTitleFragment } from './__generated__/Table.graphql';
@@ -218,7 +217,6 @@ type TablePeriodItem = NonNullable<TableRouteQuery['tablePeriod']>['items'][numb
 
 type TableRouteData = TableRouteQuery & {
   tablePeriod: NonNullable<TableRouteQuery['tablePeriod']>;
-  currentUser: UserDTO | null;
   items: TablePeriodItem[];
   containsKRSchedule: boolean;
   hasAnyRecord: boolean;
@@ -313,27 +311,21 @@ const Table: React.FC<RouteComponentProps<TableRouteData>> = ({
   )
 }
 
-const routeHandler: RouteHandler<TableRouteData> = {
-  component: App(Table, { activeMenu: 'search' }),
+const routeHandler = AppLayout({ activeMenu: 'search' }).wrap({
+  component: Table,
 
   async load({ params, loader }) {
-    const { period } = params;
-    const [currentUser, data] = await Promise.all([
-      loader.getCurrentUser({
-        options: {},
-      }),
-      loader.graphql(TableRouteDocument, {period, withRecommendations: true}),
-    ]);
+    const { period } = params
+    const data = await loader.graphql(TableRouteDocument, {period, withRecommendations: true})
     const {tablePeriod} = data
     if (!tablePeriod) throw new Error('not found')
-    const sort: Ordering = currentUser && tablePeriod.isRecommendationEnabled ? 'recommended' :
+    const sort: Ordering = data.currentUser && tablePeriod.isRecommendationEnabled ? 'recommended' :
       period === tablePeriod.isCurrent ? 'schedule' :
         'recordCount';
     const items = tablePeriod.items;
     return {
       ...data,
       tablePeriod,
-      currentUser,
       items: sortBy(items, comparatorMap[sort]),
       containsKRSchedule: some(
         items,
@@ -364,5 +356,5 @@ const routeHandler: RouteHandler<TableRouteData> = {
       tw_image_static: `share-table-q${period.split('Q')[1]}.jpg`,
     };
   },
-};
+});
 export default routeHandler;

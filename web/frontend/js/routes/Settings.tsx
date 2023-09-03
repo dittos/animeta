@@ -1,14 +1,14 @@
 import React from 'react';
 import { deleteFrontendSession } from '../API';
 import * as Layout from '../ui/Layout';
-import { App } from '../layouts';
 import Styles from './Settings.less';
-import { RouteComponentProps, RouteHandler } from '../routes';
-import { UserDTO } from '../../../shared/types_generated';
+import { RouteComponentProps } from '../routes';
 import { API } from '../ApiClient';
+import { SettingsRouteDocument, SettingsRouteQuery } from './__generated__/Settings.graphql';
+import { AppLayout } from '../layouts/AppLayout';
 
-type SettingsRouteData = {
-  currentUser: UserDTO;
+type SettingsRouteData = SettingsRouteQuery & {
+  currentUser: NonNullable<SettingsRouteQuery['currentUser']>;
 };
 
 class ChangePassword extends React.Component {
@@ -111,7 +111,7 @@ class SettingsRoute extends React.Component<RouteComponentProps<SettingsRouteDat
         <div className={Styles.section}>
           <h2 className={Styles.sectionTitle}>트위터 연동</h2>
           <div className={Styles.action}>
-            {currentUser.is_twitter_connected ? <>
+            {currentUser.isTwitterConnected ? <>
               상태: 연결됨<br />
               <a href="#" onClick={this._disconnectTwitter}>
                 연결 끊기
@@ -151,7 +151,7 @@ class SettingsRoute extends React.Component<RouteComponentProps<SettingsRouteDat
     event.preventDefault();
     API.call('/api/v5/Settings/disconnectTwitter', {}).then(() => {
       this.props.writeData(data => {
-        data.currentUser.is_twitter_connected = false;
+        data.currentUser.isTwitterConnected = false;
       });
     });
   };
@@ -176,19 +176,17 @@ class SettingsRoute extends React.Component<RouteComponentProps<SettingsRouteDat
   };
 }
 
-const routeHandler: RouteHandler<SettingsRouteData> = {
-  component: App(SettingsRoute, { activeMenu: 'user' }),
+const routeHandler = AppLayout({ activeMenu: 'user' }).wrap({
+  component: SettingsRoute,
 
   async load({ loader, redirect }) {
-    const currentUser = await loader.getCurrentUser({
-      options: {
-        twitter: true,
-      },
-    });
-    if (!currentUser) return redirect('/login/');
+    const data = await loader.graphql(SettingsRouteDocument)
+    const {currentUser} = data
+    if (!currentUser) return redirect('/login/')
     return {
+      ...data,
       currentUser,
     };
   },
-};
+});
 export default routeHandler;

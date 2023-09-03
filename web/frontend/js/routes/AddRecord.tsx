@@ -1,13 +1,12 @@
 import React from 'react';
-import { User, Stackable, StackablePropsData } from '../layouts';
+import { CurrentUserLayout } from '../layouts/CurrentUserLayout';
 import AddRecordDialog from '../ui/AddRecordDialog';
 import { trackEvent } from '../Tracking';
 import * as Mutations from '../Mutations';
-import { RouteComponentProps, RouteHandler } from '../routes';
-import { AddRecordRouteDocument, AddRecord_CreateRecordDocument, AddRecord_CreateRecordMutation } from './__generated__/AddRecord.graphql';
-import { UserLayoutPropsData } from '../ui/UserLayout';
+import { RouteComponentProps } from '../routes';
+import { AddRecordRouteDocument, AddRecordRouteQuery, AddRecord_CreateRecordDocument, AddRecord_CreateRecordMutation } from './__generated__/AddRecord.graphql';
 
-type AddRecordRouteData = StackablePropsData & UserLayoutPropsData & {
+type AddRecordRouteData = AddRecordRouteQuery & {
   title?: string;
   referrer: string;
 };
@@ -44,10 +43,11 @@ class AddRecord extends React.Component<RouteComponentProps<AddRecordRouteData>>
   };
 }
 
-const routeHandler: RouteHandler<AddRecordRouteData> = {
-  component: Stackable(User, AddRecord),
+const routeHandler = CurrentUserLayout.wrap({
+  component: AddRecord,
+  unwrapLayoutOnStacked: true,
 
-  async load({ loader, params, query, stacked }) {
+  async load({ loader, params, query }) {
     const {currentUser, ...data} = await loader.graphql(AddRecordRouteDocument);
     // TODO: redirect to login page
     if (!currentUser) {
@@ -56,15 +56,9 @@ const routeHandler: RouteHandler<AddRecordRouteData> = {
     return {
       ...data,
       currentUser,
-      user: currentUser, // for layout
-      stacked, // for layout
       title: params.title,
       referrer: query.ref || 'AddRecord',
     };
   },
-
-  renderTitle({ currentUser }) {
-    return `${currentUser!.name} 사용자`;
-  },
-};
+});
 export default routeHandler;

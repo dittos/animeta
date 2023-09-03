@@ -1,4 +1,7 @@
 query TableRoute($period: String!, $withRecommendations: Boolean!) {
+  currentUser {
+    databaseId
+  }
   tablePeriods {
     period
     year

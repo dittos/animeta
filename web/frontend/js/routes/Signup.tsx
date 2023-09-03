@@ -1,5 +1,5 @@
 import React from 'react';
-import { App } from '../layouts';
+import { AppLayout } from '../layouts/AppLayout';
 import { createFrontendSession } from '../API';
 import { trackEvent } from '../Tracking';
 import { RouteComponentProps } from '../routes';
@@ -124,7 +124,8 @@ class Signup extends React.Component<RouteComponentProps<any>> {
   }
 }
 
-export default {
-  component: App(Signup, { noHero: true }),
+export default AppLayout({ noHero: true }).wrap({
+  component: Signup,
+  load: async () => ({}),
   renderTitle: () => '회원 가입',
-};
+});

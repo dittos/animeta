@@ -1,16 +1,16 @@
-import { RouteComponentProps, RouteHandler } from '../routes';
+import { RouteComponentProps } from '../routes';
 import React from 'react';
-import { User as UserLayout } from '../layouts';
 import Library from '../ui/Library';
 import { UserRouteDocument, UserRouteQuery } from './__generated__/User.graphql';
 import { NormalizedUserRouteQuery, normalizeUserRouteQuery } from '../UserRouteUtils';
-import { UserLayoutPropsData } from '../ui/UserLayout';
+import { UserLayout } from '../layouts/UserLayout';
 
-type UserRouteData = UserLayoutPropsData & UserRouteQuery & {
+type UserRouteData = UserRouteQuery & {
+  user: NonNullable<UserRouteQuery['user']>;
   query: NormalizedUserRouteQuery;
 };
 
-function User({ data, controller }: RouteComponentProps<UserRouteData>) {
+function UserRoute({ data, controller }: RouteComponentProps<UserRouteData>) {
   const { query, user } = data;
 
   function addRecord() {
@@ -27,8 +27,8 @@ function User({ data, controller }: RouteComponentProps<UserRouteData>) {
   );
 }
 
-const routeHandler: RouteHandler<UserRouteData> = {
-  component: UserLayout(User),
+export default UserLayout.wrap({
+  component: UserRoute,
 
   async load({ loader, params, query }) {
     const { username } = params;
@@ -49,9 +49,4 @@ const routeHandler: RouteHandler<UserRouteData> = {
       query: normalizedQuery,
     };
   },
-
-  renderTitle({ user }) {
-    return `${user.name!} 사용자`;
-  },
-};
-export default routeHandler;
+});

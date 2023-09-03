@@ -1,7 +1,5 @@
 query ManageCategoryRoute {
   currentUser {
-    ...UserLayout_currentUser
-    ...UserLayout_user
     categories {
       ...ManageCategory_category
     }

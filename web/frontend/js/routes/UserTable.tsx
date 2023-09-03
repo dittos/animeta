@@ -1,19 +1,19 @@
-import { RouteComponentProps, RouteHandler } from '../routes';
+import { RouteComponentProps } from '../routes';
 import React, { useRef } from 'react';
-import { User as UserLayout } from '../layouts';
 import * as Layout from '../ui/Layout';
 import * as Grid from '../ui/Grid';
 import Styles from '../../less/table-period.less';
 import { TableItem } from '../ui/TableItem';
 import { formatPeriod } from '../util';
 import { Link } from 'nuri';
-import { UserLayoutPropsData } from '../ui/UserLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { UserTableRouteDocument, UserTableRouteQuery } from './__generated__/UserTable.graphql';
 import useIntersectionObserver from '../ui/useIntersectionObserver';
+import { UserLayout } from '../layouts/UserLayout';
 
-type UserTableRouteData = UserTableRouteQuery & UserLayoutPropsData & {
+type UserTableRouteData = UserTableRouteQuery & {
+  user: NonNullable<UserTableRouteQuery['user']>;
   tablePeriod: NonNullable<UserTableRouteQuery['tablePeriod']>;
 };
 
@@ -60,8 +60,8 @@ const UserTable: React.FC<RouteComponentProps<UserTableRouteData>> = ({ data }) 
   )
 }
 
-const routeHandler: RouteHandler<UserTableRouteData> = {
-  component: UserLayout(UserTable, { noContentWrapper: true }, { noHero: true, noNotice: true }),
+const routeHandler = UserLayout({ noContentWrapper: true }, { noHero: true, noNotice: true }).wrap({
+  component: UserTable,
 
   async load({ loader, params }) {
     const { username, period } = params;
@@ -81,8 +81,8 @@ const routeHandler: RouteHandler<UserTableRouteData> = {
     };
   },
 
-  renderTitle({ user, tablePeriod }) {
-    return `${formatPeriod(tablePeriod)} 신작 - ${user.name} 사용자`;
+  renderTitle({ tablePeriod }, parentTitle) {
+    return `${formatPeriod(tablePeriod)} 신작 - ${parentTitle}`;
   },
   
   renderMeta({ user, tablePeriod }) {
@@ -96,5 +96,5 @@ const routeHandler: RouteHandler<UserTableRouteData> = {
       tw_image_static: `share-table-q${period.split('Q')[1]}.jpg`,
     };
   },
-};
+});
 export default routeHandler;

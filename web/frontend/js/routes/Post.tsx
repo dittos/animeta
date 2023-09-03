@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import * as WorkViews from '../ui/WorkViews';
 import { getStatusDisplayGql } from '../util';
-import { App } from '../layouts';
+import { AppLayout } from '../layouts/AppLayout';
 import { Post as PostComponent } from '../ui/Post';
-import { RouteComponentProps, RouteHandler } from '../routes';
+import { RouteComponentProps } from '../routes';
 import { UserDTO } from '../../../shared/types_generated';
 import { PostRouteDocument, PostRouteQuery, PostRoute_PostsDocument, PostRoute_PostsQuery, PostRoute_RefetchDocument } from './__generated__/Post.graphql';
 import Styles from './Post.module.less';
@@ -83,8 +83,8 @@ function Post({ data, writeData, loader }: RouteComponentProps<PostRouteData>) {
   );
 }
 
-const routeHandler: RouteHandler<PostRouteData> = {
-  component: App(Post),
+const routeHandler = AppLayout.wrap({
+  component: Post,
 
   async load({ params, loader }) {
     const { id } = params;
@@ -117,5 +117,5 @@ const routeHandler: RouteHandler<PostRouteData> = {
       tw_image: work?.imageUrl,
     };
   },
-};
+});
 export default routeHandler;

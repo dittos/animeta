@@ -4,11 +4,7 @@ query UserRoute(
   $categoryIdFilter: ID,
   $recordOrder: RecordOrder!,
 ) {
-  currentUser {
-    ...UserLayout_currentUser
-  }
   user: userByName(name: $username) {
-    ...UserLayout_user
     ...Library_user
   }
 }

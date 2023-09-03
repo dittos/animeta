@@ -1,15 +1,16 @@
-import { RouteComponentProps, RouteHandler } from '../routes';
+import { RouteComponentProps } from '../routes';
 import React, { useState } from 'react';
-import { User } from '../layouts';
+import { UserLayout } from '../layouts/UserLayout';
 import * as Layout from '../ui/Layout';
 import { LoadMore } from '../ui/LoadMore';
 import { Post } from '../ui/Post';
 import Styles from './UserHistory.less';
-import { UserLayoutPropsData } from '../ui/UserLayout';
 import { UserHistoryRouteDocument, UserHistoryRouteQuery, UserHistoryRoute_MorePostsDocument } from './__generated__/UserHistory.graphql';
 import { Post_PostFragment } from '../ui/__generated__/Post.graphql';
 
-type UserHistoryRouteData = UserLayoutPropsData & UserHistoryRouteQuery;
+type UserHistoryRouteData = UserHistoryRouteQuery & {
+  user: NonNullable<UserHistoryRouteQuery['user']>;
+};
 
 function getDateHeader(post: Post_PostFragment) {
   if (!post.updatedAt) {
@@ -74,8 +75,8 @@ function UserHistory({ data, writeData, loader }: RouteComponentProps<UserHistor
   );
 }
 
-const routeHandler: RouteHandler<UserHistoryRouteData> = {
-  component: User(UserHistory),
+const routeHandler = UserLayout.wrap({
+  component: UserHistory,
 
   async load({ loader, params }) {
     const { username } = params;
@@ -88,9 +89,5 @@ const routeHandler: RouteHandler<UserHistoryRouteData> = {
       user: user!,
     };
   },
-
-  renderTitle({ user }) {
-    return `${user.name} 사용자`;
-  },
-};
+});
 export default routeHandler;

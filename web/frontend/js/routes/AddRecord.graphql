@@ -1,7 +1,6 @@
 query AddRecordRoute {
   currentUser {
-    ...UserLayout_currentUser
-    ...UserLayout_user
+    name
   }
 }
 

@@ -1,12 +1,3 @@
-query UserLayout_commonPrivate {
-  currentUser {
-    ...UserLayout_currentUser
-  }
-  user: currentUser {
-    ...UserLayout_user
-  }
-}
-
 fragment UserLayout_currentUser on User {
   name
 }

@@ -1,8 +1,11 @@
 query RecordRoute($recordId: ID!) {
+  layoutCurrentUser: currentUser {
+    ...UserLayout_currentUser
+  }
+  
   currentUser {
     databaseId
     isTwitterConnected
-    ...UserLayout_currentUser
   }
   record(id: $recordId) {
     ...RecordRoute_record
@@ -14,6 +17,8 @@ fragment RecordRoute_record on Record {
   user {
     isCurrentUser
     name
+  }
+  layoutUser: user {
     ...UserLayout_user
   }
   title

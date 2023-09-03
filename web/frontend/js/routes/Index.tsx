@@ -1,19 +1,14 @@
 import React, { useState } from 'react';
-import { App } from '../layouts';
+import { AppLayout } from '../layouts/AppLayout';
 import * as Grid from '../ui/Grid';
 import { LoadMore } from '../ui/LoadMore';
 import Styles from './Index.module.less';
-import { RouteComponentProps, RouteHandler } from '../routes';
-import { UserDTO } from '../../../shared/types_generated';
+import { RouteComponentProps } from '../routes';
 import { Post } from '../ui/Post';
 import { IndexRouteDocument, IndexRouteQuery, IndexRoute_MoreTimelineDocument } from './__generated__/Index.graphql';
 import { WeeklyChart } from '../ui/WeeklyChart';
 
-type IndexRouteData = IndexRouteQuery & {
-  currentUser: UserDTO | null;
-};
-
-const Index: React.FC<RouteComponentProps<IndexRouteData>> = ({ data, writeData, loader }) => {
+const Index: React.FC<RouteComponentProps<IndexRouteQuery>> = ({ data, writeData, loader }) => {
   const [isLoading, setIsLoading] = useState(false)
 
   return (
@@ -51,20 +46,11 @@ const Index: React.FC<RouteComponentProps<IndexRouteData>> = ({ data, writeData,
   }
 }
 
-const routeHandler: RouteHandler<IndexRouteData> = {
-  component: App(Index, { activeMenu: 'home' }),
+const routeHandler = AppLayout({ activeMenu: 'home' }).wrap({
+  component: Index,
 
   async load({ loader }) {
-    const [currentUser, data] = await Promise.all([
-      loader.getCurrentUser({
-        options: {},
-      }),
-      loader.graphql(IndexRouteDocument, { count: 10 }),
-    ]);
-    return {
-      ...data,
-      currentUser,
-    };
+    return loader.graphql(IndexRouteDocument, { count: 10 });
   },
-};
+});
 export default routeHandler;
