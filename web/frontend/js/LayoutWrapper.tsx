@@ -15,14 +15,15 @@ export type LayoutHandler<LayoutData> = {
 }
 
 export type Layout<LayoutData> = {
-  wrap<InnerData>(inner: InnerHandler<InnerData>): RouteHandler<{
+  wrap<InnerData>(inner: InnerHandler<LayoutData, InnerData>): RouteHandler<{
     layoutData: LayoutData,
     innerData: InnerData,
   }, Loader>
 }
 
-type InnerHandler<InnerData> = Omit<RouteHandler<InnerData, Loader>, 'renderTitle'> & {
+type InnerHandler<LayoutData, InnerData> = Omit<RouteHandler<InnerData, Loader>, 'renderTitle'> & {
   load: NonNullable<RouteHandler<InnerData, Loader>['load']>,
+  extractLayoutData?: (data: InnerData) => LayoutData;
   renderTitle?: (data: InnerData, parentTitle: string) => string;
   unwrapLayoutOnStacked?: boolean;
 }
@@ -72,7 +73,7 @@ function LayoutWrapper<LayoutData, InnerData>(
 
 function wrap<InnerData, LayoutData>(
   layout: LayoutHandler<LayoutData>,
-  handler: InnerHandler<InnerData>,
+  handler: InnerHandler<LayoutData, InnerData>,
 ): RouteHandler<WrappedData<LayoutData, InnerData>, Loader> {
   const {
     component,
@@ -80,6 +81,7 @@ function wrap<InnerData, LayoutData>(
     renderMeta,
     renderTitle,
     unwrapLayoutOnStacked = false,
+    extractLayoutData,
     ...rest
   } = handler
   const layoutRenderTitle = layout.renderTitle
@@ -87,9 +89,11 @@ function wrap<InnerData, LayoutData>(
     component: component && LayoutWrapper(layout.component, component, unwrapLayoutOnStacked),
 
     load: async (request) => {
+      const innerDataPromise = load(request)
+      const layoutDataPromise = extractLayoutData ? innerDataPromise.then(extractLayoutData) : layout.load(request)
       const [layoutData, innerData] = await Promise.all([
-        layout.load(request),
-        load(request),
+        layoutDataPromise,
+        innerDataPromise,
       ])
       if (isRedirect(innerData)) {
         return innerData
