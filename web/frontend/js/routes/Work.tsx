@@ -1,13 +1,12 @@
 import React from 'react';
 import * as WorkViews from '../ui/WorkViews';
-import { App } from '../layouts';
-import { UserDTO } from '../../../shared/types_generated';
-import { RouteComponentProps, RouteHandler } from '../routes';
+import { AppLayout } from '../layouts/AppLayout';
+import { RouteComponentProps } from '../routes';
 import { WorkRouteDocument, WorkRouteQuery, WorkRoute_MorePostsDocument, WorkRoute_RefetchDocument } from './__generated__/Work.graphql';
 
 type WorkRouteData = WorkRouteQuery & {
-  currentUser: UserDTO | null;
-};
+  work: NonNullable<WorkRouteQuery['work']>;
+}
 
 function Work({ data, writeData, loader }: RouteComponentProps<WorkRouteData>) {
   const { work, currentUser } = data;
@@ -50,21 +49,12 @@ function Work({ data, writeData, loader }: RouteComponentProps<WorkRouteData>) {
   );
 }
 
-const routeHandler: RouteHandler<WorkRouteData> = {
-  component: App(Work),
+const routeHandler = AppLayout.wrap({
+  component: Work,
 
   async load({ params, loader }) {
     const { title } = params;
-    const [currentUser, data] = await Promise.all([
-      loader.getCurrentUser({
-        options: {},
-      }),
-      loader.graphql(WorkRouteDocument, { title }),
-    ]);
-    return {
-      ...data,
-      currentUser,
-    };
+    return loader.graphql(WorkRouteDocument, { title })
   },
 
   renderTitle({ work }) {
@@ -82,5 +72,5 @@ const routeHandler: RouteHandler<WorkRouteData> = {
       tw_image: work.imageUrl,
     };
   },
-};
+});
 export default routeHandler;

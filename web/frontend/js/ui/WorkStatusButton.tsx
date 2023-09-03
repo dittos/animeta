@@ -3,7 +3,6 @@ import { Link } from 'nuri';
 import * as util from '../util';
 import Styles from './WorkStatusButton.less';
 import LoginDialog from './LoginDialog';
-import { UserDTO } from '../../../shared/types_generated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { WorkStatusButton_RecordFragment, WorkStatusButton_WorkFragment } from './__generated__/WorkStatusButton.graphql';
@@ -11,7 +10,7 @@ import { WorkStatusButton_RecordFragment, WorkStatusButton_WorkFragment } from '
 export function WorkStatusButton({ work, record, currentUser }: {
   work: WorkStatusButton_WorkFragment;
   record?: WorkStatusButton_RecordFragment | null;
-  currentUser: UserDTO | null;
+  currentUser: unknown | null;
 }) {
   if (record) {
     return (

@@ -10,7 +10,6 @@ import { WorkStatusButton } from './WorkStatusButton';
 import VideoSearch from './VideoSearch';
 import Styles from './WorkViews.less';
 import * as Mutations from '../Mutations';
-import { UserDTO } from '../../../shared/types_generated';
 import { Subscription } from 'rxjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt, faComment, faExternalLink, faUser } from '@fortawesome/free-solid-svg-icons';
@@ -89,7 +88,7 @@ function Sidebar({ work, chart, episode }: {
 }
 
 export class Work extends React.Component<{
-  currentUser: UserDTO | null;
+  currentUser: { databaseId: string } | null;
   work: WorkViewsFragment;
   episode?: string;
   chart: WeeklyChartFragment;
@@ -101,7 +100,7 @@ export class Work extends React.Component<{
     // TODO: move subscription up to route
     if (this.props.currentUser) {
       this._subscription = Mutations.records
-        .pipe(filter(it => it.workId === this.props.work.databaseId && it.userId === this.props.currentUser?.id?.toString()))
+        .pipe(filter(it => it.workId === this.props.work.databaseId && it.userId === this.props.currentUser?.databaseId))
         .subscribe(it => {
           this.props.onRecordChange(it.id);
         });

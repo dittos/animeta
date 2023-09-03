@@ -1,4 +1,7 @@
 query WorkEpisodeRoute($title: String!, $episode: Int!) {
+  currentUser {
+    databaseId
+  }
   work: workByTitle(title: $title) {
     ...WorkViews
     posts(count: 10, episode: $episode) {

@@ -1,4 +1,7 @@
 query WorkRoute($title: String!) {
+  currentUser {
+    databaseId
+  }
   work: workByTitle(title: $title) {
     ...WorkViews
     posts(count: 10) {

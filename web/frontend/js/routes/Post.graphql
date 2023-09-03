@@ -1,4 +1,7 @@
 query PostRoute($postId: ID!) {
+  currentUser {
+    databaseId
+  }
   post(id: $postId) {
     databaseId
     ...Post_post

@@ -1,7 +1,6 @@
 import React from 'react';
 import { createApp } from 'nuri';
 import * as NuriApp from 'nuri/app';
-import * as layouts from './layouts';
 import LoginDialog from './ui/LoginDialog';
 import IndexRoute from './routes/Index';
 import SignupRoute from './routes/Signup';
@@ -20,6 +19,7 @@ import ManageCategoryRoute from './routes/ManageCategory';
 import ManageRatingRoute from './routes/ManageRating';
 import { Loader } from '../../shared/loader';
 import { GetCurrentTablePeriodDocument } from './__generated__/routes.graphql';
+import { AppLayout } from './layouts/AppLayout';
 
 export type RouteHandler<D> = NuriApp.RouteHandler<D, Loader>;
 export type RouteComponent<D> = NuriApp.RouteComponent<D, Loader>;
@@ -32,10 +32,11 @@ app.title = routeTitle => {
 };
 
 app.route('/', IndexRoute);
-app.route('/login/', {
-  component: layouts.App(() => <LoginDialog next="/" />),
+app.route('/login/', AppLayout.wrap({
+  component: () => <LoginDialog next="/" />,
+  load: async () => ({}),
   renderTitle: () => '로그인',
-});
+}));
 app.route('/signup/', SignupRoute);
 app.route('/-:id', PostRoute);
 app.route('/works/:title+/ep/:episode/', WorkEpisodeRoute);

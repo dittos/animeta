@@ -1,14 +1,11 @@
 import React from 'react';
 import * as WorkViews from '../ui/WorkViews';
-import { App } from '../layouts';
-import { UserDTO } from '../../../shared/types_generated';
-import { RouteComponentProps, RouteHandler } from '../routes';
+import { AppLayout } from '../layouts/AppLayout';
+import { RouteComponentProps } from '../routes';
 import { WorkEpisodeRouteDocument, WorkEpisodeRouteQuery, WorkEpisodeRoute_MorePostsDocument, WorkEpisodeRoute_RefetchDocument } from './__generated__/WorkEpisode.graphql';
 import { Redirect } from 'nuri/app';
 
-type WorkEpisodeRouteData = WorkEpisodeRouteQuery & {
-  currentUser: UserDTO | null;
-};
+type WorkEpisodeRouteData = WorkEpisodeRouteQuery
 
 function WorkEpisode({ data, writeData, loader }: RouteComponentProps<WorkEpisodeRouteData>) {
   const { work, currentUser } = data;
@@ -58,25 +55,17 @@ function WorkEpisode({ data, writeData, loader }: RouteComponentProps<WorkEpisod
   );
 }
 
-const routeHandler: RouteHandler<WorkEpisodeRouteData> = {
-  component: App(WorkEpisode),
+const routeHandler = AppLayout.wrap({
+  component: WorkEpisode,
 
   async load({ params, loader }) {
-    const { title, episode: _episode } = params;
+    const { title, episode: _episode } = params
     const episode = Number(_episode)
-    const [currentUser, data] = await Promise.all([
-      loader.getCurrentUser({
-        options: {},
-      }),
-      loader.graphql(WorkEpisodeRouteDocument, { title, episode }),
-    ]);
+    const data = await loader.graphql(WorkEpisodeRouteDocument, { title, episode })
     if (!data.work?.episode) {
-      return new Redirect(`/works/${encodeURIComponent(title)}/`);
+      return new Redirect(`/works/${encodeURIComponent(title)}/`)
     }
-    return {
-      ...data,
-      currentUser,
-    };
+    return data
   },
 
   renderTitle({ work }) {
@@ -94,5 +83,5 @@ const routeHandler: RouteHandler<WorkEpisodeRouteData> = {
       tw_image: work.imageUrl,
     };
   },
-};
+});
 export default routeHandler;

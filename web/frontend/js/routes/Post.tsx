@@ -4,12 +4,10 @@ import { getStatusDisplayGql } from '../util';
 import { AppLayout } from '../layouts/AppLayout';
 import { Post as PostComponent } from '../ui/Post';
 import { RouteComponentProps } from '../routes';
-import { UserDTO } from '../../../shared/types_generated';
 import { PostRouteDocument, PostRouteQuery, PostRoute_PostsDocument, PostRoute_PostsQuery, PostRoute_RefetchDocument } from './__generated__/Post.graphql';
 import Styles from './Post.module.less';
 
 type PostRouteData = PostRouteQuery & {
-  currentUser: UserDTO | null;
   postsData?: PostRoute_PostsQuery;
 };
 
@@ -87,17 +85,8 @@ const routeHandler = AppLayout.wrap({
   component: Post,
 
   async load({ params, loader }) {
-    const { id } = params;
-    const [currentUser, data] = await Promise.all([
-      loader.getCurrentUser({
-        options: {},
-      }),
-      loader.graphql(PostRouteDocument, {postId: id}),
-    ]);
-    return {
-      ...data,
-      currentUser,
-    };
+    const { id } = params
+    return loader.graphql(PostRouteDocument, {postId: id})
   },
 
   renderTitle({ post }) {
