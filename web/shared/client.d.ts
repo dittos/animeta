@@ -7,6 +7,19 @@ export type CompanyDto = {
   }[];
   metadata: any;
 }
+export type CategoryDto = {
+  id: string;
+  name: string;
+}
+export type UserDto = {
+  id: string;
+  name: string;
+  dateJoined: number; // TODO: Date
+  categories: CategoryDto[] | null;
+  recordCount: number | null;
+  historyCount: number | null;
+  isTwitterConnected: boolean | null;
+}
 type PersonWorkDto = {
   workId: string,
   workTitle: string,
@@ -85,19 +98,6 @@ export type UserSerializerOptions = {
   stats?: boolean;
   twitter?: boolean;
 };
-export type CategoryDto = {
-  id: string;
-  name: string;
-}
-export type UserDto = {
-  id: string;
-  name: string;
-  dateJoined: number; // TODO: Date
-  categories: CategoryDto[] | null;
-  recordCount: number | null;
-  historyCount: number | null;
-  isTwitterConnected: boolean | null;
-}
 export type AuthResult = {
   sessionKey: string;
   expiryMs: number | null;
@@ -123,6 +123,7 @@ export type StatusType = 'WATCHING' | 'FINISHED' | 'INTERESTED' | 'SUSPENDED';
 export interface Client<TOptions = any> {
   call(path: "/api/admin/v1/clearCache", params: {}, options?: TOptions): Promise<boolean>
   call(path: "/api/admin/v1/getCompanies", params: {}, options?: TOptions): Promise<CompanyDto[]>
+  call(path: "/api/admin/v1/getCurrentUser", params: {}, options?: TOptions): Promise<UserDto>
   call(path: "/api/admin/v1/CompanyDetail/", params: {id: string}, options?: TOptions): Promise<CompanyDto>
   call(path: "/api/admin/v1/CompanyDetail/rename", params: {
   id: string;
@@ -133,6 +134,13 @@ export interface Client<TOptions = any> {
   id: string;
   otherCompanyId: string;
 }, options?: TOptions): Promise<CompanyDto>
+  call(path: "/api/admin/v1/Login/authenticate", params: {
+  username: string;
+  password: string;
+}, options?: TOptions): Promise<{
+  sessionKey: string;
+  expiryMs: number | null;
+}>
   call(path: "/api/admin/v1/PersonDetail/", params: {id: string}, options?: TOptions): Promise<PersonDto>
   call(path: "/api/admin/v1/PersonDetail/rename", params: {
   id: string;

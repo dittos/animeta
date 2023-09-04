@@ -6,7 +6,7 @@ import {
   Button,
   Modal,
 } from 'react-bootstrap';
-import * as API from './API';
+import { API, saveSessionKey } from './ApiClient';
 
 class Login extends React.Component<{
   onLogin: () => void;
@@ -41,10 +41,13 @@ class Login extends React.Component<{
 
   _submit = (event: React.FormEvent) => {
     event.preventDefault();
-    API.login(
-      this.usernameInput.current!.value,
-      this.passwordInput.current!.value
-    ).then(this.props.onLogin);
+    API.call('/api/admin/v1/Login/authenticate', {
+      username: this.usernameInput.current!.value,
+      password: this.passwordInput.current!.value,
+    }).then(result => {
+      saveSessionKey(result.sessionKey)
+      this.props.onLogin()
+    })
   };
 }
 

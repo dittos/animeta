@@ -11,7 +11,7 @@ import {
 import { LinkContainer } from 'react-router-bootstrap';
 import Loading from './Loading';
 import Login from './Login';
-import * as API from './API';
+import * as API from './ApiClient';
 import { API as ApiClient } from './ApiClient';
 import { WorkAddForm } from './WorkAddForm';
 
