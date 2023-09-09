@@ -3,7 +3,6 @@ import mercurius from 'mercurius'
 import * as path from 'path'
 import * as fs from 'fs'
 import { createConnection } from 'typeorm'
-import { HttpException } from '@nestjs/common'
 import { resolvers } from './resolvers'
 import { getCurrentUser } from './auth'
 import { glob } from 'glob'
@@ -82,15 +81,15 @@ function registerEndpoints(parent: FastifyInstance, endpointsDir: string, prefix
           url: file.name === 'index.js' ? '/' : '/' + file.name.replace(/\.js$/, ''),
           schema: schema ?? undefined,
           handler: async (request, reply) => {
-            try {
+            // try {
               return await handler(request.body, request)
-            } catch (e) {
-              if (e instanceof HttpException) {
-                reply.status(e.getStatus()).send(e.getResponse())
-                return
-              }
-              throw e
-            }
+            // } catch (e) {
+            //   if (e instanceof HttpException) {
+            //     reply.status(e.getStatus()).send(e.getResponse())
+            //     return
+            //   }
+            //   throw e
+            // }
           }
         })
       }

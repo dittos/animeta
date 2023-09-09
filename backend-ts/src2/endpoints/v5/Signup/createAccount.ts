@@ -1,6 +1,5 @@
-import { HttpStatus } from "@nestjs/common";
 import { User } from "src/entities/user.entity";
-import { ApiException } from "src/controllers/exceptions";
+import { ApiException } from "src2/exceptions";
 import { AuthResult } from "../LoginForm/authenticate";
 import { QueryFailedError } from "typeorm";
 import { db } from "src2/database";
@@ -24,7 +23,7 @@ export default async function (params: {
     params.password2 === '' ||
     params.password1 !== params.password2
   ) {
-    throw new ApiException("회원가입 실패", HttpStatus.BAD_REQUEST)
+    throw new ApiException("회원가입 실패", 400)
   }
   const user = new User()
   user.username = params.username
@@ -57,5 +56,5 @@ export default async function (params: {
 }
 
 function usernameAlreadyExistError() {
-  return new ApiException("이미 사용 중인 아이디입니다. 다른 아이디로 가입하세요.", HttpStatus.BAD_REQUEST)
+  return new ApiException("이미 사용 중인 아이디입니다. 다른 아이디로 가입하세요.", 400)
 }

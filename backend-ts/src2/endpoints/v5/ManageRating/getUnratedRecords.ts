@@ -1,5 +1,5 @@
 import { FastifyRequest } from "fastify";
-import { ApiException } from "src/controllers/exceptions";
+import { ApiException } from "src2/exceptions";
 import { getCurrentUser } from "src2/auth";
 import { getUnratedRecords } from "src2/services/record";
 

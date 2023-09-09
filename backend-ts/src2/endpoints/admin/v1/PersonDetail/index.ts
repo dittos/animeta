@@ -1,4 +1,4 @@
-import { ApiException } from "src/controllers/exceptions";
+import { ApiException } from "src2/exceptions";
 import { Person } from "src/entities/person.entity";
 import { db } from "src2/database";
 import { PersonDto } from "src2/schemas/admin";

@@ -1,5 +1,4 @@
-import { HttpStatus } from "@nestjs/common";
-import { ApiException } from "src/controllers/exceptions";
+import { ApiException } from "src2/exceptions";
 import { authenticate, createSession } from "src2/services/auth";
 
 export default async function (params: {
@@ -11,7 +10,7 @@ export default async function (params: {
 }> {
   const user = await authenticate(params.username, params.password)
   if (!user || !user.is_active)
-    throw new ApiException('없는 아이디거나 암호가 틀렸습니다.', HttpStatus.UNAUTHORIZED)
+    throw new ApiException('없는 아이디거나 암호가 틀렸습니다.', 401)
   const session = createSession(user, false)
   return {
     sessionKey: session.sessionKey,

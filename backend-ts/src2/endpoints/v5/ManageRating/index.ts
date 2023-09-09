@@ -1,5 +1,5 @@
 import { FastifyRequest } from "fastify";
-import { ApiException } from "src/controllers/exceptions";
+import { ApiException } from "src2/exceptions";
 import { User } from "src/entities/user.entity";
 import { getCurrentUser } from "src2/auth";
 import { db } from "src2/database";

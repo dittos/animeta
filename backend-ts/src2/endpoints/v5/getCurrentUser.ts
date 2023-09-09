@@ -1,4 +1,4 @@
-import { ApiException } from "src/controllers/exceptions";
+import { ApiException } from "src2/exceptions";
 import { serializeUser, UserSerializerOptions } from 'src2/serializers/user';
 import { UserDto } from 'src2/schemas/user';
 import { getCurrentUser } from "src2/auth";

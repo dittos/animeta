@@ -1,5 +1,4 @@
-import { HttpStatus } from "@nestjs/common";
-import { ApiException } from "src/controllers/exceptions";
+import { ApiException } from "src2/exceptions";
 import { Record } from "src/entities/record.entity";
 import { TitleMapping } from "src/entities/title_mapping.entity";
 import { Work } from "src/entities/work.entity";
@@ -15,7 +14,7 @@ export default async function(params: {workId: string}): Promise<boolean> {
   return await db.transaction(async () => {
     const work = await db.findOneOrFail(Work, params.workId)
     if (await db.findOne(Record, {where: {work_id: work.id}})) {
-      throw new ApiException("Record exists", HttpStatus.FORBIDDEN)
+      throw new ApiException("Record exists", 403)
     }
     await db.delete(WorkIndex, {work_id: work.id})
     await db.delete(WorkTitleIndex, {work_id: work.id})
