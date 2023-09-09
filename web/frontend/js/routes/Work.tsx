@@ -52,24 +52,23 @@ function Work({ data, writeData, loader }: RouteComponentProps<WorkRouteData>) {
 const routeHandler = AppLayout.wrap({
   component: Work,
 
-  async load({ params, loader }) {
+  async load({ params, loader, notFound }) {
     const { title } = params;
-    const data = await loader.graphql(WorkRouteDocument, { title })
-    if (!data.work) {
-      // TODO: 404
+    const {work, ...data} = await loader.graphql(WorkRouteDocument, { title })
+    if (!work) {
+      return notFound()
     }
     return {
       ...data,
-      work: data.work!,
+      work,
     }
   },
 
   renderTitle({ work }) {
-    return work!.title!;
+    return work.title!;
   },
 
   renderMeta({ work }) {
-    if (!work) return {};
     const title = work.title!;
     return {
       og_url: `/works/${encodeURIComponent(title)}/`,

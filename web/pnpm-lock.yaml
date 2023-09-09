@@ -81,7 +81,7 @@ importers:
       msw: ^0.40.0
       notistack: ^2.0.2
       nprogress: ^0.2.0
-      nuri: github:dittos/nuri-builds#1be420c859a8097bbbfe9e1f7a182954343a7182
+      nuri: github:dittos/nuri-builds#203195edc30d0f8e25b531b05f55e1abadab719c
       postcss-loader: ^3.0.0
       react: ^17.0.2
       react-bootstrap: ^1.4.0
@@ -136,7 +136,7 @@ importers:
       lodash: 4.17.21
       notistack: 2.0.2_uiw6ajzzm4tk2ocr5a5l7wfqw4
       nprogress: 0.2.0
-      nuri: github.com/dittos/nuri-builds/1be420c859a8097bbbfe9e1f7a182954343a7182
+      nuri: github.com/dittos/nuri-builds/203195edc30d0f8e25b531b05f55e1abadab719c
       react: 17.0.2
       react-bootstrap: 1.4.0_sfoxds7t5ydpegc3knd667wn6m
       react-dom: 17.0.2_react@17.0.2
@@ -233,7 +233,7 @@ importers:
       graphql-request: ^4.3.0
       http-proxy: ^1.18.1
       lodash: ^4.17.21
-      nuri: github:dittos/nuri-builds#1be420c859a8097bbbfe9e1f7a182954343a7182
+      nuri: github:dittos/nuri-builds#203195edc30d0f8e25b531b05f55e1abadab719c
       qs: ^6.11.0
       react: ^17.0.2
       rollup: ^2.79.0
@@ -257,7 +257,7 @@ importers:
       graphql-request: 4.3.0_graphql@16.6.0
       http-proxy: 1.18.1
       lodash: 4.17.21
-      nuri: github.com/dittos/nuri-builds/1be420c859a8097bbbfe9e1f7a182954343a7182
+      nuri: github.com/dittos/nuri-builds/203195edc30d0f8e25b531b05f55e1abadab719c
       qs: 6.11.0
       react: 17.0.2
       serialize-javascript: 1.9.1
@@ -10930,8 +10930,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  github.com/dittos/nuri-builds/1be420c859a8097bbbfe9e1f7a182954343a7182:
-    resolution: {tarball: https://codeload.github.com/dittos/nuri-builds/tar.gz/1be420c859a8097bbbfe9e1f7a182954343a7182}
+  github.com/dittos/nuri-builds/203195edc30d0f8e25b531b05f55e1abadab719c:
+    resolution: {tarball: https://codeload.github.com/dittos/nuri-builds/tar.gz/203195edc30d0f8e25b531b05f55e1abadab719c}
     name: nuri
     version: 0.0.1
     dependencies:

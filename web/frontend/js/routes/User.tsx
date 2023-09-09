@@ -30,7 +30,7 @@ function UserRoute({ data, controller }: RouteComponentProps<UserRouteData>) {
 export default UserLayout.wrap({
   component: UserRoute,
 
-  async load({ loader, params, query }) {
+  async load({ loader, params, query, notFound }) {
     const { username } = params;
     const normalizedQuery = normalizeUserRouteQuery(query);
     const data = await loader.graphql(UserRouteDocument, {
@@ -41,11 +41,11 @@ export default UserLayout.wrap({
     });
     const user = data.user;
     if (!user) {
-      // TODO: 404
+      return notFound();
     }
     return {
       ...data,
-      user: user!,
+      user,
       query: normalizedQuery,
     };
   },

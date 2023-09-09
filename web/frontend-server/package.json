@@ -46,7 +46,7 @@
     "graphql-request": "^4.3.0",
     "http-proxy": "^1.18.1",
     "lodash": "^4.17.21",
-    "nuri": "github:dittos/nuri-builds#1be420c859a8097bbbfe9e1f7a182954343a7182",
+    "nuri": "github:dittos/nuri-builds#203195edc30d0f8e25b531b05f55e1abadab719c",
     "qs": "^6.11.0",
     "react": "^17.0.2",
     "serialize-javascript": "^1.9.1",

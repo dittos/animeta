@@ -31,12 +31,12 @@ export function UserLayout(
         </UserLayoutComponent>
       </ErrorBoundary>
     ),
-    load: async (request: Request<Loader>): Promise<UserLayoutPropsData> => {
+    load: async (request: Request<Loader>) => {
       const {user, ...layoutData} = await request.loader.graphql(UserLayoutDocument, {username: request.params['username']})
       if (!user) {
-        // TODO: throw not found
+        return request.notFound();
       }
-      return {...layoutData, user: user!}
+      return {...layoutData, user}
     },
     renderTitle: ({ user }) => {
       return `${user.name} 사용자`;

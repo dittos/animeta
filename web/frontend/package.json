@@ -29,7 +29,7 @@
     "lodash": "^4.17.11",
     "notistack": "^2.0.2",
     "nprogress": "^0.2.0",
-    "nuri": "github:dittos/nuri-builds#1be420c859a8097bbbfe9e1f7a182954343a7182",
+    "nuri": "github:dittos/nuri-builds#203195edc30d0f8e25b531b05f55e1abadab719c",
     "react": "^17.0.2",
     "react-bootstrap": "^1.4.0",
     "react-dom": "^17.0.2",

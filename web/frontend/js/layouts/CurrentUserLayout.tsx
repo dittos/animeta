@@ -34,7 +34,7 @@ export function CurrentUserLayout(
     load: async (request: Request<Loader>): Promise<UserLayoutPropsData> => {
       const {currentUser, user, ...layoutData} = await request.loader.graphql(CurrentUserLayoutDocument)
       if (!currentUser || !user) {
-        // TODO: throw not found
+        // TODO: require auth
       }
       return {...layoutData, currentUser: currentUser!, user: user!}
     },

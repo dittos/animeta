@@ -63,21 +63,19 @@ const UserTable: React.FC<RouteComponentProps<UserTableRouteData>> = ({ data }) 
 const routeHandler = UserLayout({ noContentWrapper: true }, { noHero: true, noNotice: true }).wrap({
   component: UserTable,
 
-  async load({ loader, params }) {
+  async load({ loader, params, notFound }) {
     const { username, period } = params;
     const {user, tablePeriod, ...data} = await loader.graphql(UserTableRouteDocument, {
       period,
       username,
       withRecommendations: true,
     });
-    if (!tablePeriod) throw new Error('not found')
-    if (!user) {
-      // TODO: 404
-    }
+    if (!tablePeriod) return notFound()
+    if (!user) return notFound()
     return {
       ...data,
       tablePeriod,
-      user: user!,
+      user,
     };
   },
 

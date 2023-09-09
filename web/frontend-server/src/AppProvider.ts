@@ -30,7 +30,7 @@ export class DefaultAppProvider implements AppProvider {
 export function evalCode(code: string): AppModule {
   const sandbox = {
     require,
-    global: { Promise },
+    global: { Promise, Error },
     module: { exports: <any>{} }
   };
   const context = vm.createContext(sandbox);

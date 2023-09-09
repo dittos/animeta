@@ -8,13 +8,12 @@ import { PostRouteDocument, PostRouteQuery, PostRoute_PostsDocument, PostRoute_P
 import Styles from './Post.module.less';
 
 type PostRouteData = PostRouteQuery & {
+  post: NonNullable<PostRouteQuery['post']>;
   postsData?: PostRoute_PostsQuery;
 };
 
 function Post({ data, writeData, loader }: RouteComponentProps<PostRouteData>) {
   const { post, currentUser, postsData } = data;
-
-  if (!post) return null; // TODO: 404
 
   const { work, episode } = post;
   
@@ -84,19 +83,19 @@ function Post({ data, writeData, loader }: RouteComponentProps<PostRouteData>) {
 const routeHandler = AppLayout.wrap({
   component: Post,
 
-  async load({ params, loader }) {
+  async load({ params, loader, notFound }) {
     const { id } = params
-    return loader.graphql(PostRouteDocument, {postId: id})
+    const {post, ...data} = await loader.graphql(PostRouteDocument, {postId: id})
+    if (!post) return notFound()
+    return {...data, post}
   },
 
   renderTitle({ post }) {
-    if (!post) return '';
     const { work } = post
     return `${post.user!.name} 사용자 > ${work!.title} ${getStatusDisplayGql(post)}`;
   },
 
   renderMeta({ post }) {
-    if (!post) return {};
     const { work } = post
     return {
       og_url: `/-${post.databaseId}`,

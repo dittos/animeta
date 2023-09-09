@@ -1,6 +1,6 @@
 import { RouteComponentProps } from './routes';
 import React from 'react';
-import { DataUpdater, Request, RouteHandler, isRedirect } from 'nuri/app';
+import { DataUpdater, Request, Response, RouteHandler, isNotFound, isRedirect } from 'nuri/app';
 import { Loader } from '../../shared/loader';
 
 type LayoutComponent<LayoutData> = React.JSXElementConstructor<{
@@ -10,7 +10,7 @@ type LayoutComponent<LayoutData> = React.JSXElementConstructor<{
 
 export type LayoutHandler<LayoutData> = {
   component: LayoutComponent<LayoutData>;
-  load: (request: Request<Loader>) => Promise<LayoutData>;
+  load: (request: Request<Loader>) => Promise<Response<LayoutData>>;
   renderTitle?: (data: LayoutData) => string;
 }
 
@@ -89,14 +89,14 @@ function wrap<InnerData, LayoutData>(
     component: component && LayoutWrapper(layout.component, component, unwrapLayoutOnStacked),
 
     load: async (request) => {
-      const innerDataPromise = load(request)
-      const layoutDataPromise = extractLayoutData ? innerDataPromise.then(extractLayoutData) : layout.load(request)
-      const [layoutData, innerData] = await Promise.all([
-        layoutDataPromise,
-        innerDataPromise,
-      ])
-      if (isRedirect(innerData)) {
+      const layoutDataPromise = extractLayoutData ? null : layout.load(request)
+      const innerData = await load(request)
+      if (isRedirect(innerData) || isNotFound(innerData)) {
         return innerData
+      }
+      const layoutData = extractLayoutData ? extractLayoutData(innerData) : await layoutDataPromise
+      if (isRedirect(layoutData) || isNotFound(layoutData)) {
+        return layoutData
       }
       return {
         layoutData,

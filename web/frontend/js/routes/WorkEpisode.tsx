@@ -5,13 +5,15 @@ import { RouteComponentProps } from '../routes';
 import { WorkEpisodeRouteDocument, WorkEpisodeRouteQuery, WorkEpisodeRoute_MorePostsDocument, WorkEpisodeRoute_RefetchDocument } from './__generated__/WorkEpisode.graphql';
 import { Redirect } from 'nuri/app';
 
-type WorkEpisodeRouteData = WorkEpisodeRouteQuery
+type WorkEpisodeRouteData = WorkEpisodeRouteQuery & {
+  work: NonNullable<WorkEpisodeRouteQuery['work']> & {
+    episode: NonNullable<NonNullable<WorkEpisodeRouteQuery['work']>['episode']>
+  }
+}
 
 function WorkEpisode({ data, writeData, loader }: RouteComponentProps<WorkEpisodeRouteData>) {
   const { work, currentUser } = data;
-  const episode = work?.episode;
-
-  if (!episode) return null; // TODO: 404
+  const episode = work.episode;
 
   const postConnection = work?.posts;
   const posts = postConnection?.nodes;
@@ -60,20 +62,21 @@ const routeHandler = AppLayout.wrap({
 
   async load({ params, loader }) {
     const { title, episode: _episode } = params
-    const episode = Number(_episode)
-    const data = await loader.graphql(WorkEpisodeRouteDocument, { title, episode })
-    if (!data.work?.episode) {
+    const episodeParam = Number(_episode)
+    const data = await loader.graphql(WorkEpisodeRouteDocument, { title, episode: episodeParam })
+    const work = data.work
+    const episode = work?.episode
+    if (!work || !episode) {
       return new Redirect(`/works/${encodeURIComponent(title)}/`)
     }
-    return data
+    return {...data, work: {...work, episode}}
   },
 
   renderTitle({ work }) {
-    return `${work!.title} ${work!.episode!.number}화`;
+    return `${work.title} ${work.episode.number}화`;
   },
 
   renderMeta({ work }) {
-    if (!work) return {};
     const title = work.title!;
     return {
       og_url: `/works/${encodeURIComponent(title)}/`,

@@ -78,15 +78,15 @@ function UserHistory({ data, writeData, loader }: RouteComponentProps<UserHistor
 const routeHandler = UserLayout.wrap({
   component: UserHistory,
 
-  async load({ loader, params }) {
+  async load({ loader, params, notFound }) {
     const { username } = params;
     const {user, ...data} = await loader.graphql(UserHistoryRouteDocument, {username});
     if (!user) {
-      // TODO: 404
+      return notFound()
     }
     return {
       ...data,
-      user: user!,
+      user,
     };
   },
 });

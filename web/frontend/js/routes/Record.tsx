@@ -473,15 +473,15 @@ class RecordBase extends React.Component<RouteWithLayoutComponentProps<UserLayou
 const routeHandler = UserLayout.wrap({
   component: Record,
 
-  async load({ loader, params }) {
+  async load({ loader, params, notFound }) {
     const { recordId } = params;
-    const data = await loader.graphql(RecordRouteDocument, { recordId });
-    if (!data.record) {
-      // TODO: 404
+    const { record, ...data } = await loader.graphql(RecordRouteDocument, { recordId });
+    if (!record) {
+      return notFound();
     }
     return {
       ...data,
-      record: data.record!,
+      record,
     };
   },
 
