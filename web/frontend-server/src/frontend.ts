@@ -131,7 +131,8 @@ export function createServer({ config, server = express(), appProvider, getAsset
     res.end('API error');
   }
   function configureProxy(pathPrefix: string, targetUrl: string, options?: {
-    appendPathPrefixToTarget: boolean;
+    appendPathPrefixToTarget?: boolean;
+    deprecationWarning?: boolean;
   }) {
     if (options?.appendPathPrefixToTarget) {
       targetUrl = targetUrl.replace(/\/$/, '') + pathPrefix;
@@ -145,11 +146,14 @@ export function createServer({ config, server = express(), appProvider, getAsset
     proxy.on('error', onProxyError);
     
     server.use(pathPrefix, (req, res) => {
+      if (options?.deprecationWarning) {
+        Sentry.captureMessage(`deprecated endpoint requested: ${req.method} ${req.path}`)
+      }
       proxy.web(req, res);
     });
   }
 
-  configureProxy('/api/v4', config.backend.v4BaseUrl)
+  configureProxy('/api/v4', config.backend.v4BaseUrl, {deprecationWarning: true})
   configureProxy('/api/v5', config.backend.v5BaseUrl, {appendPathPrefixToTarget: true})
   configureProxy('/api/admin/v1', config.backend.adminNewBaseUrl2)
 
