@@ -28,6 +28,7 @@
   "dependencies": {
     "@databases/pg": "^5.4.1",
     "@google-cloud/storage": "^5.18.2",
+    "@immobiliarelabs/fastify-sentry": "^3.1.0",
     "@js-temporal/polyfill": "^0.3.0",
     "@nestjs/common": "^8.3.1",
     "@nestjs/config": "^1.2.0",

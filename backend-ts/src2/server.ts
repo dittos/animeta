@@ -3,6 +3,7 @@ import mercurius from 'mercurius'
 import * as path from 'path'
 import * as fs from 'fs'
 import { createConnection } from 'typeorm'
+import * as Sentry from '@sentry/node'
 import { resolvers } from './resolvers'
 import { getCurrentUser } from './auth'
 import { glob } from 'glob'
@@ -19,6 +20,10 @@ export const server = fastify({
       coerceTypes: true,
     },
   },
+})
+
+server.register(require('@immobiliarelabs/fastify-sentry'), {
+  dsn: process.env.SENTRY_DSN,
 })
 
 async function buildContext(req: FastifyRequest, _reply: FastifyReply) {
@@ -44,6 +49,14 @@ server.register(mercurius, {
   },
   context: buildContext,
   graphiql: process.env.NODE_ENV !== 'production',
+  errorFormatter(execution, context) {
+    if (execution.errors) {
+      for (const e of execution.errors) {
+        Sentry.captureException(e)
+      }
+    }
+    return mercurius.defaultErrorFormatter(execution, context)
+  },
 })
 
 const middlewareFilename = '_middleware.js'
