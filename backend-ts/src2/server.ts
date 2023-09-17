@@ -115,6 +115,8 @@ function registerEndpoints(parent: FastifyInstance, endpointsDir: string, prefix
 server.addSchema(JSON.parse(fs.readFileSync(path.resolve(__dirname, '../gen/schemas/common.json'), {encoding: 'utf8'})))
 registerEndpoints(server, path.join(__dirname, 'endpoints'), '/api')
 
+server.get('/health', async (_req, reply) => reply.send('pong'))
+
 export async function bootstrap2() {
   await createConnection()
   
