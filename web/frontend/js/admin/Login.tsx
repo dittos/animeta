@@ -41,7 +41,7 @@ class Login extends React.Component<{
 
   _submit = (event: React.FormEvent) => {
     event.preventDefault();
-    API.call('/api/admin/v1/Login/authenticate', {
+    API.call('/api/admin/auth/Login/authenticate', {
       username: this.usernameInput.current!.value,
       password: this.passwordInput.current!.value,
     }).then(result => {

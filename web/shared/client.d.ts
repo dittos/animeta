@@ -121,6 +121,13 @@ export type StatusType = 'WATCHING' | 'FINISHED' | 'INTERESTED' | 'SUSPENDED';
 
 
 export interface Client<TOptions = any> {
+  call(path: "/api/admin/auth/Login/authenticate", params: {
+  username: string;
+  password: string;
+}, options?: TOptions): Promise<{
+  sessionKey: string;
+  expiryMs: number | null;
+}>
   call(path: "/api/admin/v1/clearCache", params: {}, options?: TOptions): Promise<boolean>
   call(path: "/api/admin/v1/getCompanies", params: {}, options?: TOptions): Promise<CompanyDto[]>
   call(path: "/api/admin/v1/getCurrentUser", params: {}, options?: TOptions): Promise<UserDto>
@@ -134,13 +141,6 @@ export interface Client<TOptions = any> {
   id: string;
   otherCompanyId: string;
 }, options?: TOptions): Promise<CompanyDto>
-  call(path: "/api/admin/v1/Login/authenticate", params: {
-  username: string;
-  password: string;
-}, options?: TOptions): Promise<{
-  sessionKey: string;
-  expiryMs: number | null;
-}>
   call(path: "/api/admin/v1/PersonDetail/", params: {id: string}, options?: TOptions): Promise<PersonDto>
   call(path: "/api/admin/v1/PersonDetail/rename", params: {
   id: string;
