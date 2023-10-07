@@ -155,7 +155,7 @@ export function createServer({ config, server = express(), appProvider, getAsset
 
   configureProxy('/api/v4', config.backend.v4BaseUrl, {deprecationWarning: true})
   configureProxy('/api/v5', config.backend.v5BaseUrl, {appendPathPrefixToTarget: true})
-  configureProxy('/api/admin/v1', config.backend.adminNewBaseUrl2)
+  configureProxy('/api/admin', config.backend.v5BaseUrl, {appendPathPrefixToTarget: true})
 
   function renderDefault(req: express.Request, res: express.Response, locals: any, content: string) {
     const context = {
