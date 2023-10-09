@@ -10,6 +10,6 @@
     "^src/(.*)": "<rootDir>/../dist/backend-ts/src/$1",
     "^src2/(.*)": "<rootDir>/../dist/backend-ts/src2/$1"
   },
-  "globalSetup": "<rootDir>/../test/utils/globalSetup.ts",
+  "globalSetup": "<rootDir>/utils/globalSetup.ts",
   ".globalTeardown": "<rootDir>/../node_modules/@databases/pg-test/jest/globalTeardown"
 }
