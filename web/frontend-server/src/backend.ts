@@ -4,18 +4,7 @@ import { request as graphqlRequest } from 'graphql-request';
 export const HttpNotFound = {};
 
 export default class {
-  constructor(private v4BaseUrl: string, private v5BaseUrl: string, private graphqlUrl: string) {
-  }
-
-  async callV4(req: any, path: string, params?: any) {
-    try {
-      return await this._call(req, this.v4BaseUrl, path, params);
-    } catch (e) {
-      if (e instanceof ApiError && e.status === 404) {
-        throw HttpNotFound;
-      }
-      throw e;
-    }
+  constructor(private v5BaseUrl: string, private graphqlUrl: string) {
   }
 
   async callV5(req: any, path: string, params?: any) {
@@ -26,14 +15,6 @@ export default class {
         throw HttpNotFound;
       }
       throw e;
-    }
-  }
-
-  async getCurrentUser(req: any, params?: any) {
-    try {
-      return await this._call(req, this.v4BaseUrl, '/me', params);
-    } catch (e) {
-      return null;
     }
   }
 
@@ -49,24 +30,6 @@ export default class {
     return graphqlRequest(this.graphqlUrl, doc, variables, {
       'x-animeta-session-key': req.cookies?.sessionid,
     })
-  }
-
-  async _call(req: any, baseUrl: string, path: string, params?: any) {
-    const url = new URL(baseUrl + path)
-    if (params)
-      url.search = new URLSearchParams(params).toString()
-    const r = await fetch(url, {
-      headers: {
-        'x-animeta-session-key': req.cookies?.sessionid,
-        'Accept': 'application/json',
-      },
-    })
-    const body = await r.json()
-    if (r.ok) {
-      return body
-    } else {
-      throw new ApiError(r.status, body)
-    }
   }
 
   async _callV5(req: any, baseUrl: string, path: string, params?: any) {

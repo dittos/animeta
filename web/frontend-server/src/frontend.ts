@@ -22,7 +22,7 @@ export function createServer({ config, server = express(), appProvider, getAsset
   getAssets: () => any;
   staticDir?: string;
 }) {
-  const backend = new Backend(config.backend.v4BaseUrl, config.backend.v5BaseUrl, config.backend.graphqlUrl);
+  const backend = new Backend(config.backend.v5BaseUrl, config.backend.graphqlUrl);
 
   function loaderFactory(serverRequest: ServerRequest): Loader {
     return {
@@ -203,7 +203,7 @@ Disallow: /
 
   server.get('/library/', (req, res, next) => {
     backend
-      .getCurrentUser(req)
+      .getCurrentUserV5(req)
       .then(currentUser => {
         if (!currentUser) {
           res.redirect('/login/');
