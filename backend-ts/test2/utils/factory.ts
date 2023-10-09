@@ -8,7 +8,7 @@ import { User } from "src/entities/user.entity";
 import { Work } from "src/entities/work.entity";
 import { WorkIndex } from "src/entities/work_index.entity";
 import { WorkMetadata } from "src/entities/work_metadata";
-import { createCategory } from "src/services/category.service";
+import { createCategory } from "src2/services/category";
 import { addRecordHistory, createRecord } from "src2/services/record";
 import { getOrCreateWork } from "src2/services/work";
 import { Period } from "src/utils/period";
@@ -40,7 +40,7 @@ export class TestFactoryUtils {
     user: User;
     name?: string;
   }): Promise<Category> {
-    return createCategory(db, user, {
+    return createCategory(user, {
       name: name ?? cuid()
     })
   }

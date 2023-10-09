@@ -1,9 +1,7 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
 import { Record } from "src/entities/record.entity";
 import { StatusType } from "src/entities/status_type";
 import { User } from "src/entities/user.entity";
-import { QueryBuilder, Repository } from "typeorm";
+import { db } from "src2/database";
 
 export type CountByCriteria = {[key: string]: number} & {_all: number}
 
@@ -20,29 +18,17 @@ type CountGroupRow = {
   category_id: number | null;
 }
 
-@Injectable()
-export class UserRecordsService {
-  constructor(
-    @InjectRepository(Record) private recordRepository: Repository<Record>,
-  ) {
-  }
-
-  async count(
-    user: User,
-    statusType: StatusType | null,
-    categoryId: number | null
-  ): Promise<RecordsCount> {
-    return countRecordsForFilter(this.recordRepository.createQueryBuilder(), user, statusType, categoryId)
-  }
-}
-
 export async function countRecordsForFilter(
-  queryBuilder: QueryBuilder<Record>,
   user: User,
-  statusType: StatusType | null,
-  categoryId: number | null
+  {
+    statusType,
+    categoryId,
+  }: {
+    statusType: StatusType | null,
+    categoryId: number | null,
+  }
 ): Promise<RecordsCount> {
-  const counts: CountGroupRow[] = (await queryBuilder
+  const counts: CountGroupRow[] = (await db.createQueryBuilder(Record, 'r')
     .select('COUNT(*)', 'count')
     .addSelect('status_type')
     .addSelect('category_id')

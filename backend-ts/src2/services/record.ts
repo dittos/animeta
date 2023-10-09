@@ -7,7 +7,6 @@ import { StatusType } from "src/entities/status_type";
 import { User } from "src/entities/user.entity";
 import { Work } from "src/entities/work.entity";
 import { PermissionError, ValidationError } from "src/services/exceptions";
-import { countRecordsForFilter as _countRecordsForFilter } from "src/services/user_records.service";
 import { objResults } from "src/utils/dataloader";
 import { db } from "src2/database";
 import { LessThanOrEqual, MoreThan } from "typeorm";
@@ -219,21 +218,6 @@ export async function getUserRecords(user: User, {
     ...limit ? { take: limit } : {},
   })
   return { nodes }
-}
-
-export async function countRecordsForFilter(user: User, {
-  statusType,
-  categoryId,
-}: {
-  statusType: StatusType | null,
-  categoryId: number | null,
-}) {
-  return _countRecordsForFilter(
-    db.createQueryBuilder(Record, 'r'),
-    user,
-    statusType,
-    categoryId,
-  )
 }
 
 const HAS_NEWER_EPISODE_AGE_THRESHOLD = Temporal.Duration.from({days: 100})

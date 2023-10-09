@@ -1,5 +1,5 @@
 import { MutationResolvers } from "src/graphql/generated";
-import { deleteCategory as _deleteCategory } from "src/services/category.service";
+import { deleteCategory as _deleteCategory } from "src2/services/category";
 import { db } from "src2/database";
 import { permissionDeniedException, requireUser } from "../utils";
 import { Category } from "src/entities/category.entity";

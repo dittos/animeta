@@ -1,5 +1,5 @@
 import { MutationResolvers } from "src/graphql/generated";
-import { renameCategory as _renameCategory } from "src/services/category.service";
+import { renameCategory as _renameCategory } from "src2/services/category";
 import { db } from "src2/database";
 import { permissionDeniedException, requireUser } from "../utils";
 import { Category } from "src/entities/category.entity";

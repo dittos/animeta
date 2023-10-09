@@ -1,5 +1,5 @@
 import { MutationResolvers } from "src/graphql/generated";
-import { updateCategoryOrder as _updateCategoryOrder } from "src/services/category.service";
+import { updateCategoryOrder as _updateCategoryOrder } from "src2/services/category";
 import { db } from "src2/database";
 import { requireUser } from "../utils";
 import { CategoryId } from "../id";

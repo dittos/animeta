@@ -3,10 +3,10 @@ import { History } from "src/entities/history.entity";
 import { Record } from "src/entities/record.entity";
 import { StatusType } from "src/entities/status_type";
 import { RecordFilter, UserResolvers } from "src/graphql/generated";
-import { CountByCriteria } from "src/services/user_records.service";
 import { db } from "src2/database";
 import { getUserPosts } from "src2/services/post";
-import { countRecordsForFilter, getUserRecords } from "src2/services/record";
+import { getUserRecords } from "src2/services/record";
+import { CountByCriteria, countRecordsForFilter } from "src2/services/userRecords";
 import { CategoryId, PostId, UserId } from "./id";
 
 export const User: UserResolvers = {

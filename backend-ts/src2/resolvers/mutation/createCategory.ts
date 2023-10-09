@@ -1,10 +1,9 @@
 import { MutationResolvers } from "src/graphql/generated";
-import { createCategory as _createCategory } from "src/services/category.service";
-import { db } from "src2/database";
+import { createCategory as _createCategory } from "src2/services/category";
 import { requireUser } from "../utils";
 
 export const createCategory: MutationResolvers['createCategory'] = async (_, { input }, ctx) => {
   const currentUser = requireUser(ctx)
-  const category = await _createCategory(db, currentUser, input)
+  const category = await _createCategory(currentUser, input)
   return { category }
 }
