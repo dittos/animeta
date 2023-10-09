@@ -1,4 +1,4 @@
-import { normalizeTitle } from "./work.service"
+import { normalizeTitle } from "./work"
 
 describe('normalizeTitle', () => {
   it('normalizes', () => {

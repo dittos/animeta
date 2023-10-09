@@ -4,7 +4,7 @@ import { Work } from "src/entities/work.entity";
 import { History } from "src/entities/history.entity";
 import { diff, ranked } from "src/utils/chart";
 import { caching } from "cache-manager";
-import { getWorkImageUrl } from "src/services/work.service";
+import { getWorkImageUrl } from "src2/services/work";
 import { db } from "src2/database";
 import { getWork } from "./work";
 

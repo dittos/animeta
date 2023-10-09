@@ -5,7 +5,6 @@ import { WorkPeriodIndex } from "src/entities/work_period_index.entity";
 import { Period } from "src/utils/period";
 import { ValidationError } from "src/services/exceptions";
 import { db } from "src2/database";
-import { normalizeTitle } from "src/services/work.service";
 import { TitleMapping } from "src/entities/title_mapping.entity";
 import { Not } from "typeorm";
 import { Record } from "src/entities/record.entity";
@@ -38,6 +37,48 @@ export async function getWorkByTitle(title: string): Promise<Work | undefined> {
 
 export async function getWorkIndex(id: number): Promise<WorkIndex | undefined> {
   return indexDataLoader.load(id)
+}
+
+export function getWorkImageUrl(work: Work): string | null {
+  // TODO: config
+  return work.image_filename ? `https://storage.googleapis.com/animeta-static/media/${work.image_filename}` : null
+}
+
+export async function getOrCreateWork(title: string): Promise<Work> {
+  title = title.trim()
+  if (title === '')
+    throw new ValidationError('작품 제목을 입력하세요.')
+  
+  const mapping = await db.findOne(TitleMapping, { where: {title} })
+  if (mapping) {
+    return db.findOneOrFail(Work, mapping.work_id)
+  }
+  const key = normalizeTitle(title)
+  const similarMapping = await db.findOne(TitleMapping, { where: {key} })
+  if (similarMapping) {
+    await db.save(TitleMapping, {
+      work_id: similarMapping.work_id,
+      title,
+      key
+    })
+    return db.findOneOrFail(Work, similarMapping.work_id)
+  }
+  const work = new Work()
+  work.title = title
+  work.image_filename = null
+  work.original_image_filename = null
+  work.image_center_y = 0.0
+  work.raw_metadata = null
+  work.metadata = null
+  work.blacklisted = false
+  work.first_period = null
+  await db.save(work)
+  await db.save(TitleMapping, {
+    work_id: work.id,
+    title,
+    key,
+  })
+  return work
 }
 
 export async function applyWorkMetadataRaw(work: Work, rawMetadata: string) {
@@ -215,4 +256,21 @@ export async function getWorkEpisode(work: Work, number: number): Promise<Episod
     number,
     postCount,
   }
+}
+
+const exceptionChars = ['!', '+']
+
+export function normalizeTitle(title: string): string {
+  return Array.from(title)
+    .map(c => {
+      // full width -> half width
+      if ('\uFF01' <= c && c <= '\uFF5E')
+        return String.fromCodePoint(c.codePointAt(0)! - 0xFF01 + 0x21)
+      else
+        return c
+    })
+    .filter(c => exceptionChars.includes(c) || /\p{L}|\p{N}/u.test(c))
+    .join('')
+    .toLowerCase()
+    .trim()
 }

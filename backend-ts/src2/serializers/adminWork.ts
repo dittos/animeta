@@ -4,7 +4,7 @@ import { Work } from "src/entities/work.entity";
 import { WorkCast } from "src/entities/work_cast.entity";
 import { WorkIndex } from "src/entities/work_index.entity";
 import { WorkStaff } from "src/entities/work_staff.entity";
-import { getWorkImageUrl } from "src/services/work.service";
+import { getWorkImageUrl } from "src2/services/work";
 import { db } from "src2/database";
 import { TitleMappingDto, AdminWorkDto } from "src2/schemas/admin";
 

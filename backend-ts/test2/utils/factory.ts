@@ -10,7 +10,7 @@ import { WorkIndex } from "src/entities/work_index.entity";
 import { WorkMetadata } from "src/entities/work_metadata";
 import { createCategory } from "src/services/category.service";
 import { addRecordHistory, createRecord } from "src/services/record.service";
-import { getOrCreateWork } from "src/services/work.service";
+import { getOrCreateWork } from "src2/services/work";
 import { Period } from "src/utils/period";
 import { db } from "src2/database";
 
@@ -52,7 +52,7 @@ export class TestFactoryUtils {
     periods?: Period[];
     metadata?: Partial<WorkMetadata>;
   } = {}): Promise<Work> {
-    const work = await getOrCreateWork(db, cuid())
+    const work = await getOrCreateWork(cuid())
     work.metadata = {
       version: 2,
       ...periods ? { periods: periods.map(it => it.toString()) } : {},
