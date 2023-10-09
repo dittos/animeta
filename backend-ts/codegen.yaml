@@ -1,10 +1,10 @@
 schema: ./schema/**/*.graphql
 documents:
-  - ./test2/fragments.graphql
+  - ./test/fragments.graphql
 config:
   sort: false
 generates:
-  ./test2/fragments.generated.ts:
+  ./test/fragments.generated.ts:
     config:
       avoidOptionals: true
     plugins:

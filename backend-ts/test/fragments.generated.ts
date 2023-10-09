@@ -214,6 +214,177 @@ export enum StatusType {
   Interested = 'INTERESTED'
 }
 
+export type Query = {
+  __typename?: 'Query';
+  currentUser: Maybe<User>;
+  user: Maybe<User>;
+  userByName: Maybe<User>;
+  timeline: Maybe<Array<Maybe<Post>>>;
+  work: Maybe<Work>;
+  workByTitle: Maybe<Work>;
+  post: Maybe<Post>;
+  record: Maybe<Record>;
+  curatedLists: Array<CuratedList>;
+  curatedList: Maybe<CuratedList>;
+  searchWorks: Maybe<SearchWorksResult>;
+  tablePeriod: Maybe<TablePeriod>;
+  currentTablePeriod: TablePeriod;
+  tablePeriods: Array<TablePeriod>;
+  weeklyWorksChart: Array<WorksChartItem>;
+};
+
+
+export type QueryUserArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryUserByNameArgs = {
+  name: Scalars['String'];
+};
+
+
+export type QueryTimelineArgs = {
+  beforeId: InputMaybe<Scalars['ID']>;
+  count: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryWorkArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryWorkByTitleArgs = {
+  title: Scalars['String'];
+};
+
+
+export type QueryPostArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryRecordArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryCuratedListArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QuerySearchWorksArgs = {
+  query: Scalars['String'];
+};
+
+
+export type QueryTablePeriodArgs = {
+  period: Scalars['String'];
+};
+
+
+export type QueryWeeklyWorksChartArgs = {
+  limit: Scalars['Int'];
+};
+
+export type CuratedList = {
+  __typename?: 'CuratedList';
+  id: Scalars['ID'];
+  name: Maybe<Scalars['String']>;
+  works: Maybe<CuratedListWorkConnection>;
+};
+
+export type CuratedListWorkConnection = {
+  __typename?: 'CuratedListWorkConnection';
+  edges: Maybe<Array<Maybe<CuratedListWorkEdge>>>;
+  totalCount: Maybe<Scalars['Int']>;
+};
+
+export type CuratedListWorkEdge = {
+  __typename?: 'CuratedListWorkEdge';
+  node: Maybe<Work>;
+};
+
+export type SearchWorksResult = {
+  __typename?: 'SearchWorksResult';
+  edges: Array<SearchWorksResultEdge>;
+};
+
+export type SearchWorksResultEdge = {
+  __typename?: 'SearchWorksResultEdge';
+  node: Work;
+  recordCount: Maybe<Scalars['Int']>;
+};
+
+export type TablePeriod = {
+  __typename?: 'TablePeriod';
+  period: Scalars['String'];
+  year: Scalars['Int'];
+  month: Scalars['Int'];
+  isCurrent: Scalars['Boolean'];
+  isRecommendationEnabled: Scalars['Boolean'];
+  items: Array<TablePeriodItem>;
+};
+
+
+export type TablePeriodItemsArgs = {
+  onlyAdded?: InputMaybe<Scalars['Boolean']>;
+  username: InputMaybe<Scalars['String']>;
+  withRecommendations?: InputMaybe<Scalars['Boolean']>;
+};
+
+export type TablePeriodItem = {
+  __typename?: 'TablePeriodItem';
+  title: Scalars['String'];
+  work: Work;
+  record: Maybe<Record>;
+  recommendations: Maybe<Array<Recommendation>>;
+  recommendationScore: Maybe<Scalars['Int']>;
+};
+
+export type Recommendation = RecommendationByCredit;
+
+export type RecommendationByCredit = {
+  __typename?: 'RecommendationByCredit';
+  credit: Maybe<Credit>;
+  related: Maybe<Array<WorkCredit>>;
+  score: Maybe<Scalars['Int']>;
+};
+
+export type Credit = {
+  __typename?: 'Credit';
+  type: Maybe<CreditType>;
+  name: Maybe<Scalars['String']>;
+  personId: Scalars['ID'];
+};
+
+export type WorkCredit = {
+  __typename?: 'WorkCredit';
+  workId: Scalars['ID'];
+  workTitle: Scalars['String'];
+  type: Maybe<CreditType>;
+};
+
+export enum CreditType {
+  OriginalWork = 'ORIGINAL_WORK',
+  ChiefDirector = 'CHIEF_DIRECTOR',
+  SeriesDirector = 'SERIES_DIRECTOR',
+  Director = 'DIRECTOR',
+  SeriesComposition = 'SERIES_COMPOSITION',
+  CharacterDesign = 'CHARACTER_DESIGN',
+  Music = 'MUSIC'
+}
+
+export type WorksChartItem = {
+  __typename?: 'WorksChartItem';
+  rank: Scalars['Int'];
+  work: Work;
+  diff: Maybe<Scalars['Int']>;
+  sign: Maybe<Scalars['Int']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   _empty: Maybe<Scalars['Boolean']>;
@@ -402,177 +573,6 @@ export type UpdateRecordTitleInput = {
 export type UpdateRecordTitleResult = {
   __typename?: 'UpdateRecordTitleResult';
   record: Record;
-};
-
-export type Query = {
-  __typename?: 'Query';
-  currentUser: Maybe<User>;
-  user: Maybe<User>;
-  userByName: Maybe<User>;
-  timeline: Maybe<Array<Maybe<Post>>>;
-  work: Maybe<Work>;
-  workByTitle: Maybe<Work>;
-  post: Maybe<Post>;
-  record: Maybe<Record>;
-  curatedLists: Array<CuratedList>;
-  curatedList: Maybe<CuratedList>;
-  searchWorks: Maybe<SearchWorksResult>;
-  tablePeriod: Maybe<TablePeriod>;
-  currentTablePeriod: TablePeriod;
-  tablePeriods: Array<TablePeriod>;
-  weeklyWorksChart: Array<WorksChartItem>;
-};
-
-
-export type QueryUserArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryUserByNameArgs = {
-  name: Scalars['String'];
-};
-
-
-export type QueryTimelineArgs = {
-  beforeId: InputMaybe<Scalars['ID']>;
-  count: InputMaybe<Scalars['Int']>;
-};
-
-
-export type QueryWorkArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryWorkByTitleArgs = {
-  title: Scalars['String'];
-};
-
-
-export type QueryPostArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryRecordArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryCuratedListArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QuerySearchWorksArgs = {
-  query: Scalars['String'];
-};
-
-
-export type QueryTablePeriodArgs = {
-  period: Scalars['String'];
-};
-
-
-export type QueryWeeklyWorksChartArgs = {
-  limit: Scalars['Int'];
-};
-
-export type CuratedList = {
-  __typename?: 'CuratedList';
-  id: Scalars['ID'];
-  name: Maybe<Scalars['String']>;
-  works: Maybe<CuratedListWorkConnection>;
-};
-
-export type CuratedListWorkConnection = {
-  __typename?: 'CuratedListWorkConnection';
-  edges: Maybe<Array<Maybe<CuratedListWorkEdge>>>;
-  totalCount: Maybe<Scalars['Int']>;
-};
-
-export type CuratedListWorkEdge = {
-  __typename?: 'CuratedListWorkEdge';
-  node: Maybe<Work>;
-};
-
-export type SearchWorksResult = {
-  __typename?: 'SearchWorksResult';
-  edges: Array<SearchWorksResultEdge>;
-};
-
-export type SearchWorksResultEdge = {
-  __typename?: 'SearchWorksResultEdge';
-  node: Work;
-  recordCount: Maybe<Scalars['Int']>;
-};
-
-export type TablePeriod = {
-  __typename?: 'TablePeriod';
-  period: Scalars['String'];
-  year: Scalars['Int'];
-  month: Scalars['Int'];
-  isCurrent: Scalars['Boolean'];
-  isRecommendationEnabled: Scalars['Boolean'];
-  items: Array<TablePeriodItem>;
-};
-
-
-export type TablePeriodItemsArgs = {
-  onlyAdded?: InputMaybe<Scalars['Boolean']>;
-  username: InputMaybe<Scalars['String']>;
-  withRecommendations?: InputMaybe<Scalars['Boolean']>;
-};
-
-export type TablePeriodItem = {
-  __typename?: 'TablePeriodItem';
-  title: Scalars['String'];
-  work: Work;
-  record: Maybe<Record>;
-  recommendations: Maybe<Array<Recommendation>>;
-  recommendationScore: Maybe<Scalars['Int']>;
-};
-
-export type Recommendation = RecommendationByCredit;
-
-export type RecommendationByCredit = {
-  __typename?: 'RecommendationByCredit';
-  credit: Maybe<Credit>;
-  related: Maybe<Array<WorkCredit>>;
-  score: Maybe<Scalars['Int']>;
-};
-
-export type Credit = {
-  __typename?: 'Credit';
-  type: Maybe<CreditType>;
-  name: Maybe<Scalars['String']>;
-  personId: Scalars['ID'];
-};
-
-export type WorkCredit = {
-  __typename?: 'WorkCredit';
-  workId: Scalars['ID'];
-  workTitle: Scalars['String'];
-  type: Maybe<CreditType>;
-};
-
-export enum CreditType {
-  OriginalWork = 'ORIGINAL_WORK',
-  ChiefDirector = 'CHIEF_DIRECTOR',
-  SeriesDirector = 'SERIES_DIRECTOR',
-  Director = 'DIRECTOR',
-  SeriesComposition = 'SERIES_COMPOSITION',
-  CharacterDesign = 'CHARACTER_DESIGN',
-  Music = 'MUSIC'
-}
-
-export type WorksChartItem = {
-  __typename?: 'WorksChartItem';
-  rank: Scalars['Int'];
-  work: Work;
-  diff: Maybe<Scalars['Int']>;
-  sign: Maybe<Scalars['Int']>;
 };
 
 export type WorkDtoFragment = { __typename?: 'Work', title: string | null, imageUrl: string | null, recordCount: number | null, id: string, record: { __typename?: 'Record', id: string } | null, metadata: { __typename?: 'WorkMetadata', periods: Array<string> | null, studioNames: Array<string> | null, source: SourceType | null, websiteUrl: string | null, namuwikiUrl: string | null, annUrl: string | null, durationMinutes: number | null, schedules: Array<{ __typename?: 'WorkSchedule', country: string, date: any | null, datePrecision: DatePrecision | null, broadcasts: Array<string> | null }> | null } | null };
