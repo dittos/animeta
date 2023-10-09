@@ -1,6 +1,6 @@
 import { TitleMapping } from "src/entities/title_mapping.entity";
 import { WorkTitleIndex } from "src/entities/work_title_index.entity";
-import { makeKey } from "src/services/search.service";
+import { makeKey } from "src2/services/search";
 import { db } from "src2/database";
 import { createConnection } from "typeorm";
 import * as Sentry from '@sentry/node';
