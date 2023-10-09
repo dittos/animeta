@@ -2,7 +2,6 @@ import fastify, { FastifyInstance, FastifyReply, FastifyRequest, FastifySchema }
 import mercurius from 'mercurius'
 import * as path from 'path'
 import * as fs from 'fs'
-import { createConnection } from 'typeorm'
 import * as Sentry from '@sentry/node'
 import { resolvers } from './resolvers'
 import { getCurrentUser } from './auth'
@@ -116,17 +115,3 @@ server.addSchema(JSON.parse(fs.readFileSync(path.resolve(__dirname, '../gen/sche
 registerEndpoints(server, path.join(__dirname, 'endpoints'), '/api')
 
 server.get('/health', async (_req, reply) => reply.send('pong'))
-
-export async function bootstrap2() {
-  await createConnection()
-  
-  server.listen(8082, '0.0.0.0', (err, address) => {
-    if (err) {
-      console.error(err)
-      process.exit(1)
-    }
-    console.log(`Server listening at ${address}`)
-  })
-}
-
-// bootstrap2()
