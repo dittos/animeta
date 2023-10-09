@@ -1,6 +1,6 @@
 import * as cuid from 'cuid';
 import { getTestUtils, TestUtils } from '../utils';
-import { changePassword } from 'src2/services/auth';
+import { changePassword } from 'src/services/auth';
 
 let utils: TestUtils
 beforeAll(async () => utils = await getTestUtils())

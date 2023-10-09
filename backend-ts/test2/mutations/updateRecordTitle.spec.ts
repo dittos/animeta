@@ -1,4 +1,4 @@
-import { addTitleMapping } from 'src2/services/work'
+import { addTitleMapping } from 'src/services/work'
 import { RecordDtoFragment, RecordDtoFragmentDoc, UpdateRecordTitleInput, UpdateRecordTitleResult } from '../fragments.generated'
 import { getTestUtils, gql, TestUtils } from '../utils'
 import * as cuid from 'cuid'

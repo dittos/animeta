@@ -7,7 +7,7 @@
       {
         "name": "@animeta/tooling",
         "options": {
-          "endpointsDir": "src2/endpoints",
+          "endpointsDir": "src/endpoints",
           "distDir": "dist/backend-ts",
           "clientTypesOutput": "../web/shared/client.d.ts"
         }

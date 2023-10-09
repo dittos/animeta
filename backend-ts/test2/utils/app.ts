@@ -9,7 +9,7 @@ export async function getApp(): Promise<FastifyInstance> {
     // "logging": true,
   })
 
-  const server = require('src2/server').server
+  const server = require('src/server').server
   // tmb = tmb.overrideProvider(CACHE_MANAGER).useValue(caching({ store: 'none', ttl: 0 }))
   return server
 }

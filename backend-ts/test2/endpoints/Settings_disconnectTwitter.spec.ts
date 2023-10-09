@@ -1,6 +1,6 @@
 import { getTestUtils, TestUtils } from '../utils';
 import { TwitterSetting } from 'src/entities/twitter_setting.entity';
-import { db } from 'src2/database';
+import { db } from 'src/database';
 
 let utils: TestUtils
 beforeAll(async () => utils = await getTestUtils())

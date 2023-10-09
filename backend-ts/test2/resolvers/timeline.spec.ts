@@ -1,4 +1,4 @@
-import { rebuildWorkIndex } from 'src2/services/indexer'
+import { rebuildWorkIndex } from 'src/services/indexer'
 import { PostDtoFragment, PostDtoFragmentDoc } from '../fragments.generated'
 import { getTestUtils, gql, TestUtils } from '../utils'
 

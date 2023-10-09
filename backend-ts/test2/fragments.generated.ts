@@ -14,6 +14,63 @@ export type Scalars = {
   GraphQLTimestamp: any;
 };
 
+export type Category = Node & {
+  __typename?: 'Category';
+  id: Scalars['ID'];
+  databaseId: Scalars['String'];
+  user: Maybe<User>;
+  name: Scalars['String'];
+};
+
+export type Post = Node & {
+  __typename?: 'Post';
+  id: Scalars['ID'];
+  databaseId: Scalars['String'];
+  record: Maybe<Record>;
+  statusType: Maybe<StatusType>;
+  status: Maybe<Scalars['String']>;
+  comment: Maybe<Scalars['String']>;
+  containsSpoiler: Maybe<Scalars['Boolean']>;
+  user: Maybe<User>;
+  updatedAt: Maybe<Scalars['GraphQLTimestamp']>;
+  rating: Maybe<Scalars['Float']>;
+  work: Maybe<Work>;
+  episode: Maybe<Episode>;
+};
+
+export type PostConnection = {
+  __typename?: 'PostConnection';
+  nodes: Array<Post>;
+  hasMore: Scalars['Boolean'];
+};
+
+export type Record = Node & {
+  __typename?: 'Record';
+  id: Scalars['ID'];
+  databaseId: Scalars['String'];
+  title: Maybe<Scalars['String']>;
+  statusType: Maybe<StatusType>;
+  status: Maybe<Scalars['String']>;
+  user: Maybe<User>;
+  work: Maybe<Work>;
+  category: Maybe<Category>;
+  updatedAt: Maybe<Scalars['GraphQLTimestamp']>;
+  rating: Maybe<Scalars['Float']>;
+  hasNewerEpisode: Maybe<Scalars['Boolean']>;
+  posts: PostConnection;
+};
+
+
+export type RecordPostsArgs = {
+  beforeId: InputMaybe<Scalars['ID']>;
+  count: InputMaybe<Scalars['Int']>;
+};
+
+export type RecordConnection = {
+  __typename?: 'RecordConnection';
+  nodes: Array<Record>;
+};
+
 export type User = Node & {
   __typename?: 'User';
   id: Scalars['ID'];
@@ -74,63 +131,6 @@ export type RecordFilterItem = {
   __typename?: 'RecordFilterItem';
   key: Scalars['String'];
   count: Scalars['Int'];
-};
-
-export type Post = Node & {
-  __typename?: 'Post';
-  id: Scalars['ID'];
-  databaseId: Scalars['String'];
-  record: Maybe<Record>;
-  statusType: Maybe<StatusType>;
-  status: Maybe<Scalars['String']>;
-  comment: Maybe<Scalars['String']>;
-  containsSpoiler: Maybe<Scalars['Boolean']>;
-  user: Maybe<User>;
-  updatedAt: Maybe<Scalars['GraphQLTimestamp']>;
-  rating: Maybe<Scalars['Float']>;
-  work: Maybe<Work>;
-  episode: Maybe<Episode>;
-};
-
-export type PostConnection = {
-  __typename?: 'PostConnection';
-  nodes: Array<Post>;
-  hasMore: Scalars['Boolean'];
-};
-
-export type Record = Node & {
-  __typename?: 'Record';
-  id: Scalars['ID'];
-  databaseId: Scalars['String'];
-  title: Maybe<Scalars['String']>;
-  statusType: Maybe<StatusType>;
-  status: Maybe<Scalars['String']>;
-  user: Maybe<User>;
-  work: Maybe<Work>;
-  category: Maybe<Category>;
-  updatedAt: Maybe<Scalars['GraphQLTimestamp']>;
-  rating: Maybe<Scalars['Float']>;
-  hasNewerEpisode: Maybe<Scalars['Boolean']>;
-  posts: PostConnection;
-};
-
-
-export type RecordPostsArgs = {
-  beforeId: InputMaybe<Scalars['ID']>;
-  count: InputMaybe<Scalars['Int']>;
-};
-
-export type RecordConnection = {
-  __typename?: 'RecordConnection';
-  nodes: Array<Record>;
-};
-
-export type Category = Node & {
-  __typename?: 'Category';
-  id: Scalars['ID'];
-  databaseId: Scalars['String'];
-  user: Maybe<User>;
-  name: Scalars['String'];
 };
 
 export type Work = Node & {
@@ -203,35 +203,31 @@ export enum DatePrecision {
   DateTime = 'DATE_TIME'
 }
 
+export type Node = {
+  id: Scalars['ID'];
+};
+
+export enum StatusType {
+  Finished = 'FINISHED',
+  Watching = 'WATCHING',
+  Suspended = 'SUSPENDED',
+  Interested = 'INTERESTED'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   _empty: Maybe<Scalars['Boolean']>;
-  createPost: CreatePostResult;
-  deleteCategory: DeleteCategoryResult;
-  createRecord: CreateRecordResult;
   createCategory: CreateCategoryResult;
+  createPost: CreatePostResult;
+  createRecord: CreateRecordResult;
+  deleteCategory: DeleteCategoryResult;
   deletePost: DeletePostResult;
-  renameCategory: RenameCategoryResult;
-  updateRecordCategoryId: UpdateRecordCategoryIdResult;
   deleteRecord: DeleteRecordResult;
-  updateRecordRating: UpdateRecordRatingResult;
+  renameCategory: RenameCategoryResult;
   updateCategoryOrder: UpdateCategoryOrderResult;
+  updateRecordCategoryId: UpdateRecordCategoryIdResult;
+  updateRecordRating: UpdateRecordRatingResult;
   updateRecordTitle: UpdateRecordTitleResult;
-};
-
-
-export type MutationCreatePostArgs = {
-  input: CreatePostInput;
-};
-
-
-export type MutationDeleteCategoryArgs = {
-  input: DeleteCategoryInput;
-};
-
-
-export type MutationCreateRecordArgs = {
-  input: CreateRecordInput;
 };
 
 
@@ -240,18 +236,23 @@ export type MutationCreateCategoryArgs = {
 };
 
 
+export type MutationCreatePostArgs = {
+  input: CreatePostInput;
+};
+
+
+export type MutationCreateRecordArgs = {
+  input: CreateRecordInput;
+};
+
+
+export type MutationDeleteCategoryArgs = {
+  input: DeleteCategoryInput;
+};
+
+
 export type MutationDeletePostArgs = {
   input: DeletePostInput;
-};
-
-
-export type MutationRenameCategoryArgs = {
-  input: RenameCategoryInput;
-};
-
-
-export type MutationUpdateRecordCategoryIdArgs = {
-  input: UpdateRecordCategoryIdInput;
 };
 
 
@@ -260,8 +261,8 @@ export type MutationDeleteRecordArgs = {
 };
 
 
-export type MutationUpdateRecordRatingArgs = {
-  input: UpdateRecordRatingInput;
+export type MutationRenameCategoryArgs = {
+  input: RenameCategoryInput;
 };
 
 
@@ -270,8 +271,27 @@ export type MutationUpdateCategoryOrderArgs = {
 };
 
 
+export type MutationUpdateRecordCategoryIdArgs = {
+  input: UpdateRecordCategoryIdInput;
+};
+
+
+export type MutationUpdateRecordRatingArgs = {
+  input: UpdateRecordRatingInput;
+};
+
+
 export type MutationUpdateRecordTitleArgs = {
   input: UpdateRecordTitleInput;
+};
+
+export type CreateCategoryInput = {
+  name: Scalars['String'];
+};
+
+export type CreateCategoryResult = {
+  __typename?: 'CreateCategoryResult';
+  category: Category;
 };
 
 export type CreatePostInput = {
@@ -287,16 +307,6 @@ export type CreatePostInput = {
 export type CreatePostResult = {
   __typename?: 'CreatePostResult';
   post: Post;
-};
-
-export type DeleteCategoryInput = {
-  categoryId: Scalars['ID'];
-};
-
-export type DeleteCategoryResult = {
-  __typename?: 'DeleteCategoryResult';
-  deleted: Scalars['Boolean'];
-  user: Maybe<User>;
 };
 
 export type CreateRecordInput = {
@@ -315,24 +325,14 @@ export type CreateRecordResult = {
   post: Maybe<Post>;
 };
 
-export type Node = {
-  id: Scalars['ID'];
+export type DeleteCategoryInput = {
+  categoryId: Scalars['ID'];
 };
 
-export enum StatusType {
-  Finished = 'FINISHED',
-  Watching = 'WATCHING',
-  Suspended = 'SUSPENDED',
-  Interested = 'INTERESTED'
-}
-
-export type CreateCategoryInput = {
-  name: Scalars['String'];
-};
-
-export type CreateCategoryResult = {
-  __typename?: 'CreateCategoryResult';
-  category: Category;
+export type DeleteCategoryResult = {
+  __typename?: 'DeleteCategoryResult';
+  deleted: Scalars['Boolean'];
+  user: Maybe<User>;
 };
 
 export type DeletePostInput = {
@@ -345,6 +345,16 @@ export type DeletePostResult = {
   record: Maybe<Record>;
 };
 
+export type DeleteRecordInput = {
+  recordId: Scalars['ID'];
+};
+
+export type DeleteRecordResult = {
+  __typename?: 'DeleteRecordResult';
+  deleted: Scalars['Boolean'];
+  user: Maybe<User>;
+};
+
 export type RenameCategoryInput = {
   categoryId: Scalars['ID'];
   name: Scalars['String'];
@@ -353,6 +363,15 @@ export type RenameCategoryInput = {
 export type RenameCategoryResult = {
   __typename?: 'RenameCategoryResult';
   category: Category;
+};
+
+export type UpdateCategoryOrderInput = {
+  categoryIds: Array<Scalars['ID']>;
+};
+
+export type UpdateCategoryOrderResult = {
+  __typename?: 'UpdateCategoryOrderResult';
+  categories: Array<Category>;
 };
 
 export type UpdateRecordCategoryIdInput = {
@@ -365,16 +384,6 @@ export type UpdateRecordCategoryIdResult = {
   record: Record;
 };
 
-export type DeleteRecordInput = {
-  recordId: Scalars['ID'];
-};
-
-export type DeleteRecordResult = {
-  __typename?: 'DeleteRecordResult';
-  deleted: Scalars['Boolean'];
-  user: Maybe<User>;
-};
-
 export type UpdateRecordRatingInput = {
   recordId: Scalars['ID'];
   rating: InputMaybe<Scalars['Float']>;
@@ -385,13 +394,14 @@ export type UpdateRecordRatingResult = {
   record: Record;
 };
 
-export type UpdateCategoryOrderInput = {
-  categoryIds: Array<Scalars['ID']>;
+export type UpdateRecordTitleInput = {
+  recordId: Scalars['ID'];
+  title: Scalars['String'];
 };
 
-export type UpdateCategoryOrderResult = {
-  __typename?: 'UpdateCategoryOrderResult';
-  categories: Array<Category>;
+export type UpdateRecordTitleResult = {
+  __typename?: 'UpdateRecordTitleResult';
+  record: Record;
 };
 
 export type Query = {
@@ -406,11 +416,11 @@ export type Query = {
   record: Maybe<Record>;
   curatedLists: Array<CuratedList>;
   curatedList: Maybe<CuratedList>;
+  searchWorks: Maybe<SearchWorksResult>;
   tablePeriod: Maybe<TablePeriod>;
   currentTablePeriod: TablePeriod;
   tablePeriods: Array<TablePeriod>;
   weeklyWorksChart: Array<WorksChartItem>;
-  searchWorks: Maybe<SearchWorksResult>;
 };
 
 
@@ -455,6 +465,11 @@ export type QueryCuratedListArgs = {
 };
 
 
+export type QuerySearchWorksArgs = {
+  query: Scalars['String'];
+};
+
+
 export type QueryTablePeriodArgs = {
   period: Scalars['String'];
 };
@@ -462,11 +477,6 @@ export type QueryTablePeriodArgs = {
 
 export type QueryWeeklyWorksChartArgs = {
   limit: Scalars['Int'];
-};
-
-
-export type QuerySearchWorksArgs = {
-  query: Scalars['String'];
 };
 
 export type CuratedList = {
@@ -487,14 +497,15 @@ export type CuratedListWorkEdge = {
   node: Maybe<Work>;
 };
 
-export type UpdateRecordTitleInput = {
-  recordId: Scalars['ID'];
-  title: Scalars['String'];
+export type SearchWorksResult = {
+  __typename?: 'SearchWorksResult';
+  edges: Array<SearchWorksResultEdge>;
 };
 
-export type UpdateRecordTitleResult = {
-  __typename?: 'UpdateRecordTitleResult';
-  record: Record;
+export type SearchWorksResultEdge = {
+  __typename?: 'SearchWorksResultEdge';
+  node: Work;
+  recordCount: Maybe<Scalars['Int']>;
 };
 
 export type TablePeriod = {
@@ -562,17 +573,6 @@ export type WorksChartItem = {
   work: Work;
   diff: Maybe<Scalars['Int']>;
   sign: Maybe<Scalars['Int']>;
-};
-
-export type SearchWorksResult = {
-  __typename?: 'SearchWorksResult';
-  edges: Array<SearchWorksResultEdge>;
-};
-
-export type SearchWorksResultEdge = {
-  __typename?: 'SearchWorksResultEdge';
-  node: Work;
-  recordCount: Maybe<Scalars['Int']>;
 };
 
 export type WorkDtoFragment = { __typename?: 'Work', title: string | null, imageUrl: string | null, recordCount: number | null, id: string, record: { __typename?: 'Record', id: string } | null, metadata: { __typename?: 'WorkMetadata', periods: Array<string> | null, studioNames: Array<string> | null, source: SourceType | null, websiteUrl: string | null, namuwikiUrl: string | null, annUrl: string | null, durationMinutes: number | null, schedules: Array<{ __typename?: 'WorkSchedule', country: string, date: any | null, datePrecision: DatePrecision | null, broadcasts: Array<string> | null }> | null } | null };

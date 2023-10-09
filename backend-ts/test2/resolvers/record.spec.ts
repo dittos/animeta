@@ -1,4 +1,4 @@
-import { RecordId } from 'src2/resolvers/id'
+import { RecordId } from 'src/resolvers/id'
 import { RecordDtoFragment, RecordDtoFragmentDoc } from '../fragments.generated'
 import { getTestUtils, gql, TestUtils } from '../utils'
 

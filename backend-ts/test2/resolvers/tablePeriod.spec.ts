@@ -1,8 +1,8 @@
 import { Period } from 'src/utils/period'
-import { Periods } from 'src2/services/table'
+import { Periods } from 'src/services/table'
 import { RecordDtoFragment, RecordDtoFragmentDoc, WorkDtoFragment, WorkDtoFragmentDoc } from '../fragments.generated'
 import { getTestUtils, gql, TestUtils } from '../utils'
-import { generateRecommendations } from 'src2/services/recommendation'
+import { generateRecommendations } from 'src/services/recommendation'
 
 let utils: TestUtils
 beforeAll(async () => utils = await getTestUtils())
@@ -10,8 +10,8 @@ afterAll(() => utils.close())
 
 beforeEach(async () => await utils.factory.deleteAllWorks())
 
-jest.mock('src2/services/recommendation', () => {
-  const originalModule = jest.requireActual('src2/services/recommendation');
+jest.mock('src/services/recommendation', () => {
+  const originalModule = jest.requireActual('src/services/recommendation');
   return {
     __esModule: true,
     ...originalModule,

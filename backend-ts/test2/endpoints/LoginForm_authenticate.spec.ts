@@ -1,8 +1,8 @@
 import { HttpStatus } from '@nestjs/common';
 import * as cuid from 'cuid';
 import { getTestUtils, TestUtils } from '../utils';
-import { changePassword } from 'src2/services/auth';
-import { UserDto } from 'src2/schemas/user';
+import { changePassword } from 'src/services/auth';
+import { UserDto } from 'src/schemas/user';
 
 let utils: TestUtils
 beforeAll(async () => utils = await getTestUtils())

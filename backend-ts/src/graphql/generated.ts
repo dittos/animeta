@@ -1,4 +1,4 @@
-import type { NodeId } from 'src2/resolvers/id';
+import type { NodeId } from 'src/resolvers/id';
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import type { History as HistoryModel } from 'src/entities/history.entity';
 import type { User as UserModel } from 'src/entities/user.entity';
@@ -7,8 +7,8 @@ import type { Work as WorkModel } from 'src/entities/work.entity';
 import type { Episode as EpisodeModel } from 'src/entities/episode.entity';
 import type { Category as CategoryModel } from 'src/entities/category.entity';
 import type { Period as PeriodModel } from 'src/utils/period';
-import type { Credit as CreditModel, WorkCredit as WorkCreditModel } from 'src2/services/recommendation';
-import type { CuratedListMetadata as CuratedListMetadataModel } from 'src2/services/curatedList';
+import type { Credit as CreditModel, WorkCredit as WorkCreditModel } from 'src/services/recommendation';
+import type { CuratedListMetadata as CuratedListMetadataModel } from 'src/services/curatedList';
 import type { MercuriusContext } from 'mercurius';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
