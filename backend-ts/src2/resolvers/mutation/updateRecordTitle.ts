@@ -12,9 +12,9 @@ export const updateRecordTitle: MutationResolvers['updateRecordTitle'] = async (
   if (currentUser.id !== record.user_id)
     throw permissionDeniedException()
   const work = await getOrCreateWork(input.title)
-  await db.transaction(async em =>
+  await db.transaction(async () =>
     // TODO: refetch record here
-    updateRecordWorkAndTitle(em, record, work, input.title)
+    updateRecordWorkAndTitle(record, work, input.title)
   )
   return { record }
 }

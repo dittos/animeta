@@ -81,7 +81,7 @@ export class TestFactoryUtils {
   } = {}): Promise<{ record: Record, history: History }> {
     if (!user) user = await this.newUser()
     if (!work) work = await this.newWork()
-    const {record, history} = await createRecord(db, user, work, {
+    const {record, history} = await createRecord(user, work, {
       title: work.title,
       status: status ?? '1',
       statusType: statusType ?? StatusType.FINISHED,
@@ -104,7 +104,7 @@ export class TestFactoryUtils {
     comment?: string,
   } = {}): Promise<History> {
     if (!record) record = (await this.newRecord({ user, work, comment })).record
-    return addRecordHistory(db, record, {
+    return addRecordHistory(record, {
       status: record.status,
       statusType: record.status_type,
       comment: comment ?? '',

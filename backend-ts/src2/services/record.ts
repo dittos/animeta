@@ -10,7 +10,7 @@ import { PermissionError, ValidationError } from "src/services/exceptions";
 import { countRecordsForFilter as _countRecordsForFilter } from "src/services/user_records.service";
 import { objResults } from "src/utils/dataloader";
 import { db } from "src2/database";
-import { EntityManager, LessThanOrEqual, MoreThan } from "typeorm";
+import { LessThanOrEqual, MoreThan } from "typeorm";
 
 const INVALID_RATING_ERROR_MESSAGE = '별점은 0.5부터 5까지 0.5 단위로 입력할 수 있습니다.'
 
@@ -39,7 +39,7 @@ async function loadByUserAndWork(userAndWorks: readonly {userId: number, workId:
     .getMany()
 }
 
-export async function createRecord(em: EntityManager, user: User, work: Work, params: {
+export async function createRecord(user: User, work: Work, params: {
   title: string;
   categoryId: number | null;
   status: string;
@@ -51,10 +51,10 @@ export async function createRecord(em: EntityManager, user: User, work: Work, pa
     throw new ValidationError('작품 제목을 입력하세요.')
   if (params.rating != null && !isValidRating(params.rating))
     throw new ValidationError(INVALID_RATING_ERROR_MESSAGE)
-  const category = params.categoryId ? await em.findOne(Category, params.categoryId) : null
+  const category = params.categoryId ? await db.findOne(Category, params.categoryId) : null
   if (category != null && user.id !== category.user_id)
     throw new PermissionError()
-  const existingRecord = await em.findOne(Record, { where: {user, work_id: work.id} })
+  const existingRecord = await db.findOne(Record, { where: {user, work_id: work.id} })
   if (existingRecord != null)
     throw new ValidationError(`이미 같은 작품이 "${existingRecord.title}"로 등록되어 있습니다.`)
   
@@ -67,7 +67,7 @@ export async function createRecord(em: EntityManager, user: User, work: Work, pa
   record.status_type = params.statusType
   record.updated_at = new Date()
   record.rating = params.rating
-  await em.save(record)
+  await db.save(record)
 
   const history = new History()
   history.user_id = record.user_id
@@ -79,12 +79,12 @@ export async function createRecord(em: EntityManager, user: User, work: Work, pa
   history.comment = params.comment
   history.contains_spoiler = false
   history.rating = null // post should not inherit record rating
-  await em.save(history)
+  await db.save(history)
 
   return { record, history }
 }
 
-export async function addRecordHistory(em: EntityManager, record: Record, params: {
+export async function addRecordHistory(record: Record, params: {
   status: string;
   statusType: StatusType;
   comment: string;
@@ -104,39 +104,39 @@ export async function addRecordHistory(em: EntityManager, record: Record, params
   history.contains_spoiler = params.containsSpoiler
   history.updated_at = new Date()
   history.rating = params.rating
-  await em.save(history)
+  await db.save(history)
 
   record.status_type = history.status_type
   record.status = history.status
   record.updated_at = history.updated_at
-  await em.save(record)
+  await db.save(record)
 
   return history
 }
 
-export async function deleteRecordHistory(em: EntityManager, history: History) {
+export async function deleteRecordHistory(history: History) {
   const record = history.record
-  if (await em.count(History, { where: { record } }) === 1)
+  if (await db.count(History, { where: { record } }) === 1)
     throw new ValidationError('등록된 작품마다 최소 1개의 기록이 필요합니다.')
-  await em.remove(history)
+  await db.remove(history)
 
-  const latestHistory = (await em.find(History, {
+  const latestHistory = (await db.find(History, {
     where: {record},
     order: {id: 'DESC'},
     take: 1,
   }))[0]
   record.status = latestHistory.status
   record.status_type = latestHistory.status_type
-  await em.save(record)
+  await db.save(record)
 }
 
 function isValidRating(rating: number) {
   return [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].includes(rating)
 }
 
-export async function updateRecordWorkAndTitle(em: EntityManager, record: Record, work: Work, title: string) {
+export async function updateRecordWorkAndTitle(record: Record, work: Work, title: string) {
   if (record.work_id !== work.id) {
-    const existingRecord = await em.findOne(Record, { where: {user_id: record.user_id, work_id: work.id} })
+    const existingRecord = await db.findOne(Record, { where: {user_id: record.user_id, work_id: work.id} })
     if (existingRecord != null)
       throw new ValidationError(`이미 등록된 작품입니다. (${existingRecord.title})`)
 
@@ -144,8 +144,8 @@ export async function updateRecordWorkAndTitle(em: EntityManager, record: Record
   }
 
   record.title = title
-  await em.save(record)
-  await em.update(History, {record}, {work_id: work.id})
+  await db.save(record)
+  await db.update(History, {record}, {work_id: work.id})
 }
 
 export async function updateRecordCategory(record: Record, category: Category | null): Promise<void> {
@@ -161,9 +161,9 @@ export async function updateRecordRating(record: Record, rating: number | null):
   await db.save(record)
 }
 
-export async function deleteRecord(em: EntityManager, record: Record) {
-  await em.delete(History, {record})
-  await em.remove(record)
+export async function deleteRecord(record: Record) {
+  await db.delete(History, {record})
+  await db.remove(record)
 }
 
 function getUnratedRecordFindCondition(user: User) {

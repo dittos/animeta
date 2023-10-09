@@ -10,12 +10,12 @@ import { RecordId } from "../id";
 
 export const createPost: MutationResolvers['createPost'] = async (_, { input }, ctx) => {
   const currentUser = requireUser(ctx)
-  const history = await db.transaction(async em => {
+  const history = await db.transaction(async () => {
     const record = await db.findOneOrFail(Record, RecordId.toDatabaseId(input.recordId))
     if (currentUser.id !== record.user_id)
       throw permissionDeniedException()
 
-    return await addRecordHistory(em, record, {
+    return await addRecordHistory(record, {
       status: input.status,
       statusType: StatusType[input.statusType],
       comment: input.comment,

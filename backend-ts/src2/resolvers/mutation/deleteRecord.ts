@@ -12,8 +12,8 @@ export const deleteRecord: MutationResolvers['deleteRecord'] = async (_, { input
     return { deleted: false }
   if (currentUser.id !== record.user_id)
     throw permissionDeniedException()
-  await db.transaction(async em =>
-    _deleteRecord(em, record)
+  await db.transaction(async () =>
+    _deleteRecord(record)
   )
   return { deleted: true, user: currentUser }
 }

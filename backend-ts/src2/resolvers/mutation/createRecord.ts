@@ -11,8 +11,8 @@ import { CategoryId } from "../id";
 export const createRecord: MutationResolvers['createRecord'] = async (_, { input }, ctx) => {
   const currentUser = requireUser(ctx)
   const work = await getOrCreateWork(input.title)
-  const {record, history} = await db.transaction(async em => {
-    return _createRecord(em, currentUser, work, {
+  const {record, history} = await db.transaction(async () => {
+    return _createRecord(currentUser, work, {
       title: input.title,
       categoryId: input.categoryId ? CategoryId.toDatabaseId(input.categoryId) : null,
       status: input.status,
