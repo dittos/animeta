@@ -1,5 +1,5 @@
 import { MutationResolvers } from "src/graphql/generated";
-import { addRecordHistory } from "src/services/record.service";
+import { addRecordHistory } from "src2/services/record";
 import { db } from "src2/database";
 import { StatusType } from "src/entities/status_type";
 import { permissionDeniedException, requireUser } from "../utils";

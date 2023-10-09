@@ -2,7 +2,7 @@ import { MutationResolvers } from "src/graphql/generated";
 import { db } from "src2/database";
 import { permissionDeniedException, requireUser } from "../utils";
 import { Record } from "src/entities/record.entity";
-import { updateRecordRating as _updateRecordRating } from "src/services/record.service";
+import { updateRecordRating as _updateRecordRating } from "src2/services/record";
 import { RecordId } from "../id";
 
 export const updateRecordRating: MutationResolvers['updateRecordRating'] = async (_, { input }, ctx) => {

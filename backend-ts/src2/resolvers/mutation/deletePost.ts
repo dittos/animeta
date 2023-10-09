@@ -1,5 +1,5 @@
 import { MutationResolvers } from "src/graphql/generated";
-import { deleteRecordHistory } from "src/services/record.service";
+import { deleteRecordHistory } from "src2/services/record";
 import { db } from "src2/database";
 import { permissionDeniedException, requireUser } from "../utils";
 import { History } from "src/entities/history.entity";

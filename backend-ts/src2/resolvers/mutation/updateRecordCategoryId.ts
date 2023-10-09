@@ -2,7 +2,7 @@ import { MutationResolvers } from "src/graphql/generated";
 import { db } from "src2/database";
 import { permissionDeniedException, requireUser } from "../utils";
 import { Record } from "src/entities/record.entity";
-import { updateRecordCategory } from "src/services/record.service";
+import { updateRecordCategory } from "src2/services/record";
 import { Category } from "src/entities/category.entity";
 import { CategoryId, RecordId } from "../id";
 

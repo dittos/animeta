@@ -1,5 +1,5 @@
 import { MutationResolvers } from "src/graphql/generated";
-import { deleteRecord as _deleteRecord } from "src/services/record.service";
+import { deleteRecord as _deleteRecord } from "src2/services/record";
 import { db } from "src2/database";
 import { permissionDeniedException, requireUser } from "../utils";
 import { Record } from "src/entities/record.entity";

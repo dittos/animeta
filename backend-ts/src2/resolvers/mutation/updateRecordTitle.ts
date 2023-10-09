@@ -3,7 +3,7 @@ import { db } from "src2/database";
 import { permissionDeniedException, requireUser } from "../utils";
 import { Record } from "src/entities/record.entity";
 import { getOrCreateWork } from "src2/services/work";
-import { updateRecordWorkAndTitle } from "src/services/record.service";
+import { updateRecordWorkAndTitle } from "src2/services/record";
 import { RecordId } from "../id";
 
 export const updateRecordTitle: MutationResolvers['updateRecordTitle'] = async (_, { input }, ctx) => {

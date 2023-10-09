@@ -1,6 +1,6 @@
 import { MutationResolvers } from "src/graphql/generated";
 import { getOrCreateWork } from "src2/services/work";
-import { createRecord as _createRecord } from "src/services/record.service";
+import { createRecord as _createRecord } from "src2/services/record";
 import { db } from "src2/database";
 import { StatusType } from "src/entities/status_type";
 import { requireUser } from "../utils";
