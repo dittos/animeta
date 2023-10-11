@@ -1,5 +1,6 @@
 import { fetch } from 'cross-fetch';
 import { request as graphqlRequest } from 'graphql-request';
+import express from 'express';
 
 export const HttpNotFound = {};
 
@@ -7,7 +8,7 @@ export default class {
   constructor(private v5BaseUrl: string, private graphqlUrl: string) {
   }
 
-  async callV5(req: any, path: string, params?: any) {
+  async callV5(req: express.Request, path: string, params?: any) {
     try {
       return await this._callV5(req, this.v5BaseUrl, path, params);
     } catch (e) {
@@ -18,7 +19,7 @@ export default class {
     }
   }
 
-  async getCurrentUserV5(req: any, params?: any) {
+  async getCurrentUserV5(req: express.Request, params?: any) {
     try {
       return await this._callV5(req, this.v5BaseUrl, '/api/v5/getCurrentUser', params);
     } catch (e) {
@@ -26,13 +27,15 @@ export default class {
     }
   }
 
-  async graphql(req: any, doc: any, variables: any) {
+  async graphql(req: express.Request, doc: any, variables: any) {
     return graphqlRequest(this.graphqlUrl, doc, variables, {
       'x-animeta-session-key': req.cookies?.sessionid,
+      'Referer': getFrontendUrlHeader(req),
+      'User-Agent': req.headers['user-agent'],
     })
   }
 
-  async _callV5(req: any, baseUrl: string, path: string, params?: any) {
+  async _callV5(req: express.Request, baseUrl: string, path: string, params?: any) {
     let body
     if (typeof params !== 'undefined')
       body = JSON.stringify(params)
@@ -41,8 +44,10 @@ export default class {
       body,
       headers: {
         'Content-Type': 'application/json',
-        'x-animeta-session-key': req.cookies?.sessionid,
         'Accept': 'application/json',
+        'x-animeta-session-key': req.cookies?.sessionid,
+        'Referer': getFrontendUrlHeader(req),
+        'User-Agent': req.headers['user-agent'],
       },
     })
     const responseBody = await r.json()
@@ -52,6 +57,10 @@ export default class {
       throw new ApiError(r.status, responseBody)
     }
   }
+}
+
+function getFrontendUrlHeader(req: express.Request): string {
+  return req.headers['referer'] || req.url
 }
 
 export class ApiError extends Error {

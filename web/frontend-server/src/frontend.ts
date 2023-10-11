@@ -24,7 +24,7 @@ export function createServer({ config, server = express(), appProvider, getAsset
 }) {
   const backend = new Backend(config.backend.v5BaseUrl, config.backend.graphqlUrl);
 
-  function loaderFactory(serverRequest: ServerRequest): Loader {
+  function loaderFactory(serverRequest: express.Request): Loader {
     return {
       v5: {
         call(path: string, params: any, options: any) {
@@ -250,7 +250,7 @@ Disallow: /
 
     // TODO: remove type assertion
     const {app, render} = appProvider.get()
-    render(app, req as ServerRequest, loaderFactory(req as ServerRequest))
+    render(app, req as ServerRequest, loaderFactory(req))
       .then(result => {
         const {
           preloadData,

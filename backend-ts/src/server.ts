@@ -29,6 +29,7 @@ async function buildContext(req: FastifyRequest, _reply: FastifyReply) {
   return {
     currentUser: await getCurrentUser(req),
     useNewId: req.headers['x-graphql-use-new-id'] === 'true',
+    request: req,
 
     _legacyIdWarned: false, // mutable
   }
@@ -51,7 +52,22 @@ server.register(mercurius, {
   errorFormatter(execution, context) {
     if (execution.errors) {
       for (const e of execution.errors) {
-        Sentry.captureException(e)
+        Sentry.withScope(scope => {
+          const request = context.request
+          scope.setUser({
+            ip_address: request.ip,
+          });
+          scope.setLevel(Sentry.Severity.Error);
+          scope.setTag('path', request.url);
+          scope.setExtra('headers', request.headers);
+          if (
+              request.headers['content-type'] === 'application/json' &&
+              request.body
+          ) {
+            scope.setExtra('body', request.body);
+          }
+          Sentry.captureException(e)
+        })
       }
     }
     return mercurius.defaultErrorFormatter(execution, context)
