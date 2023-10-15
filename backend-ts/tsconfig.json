@@ -12,12 +12,6 @@
     "baseUrl": "./",
     "incremental": true,
     "strict": true,
-    "skipLibCheck": false,
-    "paths": {
-      "shared/*": ["../web/shared/*"]
-    }
-  },
-  "references": [
-    { "path": "../web/shared" }
-  ]
+    "skipLibCheck": false
+  }
 }

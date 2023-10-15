@@ -1,5 +1,5 @@
 import throttle from 'lodash/throttle';
-import { SearchResultItem } from '../../../shared/types';
+import { SearchResultItem } from '../../../shared/client';
 import { loadTypeahead } from '../typeahead';
 import { API } from '../ApiClient';
 

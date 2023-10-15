@@ -3,7 +3,7 @@ import { FormControl } from 'react-bootstrap';
 import { loadTypeahead } from '../typeahead';
 import { API } from './ApiClient';
 import './TitleAutosuggest.css';
-import { SearchResultItem } from '../../../shared/types';
+import { SearchResultItem } from '../../../shared/client';
 import throttle from 'lodash/throttle';
 
 type TypeaheadSource = (q: string, cb: (result: SearchResultItem[]) => void) => void

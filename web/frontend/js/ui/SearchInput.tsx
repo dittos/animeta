@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as Typeahead from './Typeahead';
 import { ControllerContext } from 'nuri/components';
-import { SearchResultItem } from '../../../shared/types';
+import { SearchResultItem } from '../../../shared/client';
 
 class SearchInput extends React.Component<{
   onSelect?(title: string): void;

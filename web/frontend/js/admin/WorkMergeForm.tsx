@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormGroup, Button, Modal } from 'react-bootstrap';
 import { AdminWorkDto } from '../../../shared/client';
-import { SearchResultItem } from '../../../shared/types';
+import { SearchResultItem } from '../../../shared/client';
 import { API } from './ApiClient';
 import TitleAutosuggest from './TitleAutosuggest';
 

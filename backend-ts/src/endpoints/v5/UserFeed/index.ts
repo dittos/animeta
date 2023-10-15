@@ -1,8 +1,8 @@
 import { ApiException } from "src/exceptions";
-import { serializeUser } from 'src/serializers/user';
-import { UserDto } from 'src/schemas/user';
+import { serializeUser } from "src/serializers/user";
+import { UserDto } from "src/schemas/user";
 import { getUserByName } from "src/services/user";
-import { StatusType } from "shared/types";
+import { StatusType } from "src/schemas/statusType";
 import { getUserPosts } from "src/services/post";
 import { StatusType as StatusTypeEnum } from "src/entities/status_type";
 import { History } from "src/entities/history.entity";

@@ -1,10 +1,4 @@
-import { PostDTO, RecordDTO, WorkMetadata$SourceType, LegacyStatusType } from "../../shared/types";
-import { StatusType } from "./__generated__/globalTypes";
-
-interface HasStatus {
-  status_type: string;
-  status: string | null;
-}
+import { SourceType, StatusType } from "./__generated__/globalTypes";
 
 interface GqlHasStatus {
   statusType?: StatusType | null
@@ -60,10 +54,6 @@ export function plusOne(val: string): string {
   return val.replace(/(\d+)([^\d]*)$/, add1 + '$2');
 }
 
-export function getStatusDisplay(record: HasStatus): string {
-  return formatStatus(record.status ?? '')
-}
-
 export function getStatusDisplayGql(record: GqlHasStatus): string {
   return formatStatus(record.status ?? '');
 }
@@ -86,19 +76,6 @@ export const GQL_STATUS_TYPE_TEXT: {[K in StatusType]: string} = {
   SUSPENDED: '중단',
 };
 
-export function getStatusText(record: HasStatus): string {
-  var status = getStatusDisplay(record);
-  if (record.status_type != 'watching' || status === '') {
-    var statusTypeText = STATUS_TYPE_TEXT[record.status_type as LegacyStatusType];
-    if (status !== '') {
-      status += ' (' + statusTypeText + ')';
-    } else {
-      status = statusTypeText;
-    }
-  }
-  return status;
-}
-
 export function getStatusTextGql(record: GqlHasStatus): string {
   var status = getStatusDisplayGql(record);
   if (record.statusType !== 'WATCHING' || status === '') {
@@ -116,15 +93,11 @@ export function getWorkURL(title: string): string {
   return '/works/' + encodeURIComponent(title) + '/';
 }
 
-export function getPostURL(post: PostDTO): string {
-  return '/-' + post.id;
-}
-
 export function getPostURLGql(post: { databaseId: string } | { id: string }): string {
   return '/-' + ('databaseId' in post ? post.databaseId : post.id);
 }
 
-export const SOURCE_TYPE_MAP: {[K in WorkMetadata$SourceType]: string} = {
+export const SOURCE_TYPE_MAP: {[K in SourceType]: string} = {
   MANGA: '만화 원작',
   ORIGINAL: '오리지널 작품',
   LIGHT_NOVEL: '라노베 원작',
