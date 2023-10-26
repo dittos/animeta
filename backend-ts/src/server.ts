@@ -7,6 +7,7 @@ import { resolvers } from './resolvers'
 import { getCurrentUser } from './auth'
 import { glob } from 'glob'
 import { GraphQLID } from './resolvers/scalars/id'
+import { ValidationError } from './services/exceptions'
 
 // TODO: dotenv
 
@@ -109,15 +110,18 @@ function registerEndpoints(parent: FastifyInstance, endpointsDir: string, prefix
           url: file.name === 'index.js' ? '/' : '/' + file.name.replace(/\.js$/, ''),
           schema: schema ?? undefined,
           handler: async (request, reply) => {
-            // try {
+            try {
               return await handler(request.body, request)
-            // } catch (e) {
-            //   if (e instanceof HttpException) {
-            //     reply.status(e.getStatus()).send(e.getResponse())
-            //     return
-            //   }
-            //   throw e
-            // }
+            } catch (e) {
+              if (e instanceof ValidationError) {
+                reply.status(400).send({
+                  message: e.message,
+                  extra: e.extra,
+                })
+                return
+              }
+              throw e
+            }
           }
         })
       }

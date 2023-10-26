@@ -18,14 +18,18 @@ export class TestFactoryUtils {
   constructor(
   ) {}
 
-  async newUser(): Promise<User> {
+  async newUser({
+    isStaff = false,
+  }: {
+    isStaff?: boolean,
+  } = {}): Promise<User> {
     return await db.save(db.create(User, {
       username: cuid(),
       first_name: '',
       last_name: '',
       email: '',
       password: '',
-      is_staff: false,
+      is_staff: isStaff,
       is_active: true,
       is_superuser: false,
       last_login: new Date(),

@@ -42,7 +42,24 @@ export function main(options: Record<string, any>, program: ts.Program, context:
   
   const schema: any = {
     $id: 'common',
-    definitions: {}
+    definitions: {
+      ValidationErrorDto: {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "extra": {
+            "type": "object",
+            // https://www.npmjs.com/package/fast-json-stringify#additional-properties
+            "additionalProperties": true,
+          }
+        },
+        "required": [
+          "message",
+        ],
+      }
+    }
   }
   for (const [n,v] of writeJsonSchema(app.types, tc).entries()) {
     schema.definitions[n] = v
@@ -59,7 +76,8 @@ export function main(options: Record<string, any>, program: ts.Program, context:
       JSON.stringify({
         body: writeJsonSchemaFor(app.types, endpoint.paramsType, tc),
         response: {
-          200: writeJsonSchemaFor(app.types, endpoint.resultType, tc)
+          200: writeJsonSchemaFor(app.types, endpoint.resultType, tc),
+          400: {$ref: "common#/definitions/ValidationErrorDto"},
         },
       }, null, 2)
     )
