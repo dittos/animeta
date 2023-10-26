@@ -10,9 +10,10 @@ export function main(options: Record<string, any>, program: ts.Program, context:
     types: new Map(),
   }
 
+  const sourceRoot: string = options.sourceRoot
   const endpointsDir: string = options.endpointsDir
   const distDir: string = options.distDir
-  const basePath = path.join(program.getCurrentDirectory(), endpointsDir)
+  const basePath = path.join(program.getCurrentDirectory(), sourceRoot, endpointsDir)
   const distPath = path.join(distDir, endpointsDir)
   
   const tc = program.getTypeChecker()
@@ -27,7 +28,7 @@ export function main(options: Record<string, any>, program: ts.Program, context:
         collectRootTypes(app.types, paramsType, tc)
         const resultType = unwrapPromise(node.type!)
         collectRootTypes(app.types, resultType, tc)
-        const relativePath = path.relative(endpointsDir, sf.fileName)
+        const relativePath = path.relative(path.join(sourceRoot, endpointsDir), sf.fileName)
         const fileName = path.basename(sf.fileName)
         app.endpoints.push({
           path: '/api/' + (fileName === 'index.ts' ? path.dirname(relativePath) + '/' : relativePath.replace(/\.ts$/, '')),

@@ -1,14 +1,15 @@
 {
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
-  "entryFile": "backend-ts/src/main.js",
+  "entryFile": "main.js",
   "compilerOptions": {
     "plugins": [
       {
         "name": "@animeta/tooling",
         "options": {
-          "endpointsDir": "src/endpoints",
-          "distDir": "dist/backend-ts",
+          "sourceRoot": "src",
+          "endpointsDir": "endpoints",
+          "distDir": "dist",
           "clientTypesOutput": "../web/shared/client.d.ts"
         }
       }

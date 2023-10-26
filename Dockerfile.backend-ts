@@ -24,4 +24,4 @@ RUN npm install
 COPY backend-ts .
 RUN node_modules/.bin/nest build
 
-ENTRYPOINT ["node", "dist/backend-ts/src/main.js"]
+ENTRYPOINT ["node", "dist/main.js"]
