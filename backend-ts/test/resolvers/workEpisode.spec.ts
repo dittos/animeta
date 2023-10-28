@@ -29,3 +29,27 @@ test('get', async () => {
     suspendedUserCount: 0,
   })
 })
+
+test('get statuses with leading zero', async () => {
+  const work = await utils.factory.newWork()
+  await utils.factory.newRecord({ work, status: "01", comment: 'hello' })
+
+  const { data } = await utils.getHttpClient().query<{work: {episode: EpisodeDtoFragment}}, any>(gql`
+    query($id: ID!, $episode: Int!) {
+      work(id: $id) {
+        episode(episode: $episode) {
+          ...EpisodeDTO
+        }
+      }
+    }
+    ${EpisodeDtoFragmentDoc}
+  `, {
+    variables: {id: work.id, episode: 1}
+  })
+  expect(data.work.episode).toEqual({
+    number: 1,
+    postCount: 1,
+    userCount: 1,
+    suspendedUserCount: 0,
+  })
+})

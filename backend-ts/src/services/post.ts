@@ -3,7 +3,7 @@ import { Record } from "src/entities/record.entity";
 import { User } from "src/entities/user.entity";
 import { Work } from "src/entities/work.entity";
 import { db } from "src/database";
-import { LessThan, Not } from "typeorm";
+import { In, LessThan, Not } from "typeorm";
 
 export function getPost(id: number): Promise<History | undefined> {
   // TODO: dataloader
@@ -22,7 +22,7 @@ export async function getWorkPosts(work: Work, { beforeId, count, episode }: {
       work_id: work.id,
       comment: Not(''),
       ...beforeId ? { id: LessThan(beforeId) } : {},
-      ...episode ? { status: episode } : {},
+      ...episode ? { status: In([episode, '0' + episode]) } : {},
     },
     order: { id: 'DESC' },
     take: count + 1,

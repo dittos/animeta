@@ -6,7 +6,7 @@ import { Period } from "src/utils/period";
 import { ValidationError } from "src/services/exceptions";
 import { db } from "src/database";
 import { TitleMapping } from "src/entities/title_mapping.entity";
-import { Not } from "typeorm";
+import { In, Not } from "typeorm";
 import { Record } from "src/entities/record.entity";
 import { History } from "src/entities/history.entity";
 import { WorkTitleIndex } from "src/entities/work_title_index.entity";
@@ -234,7 +234,7 @@ export async function getWorkEpisode(work: Work, number: number): Promise<Episod
   const postCount = await db.count(History, {
     where: {
       work_id: work.id,
-      status: number,
+      status: In([number, '0' + number]),
       comment: Not(''),
     }
   })
@@ -242,7 +242,7 @@ export async function getWorkEpisode(work: Work, number: number): Promise<Episod
     const historyWithoutCommentCount = await db.count(History, {
       where: {
         work_id: work.id,
-        status: number,
+        status: In([number, '0' + number]),
         comment: '',
       }
     })

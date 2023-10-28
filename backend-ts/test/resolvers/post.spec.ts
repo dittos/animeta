@@ -38,3 +38,24 @@ test('get', async () => {
   })
   expect(data.post.id).toBe(history.id.toString())
 })
+
+test('get episode for status wiht leading zero', async () => {
+  const { history } = await utils.factory.newRecord({
+    status: '01',
+    comment: 'hi',
+  })
+  const { data } = await utils.getHttpClient().query<{post: {episode: {number: number}}}, any>(gql`
+    query($id: ID!) {
+      post(id: $id) {
+        episode {
+          number
+        }
+      }
+    }
+  `, {
+    variables: {
+      id: history.id,
+    }
+  })
+  expect(data.post.episode.number).toBe(1)
+})

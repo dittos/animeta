@@ -8,7 +8,11 @@ export const Episode: EpisodeResolvers = {
     const result = await db.createQueryBuilder()
       .from(History, 'h')
       .select('COUNT(DISTINCT user_id)', 'count')
-      .where('work_id = :workId AND status = :status', { workId: episode.workId, status: episode.number })
+      .where('work_id = :workId AND status IN (:status, :status0)', {
+        workId: episode.workId,
+        status: episode.number,
+        status0: '0' + episode.number,
+      })
       .getRawOne()
     return Number(result.count)
   },
@@ -16,8 +20,13 @@ export const Episode: EpisodeResolvers = {
     const result = await db.createQueryBuilder()
       .from(History, 'h')
       .select('COUNT(DISTINCT user_id)', 'count')
-      .where('work_id = :workId AND status = :status AND status_type = :statusType',
-        { workId: episode.workId, status: episode.number, statusType: StatusType.SUSPENDED })
+      .where('work_id = :workId AND status IN (:status, :status0) AND status_type = :statusType',
+        {
+          workId: episode.workId,
+          status: episode.number,
+          status0: '0' + episode.number,
+          statusType: StatusType.SUSPENDED,
+        })
       .getRawOne()
     return Number(result.count)
   },
