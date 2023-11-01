@@ -3,9 +3,7 @@
   "rootDir": ".",
   "testEnvironment": "node",
   "testRegex": "\\.spec\\.ts$",
-  "transform": {
-    "^.+\\.ts$": "ts-jest"
-  },
+  "preset": "ts-jest",
   "moduleNameMapper": {
     "^src/(.*)": "<rootDir>/../dist/$1"
   },

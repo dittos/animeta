@@ -25,4 +25,7 @@ export default async function setup(opts: any) {
     "migrationsRun": true,
   })
   await connection.close()
+
+  // XXX: avoid typeorm global state being reused in actual tests
+  delete (global as any).typeormMetadataArgsStorage
 }

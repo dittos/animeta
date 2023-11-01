@@ -6,7 +6,7 @@ describe('SundayStartWeekRange', () => {
     it('now', () => {
       const kst = Temporal.TimeZone.from('Asia/Seoul')
       const date = new Temporal.PlainDate(2022, 2, 10)
-      jest.useFakeTimers('modern').setSystemTime(date.toZonedDateTime(kst).toInstant().epochMilliseconds)
+      jest.useFakeTimers().setSystemTime(date.toZonedDateTime(kst).toInstant().epochMilliseconds)
       expect(SundayStartWeekRange.now(kst).equals(SundayStartWeekRange.including(date))).toBeTruthy()
     })
 
