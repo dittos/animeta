@@ -7,6 +7,10 @@ import { server } from 'src/server'
 
 async function main() {
   await createConnection()
+
+  server.register(require('@immobiliarelabs/fastify-sentry'), {
+    dsn: process.env.SENTRY_DSN,
+  })
   
   server.listen(8082, '0.0.0.0', (err, address) => {
     if (err) {

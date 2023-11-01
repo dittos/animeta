@@ -22,10 +22,6 @@ export const server = fastify({
   },
 })
 
-server.register(require('@immobiliarelabs/fastify-sentry'), {
-  dsn: process.env.SENTRY_DSN,
-})
-
 async function buildContext(req: FastifyRequest, _reply: FastifyReply) {
   return {
     currentUser: await getCurrentUser(req),
