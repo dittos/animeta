@@ -1,0 +1,11 @@
+{
+  "type": "postgres",
+  "host": "animetadb",
+  "port": 5432,
+  "username": "postgres",
+  "password": "",
+  "database": "animeta",
+  "entities": ["dist/**/*.entity{.ts,.js}"],
+  "synchronize": false,
+  "logging": true
+}

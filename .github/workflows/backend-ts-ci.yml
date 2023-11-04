@@ -1,0 +1,54 @@
+name: Backend (TS) / CI
+
+on:
+  push:
+    branches: [ '*' ]
+    paths:
+      - 'backend-ts/**'
+      - 'tooling/**'
+      - '.github/workflows/backend-ts-ci.yml'
+  pull_request:
+    paths: ['backend-ts/**', 'tooling/**']
+
+jobs:
+  test:
+
+    runs-on: ubuntu-20.04
+
+    defaults:
+      run:
+        working-directory: .
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+        cache: npm
+        cache-dependency-path: |
+          tooling/package-lock.json
+          backend-ts/package-lock.json
+    
+    - run: |
+        npm install
+        npm run build
+      working-directory: tooling
+
+    - run: |
+        npm install
+        npm run build
+      working-directory: backend-ts
+    
+    - name: Run unit tests
+      run: npm test
+      working-directory: backend-ts
+
+    - name: Run functional tests
+      run: npm run test:e2e
+      working-directory: backend-ts
