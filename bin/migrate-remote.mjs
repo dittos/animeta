@@ -46,6 +46,10 @@ spec:
           - mountPath: /app/backend-ts/ormconfig.json
             name: secret
             subPath: backend-ts-ormconfig.json
+          # for pnpm based build
+          - mountPath: /app/ormconfig.json
+            name: secret
+            subPath: backend-ts-ormconfig.json
           - mountPath: /app/secrets
             name: secret
           resources:

@@ -1,0 +1,19 @@
+FROM node:16
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+		imagemagick \
+		jpegoptim \
+	&& rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g pnpm@^7
+
+WORKDIR /app/backend-ts
+
+COPY pnpm-lock.yaml pnpm-workspace.yaml ../
+COPY backend-ts/package.json ./
+COPY backend-ts/patches ./patches
+RUN pnpm install --prod --frozen-lockfile
+
+COPY backend-ts .
+
+ENTRYPOINT ["node", "dist/main.js"]

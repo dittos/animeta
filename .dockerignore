@@ -1,6 +1,4 @@
-# This is for Dockerfile.backend-ts
-backend-ts/dist
-backend-ts/node_modules
-backend-ts/ormconfig.json
-web
-!web/shared
+**/node_modules
+.git
+.gitignore
+backend-ts/.env
