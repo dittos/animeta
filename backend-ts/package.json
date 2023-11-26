@@ -20,7 +20,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --runInBand --verbose --config ./test/jest-e2e.json",
     "test:e2e:watch": "jest --runInBand --verbose --config ./test/jest-e2e.json --watch",
-    "graphql-codegen": "graphql-codegen --watch",
+    "graphql-codegen:watch": "graphql-codegen --watch",
     "postinstall": "patch-package"
   },
   "dependencies": {

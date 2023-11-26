@@ -24,6 +24,7 @@
     "ejs": "^2.3.4",
     "express": "^4.13.4",
     "graphql-request": "^4.3.0",
+    "headers-polyfill": "3.0.7",
     "http-proxy": "^1.16.2",
     "jquery": "^2.1.4",
     "lodash": "^4.17.11",

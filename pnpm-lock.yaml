@@ -209,6 +209,7 @@ importers:
       file-loader: ^2.0.0
       fork-ts-checker-webpack-plugin: ^6.0.8
       graphql-request: ^4.3.0
+      headers-polyfill: 3.0.7
       http-proxy: ^1.16.2
       jquery: ^2.1.4
       less: ^3.0.2
@@ -270,6 +271,7 @@ importers:
       ejs: 2.7.4
       express: 4.18.2
       graphql-request: 4.3.0
+      headers-polyfill: 3.0.7
       http-proxy: 1.18.1
       jquery: 2.2.4
       lodash: 4.17.21
@@ -3601,7 +3603,7 @@ packages:
       '@open-draft/until': 1.0.3
       '@xmldom/xmldom': 0.7.13
       debug: 4.3.4
-      headers-polyfill: 3.3.0
+      headers-polyfill: 3.0.7
       outvariant: 1.4.0
       strict-event-emitter: 0.2.8
     transitivePeerDependencies:
@@ -9471,9 +9473,8 @@ packages:
       tslib: 2.6.2
     dev: true
 
-  /headers-polyfill/3.3.0:
-    resolution: {integrity: sha512-5e57etwBpNcDc0b6KCVWEh/Ro063OxPvzVimUdM0/tsYM/T7Hfy3kknIGj78SFTOhNd8AZY41U8mOHoO4LzmIQ==}
-    dev: true
+  /headers-polyfill/3.0.7:
+    resolution: {integrity: sha512-JoLCAdCEab58+2/yEmSnOlficyHFpIl0XJqwu3l+Unkm1gXpFUYsThz6Yha3D6tNhocWkCPfyW0YVIGWFqTi7w==}
 
   /hexoid/1.0.0:
     resolution: {integrity: sha512-QFLV0taWQOZtvIRIAdBChesmogZrtuXvVWsFHZTk2SU+anspqZ2vMnoLg7IE1+Uk16N19APic1BuF8bC8c2m5g==}
@@ -11549,7 +11550,7 @@ packages:
       chokidar: 3.5.3
       cookie: 0.4.2
       graphql: 16.8.1
-      headers-polyfill: 3.3.0
+      headers-polyfill: 3.0.7
       inquirer: 8.2.6
       is-node-process: 1.2.0
       js-levenshtein: 1.1.6
