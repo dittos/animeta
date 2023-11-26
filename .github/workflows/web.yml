@@ -3,7 +3,10 @@ name: Web
 on:
   push:
     branches: [ master ]
-    paths: ['web/**', '.github/workflows/web.yml']
+    paths:
+      - 'web/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/web.yml'
   pull_request:
     paths: ['web/**']
 
