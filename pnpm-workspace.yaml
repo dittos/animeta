@@ -1,0 +1,6 @@
+packages:
+  - tooling
+  - backend-ts
+  - web/shared
+  - web/frontend
+  - web/frontend-server

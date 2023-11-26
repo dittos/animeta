@@ -21,4 +21,7 @@ async function main() {
   })
 }
 
-main().catch(e => Sentry.captureException(e))
+main().catch(e => {
+  console.error(e)
+  Sentry.captureException(e)
+})

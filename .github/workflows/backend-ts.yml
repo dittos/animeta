@@ -2,14 +2,18 @@ name: Backend (TS)
 
 on:
   push:
-    branches: [ master ]
+    branches: [ '*' ]
     paths:
       - 'backend-ts/**'
       - 'tooling/**'
-      - 'Dockerfile.backend-ts'
+      - 'Dockerfile.backend-ts.prebuilt'
       - '.github/workflows/backend-ts.yml'
   pull_request:
     paths: ['backend-ts/**', 'tooling/**']
+
+env:
+  # change this to test deploy from other branch
+  DEPLOY_REF: refs/heads/master
 
 jobs:
   build:
@@ -25,7 +29,44 @@ jobs:
       packages: write
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+    
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+    
+    - uses: pnpm/action-setup@v2.0.1
+      name: Install pnpm
+      id: pnpm-install
+      with:
+        version: 7
+        run_install: false
+
+    - name: Get pnpm store directory
+      id: pnpm-cache
+      run: |
+        echo "::set-output name=pnpm_cache_dir::$(pnpm store path)"
+
+    - uses: actions/cache@v3
+      name: Setup pnpm cache
+      with:
+        path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+
+    - run: pnpm -C tooling run build
+    - run: pnpm -C backend-ts run prebuild && pnpm -C backend-ts run build
+    
+    - name: Run unit tests
+      run: pnpm -C backend-ts run test
+
+    - name: Run functional tests
+      run: pnpm -C backend-ts run test:e2e
 
     # Deploy
     - name: Set up Docker Buildx
@@ -40,26 +81,26 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: .
-        file: Dockerfile.backend-ts
-        push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        file: Dockerfile.backend-ts.prebuilt
+        push: ${{ github.event_name == 'push' && github.ref == env.DEPLOY_REF }}
         tags: "ghcr.io/dittos/animeta-backend-ts:latest"
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
     - uses: azure/setup-kubectl@v3
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == env.DEPLOY_REF
     - name: Set up kubeconfig
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == env.DEPLOY_REF
       env:
         KUBECONFIG_DATA_BASE64: ${{ secrets.KUBECONFIG_DATA_BASE64 }}
       run: |
         mkdir ~/.kube
         echo $KUBECONFIG_DATA_BASE64 | base64 -d > ~/.kube/config
     - name: Run migration
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == env.DEPLOY_REF
       run: npx zx@7 bin/migrate-remote.mjs
     - name: Rollout
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == env.DEPLOY_REF
       run: |
         kubectl rollout restart deployment/animeta-backend-ts
         kubectl rollout status deployment/animeta-backend-ts
