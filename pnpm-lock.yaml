@@ -12,6 +12,7 @@ importers:
       '@graphql-codegen/typescript': ^2.7.1
       '@graphql-codegen/typescript-operations': ^2.5.1
       '@graphql-codegen/typescript-resolvers': ^2.7.1
+      '@graphql-typed-document-node/core': ^3.1.1
       '@immobiliarelabs/fastify-sentry': ^3.1.0
       '@js-temporal/polyfill': ^0.3.0
       '@nestjs/cli': ^8.2.1
@@ -77,6 +78,7 @@ importers:
     dependencies:
       '@databases/pg': 5.5.0_typescript@4.5.5
       '@google-cloud/storage': 5.20.5
+      '@graphql-typed-document-node/core': 3.2.0_graphql@16.8.1
       '@immobiliarelabs/fastify-sentry': 3.1.0
       '@js-temporal/polyfill': 0.3.0
       '@nestjs/common': 8.4.7_gfqkyrx5bttwtm5a2k3vqkmaem
