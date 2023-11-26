@@ -20,8 +20,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --runInBand --verbose --config ./test/jest-e2e.json",
     "test:e2e:watch": "jest --runInBand --verbose --config ./test/jest-e2e.json --watch",
-    "graphql-codegen:watch": "graphql-codegen --watch",
-    "postinstall": "patch-package"
+    "graphql-codegen:watch": "graphql-codegen --watch"
   },
   "dependencies": {
     "@databases/pg": "^5.4.1",
@@ -53,7 +52,6 @@
     "mercurius": "^9.7.0",
     "mercurius-integration-testing": "^4.0.0",
     "oauth": "^0.9.15",
-    "patch-package": "^6.4.7",
     "pg": "^8.5.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",

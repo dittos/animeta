@@ -1,7 +1,7 @@
-diff --git a/node_modules/mercurius-codegen/dist/code.d.ts b/node_modules/mercurius-codegen/dist/code.d.ts
-index 544e8b4..d99b085 100644
---- a/node_modules/mercurius-codegen/dist/code.d.ts
-+++ b/node_modules/mercurius-codegen/dist/code.d.ts
+diff --git a/dist/code.d.ts b/dist/code.d.ts
+index 544e8b4c7a118cd2b928ec2fec6b9a5f4a2a4bd8..d99b0856c6dd1e7d06e26f8ed08a8904d52e37a0 100644
+--- a/dist/code.d.ts
++++ b/dist/code.d.ts
 @@ -1,6 +1,6 @@
  import type { GraphQLSchema } from 'graphql';
  import type { TypeScriptPluginConfig } from '@graphql-codegen/typescript';

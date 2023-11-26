@@ -1,0 +1,7 @@
+{
+	"pnpm": {
+		"patchedDependencies": {
+			"mercurius-codegen@3.3.1": "patches/mercurius-codegen@3.3.1.patch"
+		}
+	}
+}
