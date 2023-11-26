@@ -325,7 +325,7 @@ importers:
       msw: 0.40.2_typescript@4.9.5
       postcss-loader: 3.0.0
       style-loader: 0.23.1
-      swc-loader: 0.1.16_xp6vke2hmqll7j2ldmum4fogzi
+      swc-loader: 0.1.12_xp6vke2hmqll7j2ldmum4fogzi
       terser-webpack-plugin: 4.2.3_webpack@4.47.0
       ts-loader: 8.4.0_zbeh2op7o6vcpwow43ygl5jcty
       ts-node: 7.0.1
@@ -13884,13 +13884,14 @@ packages:
       tslib: 2.6.2
     dev: true
 
-  /swc-loader/0.1.16_xp6vke2hmqll7j2ldmum4fogzi:
-    resolution: {integrity: sha512-NKIm8aJjK/z/yfzk+v7YGwJMjBKaLaUs9ZKI2zoaIGKAjtkwjO92ZLI0fiTZuwzRqVLQl/29fBdSgFCBzquR0w==}
+  /swc-loader/0.1.12_xp6vke2hmqll7j2ldmum4fogzi:
+    resolution: {integrity: sha512-DFV2PCxJGaym9S/K2xhUp/sVsTSeNNoPAvjqM/W3eZ9tVteUthjDOFjkQ7wo9TPemskKVBLQ8cTCAqoitXB3GQ==}
     peerDependencies:
-      '@swc/core': ^1.2.147
+      '@swc/core': ^1.1.48
       webpack: '>=2'
     dependencies:
       '@swc/core': 1.3.96
+      loader-utils: 2.0.4
       webpack: 4.47.0_webpack-cli@3.3.12
     dev: true
 
