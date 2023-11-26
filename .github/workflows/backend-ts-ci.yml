@@ -30,25 +30,35 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: 16
-        cache: npm
-        cache-dependency-path: |
-          tooling/package-lock.json
-          backend-ts/package-lock.json
     
-    - run: |
-        npm install
-        npm run build
-      working-directory: tooling
+    - uses: pnpm/action-setup@v2.0.1
+      name: Install pnpm
+      id: pnpm-install
+      with:
+        version: 7
+        run_install: false
 
-    - run: |
-        npm install
-        npm run build
-      working-directory: backend-ts
+    - name: Get pnpm store directory
+      id: pnpm-cache
+      run: |
+        echo "::set-output name=pnpm_cache_dir::$(pnpm store path)"
+
+    - uses: actions/cache@v3
+      name: Setup pnpm cache
+      with:
+        path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+
+    - run: pnpm -C tooling run build
+    - run: pnpm -C backend-ts run prebuild && pnpm -C backend-ts run build
     
     - name: Run unit tests
-      run: npm test
-      working-directory: backend-ts
+      run: pnpm -C backend-ts run test
 
     - name: Run functional tests
-      run: npm run test:e2e
-      working-directory: backend-ts
+      run: pnpm -C backend-ts run test:e2e
