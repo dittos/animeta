@@ -6,10 +6,14 @@ on:
     paths:
       - 'backend-ts/**'
       - 'tooling/**'
-      - 'Dockerfile.backend-ts'
+      - 'Dockerfile.backend-ts.prebuilt'
       - '.github/workflows/backend-ts.yml'
   pull_request:
     paths: ['backend-ts/**', 'tooling/**']
+
+env:
+  # change this to test deploy from other branch
+  DEPLOY_REF: refs/heads/master
 
 jobs:
   build:
@@ -78,25 +82,25 @@ jobs:
       with:
         context: .
         file: Dockerfile.backend-ts.prebuilt
-        push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        push: ${{ github.event_name == 'push' && github.ref == env.DEPLOY_REF }}
         tags: "ghcr.io/dittos/animeta-backend-ts:latest"
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
     - uses: azure/setup-kubectl@v3
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == env.DEPLOY_REF
     - name: Set up kubeconfig
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == env.DEPLOY_REF
       env:
         KUBECONFIG_DATA_BASE64: ${{ secrets.KUBECONFIG_DATA_BASE64 }}
       run: |
         mkdir ~/.kube
         echo $KUBECONFIG_DATA_BASE64 | base64 -d > ~/.kube/config
     - name: Run migration
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == env.DEPLOY_REF
       run: npx zx@7 bin/migrate-remote.mjs
     - name: Rollout
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == env.DEPLOY_REF
       run: |
         kubectl rollout restart deployment/animeta-backend-ts
         kubectl rollout status deployment/animeta-backend-ts
