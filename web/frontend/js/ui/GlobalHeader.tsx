@@ -67,7 +67,8 @@ export type GlobalHeaderProps = {
 
 export class GlobalHeader extends React.Component<GlobalHeaderProps> {
   static LAST_NOTICE_CLICKED = 'lastNoticeClicked';
-  static noticeId = '2023Q4';
+  static noticeId = '2024Q1';
+  static showNoticeUntil = new Date("2024-01-15T00:00:00+09:00");
 
   state = {
     showNotice: false,
@@ -75,7 +76,8 @@ export class GlobalHeader extends React.Component<GlobalHeaderProps> {
 
   componentDidMount() {
     try {
-      if (window.localStorage.getItem(GlobalHeader.LAST_NOTICE_CLICKED) !== GlobalHeader.noticeId) {
+      if (window.localStorage.getItem(GlobalHeader.LAST_NOTICE_CLICKED) !== GlobalHeader.noticeId &&
+          Date.now() < GlobalHeader.showNoticeUntil.getTime()) {
         this.setState({ showNotice: true });
       }
     } catch (e) {
@@ -86,8 +88,7 @@ export class GlobalHeader extends React.Component<GlobalHeaderProps> {
   render() {
     const activeMenu = this.props.activeMenu;
     const username = this.props.currentUsername;
-    // const showNotice = this.state.showNotice && activeMenu !== 'search' && !this.props.noNotice;
-    const showNotice = false;
+    const showNotice = this.state.showNotice && activeMenu !== 'search' && !this.props.noNotice;
     return (
       <div className={Styles.container}>
         <Layout.CenteredFullWidth className={Styles.header}>
@@ -124,7 +125,7 @@ export class GlobalHeader extends React.Component<GlobalHeaderProps> {
                 <span className={Styles.globalMenuItemText}>작품 찾기</span>
                 {showNotice && (
                   <span className={Styles.globalMenuItemPopover}>
-                    10월 신작 업데이트
+                    2024년 1월 신작 업데이트
                   </span>
                 )}
               </Link>
