@@ -55,23 +55,6 @@ export function createServer({ config, server = express(), appProvider, getAsset
   }
   server.use(cookieParser());
 
-  const graphqlProxy = httpProxy.createProxyServer({
-    target: config.backend.graphqlUrl,
-    changeOrigin: config.backend.remote ? true : false,
-    cookieDomainRewrite: config.backend.remote ? '' : false,
-    ignorePath: true,
-  });
-  graphqlProxy.on('proxyReq', onProxyReq);
-  graphqlProxy.on('error', onProxyError);
-
-  server.use(csurf({ cookie: true }));
-  function setCsrfCookie(req: express.Request, res: express.Response) {
-    res.cookie('crumb', (req as any).csrfToken());
-  }
-  server.use('/api/graphql', (req, res) => {
-    graphqlProxy.web(req, res);
-  })
-
   if (MAINTENANCE) {
     console.log('Starting in maintenance mode!');
     const maintenanceMessage = `서버 점검중입니다. (${MAINTENANCE} 완료 예정)`;
@@ -88,6 +71,23 @@ export function createServer({ config, server = express(), appProvider, getAsset
     });
     return server;
   }
+
+  const graphqlProxy = httpProxy.createProxyServer({
+    target: config.backend.graphqlUrl,
+    changeOrigin: config.backend.remote ? true : false,
+    cookieDomainRewrite: config.backend.remote ? '' : false,
+    ignorePath: true,
+  });
+  graphqlProxy.on('proxyReq', onProxyReq);
+  graphqlProxy.on('error', onProxyError);
+
+  server.use(csurf({ cookie: true }));
+  function setCsrfCookie(req: express.Request, res: express.Response) {
+    res.cookie('crumb', (req as any).csrfToken());
+  }
+  server.use('/api/graphql', (req, res) => {
+    graphqlProxy.web(req, res);
+  })
 
   server.post('/api/fe/sessions', express.json(), (req, res) => {
     const cookieOptions: express.CookieOptions = {
