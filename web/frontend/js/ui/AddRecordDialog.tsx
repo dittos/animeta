@@ -8,9 +8,9 @@ import LoginDialog from './LoginDialog';
 import { StatusInput } from './StatusInput';
 import ModalStyles from './Modal.less';
 import Styles from './AddRecordDialog.less';
-import { getLastPublishTwitter, setLastPublishTwitter } from '../Prefs';
+import { setLastPublishTwitter } from '../Prefs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimesCircle, faWarning } from '@fortawesome/free-solid-svg-icons';
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { Rating } from './Rating';
 import { CreateRecordInput, StatusType } from '../__generated__/globalTypes';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
@@ -62,8 +62,6 @@ type AddRecordState = {
   isRequesting: boolean;
   currentUser: AddRecordDialogQuery['currentUser'];
 };
-
-const PUBLISH_TWITTER_DISABLED_MESSAGE = "트위터 API 유료화로 공유 기능 제공을 중단합니다.";
 
 class AddRecord<T> extends React.Component<AddRecordProps<T>, AddRecordState> {
   private _titleEl: HTMLInputElement | null = null;
@@ -153,21 +151,8 @@ class AddRecord<T> extends React.Component<AddRecordProps<T>, AddRecordState> {
               />
             </div>
           </form>
-          <div className={Styles.shareOptions}>
-            <label
-              title={PUBLISH_TWITTER_DISABLED_MESSAGE}
-              onClick={e => alert(PUBLISH_TWITTER_DISABLED_MESSAGE)}
-            >
-              <input
-                type="checkbox"
-                disabled
-              />
-              {' 트위터에 공유'}
-              <FontAwesomeIcon icon={faWarning} />
-            </label>
-          </div>
           <button
-            className={ModalStyles.confirmButton}
+            className={ModalStyles.fullConfirmButton}
             disabled={this.state.isRequesting}
             onClick={this._onSubmit}
           >

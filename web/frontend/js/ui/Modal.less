@@ -85,8 +85,7 @@
     margin: 0;
 }
 
-:local(.button) {
-    float: right;
+:local(.baseButton) {
     display: block;
     border: none;
     border-radius: 5px;
@@ -96,11 +95,16 @@
     font-size: 14px;
     font-weight: bold;
     cursor: pointer;
-    margin-left: 10px;
 
     &:disabled {
         background: #999;
     }
+}
+
+:local(.button) {
+    composes: baseButton;
+    float: right;
+    margin-left: 10px;
 }
 
 :local(.dangerConfirmButton) {
@@ -111,6 +115,12 @@
 :local(.confirmButton) {
     composes: button;
     background: @color-main;
+}
+
+:local(.fullConfirmButton) {
+    composes: baseButton;
+    background: @color-main;
+    width: 100%;
 }
 
 :local(.cancelButton) {
