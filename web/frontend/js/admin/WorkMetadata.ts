@@ -2,6 +2,7 @@ export interface WorkMetadata {
   periods?: string[] | null;
   website?: string | null;
   namuRef?: string | null;
+  jaWikipediaRef?: string | null;
   annId?: string | null;
   source?: string | null;
   studios?: string[] | null;

@@ -17,6 +17,7 @@ export type WorkMetadata = {
   source?: SourceType | null;
   website?: string | null;
   namuRef?: string | null;
+  jaWikipediaRef?: string | null;
   annId?: string | null;
   durationMinutes?: number | null;
   schedules?: {[country: string]: Schedule} | null;

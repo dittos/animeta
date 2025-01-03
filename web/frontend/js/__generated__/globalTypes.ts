@@ -555,6 +555,7 @@ export type WorkMetadata = {
   schedules: Maybe<Array<WorkSchedule>>;
   source: Maybe<SourceType>;
   studioNames: Maybe<Array<Scalars['String']>>;
+  translatedJaWikipediaUrl: Maybe<Scalars['String']>;
   websiteUrl: Maybe<Scalars['String']>;
 };
 

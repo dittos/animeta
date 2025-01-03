@@ -116,6 +116,14 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                         ))}
                     </div>
                 </FormGroup>
+                <FormGroup>
+                    <FormLabel>JA Wikipedia Reference</FormLabel>
+                    <FormControl
+                        name="jaWikipediaRef"
+                        value={metadata.jaWikipediaRef || ''}
+                        onChange={this.handleInputChange}
+                    />
+                </FormGroup>
             </>
         );
     }

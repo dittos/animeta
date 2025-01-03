@@ -41,6 +41,7 @@ function serializeMetadata(work: WorkEntity): WorkMetadata | null {
     durationMinutes: metadata.durationMinutes ?? null,
     websiteUrl: metadata.website ?? null,
     namuwikiUrl: metadata.namuRef ? namuLink(metadata.namuRef) : null,
+    translatedJaWikipediaUrl: metadata.jaWikipediaRef ? translatedJaWikipediaLink(metadata.jaWikipediaRef) : null,
     annUrl: metadata.annId ? `http://www.animenewsnetwork.com/encyclopedia/anime.php?id=${metadata.annId}` : null,
   }
 }
@@ -76,4 +77,8 @@ function namuLink(ref: string): string {
     url += '#' + encodeURIComponent(anchor)
   }
   return url
+}
+
+function translatedJaWikipediaLink(ref: string): string {
+  return `https://jako.sapzil.org/wiki/${encodeURIComponent(ref)}`
 }

@@ -35,6 +35,7 @@ export const WorkMetadata = Type.Object({
   source: Type.Optional(Nullable(SourceType)),
   website: Type.Optional(Nullable(Type.String())),
   namuRef: Type.Optional(Nullable(Type.String())),
+  jaWikipediaRef: Type.Optional(Nullable(Type.String())),
   annId: Type.Optional(Nullable(Type.String())),
   durationMinutes: Type.Optional(Nullable(Type.Number())),
   schedules: Type.Optional(Nullable(Type.Record(Type.String(), Schedule))),

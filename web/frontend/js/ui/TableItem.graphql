@@ -11,6 +11,7 @@ fragment TableItem_item on TablePeriodItem {
       source
       websiteUrl
       namuwikiUrl
+      translatedJaWikipediaUrl
       annUrl
       durationMinutes
       schedules {

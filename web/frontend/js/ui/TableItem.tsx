@@ -128,7 +128,8 @@ export function TableItem({ item, onAddRecord }: {
   onAddRecord: (item: TableItem_ItemFragment, record: TableItem_Item_RecordFragment) => any
 }) {
   const work = item.work;
-  var { studioNames, source, schedules, durationMinutes, websiteUrl, namuwikiUrl, annUrl } = work.metadata!;
+  var { studioNames, source, schedules, durationMinutes,
+    websiteUrl, namuwikiUrl, translatedJaWikipediaUrl, annUrl } = work.metadata!;
   return (
     <div className={Styles.item}>
       <Link to={util.getWorkURL(work.title!)}>
@@ -140,13 +141,13 @@ export function TableItem({ item, onAddRecord }: {
           {durationMinutes && <span className={Styles.duration}>{durationMinutes}분</span>}
         </h3>
         <div className={Styles.info}>
-          <span className="studio">
-            {studioNames ? studioNames.join(', ') : '제작사 미정'}
-          </span>
           {source && <>
-            {' / '}
             <span className="source">{util.SOURCE_TYPE_MAP[source]}</span>
+            {' / '}
           </>}
+          <span className="studio">
+            {studioNames ? `${studioNames.join(', ')} 제작` : '제작사 미정'}
+          </span>
         </div>
         <div className={Styles.actions}>
           <StatusButton item={item} onAddRecord={onAddRecord} />
@@ -181,6 +182,15 @@ export function TableItem({ item, onAddRecord }: {
           {namuwikiUrl && (
             <a href={namuwikiUrl} className="link link-namu" target="_blank">
               나무위키
+            </a>
+          )}
+          {translatedJaWikipediaUrl && (
+            <a
+              href={translatedJaWikipediaUrl}
+              className="link link-wikipedia"
+              target="_blank"
+            >
+              위키백과 (日)
             </a>
           )}
           {annUrl && (
