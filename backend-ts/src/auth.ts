@@ -4,11 +4,15 @@ import { jsonSerializer } from "src/auth/serializer";
 import { ApiException } from "src/exceptions";
 import { User } from "src/entities/user.entity";
 import { db } from "src/database";
+import { timingSafeEqual } from "crypto";
 
 const sessionCookieAge = 1000 * 60 * 60 * 24 * 90
 
 const secretKey = process.env.ANIMETA_SECURITY_SECRET_KEY ?? ''
 if (!secretKey) throw new Error('ANIMETA_SECURITY_SECRET_KEY is not set')
+
+const internalApiKey = process.env.ANIMETA_INTERNAL_API_KEY ?? ''
+if (!internalApiKey) throw new Error('ANIMETA_INTERNAL_API_KEY is not set')
 
 export async function getCurrentUser(req: FastifyRequest): Promise<User | null> {
   let header = req.headers['x-animeta-session-key']
@@ -39,4 +43,17 @@ export async function requireUser(req: FastifyRequest): Promise<User> {
     throw new ApiException("Login required.", 401)
   }
   return currentUser
+}
+
+export function requireInternalApiKey(req: FastifyRequest): void {
+  let apiKey = req.headers['x-animeta-api-key']
+  if (!apiKey) {
+    throw new ApiException("API key required.", 401)
+  }
+  if (Array.isArray(apiKey)) {
+    apiKey = apiKey[0]
+  }
+  if (apiKey.length !== internalApiKey.length || !timingSafeEqual(Buffer.from(apiKey), Buffer.from(internalApiKey))) {
+    throw new ApiException("API key invalid.", 401)
+  }
 }
