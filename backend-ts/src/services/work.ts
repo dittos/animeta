@@ -45,13 +45,17 @@ export function getWorkImageUrl(work: Work): string | null {
 }
 
 export async function getOrCreateWork(title: string): Promise<Work> {
+  return getOrCreateWorkEx(title).then(({work}) => work)
+}
+
+export async function getOrCreateWorkEx(title: string): Promise<{work: Work, isNew: boolean}> {
   title = title.trim()
   if (title === '')
     throw new ValidationError('작품 제목을 입력하세요.')
   
   const mapping = await db.findOne(TitleMapping, { where: {title} })
   if (mapping) {
-    return db.findOneOrFail(Work, mapping.work_id)
+    return { work: await db.findOneOrFail(Work, mapping.work_id), isNew: false }
   }
   const key = normalizeTitle(title)
   const similarMapping = await db.findOne(TitleMapping, { where: {key} })
@@ -61,7 +65,7 @@ export async function getOrCreateWork(title: string): Promise<Work> {
       title,
       key
     })
-    return db.findOneOrFail(Work, similarMapping.work_id)
+    return { work: await db.findOneOrFail(Work, similarMapping.work_id), isNew: false }
   }
   const work = new Work()
   work.title = title
@@ -78,7 +82,7 @@ export async function getOrCreateWork(title: string): Promise<Work> {
     title,
     key,
   })
-  return work
+  return { work, isNew: true }
 }
 
 export async function applyWorkMetadataRaw(work: Work, rawMetadata: string) {

@@ -10,13 +10,15 @@ import { db } from "src/database";
 import { getOrCreateCompany } from "./company";
 import { getOrCreatePerson } from "./person";
 
-export async function getAnnMetadata(annId: string): Promise<cheerio.Cheerio<cheerio.Element>> {
+export type GetAnnMetadataResult = cheerio.Cheerio<cheerio.Element>
+
+export async function getAnnMetadata(annId: string): Promise<GetAnnMetadataResult> {
   const response = await got.get(`https://cdn.animenewsnetwork.com/encyclopedia/api.xml?anime=${annId}`).text()
   const doc = cheerio.load(response)
   return doc('anime').first()
 }
 
-export async function importAnnMetadata(work: Work, anime: cheerio.Cheerio<cheerio.Element>) {
+export async function importAnnMetadata(work: Work, anime: GetAnnMetadataResult): Promise<void> {
   const metadata: WorkMetadata = work.metadata ?? {version: LATEST_WORK_METADATA_VERSION}
   const durationMinutes = metadata.durationMinutes ?? getDurationMinutes(anime)
   const schedules = { ...getSchedules(anime), ...metadata.schedules }

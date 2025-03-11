@@ -4,6 +4,7 @@ import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
 import App from './admin/App';
 import WorkList from './admin/WorkList';
 import WorkDetail from './admin/WorkDetail';
+import WorkImport from './admin/WorkImport';
 import PersonList from './admin/PersonList';
 import PersonDetail from './admin/PersonDetail';
 import PersonListTransliterationCheck from './admin/PersonListTransliterationCheck';
@@ -15,6 +16,7 @@ ReactDOM.render(
   <HashRouter>
     <App>
       <Switch>
+        <Route exact path="/works/import" component={WorkImport} />
         <Route exact path="/works/:id" component={WorkDetail} />
         <Route exact path="/works" component={WorkList} />
         <Route exact path="/people/:id" component={PersonDetail} />

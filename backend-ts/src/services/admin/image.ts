@@ -3,8 +3,12 @@ import * as fs from 'fs'
 import { pipeline } from 'stream/promises';
 import { spawn } from "child_process";
 import { Storage } from '@google-cloud/storage';
+import * as tempy from "tempy";
+import * as cuid from "cuid";
 import { getAnnMetadata } from "./ann";
 import cheerio from 'cheerio';
+import { db } from 'src/database';
+import { Work } from 'src/entities/work.entity';
 
 const storage = new Storage()
 const mediaStorageUrl = new URL(process.env.ANIMETA_MEDIA_STORAGE_URL!)
@@ -90,4 +94,34 @@ export async function generateThumbnail(file: string, thumbFile: string, removeA
 export async function upload(source: string, path: string) {
   await mediaStorageBucket
     .upload(source, {destination: mediaStorageBasePath + path})
+}
+
+export async function crawlImage(
+  work: Work,
+  options: { source: 'ann', annId: string } | { source: 'url', url: string }
+): Promise<void> {
+  await tempy.file.task(async tempFile => {
+    await tempy.file.task(async tempThumbFile => {
+      switch (options.source) {
+        case 'ann':
+          await downloadAnnPoster(options.annId, tempFile)
+          await generateThumbnail(tempFile, tempThumbFile)
+          work.original_image_filename = `ann${options.annId}.jpg`
+          work.image_filename = `thumb/v2/${work.original_image_filename}`
+          await upload(tempFile, work.original_image_filename)
+          await upload(tempThumbFile, work.image_filename)
+          await db.save(work)
+          break;
+        case 'url':
+          await download(options.url, tempFile)
+          await generateThumbnail(tempFile, tempThumbFile)
+          work.original_image_filename = cuid()
+          work.image_filename = `thumb/${work.original_image_filename}`
+          await upload(tempFile, work.original_image_filename)
+          await upload(tempThumbFile, work.image_filename)
+          await db.save(work)
+          break;
+      }
+    }, {extension: 'jpg'})
+  })
 }

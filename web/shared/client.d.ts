@@ -204,6 +204,10 @@ export interface Client<TOptions = any> {
   blacklisted?: boolean;
   imageCenterY?: number;
 }, options?: TOptions): Promise<AdminWorkDto>
+  call(path: "/api/admin/v1/WorkImport/createWork", params: {
+  title: string,
+  metadata: WorkMetadata,
+}, options?: TOptions): Promise<AdminWorkDto>
   call(path: "/api/admin/v1/WorkList/delete", params: {workId: string}, options?: TOptions): Promise<boolean>
   call(path: "/api/admin/v1/WorkList/", params: {
   orphans?: boolean;

@@ -1,10 +1,12 @@
+import { SourceType } from "../../../shared/client";
+
 export interface WorkMetadata {
   periods?: string[] | null;
   website?: string | null;
   namuRef?: string | null;
   jaWikipediaRef?: string | null;
   annId?: string | null;
-  source?: string | null;
+  source?: SourceType | null;
   studios?: string[] | null;
   durationMinutes?: number | null;
   schedules?: {[country: string]: Schedule} | null;

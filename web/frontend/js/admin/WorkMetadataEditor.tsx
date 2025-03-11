@@ -19,7 +19,7 @@ interface Props {
     title: string;
     metadata: WorkMetadata;
     onChange(newMetadata: WorkMetadata): any;
-    onAnnImport(annId: string): any;
+    onAnnImport?(annId: string): any;
 }
 
 export default class WorkMetadataEditor extends React.Component<Props> {
@@ -34,9 +34,11 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                         value={metadata.annId || ''}
                         onChange={this.handleAnnIdChange}
                     />
+                    {this.props.onAnnImport && (
                     <button onClick={this.handleAnnImport} disabled={!metadata.annId}>
                         Import Metadata
                     </button>
+                    )}
                 </FormGroup>
                 <FormGroup>
                     <FormLabel>Periods</FormLabel>
@@ -108,6 +110,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                         value={metadata.namuRef || ''}
                         onChange={this.handleNamuRefChange}
                     />
+                    {this.props.title && (
                     <div>
                         {[this.props.title, `${this.props.title}#애니메이션`, `${this.props.title}/애니메이션`].map(namuRef => (
                             <button onClick={() => this.setNamuRef(namuRef)}>
@@ -115,6 +118,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
                             </button>
                         ))}
                     </div>
+                    )}
                 </FormGroup>
                 <FormGroup>
                     <FormLabel>JA Wikipedia Reference</FormLabel>
@@ -238,7 +242,7 @@ export default class WorkMetadataEditor extends React.Component<Props> {
     };
 
     private handleAnnImport = () => {
-        if (this.props.metadata.annId)
+        if (this.props.metadata.annId && this.props.onAnnImport)
             this.props.onAnnImport(this.props.metadata.annId);
     };
 
