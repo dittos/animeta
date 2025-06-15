@@ -66,173 +66,176 @@ export type GlobalHeaderProps = {
   tablePeriodNotice: GlobalHeader_TablePeriodNoticeFragment | null;
 };
 
-export class GlobalHeader extends React.Component<GlobalHeaderProps> {
-  static LAST_NOTICE_CLICKED = 'lastNoticeClicked';
+export function GlobalHeader({
+  currentUsername,
+  noNotice,
+  noHero,
+  activeMenu,
+  tablePeriodNotice,
+}: GlobalHeaderProps) {
+  const LAST_NOTICE_CLICKED = 'lastNoticeClicked';
+  const [showNotice, setShowNotice] = React.useState(false);
 
-  state = {
-    showNotice: false,
-  };
-
-  componentDidMount() {
+  React.useEffect(() => {
     try {
-      if (this.props.tablePeriodNotice) {
-        const { id, showUntil } = this.props.tablePeriodNotice;
-        if (window.localStorage.getItem(GlobalHeader.LAST_NOTICE_CLICKED) !== id &&
-            (!showUntil || Date.now() < new Date(showUntil).getTime())) {
-          this.setState({ showNotice: true });
+      if (tablePeriodNotice) {
+        const { id, showUntil } = tablePeriodNotice;
+        if (
+          window.localStorage.getItem(LAST_NOTICE_CLICKED) !== id &&
+          (!showUntil || Date.now() < new Date(showUntil).getTime())
+        ) {
+          setShowNotice(true);
         }
       }
     } catch (e) {
       // ignore
     }
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tablePeriodNotice]);
 
-  render() {
-    const activeMenu = this.props.activeMenu;
-    const username = this.props.currentUsername;
-    const showNotice = this.state.showNotice && activeMenu !== 'search' && !this.props.noNotice;
-    return (
-      <div className={Styles.container}>
-        <Layout.CenteredFullWidth className={Styles.header}>
-          <div className={Styles.headerInner}>
-            <div className={`${Styles.logo} hide-mobile`}>
-              <Link to="/">애니메타</Link>
-            </div>
-            <div className={Styles.globalMenu}>
-              <Link
-                to="/"
-                className={
-                  activeMenu === 'home'
-                    ? Styles.activeGlobalMenuItem
-                    : Styles.globalMenuItem
-                }
-              >
-                <span>
-                  <FontAwesomeIcon icon={faHome} size="sm" />
-                </span>
-                <span className={Styles.globalMenuItemText}>홈</span>
-              </Link>
-              <Link
-                to="/table/"
-                className={
-                  activeMenu === 'search'
-                    ? Styles.activeGlobalMenuItem
-                    : Styles.globalMenuItem
-                }
-                onClick={this._saveNoticeClicked}
-              >
-                <span>
-                  <FontAwesomeIcon icon={faSearch} size="sm" />
-                </span>
-                <span className={Styles.globalMenuItemText}>작품 찾기</span>
-                {showNotice && (
-                  <span className={Styles.globalMenuItemPopover}>
-                    {this.props.tablePeriodNotice?.content}
-                  </span>
-                )}
-              </Link>
-              <Link
-                to={
-                  username
-                    ? `/users/${username}/`
-                    : '/login/'
-                }
-                className={
-                  activeMenu === 'user'
-                    ? Styles.activeGlobalMenuItem
-                    : Styles.globalMenuItem
-                }
-                onClick={this._openLoginIfNeeded}
-              >
-                <span>
-                  <FontAwesomeIcon icon={faUser} size="sm" />
-                </span>
-                <span className={Styles.globalMenuItemText}>내 기록</span>
-              </Link>
-              {/*<Link to="" className={`${activeMenu === 'more' ? Styles.activeGlobalMenuItem : Styles.globalMenuItem} show-mobile`}>
-                            <span><i className="fa fa-bars" style={{fontSize: '0.9em', verticalAlign: '5%'}} /></span>
-                        </Link>*/}
-            </div>
-            <div style={{ flex: 1 }} className="hide-mobile" />
-            <div className={Styles.search}>
-              <SearchInput />
-            </div>
-            {username && (
-              <Dropdown
-                containerClassName={`${Styles.accountMenu} hide-mobile`}
-                contentClassName={Styles.userMenu}
-                renderTrigger={({ toggle }) => (
-                  <Link
-                    to={`/users/${username}/`}
-                    className={Styles.userButton}
-                    onClick={toggle}
-                  >
-                    <FontAwesomeIcon icon={faUser} />
-                    {username}
-                    <FontAwesomeIcon icon={faCaretDown} />
-                  </Link>
-                )}
-              >
-                <DropdownUserMenu username={username} />
-              </Dropdown>
-            )}
-          </div>
-        </Layout.CenteredFullWidth>
+  const username = currentUsername;
+  const shouldShowNotice = showNotice && activeMenu !== 'search' && !noNotice;
 
-        {!this.props.currentUsername &&
-          !this.props.noHero && (
-            <div className={Styles.hero}>
-              <Layout.CenteredFullWidth>
-                <div className={Styles.slogan}>
-                  애니 보고 나서,{' '}
-                  <span className={Styles.sloganBrand}>애니메타</span>
-                </div>
-                <div className={Styles.subSlogan}>
-                  애니메타는 애니메이션 감상 기록장입니다.<br />
-                  어떤 작품을 몇 화까지 봤는지 감상평과 함께 기록하실 수 있어요.
-                </div>
-
-                <div className={Styles.heroActions}>
-                  <a
-                    href="/login/"
-                    onClick={this._openLogin}
-                    className={Styles.heroLoginButton}
-                  >
-                    로그인
-                  </a>
-                  <Link to="/signup/" className={Styles.heroSignUpButton}>
-                    가입하기
-                  </Link>
-                </div>
-              </Layout.CenteredFullWidth>
-            </div>
-          )}
-      </div>
-    );
-  }
-
-  _openLoginIfNeeded = (e: React.MouseEvent) => {
-    if (!this.props.currentUsername) {
+  const _openLoginIfNeeded = (e: React.MouseEvent) => {
+    if (!currentUsername) {
       e.preventDefault();
       LoginDialog.open({ next: { redirectToUser: true } }); // FIXME
     }
   };
 
-  _openLogin = (e: React.MouseEvent) => {
+  const _openLogin = (e: React.MouseEvent) => {
     if (e) e.preventDefault();
     LoginDialog.open();
   };
 
-  _closeLogin = () => {
-    LoginDialog.close();
-  };
-
-  _saveNoticeClicked = () => {
+  const _saveNoticeClicked = () => {
     try {
-      window.localStorage.setItem(GlobalHeader.LAST_NOTICE_CLICKED, this.props.tablePeriodNotice?.id || '');
-      this.setState({ showNotice: false });
+      window.localStorage.setItem(
+        LAST_NOTICE_CLICKED,
+        tablePeriodNotice?.id || ''
+      );
+      setShowNotice(false);
     } catch (e) {
       // ignore
     }
   };
+
+  return (
+    <div className={Styles.container}>
+      <Layout.CenteredFullWidth className={Styles.header}>
+        <div className={Styles.headerInner}>
+          <div className={`${Styles.logo} hide-mobile`}>
+            <Link to="/">애니메타</Link>
+          </div>
+          <div className={Styles.globalMenu}>
+            <Link
+              to="/"
+              className={
+                activeMenu === 'home'
+                  ? Styles.activeGlobalMenuItem
+                  : Styles.globalMenuItem
+              }
+            >
+              <span>
+                <FontAwesomeIcon icon={faHome} size="sm" />
+              </span>
+              <span className={Styles.globalMenuItemText}>홈</span>
+            </Link>
+            <Link
+              to="/table/"
+              className={
+                activeMenu === 'search'
+                  ? Styles.activeGlobalMenuItem
+                  : Styles.globalMenuItem
+              }
+              onClick={_saveNoticeClicked}
+            >
+              <span>
+                <FontAwesomeIcon icon={faSearch} size="sm" />
+              </span>
+              <span className={Styles.globalMenuItemText}>작품 찾기</span>
+              {shouldShowNotice && (
+                <span className={Styles.globalMenuItemPopover}>
+                  {tablePeriodNotice?.content}
+                </span>
+              )}
+            </Link>
+            <Link
+              to={
+                username
+                  ? `/users/${username}/`
+                  : '/login/'
+              }
+              className={
+                activeMenu === 'user'
+                  ? Styles.activeGlobalMenuItem
+                  : Styles.globalMenuItem
+              }
+              onClick={_openLoginIfNeeded}
+            >
+              <span>
+                <FontAwesomeIcon icon={faUser} size="sm" />
+              </span>
+              <span className={Styles.globalMenuItemText}>내 기록</span>
+            </Link>
+            {/*<Link to="" className={`${activeMenu === 'more' ? Styles.activeGlobalMenuItem : Styles.globalMenuItem} show-mobile`}>
+                          <span><i className="fa fa-bars" style={{fontSize: '0.9em', verticalAlign: '5%'}} /></span>
+                      </Link>*/}
+          </div>
+          <div style={{ flex: 1 }} className="hide-mobile" />
+          <div className={Styles.search}>
+            <SearchInput />
+          </div>
+          {username && (
+            <Dropdown
+              containerClassName={`${Styles.accountMenu} hide-mobile`}
+              contentClassName={Styles.userMenu}
+              renderTrigger={({ toggle }) => (
+                <Link
+                  to={`/users/${username}/`}
+                  className={Styles.userButton}
+                  onClick={toggle}
+                >
+                  <FontAwesomeIcon icon={faUser} />
+                  {username}
+                  <FontAwesomeIcon icon={faCaretDown} />
+                </Link>
+              )}
+            >
+              <DropdownUserMenu username={username} />
+            </Dropdown>
+          )}
+        </div>
+      </Layout.CenteredFullWidth>
+
+      {!currentUsername &&
+        !noHero && (
+          <div className={Styles.hero}>
+            <Layout.CenteredFullWidth>
+              <div className={Styles.slogan}>
+                애니 보고 나서,{' '}
+                <span className={Styles.sloganBrand}>애니메타</span>
+              </div>
+              <div className={Styles.subSlogan}>
+                애니메타는 애니메이션 감상 기록장입니다.<br />
+                어떤 작품을 몇 화까지 봤는지 감상평과 함께 기록하실 수 있어요.
+              </div>
+
+              <div className={Styles.heroActions}>
+                <a
+                  href="/login/"
+                  onClick={_openLogin}
+                  className={Styles.heroLoginButton}
+                >
+                  로그인
+                </a>
+                <Link to="/signup/" className={Styles.heroSignUpButton}>
+                  가입하기
+                </Link>
+              </div>
+            </Layout.CenteredFullWidth>
+          </div>
+        )}
+    </div>
+  );
 }
