@@ -24,6 +24,7 @@ export function UserLayout(
               ? 'user'
               : null
           }
+          tablePeriodNotice={props.layoutData.tablePeriodNotice}
           {...globalHeaderProps}
         />
         <UserLayoutComponent data={props.layoutData} {...layoutProps}>

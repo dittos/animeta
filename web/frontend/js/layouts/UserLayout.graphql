@@ -5,4 +5,7 @@ query UserLayout($username: String!) {
   user: userByName(name: $username) {
     ...UserLayout_user
   }
+  tablePeriodNotice {
+    ...GlobalHeader_tablePeriodNotice
+  }
 }

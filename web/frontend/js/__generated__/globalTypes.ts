@@ -247,6 +247,7 @@ export type Query = {
   record: Maybe<Record>;
   searchWorks: Maybe<SearchWorksResult>;
   tablePeriod: Maybe<TablePeriod>;
+  tablePeriodNotice: Maybe<TablePeriodNotice>;
   tablePeriods: Array<TablePeriod>;
   timeline: Maybe<Array<Maybe<Post>>>;
   user: Maybe<User>;
@@ -436,6 +437,13 @@ export type TablePeriodItem = {
   record: Maybe<Record>;
   title: Scalars['String'];
   work: Work;
+};
+
+export type TablePeriodNotice = {
+  __typename?: 'TablePeriodNotice';
+  content: Scalars['String'];
+  id: Scalars['String'];
+  showUntil: Maybe<Scalars['GraphQLTimestamp']>;
 };
 
 export type UpdateCategoryOrderInput = {

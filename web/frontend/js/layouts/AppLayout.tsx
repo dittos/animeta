@@ -17,6 +17,7 @@ export function AppLayout(
       <ErrorBoundary>
         <GlobalHeader
           currentUsername={props.layoutData.currentUser?.name}
+          tablePeriodNotice={props.layoutData.tablePeriodNotice}
           {...globalHeaderProps}
         />
         {props.children}

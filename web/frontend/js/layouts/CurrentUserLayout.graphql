@@ -5,4 +5,7 @@ query CurrentUserLayout {
   user: currentUser {
     ...UserLayout_user
   }
+  tablePeriodNotice {
+    ...GlobalHeader_tablePeriodNotice
+  }
 }

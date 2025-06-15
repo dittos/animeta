@@ -9,7 +9,7 @@ import { getStatusDisplayGql } from '../util';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faHome, faSearch, faUser } from '@fortawesome/free-solid-svg-icons';
 import { graphql } from '../API';
-import { GlobalHeader_QuickRecordsDocument, GlobalHeader_QuickRecords_RecordFragment } from './__generated__/GlobalHeader.graphql';
+import { GlobalHeader_QuickRecordsDocument, GlobalHeader_QuickRecords_RecordFragment, GlobalHeader_TablePeriodNoticeFragment } from './__generated__/GlobalHeader.graphql';
 
 type DropdownUserMenuState = {
   records: GlobalHeader_QuickRecords_RecordFragment[] | null,
@@ -63,12 +63,11 @@ export type GlobalHeaderProps = {
   noNotice?: boolean;
   noHero?: boolean;
   activeMenu?: 'home' | 'search' | 'user' | null;
+  tablePeriodNotice: GlobalHeader_TablePeriodNoticeFragment | null;
 };
 
 export class GlobalHeader extends React.Component<GlobalHeaderProps> {
   static LAST_NOTICE_CLICKED = 'lastNoticeClicked';
-  static noticeId = '2025Q3';
-  static showNoticeUntil = new Date("2025-07-15T00:00:00+09:00");
 
   state = {
     showNotice: false,
@@ -76,9 +75,12 @@ export class GlobalHeader extends React.Component<GlobalHeaderProps> {
 
   componentDidMount() {
     try {
-      if (window.localStorage.getItem(GlobalHeader.LAST_NOTICE_CLICKED) !== GlobalHeader.noticeId &&
-          Date.now() < GlobalHeader.showNoticeUntil.getTime()) {
-        this.setState({ showNotice: true });
+      if (this.props.tablePeriodNotice) {
+        const { id, showUntil } = this.props.tablePeriodNotice;
+        if (window.localStorage.getItem(GlobalHeader.LAST_NOTICE_CLICKED) !== id &&
+            (!showUntil || Date.now() < new Date(showUntil).getTime())) {
+          this.setState({ showNotice: true });
+        }
       }
     } catch (e) {
       // ignore
@@ -125,7 +127,7 @@ export class GlobalHeader extends React.Component<GlobalHeaderProps> {
                 <span className={Styles.globalMenuItemText}>작품 찾기</span>
                 {showNotice && (
                   <span className={Styles.globalMenuItemPopover}>
-                    7월 신작 업데이트!
+                    {this.props.tablePeriodNotice?.content}
                   </span>
                 )}
               </Link>
@@ -227,7 +229,7 @@ export class GlobalHeader extends React.Component<GlobalHeaderProps> {
 
   _saveNoticeClicked = () => {
     try {
-      window.localStorage.setItem(GlobalHeader.LAST_NOTICE_CLICKED, GlobalHeader.noticeId);
+      window.localStorage.setItem(GlobalHeader.LAST_NOTICE_CLICKED, this.props.tablePeriodNotice?.id || '');
       this.setState({ showNotice: false });
     } catch (e) {
       // ignore

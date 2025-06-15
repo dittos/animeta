@@ -488,7 +488,8 @@ const routeHandler = UserLayout.wrap({
   extractLayoutData(data) {
     return {
       currentUser: data.layoutCurrentUser,
-      user: data.record.layoutUser!
+      user: data.record.layoutUser!,
+      tablePeriodNotice: null,
     }
   },
 

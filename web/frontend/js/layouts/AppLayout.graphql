@@ -2,4 +2,7 @@ query AppLayout {
   currentUser {
     name
   }
+  tablePeriodNotice {
+    ...GlobalHeader_tablePeriodNotice
+  }
 }

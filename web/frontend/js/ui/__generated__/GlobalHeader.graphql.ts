@@ -1,6 +1,8 @@
 import * as Types from '../../__generated__/globalTypes';
 
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+export type GlobalHeader_TablePeriodNoticeFragment = { __typename?: 'TablePeriodNotice', id: string, content: string, showUntil: any | null };
+
 export type GlobalHeader_QuickRecordsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
@@ -8,5 +10,6 @@ export type GlobalHeader_QuickRecordsQuery = { __typename?: 'Query', currentUser
 
 export type GlobalHeader_QuickRecords_RecordFragment = { __typename?: 'Record', databaseId: string, title: string | null, statusType: Types.StatusType | null, status: string | null };
 
+export const GlobalHeader_TablePeriodNoticeFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"GlobalHeader_tablePeriodNotice"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TablePeriodNotice"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"showUntil"}}]}}]} as unknown as DocumentNode<GlobalHeader_TablePeriodNoticeFragment, unknown>;
 export const GlobalHeader_QuickRecords_RecordFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"GlobalHeader_quickRecords_record"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Record"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"databaseId"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"statusType"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]} as unknown as DocumentNode<GlobalHeader_QuickRecords_RecordFragment, unknown>;
 export const GlobalHeader_QuickRecordsDocument = {"kind":"Document", "definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GlobalHeader_quickRecords"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"records"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"statusType"},"value":{"kind":"EnumValue","value":"WATCHING"}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"EnumValue","value":"DATE"}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"GlobalHeader_quickRecords_record"}}]}}]}}]}}]}},...GlobalHeader_QuickRecords_RecordFragmentDoc.definitions]} as unknown as DocumentNode<GlobalHeader_QuickRecordsQuery, GlobalHeader_QuickRecordsQueryVariables>;

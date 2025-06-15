@@ -5,6 +5,7 @@ import * as Grid from './Grid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
 import { UserLayout_CurrentUserFragment, UserLayout_UserFragment } from './__generated__/UserLayout.graphql';
+import { GlobalHeader_TablePeriodNoticeFragment } from './__generated__/GlobalHeader.graphql';
 
 export interface UserLayoutProps {
   data: UserLayoutPropsData;
@@ -15,6 +16,7 @@ export interface UserLayoutProps {
 export interface UserLayoutPropsData {
   currentUser: UserLayout_CurrentUserFragment | null;
   user: UserLayout_UserFragment;
+  tablePeriodNotice: GlobalHeader_TablePeriodNoticeFragment | null;
 }
 
 export default function UserLayout(props: UserLayoutProps) {

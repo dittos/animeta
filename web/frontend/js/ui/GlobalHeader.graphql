@@ -1,3 +1,9 @@
+fragment GlobalHeader_tablePeriodNotice on TablePeriodNotice {
+  id
+  content
+  showUntil
+}
+
 query GlobalHeader_quickRecords {
   currentUser {
     records(statusType: WATCHING, orderBy: DATE, first: 10) {
