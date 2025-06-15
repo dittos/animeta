@@ -12,6 +12,12 @@ export const Periods = {
   upcoming: Period.parseOrThrow("2025Q3"),
 }
 
+export const PeriodNotice = {
+  id: "2025Q3",
+  content: "7월 신작 업데이트!",
+  showUntil: new Date("2025-07-15T23:59:59+09:00"),
+};
+
 export function getValidPeriods(): Period[] {
   const periods: Period[] = []
   for (let y = Periods.current.year; y >= 2014; y--) {

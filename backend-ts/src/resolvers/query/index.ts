@@ -2,7 +2,7 @@ import { QueryResolvers } from "src/graphql/generated"
 import { getAllCuratedLists, getCuratedList } from "src/services/curatedList"
 import { getPost } from "src/services/post"
 import { getRecord } from "src/services/record"
-import { getValidPeriods, Periods } from "src/services/table"
+import { getValidPeriods, PeriodNotice, Periods } from "src/services/table"
 import { getUser, getUserByName } from "src/services/user"
 import { getWork, getWorkByTitle } from "src/services/work"
 import { searchWorks } from "./searchWorks"
@@ -27,4 +27,5 @@ export const Query: QueryResolvers = {
   tablePeriod,
   currentTablePeriod: () => Periods.current,
   tablePeriods: () => getValidPeriods(),
+  tablePeriodNotice: () => PeriodNotice,
 }

@@ -2,6 +2,7 @@ extend type Query {
   tablePeriod(period: String!): TablePeriod
   currentTablePeriod: TablePeriod!
   tablePeriods: [TablePeriod!]!
+  tablePeriodNotice: TablePeriodNotice
 }
 
 type TablePeriod {
@@ -54,4 +55,10 @@ enum CreditType {
   SERIES_COMPOSITION
   CHARACTER_DESIGN
   MUSIC
+}
+
+type TablePeriodNotice {
+  id: String!
+  content: String!
+  showUntil: GraphQLTimestamp
 }
