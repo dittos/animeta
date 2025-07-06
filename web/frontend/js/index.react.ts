@@ -21,8 +21,8 @@ if ((window as any).SENTRY_DSN) {
 }
 
 if (process.env.NODE_ENV === 'development') {
-  const { worker } = require('./mocks/browser')
-  worker.start()
+  // const { worker } = require('./mocks/browser')
+  // worker.start()
 }
 
 const loader: Loader = {

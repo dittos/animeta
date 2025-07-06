@@ -19,7 +19,7 @@ export function createServer({ config, server = express(), appProvider, getAsset
   config: any;
   server?: express.Express;
   appProvider: AppProvider;
-  getAssets: () => any;
+  getAssets: (url?: string) => any;
   staticDir?: string;
 }) {
   const backend = new Backend(config.backend.v5BaseUrl, config.backend.graphqlUrl);
@@ -157,13 +157,13 @@ export function createServer({ config, server = express(), appProvider, getAsset
   configureProxy('/api/v5', config.backend.v5BaseUrl, {appendPathPrefixToTarget: true})
   configureProxy('/api/admin', config.backend.v5BaseUrl, {appendPathPrefixToTarget: true})
 
-  function renderDefault(req: express.Request, res: express.Response, locals: any, content: string) {
+  async function renderDefault(req: express.Request, res: express.Response, locals: any, content: string) {
     const context = {
       DEBUG,
       STATIC_URL: config.staticUrl || '/static',
       ASSET_BASE: config.assetBase || '',
       SENTRY_DSN: config.frontendSentryDsn || '',
-      assets: getAssets(),
+      assets: await getAssets(req.originalUrl),
       title: '',
       meta: {},
       serializeJS,
@@ -230,7 +230,7 @@ Disallow: /
       .catch(next);
   });
 
-  server.get('/admin/', (req, res) => {
+  server.get('/admin/', (req, res, next) => {
     renderDefault(
       req, res,
       {
@@ -239,7 +239,7 @@ Disallow: /
         assetEntries: ['admin'],
       },
       ''
-    );
+    ).catch(next);
   });
 
   server.use((req, res, next) => {
@@ -273,7 +273,7 @@ Disallow: /
         if (errorStatus) res.status(errorStatus);
 
         preloadData.kakaoApiKey = config.kakaoApiKey; // XXX
-        renderDefault(
+        return renderDefault(
           req, res,
           {
             preloadData,

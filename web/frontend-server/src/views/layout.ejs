@@ -59,6 +59,9 @@
 <div id="app"><%- content %></div>
 <script>window.SENTRY_DSN = '<%= SENTRY_DSN %>'</script>
 <% assetEntries.forEach(entry => { %>
+    <% if (assets[entry].html) { %>
+    <%- assets[entry].html %>
+    <% } %>
     <% if (assets[entry].js) { %>
     <script type="text/javascript" src="<%= ASSET_BASE %><%= assets[entry].js %>"></script>
     <% } %>

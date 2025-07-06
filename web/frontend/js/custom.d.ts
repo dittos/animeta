@@ -11,5 +11,3 @@ declare module "nprogress" {
 
 // TODO
 declare var __nuri: any;
-
-declare module "typeahead.js";

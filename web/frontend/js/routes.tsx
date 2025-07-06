@@ -59,7 +59,7 @@ app.route('/records/category/', ManageCategoryRoute);
 app.route('/records/rating/', ManageRatingRoute);
 app.route('/records/:recordId/', RecordRoute);
 if (process.env.NODE_ENV === 'development') {
-  app.route('/_debug', require('./routes/Debug').default)
+  // app.route('/_debug', require('./routes/Debug').default)
 }
 
 export default app;

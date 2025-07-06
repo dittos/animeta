@@ -3,7 +3,8 @@ export async function loadTypeahead(): Promise<JQueryStatic> {
   if (typeof window !== 'undefined') {
     var _jQuery = window.jQuery;
     window.jQuery = $;
-    await import('typeahead.js');
+    // @ts-ignore
+    await import('./typeahead.bundle.js');
     window.jQuery = _jQuery;
   }
   return $
