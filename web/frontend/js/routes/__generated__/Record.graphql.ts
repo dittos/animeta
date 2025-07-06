@@ -3,7 +3,7 @@ import * as Types from '../../__generated__/globalTypes';
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 import { UserLayout_CurrentUserFragmentDoc, UserLayout_UserFragmentDoc } from '../../ui/__generated__/UserLayout.graphql';
 import { PostComposer_RecordFragmentDoc } from '../../ui/__generated__/PostComposer.graphql';
-import { PostComment_PostFragmentDoc } from '../../ui/__generated__/GqlPostComment.graphql';
+import { PostComment_PostFragmentDoc } from '../../ui/__generated__/PostComment.graphql';
 export type RecordRouteQueryVariables = Types.Exact<{
   recordId: Types.Scalars['ID'];
 }>;

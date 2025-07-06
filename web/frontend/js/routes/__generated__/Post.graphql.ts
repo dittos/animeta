@@ -2,7 +2,7 @@ import * as Types from '../../__generated__/globalTypes';
 
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 import { Post_PostFragmentDoc } from '../../ui/__generated__/Post.graphql';
-import { PostComment_PostFragmentDoc } from '../../ui/__generated__/GqlPostComment.graphql';
+import { PostComment_PostFragmentDoc } from '../../ui/__generated__/PostComment.graphql';
 import { WorkViewsFragmentDoc, WorkViews_EpisodeFragmentDoc, WorkViews_PostConnectionFragmentDoc } from '../../ui/__generated__/WorkViews.graphql';
 import { WorkStatusButton_WorkFragmentDoc, WorkStatusButton_RecordFragmentDoc } from '../../ui/__generated__/WorkStatusButton.graphql';
 import { WeeklyChartFragmentDoc } from '../../ui/__generated__/WeeklyChart.graphql';

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Link } from 'nuri';
 import * as util from '../util';
 import { TimeAgo } from './TimeAgo';
-import GqlPostComment from './GqlPostComment';
+import PostComment from './PostComment';
 import Styles from './Post.module.less';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretRight } from '@fortawesome/free-solid-svg-icons'
@@ -49,7 +49,7 @@ export function Post({
           {post.updatedAt ? <TimeAgo time={new Date(post.updatedAt)} /> : '#'}
         </Link>
       </div>
-      <GqlPostComment post={post} className={Styles.comment} />
+      <PostComment post={post} className={Styles.comment} />
     </div>
   );
 }

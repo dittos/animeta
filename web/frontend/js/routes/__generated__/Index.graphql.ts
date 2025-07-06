@@ -3,7 +3,7 @@ import * as Types from '../../__generated__/globalTypes';
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 import { WeeklyChartFragmentDoc } from '../../ui/__generated__/WeeklyChart.graphql';
 import { Post_PostFragmentDoc } from '../../ui/__generated__/Post.graphql';
-import { PostComment_PostFragmentDoc } from '../../ui/__generated__/GqlPostComment.graphql';
+import { PostComment_PostFragmentDoc } from '../../ui/__generated__/PostComment.graphql';
 export type IndexRouteQueryVariables = Types.Exact<{
   count: Types.InputMaybe<Types.Scalars['Int']>;
 }>;

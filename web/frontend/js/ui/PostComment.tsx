@@ -1,30 +1,27 @@
 import { faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
-import Styles from './PostComment.less';
+import Styles from './PostComment.module.less';
+import { PostComment_PostFragment } from './__generated__/PostComment.graphql';
 
 type Props = {
   className: string;
   showSpoiler?: boolean;
-  post: {
-    id: number;
-    comment: string;
-    contains_spoiler: boolean;
-  }
+  post: PostComment_PostFragment;
 };
 
 export default function PostComment(props: Props) {
   const [showSpoiler, setShowSpoiler] = useState(false);
 
   // Reset showSpoiler state when post ID changes
-  useEffect(() => setShowSpoiler(false), [props.post.id]);
+  useEffect(() => setShowSpoiler(false), [props.post.databaseId]);
   
-  const { comment, contains_spoiler } = props.post;
+  const { comment, containsSpoiler } = props.post;
   if (!comment) return null;
 
   return (
     <div className={props.className}>
-      {contains_spoiler &&
+      {containsSpoiler &&
       !showSpoiler &&
       !props.showSpoiler ? (
         <span className={Styles.spoilerAlert}>

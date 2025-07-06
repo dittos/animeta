@@ -3,7 +3,7 @@ import * as Types from '../../__generated__/globalTypes';
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 import { WorkStatusButton_WorkFragmentDoc, WorkStatusButton_RecordFragmentDoc } from './WorkStatusButton.graphql';
 import { Post_PostFragmentDoc } from './Post.graphql';
-import { PostComment_PostFragmentDoc } from './GqlPostComment.graphql';
+import { PostComment_PostFragmentDoc } from './PostComment.graphql';
 export type WorkViewsFragment = { __typename?: 'Work', databaseId: string, title: string | null, imageUrl: string | null, recordCount: number | null, record: { __typename?: 'Record', databaseId: string, statusType: Types.StatusType | null, status: string | null } | null, episodes: Array<{ __typename?: 'Episode', number: number, postCount: number | null }> | null, metadata: { __typename?: 'WorkMetadata', studioNames: Array<string> | null, source: Types.SourceType | null, websiteUrl: string | null, namuwikiUrl: string | null, annUrl: string | null, schedules: Array<{ __typename?: 'WorkSchedule', country: string, date: any | null, datePrecision: Types.DatePrecision | null }> | null } | null };
 
 export type WorkViews_PostConnectionFragment = { __typename?: 'PostConnection', hasMore: boolean, nodes: Array<{ __typename?: 'Post', databaseId: string, statusType: Types.StatusType | null, status: string | null, comment: string | null, updatedAt: any | null, containsSpoiler: boolean | null, user: { __typename?: 'User', name: string | null } | null, record: { __typename?: 'Record', title: string | null } | null }> };

@@ -6,7 +6,7 @@ import * as util from '../util';
 import { TimeAgo } from '../ui/TimeAgo';
 import { PostComposer, PostComposerResult } from '../ui/PostComposer';
 import * as Typeahead from '../ui/Typeahead';
-import PostComment from '../ui/GqlPostComment';
+import PostComment from '../ui/PostComment';
 import Styles from '../ui/RecordDetail.module.less';
 import connectTwitter from '../connectTwitter';
 import { UserLayout } from '../layouts/UserLayout';

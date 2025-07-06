@@ -2,7 +2,7 @@ import * as Types from '../../__generated__/globalTypes';
 
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 import { Post_PostFragmentDoc } from '../../ui/__generated__/Post.graphql';
-import { PostComment_PostFragmentDoc } from '../../ui/__generated__/GqlPostComment.graphql';
+import { PostComment_PostFragmentDoc } from '../../ui/__generated__/PostComment.graphql';
 export type UserHistoryRouteQueryVariables = Types.Exact<{
   username: Types.Scalars['String'];
 }>;
