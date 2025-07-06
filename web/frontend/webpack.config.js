@@ -53,7 +53,7 @@ module.exports = env => {
       ? './js/serverEntry.ts'
       : {
           index: hot(env, ['babel-polyfill', './js/index.react.ts']),
-          admin: hot(env, './js/admin.react.js'),
+          admin: hot(env, './js/admin.react.jsx'),
         },
     output: env.server
       ? {
