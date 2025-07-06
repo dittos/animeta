@@ -1,64 +1,64 @@
-import { rest } from 'msw'
+import { http, HttpResponse } from 'msw'
 
 export const handlers = [
-  rest.get('/api/getTest', (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({ url: req.url }),
+  http.get('/api/getTest', ({ request }) => {
+    return HttpResponse.json(
+      { url: request.url.toString() },
+      { status: 200 },
     )
   }),
 
-  rest.post('/api/postTest', (req, res, ctx) => {
+  http.post('/api/postTest', async ({ request, cookies }) => {
     if (
-      !req.headers.get('x-csrf-token') ||
-      !req.cookies['_csrf'] ||
-      !req.cookies['crumb'] ||
-      req.headers.get('x-csrf-token') !== req.cookies['crumb']
+      !request.headers.get('x-csrf-token') ||
+      !cookies['_csrf'] ||
+      !cookies['crumb'] ||
+      request.headers.get('x-csrf-token') !== cookies['crumb']
     ) {
-      return res(
-        ctx.status(403),
-        ctx.text('invalid csrf token'),
+      return HttpResponse.text(
+        'invalid csrf token',
+        { status: 403 },
       )
     }
-    return res(
-      ctx.status(200),
-      ctx.json({ body: req.body }),
+    return HttpResponse.json(
+      { body: await request.json() },
+      { status: 200 },
     )
   }),
 
-  rest.delete('/api/deleteTest', (req, res, ctx) => {
+  http.delete('/api/deleteTest', ({ request, cookies }) => {
     if (
-      !req.headers.get('x-csrf-token') ||
-      !req.cookies['_csrf'] ||
-      !req.cookies['crumb'] ||
-      req.headers.get('x-csrf-token') !== req.cookies['crumb']
+      !request.headers.get('x-csrf-token') ||
+      !cookies['_csrf'] ||
+      !cookies['crumb'] ||
+      request.headers.get('x-csrf-token') !== cookies['crumb']
     ) {
-      return res(
-        ctx.status(403),
-        ctx.text('invalid csrf token'),
+      return HttpResponse.text(
+        'invalid csrf token',
+        { status: 403 },
       )
     }
-    return res(
-      ctx.status(200),
-      ctx.json({}),
+    return HttpResponse.json(
+      {},
+      { status: 200 },
     )
   }),
 
-  rest.all('/api/standardError', (req, res, ctx) => {
-    return res(
-      ctx.status(400),
-      ctx.json({ message: 'message' }),
+  http.all('/api/standardError', () => {
+    return HttpResponse.json(
+      { message: 'message' },
+      { status: 400 },
     )
   }),
 
-  rest.all('/api/nonJsonError', (req, res, ctx) => {
-    return res(
-      ctx.status(500),
-      ctx.body('internal server error'),
+  http.all('/api/nonJsonError', () => {
+    return HttpResponse.text(
+      'internal server error',
+      { status: 500 },
     )
   }),
 
-  rest.all('/api/networkError', (req, res, ctx) => {
-    res.networkError('connection refused')
+  http.all('/api/networkError', () => {
+    return HttpResponse.error()
   }),
 ]

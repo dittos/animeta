@@ -7,9 +7,8 @@ export default defineConfig({
   plugins: [
     react(),
     nodePolyfills(),
-    // TODO
-    // checker({
-    //   typescript: true,
-    // }),
+    checker({
+      typescript: true,
+    }),
   ],
 })
