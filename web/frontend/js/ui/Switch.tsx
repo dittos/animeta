@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Styles from './Switch.less';
+import Styles from './Switch.module.less';
 
 interface SwitchProps<T> {
   flex?: boolean;

@@ -1,6 +1,6 @@
 @import "../../less/variables.less";
 
-:local(.item) {
+.item {
     clear: both;
     display: block;
     text-decoration: none;
@@ -11,23 +11,24 @@
 
 @thumbnail-width: 100px;
 
-:local(.thumbnail) {
+.thumbnail {
     float: left;
     width: @thumbnail-width;
     img { width: 100%; border-radius: 2px; }
 }
 
-:local(.itemContent) {
+.itemContent {
     margin-left: @thumbnail-width;
     padding-left: 10px;
 }
 
-:local(.title) {
+.title {
     font-size: 13px;
 }
 
-:local(.date) {
+.date {
     font-size: 11px;
     padding-top: 5px;
     color: @color-text-light;
 }
+

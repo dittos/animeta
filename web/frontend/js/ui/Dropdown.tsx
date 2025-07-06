@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Styles from './Dropdown.less';
+import Styles from './Dropdown.module.less';
 import { PopoverProps, Popover } from './Popover';
 
 interface DropdownProps extends PopoverProps {

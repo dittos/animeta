@@ -1,6 +1,6 @@
 import React from 'react';
-import Styles from './LoginForm.less';
-import ModalStyles from './Modal.less';
+import Styles from './LoginForm.module.less';
+import ModalStyles from './Modal.module.less';
 import {createFrontendSession} from '../API';
 import {API} from '../ApiClient';
 

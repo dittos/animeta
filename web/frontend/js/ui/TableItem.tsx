@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'nuri';
-import Styles from '../../less/table-period.less';
+import Styles from './TableItem.module.less';
 import AddRecordDialog from './AddRecordDialog';
 import { trackEvent } from '../Tracking';
 import * as util from '../util';

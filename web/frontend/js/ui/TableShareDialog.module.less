@@ -1,10 +1,10 @@
 @import "../../less/variables.less";
 
-:local(.contentSelector) {
+.contentSelector {
     margin-bottom: 5px;
 }
 
-:local(.urlInput) {
+.urlInput {
     border: 1px solid @color-border-control;
     border-radius: 2px;
     color: @color-text-dark;
@@ -19,13 +19,13 @@
     }
 }
 
-:local(.shareButtonContainer) {
+.shareButtonContainer {
     display: flex;
     justify-content: center;
     padding-top: 15px;
 }
 
-:local(.baseButton) {
+.baseButton {
     display: block;
     border-radius: 5px;
     padding: 5px 20px;
@@ -39,12 +39,12 @@
     }
 }
 
-:local(.copyButton) {
+.copyButton {
     composes: baseButton;
     color: @color-border-control;
 }
 
-:local(.tweetButton) {
+.tweetButton {
     composes: baseButton;
     color: #1DA1F2;
 }

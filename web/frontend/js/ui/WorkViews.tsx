@@ -8,7 +8,7 @@ import * as util from '../util';
 import { LoadMore } from './LoadMore';
 import { WorkStatusButton } from './WorkStatusButton';
 import VideoSearch from './VideoSearch';
-import Styles from './WorkViews.less';
+import Styles from './WorkViews.module.less';
 import * as Mutations from '../Mutations';
 import { Subscription } from 'rxjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

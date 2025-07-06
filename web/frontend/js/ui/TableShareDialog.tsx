@@ -3,9 +3,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { Modal } from 'react-overlays';
 import { formatPeriod } from '../util';
-import ModalStyles from './Modal.less';
+import ModalStyles from './Modal.module.less';
 import { Switch, SwitchItem } from './Switch';
-import Styles from './TableShareDialog.less';
+import Styles from './TableShareDialog.module.less';
 
 interface Props {
   period: {

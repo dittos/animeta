@@ -1,11 +1,11 @@
 @import "../../less/variables.less";
 
-:local(.form) {
+.form {
     clear: both;
     margin: 0;
 }
 
-:local(.field) {
+.field {
     padding-bottom: 16px;
     font-size: 14px;
 
@@ -41,16 +41,16 @@
         padding: 0 5px;
     }
 
-    .twitter-typeahead {
+    :global(.twitter-typeahead) {
         width: 100%;
     }
 
-    .tt-hint, .tt-input {
+    :global(.tt-hint), :global(.tt-input) {
         width: 100%;
     }
 }
 
-:local(.shareOptions) {
+.shareOptions {
     float: left;
     padding-top: 10px;
     color: @color-text-light;

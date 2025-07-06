@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link } from 'nuri';
-import Styles from './UserLayout.less';
+import Styles from './UserLayout.module.less';
 import * as Grid from './Grid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog } from '@fortawesome/free-solid-svg-icons';

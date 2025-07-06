@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Styles from './Popover.less';
+import Styles from './Popover.module.less';
 
 export interface PopoverProps {
   renderTrigger: (obj: { toggle: (event: React.MouseEvent) => any }) => React.ReactElement<any>;

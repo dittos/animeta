@@ -4,7 +4,7 @@ import * as Layout from './Layout';
 import LoginDialog from './LoginDialog';
 import SearchInput from './SearchInput';
 import { Dropdown } from './Dropdown';
-import Styles from './GlobalHeader.less';
+import Styles from './GlobalHeader.module.less';
 import { getStatusDisplayGql } from '../util';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faHome, faSearch, faUser } from '@fortawesome/free-solid-svg-icons';

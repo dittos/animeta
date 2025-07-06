@@ -1,7 +1,7 @@
 import fetch from 'cross-fetch';
 import React from 'react';
 import { LoadMore } from './LoadMore';
-import Styles from './VideoSearch.less';
+import Styles from './VideoSearch.module.less';
 
 function formatDate(t: string): string {
   // YYYY-MM-DDTHH:MM:SS+09:00

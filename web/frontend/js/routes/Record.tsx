@@ -11,7 +11,7 @@ import Styles from '../ui/RecordDetail.module.less';
 import connectTwitter from '../connectTwitter';
 import { UserLayout } from '../layouts/UserLayout';
 import { CenteredFullWidth } from '../ui/Layout';
-import ModalStyles from '../ui/Modal.less';
+import ModalStyles from '../ui/Modal.module.less';
 import { trackEvent } from '../Tracking';
 import { setLastPublishTwitter } from '../Prefs';
 import { RouteComponentProps } from '../routes';

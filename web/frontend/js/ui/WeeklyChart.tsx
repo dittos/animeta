@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'nuri';
 import { getWorkURL } from '../util';
-import Styles from './WeeklyChart.less';
+import Styles from './WeeklyChart.module.less';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { WeeklyChartFragment } from './__generated__/WeeklyChart.graphql';

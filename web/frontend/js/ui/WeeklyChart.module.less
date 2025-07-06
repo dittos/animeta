@@ -2,7 +2,7 @@
 
 @poster-width: 100px;
 
-:local(.item) {
+.item {
     margin-bottom: 8px;
     text-decoration: none;
     clear: both;
@@ -11,29 +11,29 @@
     color: @color-text-dark;
 }
 
-:local(.content) {
+.content {
     margin-left: @poster-width;
     padding-left: 10px;
 }
 
-:local(.title) {
+.title {
     font-weight: bold;
     font-size: 16px;
     padding: 8px 0;
 }
 
-:local(.rank) {
+.rank {
     font-size: 13px;
 }
 
-:local(.up) {
+.up {
     color: red;
 }
-:local(.down) {
+.down {
     color: blue;
 }
 
-:local(.poster) {
+.poster {
     float: left;
     width: @poster-width;
     height: @poster-width / 3 * 4;
@@ -42,8 +42,9 @@
     border-radius: 2px;
 }
 
-:local(.posterImage) {
+.posterImage {
     display: block;
     width: 100%;
     height: auto;
 }
+

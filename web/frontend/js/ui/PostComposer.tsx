@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as util from '../util';
 import { StatusInput } from './StatusInput';
-import Styles from './PostComposer.less';
+import Styles from './PostComposer.module.less';
 import { PostComposer_RecordFragment } from './__generated__/PostComposer.graphql';
 import { StatusType } from '../__generated__/globalTypes';
 

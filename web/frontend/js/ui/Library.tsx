@@ -6,7 +6,7 @@ import diffWeeks from 'date-fns/difference_in_calendar_weeks';
 import diffMonths from 'date-fns/difference_in_calendar_months';
 import { Link } from 'nuri';
 import * as util from '../util';
-import Styles from './Library.less';
+import Styles from './Library.module.less';
 import * as Grid from './Grid';
 import { Switch, SwitchItem } from './Switch';
 import AddRecordDialog from './AddRecordDialog';

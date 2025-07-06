@@ -4,7 +4,7 @@ import { CurrentUserLayout } from '../layouts/CurrentUserLayout';
 import { Sortable } from '../ui/Sortable';
 import { CenteredFullWidth } from '../ui/Layout';
 import { graphql } from '../API';
-import Styles from './ManageCategory.less';
+import Styles from './ManageCategory.module.less';
 import { RouteComponentProps } from '../routes';
 import { ManageCategoryRouteDocument, ManageCategoryRouteQuery, ManageCategory_CategoryFragment, ManageCategory_CreateCategoryDocument, ManageCategory_DeleteCategoryDocument, ManageCategory_RenameCategoryDocument, ManageCategory_UpdateCategoryOrderDocument } from './__generated__/ManageCategory.graphql';
 

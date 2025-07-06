@@ -1,0 +1,188 @@
+@import "../../less/variables.less";
+@grid-spacing: 10px;
+
+.itemsEmpty {
+    text-align: center;
+    padding: 50px 0;
+}
+
+.item {
+    margin-bottom: 20px;
+}
+
+@poster-width: 144px;
+
+.poster {
+    float: left;
+    width: @poster-width;
+    height: @poster-width / 3 * 4;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+.posterImage {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.posterOverlay {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin: 8px;
+    padding: 5px 8px;
+    font-size: 13px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.65);
+    border-radius: 999px;
+}
+
+.itemContent {
+    margin-left: @poster-width;
+    padding-left: 16px;
+    padding-bottom: 16px;
+}
+
+.title {
+    font-size: 16px;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.duration {
+    font-size: 12px;
+    border-radius: 2px;
+    background-color: @color-alt;
+    color: #fff;
+    padding: 2px 5px;
+    margin-left: 5px;
+    white-space: nowrap;
+}
+
+.info {
+    padding-top: 8px;
+    font-size: 13px;
+    color: @color-text-dark;
+    :global(.studio), :global(.source) { white-space: nowrap; }
+}
+
+.actions {
+    padding: 16px 0;
+}
+
+.favoriteButton {
+    display: block;
+    cursor: pointer;
+    height: @button-height;
+    line-height: @button-height;
+    padding: 0 @button-hpadding;
+    text-align: center;
+    text-decoration: none;
+    font-size: 13px;
+    border: 1px solid @color-main;
+    border-radius: 3px;
+    svg {
+        margin-right: 5px;
+    }
+}
+
+.favoriteButtonNormal {
+    composes: favoriteButton;
+    color: @color-main;
+}
+
+.favoriteButtonActive {
+    composes: favoriteButton;
+    background: @color-main;
+    color: #fff;
+}
+
+.favoriteButtonSubtext {
+    margin-left: 4px;
+    font-size: 13px;
+    font-weight: normal;
+}
+
+.schedules {
+    padding-bottom: 8px;
+}
+
+.schedule {
+    font-size: 12px;
+    color: @color-text-dark;
+    padding-bottom: 2px;
+    :global(.date) { font-weight: bold; margin-right: 2px; }
+    :global(.broadcasts) { color: @color-text-light; font-size: 12px; white-space: nowrap; }
+}
+.item-schedule-icon (@country) {
+    &:before {
+        content: "";
+        background: e(%("url(../../img/flag-%s.png)", @country)) left center no-repeat;
+        background-size: 16px 16px;
+        padding-left: 22px;
+    }
+}
+:global(.item-schedule-jp) {
+    .item-schedule-icon ("jp");
+}
+:global(.item-schedule-kr) {
+    .item-schedule-icon ("kr");
+    padding-top: 7px;
+}
+
+.credits {
+    padding-bottom: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: @color-text-light;
+    letter-spacing: -0.05em;
+}
+
+.credit {
+    color: @color-text-dark;
+    word-break: keep-all;
+}
+
+.creditType {
+    font-weight: bold;
+    padding-right: 5px;
+}
+
+.creditRelated {
+    color: @color-text-light;
+}
+
+.links {
+    border-top: 1px solid @color-border;
+    padding-top: 8px;
+    :global(.link) {
+        font-size: 12px;
+        color: @color-text-dark;
+        text-decoration: none;
+        margin-right: 10px;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+    :global(.link):last-child {
+        margin-right: 0;
+    }
+}
+
+// phone
+@media screen and (max-width: 480px) {
+    @poster-width-sm: 120px;
+    .item {
+        margin-bottom: 32px;
+    }
+    .poster {
+        width: @poster-width-sm;
+        height: @poster-width-sm / 3 * 4;
+    }
+    .itemContent {
+        margin-left: @poster-width-sm;
+        padding-bottom: 0;
+    }
+}

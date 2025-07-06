@@ -1,18 +1,18 @@
 @import "../../less/variables.less";
 
-:local(.container) {
+.container {
     line-height: 22px;
     display: inline-block;
     white-space: nowrap;
 }
 
-:local(.flexContainer) {
+.flexContainer {
     composes: container;
     display: flex;
     line-height: 28px;
 }
 
-:local(.item) {
+.item {
     border: thin solid @color-primary;
     border-width: 1px 0;
     padding: 0 5px;
@@ -36,7 +36,7 @@
     }
 }
 
-:local(.itemMinimal) {
+.itemMinimal {
     padding: 0 5px;
     color: @color-text-dark;
     display: inline-block;
@@ -49,14 +49,14 @@
     }
 }
 
-:local(.activeItem) {
+.activeItem {
     composes: item;
 
     background-color: @color-primary;
     color: #fff !important;
 }
 
-:local(.activeItemMinimal) {
+.activeItemMinimal {
     composes: itemMinimal;
 
     font-weight: bold;

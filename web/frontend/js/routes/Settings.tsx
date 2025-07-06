@@ -1,7 +1,7 @@
 import React from 'react';
 import { deleteFrontendSession } from '../API';
 import * as Layout from '../ui/Layout';
-import Styles from './Settings.less';
+import Styles from './Settings.module.less';
 import { RouteComponentProps } from '../routes';
 import { API } from '../ApiClient';
 import { SettingsRouteDocument, SettingsRouteQuery } from './__generated__/Settings.graphql';

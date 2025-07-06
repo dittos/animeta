@@ -1,13 +1,13 @@
 @import "../../less/variables.less";
 
-:local(.header) {
+.header {
     overflow: hidden;
     border-bottom: 1px solid @color-border;
 }
 
 @user-header-height: 64px;
 
-:local(.profile) {
+.profile {
     @media (max-width: 480px) {
         padding: 16px 0;
     }
@@ -19,7 +19,7 @@
     }
 }
 
-:local(.title) {
+.title {
     margin: 0;
     font-size: 20px;
     a {
@@ -31,13 +31,13 @@
     }
 }
 
-:local(.dateJoined) {
+.dateJoined {
     line-height: 2;
     color: @color-text-light;
     font-size: 12px;
 }
 
-:local(.nav) {
+.nav {
     display: flex;
     align-items: center;
 
@@ -50,7 +50,7 @@
     }
 }
 
-:local(.navItem) {
+.navItem {
     text-decoration: none;
     color: @color-text-dark;
     margin-right: 20px;
@@ -65,7 +65,7 @@
     }
 }
 
-:local(.navItemCount) {
+.navItemCount {
     color: @color-primary;
     font-weight: bold;
 
@@ -75,7 +75,7 @@
     }
 }
 
-:local(.settingsNavItem) {
+.settingsNavItem {
     text-decoration: none;
     color: @color-primary;
     font-size: 14px;
@@ -90,6 +90,7 @@
     }
 }
 
-:local(.content) {
+.content {
     padding: 16px 0;
 }
+

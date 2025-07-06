@@ -1,13 +1,13 @@
 @import "../../less/variables.less";
 
-:local(.fullSize) {
+.fullSize {
     left: 0;
     right: 0;
     top: 0;
     bottom: 0;
 }
 
-:local(.container) {
+.container {
     position: fixed;
     composes: fullSize;
     z-index: @z-modal;
@@ -15,7 +15,7 @@
     pointer-events: none;
 }
 
-:local(.backdrop) {
+.backdrop {
     position: fixed;
     composes: fullSize;
     background: #000;
@@ -23,7 +23,7 @@
     z-index: @z-modal;
 }
 
-:local(.dialog) {
+.dialog {
     // reset pointer-events: none set on .container
     pointer-events: auto;
     position: relative;
@@ -51,7 +51,7 @@
     }
 }
 
-:local(.mobileBottomSheet) {
+.mobileBottomSheet {
     composes: dialog;
     @media (max-width: 480px) {
         border-radius: 0px;
@@ -64,11 +64,11 @@
     }
 }
 
-:local(.header) {
+.header {
     margin-bottom: 20px;
 }
 
-:local(.closeButton) {
+.closeButton {
     float: right;
     border: none;
     background: transparent;
@@ -78,14 +78,14 @@
     color: #666;
 }
 
-:local(.title) {
+.title {
     font-size: 16px;
     font-weight: bold;
     line-height: 20px;
     margin: 0;
 }
 
-:local(.baseButton) {
+.baseButton {
     display: block;
     border: none;
     border-radius: 5px;
@@ -101,30 +101,31 @@
     }
 }
 
-:local(.button) {
+.button {
     composes: baseButton;
     float: right;
     margin-left: 10px;
 }
 
-:local(.dangerConfirmButton) {
+.dangerConfirmButton {
     composes: button;
     background: @color-danger;
 }
 
-:local(.confirmButton) {
+.confirmButton {
     composes: button;
     background: @color-main;
 }
 
-:local(.fullConfirmButton) {
+.fullConfirmButton {
     composes: baseButton;
     background: @color-main;
     width: 100%;
 }
 
-:local(.cancelButton) {
+.cancelButton {
     composes: button;
     color: @color-text-dark;
     background: transparent;
 }
+

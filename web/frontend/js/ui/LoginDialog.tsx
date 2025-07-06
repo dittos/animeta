@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Modal } from 'react-overlays';
-import ModalStyles from './Modal.less';
+import ModalStyles from './Modal.module.less';
 import LoginForm from './LoginForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import sortBy from 'lodash/sortBy';
 import some from 'lodash/some';
 import { Link } from 'nuri';
-import Styles from '../../less/table-period.less';
+import Styles from './Table.module.less';
 import { Switch, SwitchItem } from '../ui/Switch';
 import * as Layout from '../ui/Layout';
 import * as Grid from '../ui/Grid';

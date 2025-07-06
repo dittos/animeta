@@ -1,6 +1,6 @@
 @import "../../less/variables.less";
 
-:local(.navButtonGroup) {
+.navButtonGroup {
     margin-bottom: 20px;
 
     @media (max-width: 480px) {
@@ -8,7 +8,7 @@
     }
 }
 
-:local(.navButton) {
+.navButton {
     border-radius: 2px;
     display: block;
     text-decoration: none;
@@ -19,7 +19,7 @@
     flex: 1;
 }
 
-:local(.addRecordButton) {
+.addRecordButton {
     composes: navButton;
     border: 1px solid @color-primary;
     background-color: @color-primary;
@@ -32,19 +32,19 @@
     }
 }
 
-:local(.manageRatingButton) {
+.manageRatingButton {
     composes: navButton;
     border: 1px solid @color-primary;
     color: @color-primary;
 }
 
-:local(.sort) {
+.sort {
     padding-bottom: 20px;
     font-size: 14px;
     word-break: break-all;
 }
 
-:local(.toc) {
+.toc {
     font-size: 14px;
     padding-top: 8px;
     line-height: 2;
@@ -56,7 +56,7 @@
     }
 }
 
-:local(.mobileFilterToggle) {
+.mobileFilterToggle {
     float: right;
     font-size: 14px;
     line-height: 20px;
@@ -67,18 +67,18 @@
     }
 }
 
-:local(.group) {
+.group {
     border-top: 1px solid @color-border;
     font-size: 15px;
     padding-top: 10px;
 
-    &#group1 {
+    &:global(#group1) {
         border-top: 0;
         padding-top: 0;
     }
 }
 
-:local(.groupTitle) {
+.groupTitle {
     margin: 0;
     line-height: 2;
     padding-bottom: 16px;
@@ -89,12 +89,12 @@
 
 @group-item-hpadding: 8px;
 
-:local(.groupItems) {
+.groupItems {
     margin-left: -@group-item-hpadding;
     padding-bottom: 8px;
 }
 
-:local(.groupItem) {
+.groupItem {
     // TODO: css module
     padding-bottom: 8px;
 
@@ -106,43 +106,43 @@
         color: @color-text-light;
         cursor: pointer;
 
-        &:hover, &.active {
+        &:hover, &:global(.active) {
             border-radius: 4px;
             background: @color-text-light;
             color: #fff !important;
         }
     }
 
-    .item-status {
+    :global(.item-status) {
         margin-left: 8px;
         font-weight: bold;
         white-space: nowrap;
     }
 
-    .item-updated {
+    :global(.item-updated) {
         margin-left: 8px;
         font-size: 12px;
         color: #ff8c00;
     }
 
-    &.item-watching {
+    &:global(.item-watching) {
         a {
             color: #000;
             font-weight: bold;
-            &:hover, &.active {
+            &:hover, &:global(.active) {
                 background-color: @color-main;
-                .item-status {
+                :global(.item-status) {
                     color: #fff;
                 }
             }
         }
-        .item-status {
+        :global(.item-status) {
             color: @color-main;
         }
     }
 }
 
-:local(.notice) {
+.notice {
     border: 1px solid @color-border;
     background-color: @color-bg-lightest;
     border-radius: 5px;
@@ -168,7 +168,7 @@
     }
 }
 
-:local(.empty) {
+.empty {
     text-align: center;
 
     h1 {
@@ -184,3 +184,4 @@
         }
     }
 }
+

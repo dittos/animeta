@@ -4,7 +4,7 @@ import { UserLayout } from '../layouts/UserLayout';
 import * as Layout from '../ui/Layout';
 import { LoadMore } from '../ui/LoadMore';
 import { Post } from '../ui/Post';
-import Styles from './UserHistory.less';
+import Styles from './UserHistory.module.less';
 import { UserHistoryRouteDocument, UserHistoryRouteQuery, UserHistoryRoute_MorePostsDocument } from './__generated__/UserHistory.graphql';
 import { Post_PostFragment } from '../ui/__generated__/Post.graphql';
 

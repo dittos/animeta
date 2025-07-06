@@ -1,0 +1,272 @@
+@import "../../less/variables.less";
+@grid-spacing: 10px;
+
+.container {
+    font-size: 14px;
+    line-height: 1;
+}
+
+// Header
+
+.search {
+    line-height: 1;
+    font-size: 14px;
+    padding: 10px 0;
+
+    :global(.twitter-typeahead) {
+        width: 100%;
+    }
+
+    :global(.tt-hint), :global(.tt-input) {
+        height: 32px;
+        padding: 0 8px;
+        border: 1px solid @color-border;
+        border-radius: 4px;
+        background: @color-bg-lightest;
+        width: 100%;
+        box-sizing: border-box;
+
+        &:focus {
+            border-color: @color-primary;
+        }
+    }
+
+    @media (min-width: 769px) {
+        display: none;
+    }
+}
+
+.headerContainer {
+    position: sticky;
+    top: @nav-height;
+    padding: 16px 0 14px;
+    z-index: @z-header - 1;
+    background-color: #fff;
+    margin-bottom: 16px;
+}
+.stuckHeaderContainer {
+    composes: headerContainer;
+    box-shadow: 0 2px 3px 0 fade(@color-shadow, 50%);
+}
+.header {
+    display: flex;
+    align-items: center;
+}
+.pageTitleAndShareContainer {
+    flex: 1;
+    display: flex;
+}
+
+.userHeader {
+    display: flex;
+}
+.userPageTitle {
+    font-size: 20px;
+    color: @color-text-dark;
+    white-space: nowrap;
+    flex: 1;
+}
+.fullTableLink {
+    color: @color-primary;
+    font-weight: bold;
+    text-decoration: none;
+    line-height: 22px;
+}
+
+.pageTitle {
+    font-size: 20px;
+    display: inline-block;
+    color: @color-text-dark;
+    text-decoration: none;
+    padding: 8px;
+    margin: -8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    svg {
+        margin-left: 5px;
+    }
+    &:hover {
+        background-color: @color-bg-lightest;
+    }
+}
+
+.nav {
+    margin-top: 8px;
+    margin-left: -8px;
+    width: auto;
+}
+.navRow {
+    display: flex;
+}
+.navYear {
+    width: 80px;
+    align-self: center;
+    text-align: center;
+    font-weight: bold;
+    font-size: 15px;
+}
+.navPeriod {
+    width: 40px;
+    color: @color-text-dark;
+    text-decoration: none;
+    text-align: center;
+    padding: 20px 10px;
+    &:hover {
+        background-color: @color-bg-lightest;
+    }
+}
+.navPeriodNormal {
+    composes: navPeriod;
+}
+.navPeriodActive {
+    composes: navPeriod;
+    font-weight: bold;
+}
+.navPeriodHidden {
+    composes: navPeriod;
+    visibility: hidden;
+}
+
+.settings {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+.settingsItem {
+    margin-left: 15px;
+}
+
+.shareButtonContainer {
+    position: relative;
+    margin-left: 15px;
+    align-self: center;
+}
+.shareButton {
+    display: inline-block;
+    white-space: nowrap;
+    font-weight: bold;
+    padding: 0 10px;
+    color: @color-alt;
+    display: inline-block;
+    // display: none; // XXX
+    cursor: pointer;
+    text-decoration: none;
+    border-radius: 2px;
+    svg {
+        margin-right: 5px;
+    }
+}
+.shareButtonPopover {
+    position: absolute;
+    top: 22px;
+    left: 0;
+    z-index: @z-header;
+    color: rgba(255, 255, 255, 0.95);
+    background: #555;
+    box-shadow: rgba(0, 0, 0, 0.24) 0 0 8px 0;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 1.2;
+    padding: 8px;
+    white-space: nowrap;
+    margin-top: 5px;
+    margin-left: 10px;
+
+    &:after {
+        bottom: 100%;
+        left: 20px;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        border-bottom-color: #555;
+        border-width: 5px;
+    }
+
+    animation: .15s ease-in-out tableShareButtonPopoverShow;
+}
+
+@keyframes tableShareButtonPopoverShow {
+    from {
+        opacity: 0;
+        transform: translate3d(0, -10px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0, 0, 0);
+    }
+}
+
+.recommendationBetaNotice {
+    color: @color-text-dark;
+    background-color: @color-bg-lightest;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.5;
+
+    strong {
+        padding-right: 15px;
+
+        @media (max-width: 480px) {
+            display: block;
+            padding-bottom: 5px;
+        }
+    }
+}
+
+// phone/tablet
+@media screen and (max-width: 768px) {
+    .header {
+        flex-direction: column;
+    }
+    .pageTitleAndShareContainer {
+        text-align: center;
+        padding-bottom: 8px;
+    }
+    .shareButtonPopover {
+        left: auto;
+        right: 0;
+        &:after {
+            left: auto;
+            right: 20px;
+        }
+    }
+    .settings {
+        margin: 0 auto;
+        padding-top: 5px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .settingsItem {
+        padding-bottom: 5px;
+    }
+    .settingsItem:first-child {
+        margin-left: 0;
+    }
+    .nav {
+        @nav-width: 320px;
+        left: 50%;
+        margin-left: -@nav-width / 2;
+        width: @nav-width;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+// phone
+@media screen and (max-width: 480px) {
+    .settings {
+        flex-direction: column;
+    }
+    .settingsItem {
+        margin-left: 0;
+    }
+    .settingsItem:last-child {
+        padding-bottom: 0;
+    }
+}

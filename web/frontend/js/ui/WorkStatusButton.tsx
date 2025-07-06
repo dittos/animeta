@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Link } from 'nuri';
 import * as util from '../util';
-import Styles from './WorkStatusButton.less';
+import Styles from './WorkStatusButton.module.less';
 import LoginDialog from './LoginDialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil, faPlus } from '@fortawesome/free-solid-svg-icons';

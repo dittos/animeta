@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Styles from './LoadMore.less';
+import Styles from './LoadMore.module.less';
 import useIntersectionObserver from './useIntersectionObserver';
 
 type LoadMoreProps = {
