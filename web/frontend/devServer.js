@@ -25,7 +25,6 @@ appProvider.start().then(() => {
     })
   );
   server.use(webpackHotMiddleware(compiler));
-  server.get('/mockServiceWorker.js', (req, res) => res.sendFile(path.resolve(__dirname, './static/mockServiceWorker.js')))
   createServer({
     config: require(process.env.ANIMETA_CONFIG_PATH || './config.json'),
     server,

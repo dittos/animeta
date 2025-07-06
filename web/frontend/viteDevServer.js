@@ -7,7 +7,6 @@ const appProvider = new ViteAppProvider();
 appProvider.start().then(() => {
   const server = express();
   server.use(appProvider.vite.middlewares);
-  server.get('/mockServiceWorker.js', (req, res) => res.sendFile(path.resolve(__dirname, './static/mockServiceWorker.js')))
   createServer({
     config: require(process.env.ANIMETA_CONFIG_PATH || './config.json'),
     server,

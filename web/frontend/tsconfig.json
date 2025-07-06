@@ -24,6 +24,9 @@
   "exclude": [
     "node_modules",
     "dist",
-    "../shared/dist"
+    "../shared/dist",
+    "**/*.test.*",
+    "./js/test-extend.ts",
+    "./js/mocks/*"
   ]
 }
