@@ -14,7 +14,7 @@ const port = process.env.PORT || 3000;
 
 async function main() {
   const appProvider = process.env.ANIMETA_FRONTEND_APP_PROVIDER === 'vite'
-    ? new ViteSSRAppProvider(process.env.ANIMETA_FRONTEND_DIST_PATH)
+    ? new ViteSSRAppProvider(process.env.ANIMETA_FRONTEND_DIST_PATH, config.staticUrl || '/static')
     : new DefaultAppProvider(process.env.ANIMETA_FRONTEND_DIST_PATH);
   await appProvider.start();
 
