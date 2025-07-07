@@ -14,10 +14,14 @@ export class ViteSSRAppProvider implements AppProvider {
 
     this.assets = {
       index: {
-        html: fs.readFileSync(path.join(this.buildDir, 'static/index.html'), {encoding: 'utf8'}).replace(/__STATIC__/g, this.staticUrl),
+        html: fs.readFileSync(path.join(this.buildDir, 'static/index.html'), {encoding: 'utf8'})
+          .replace(/__STATIC__/g, this.staticUrl)
+          .replace(/\.(js|css)/g, "$1?v=2"),
       },
       admin: {
-        html: fs.readFileSync(path.join(this.buildDir, 'static/index-admin.html'), {encoding: 'utf8'}).replace(/__STATIC__/g, this.staticUrl),
+        html: fs.readFileSync(path.join(this.buildDir, 'static/index-admin.html'), {encoding: 'utf8'})
+          .replace(/__STATIC__/g, this.staticUrl)
+          .replace(/\.(js|css)/g, "$1?v=2"),
       },
     }
   }
