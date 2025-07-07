@@ -1,3 +1,4 @@
+const fs = require('fs');
 const webpack = require('webpack');
 const MemoryFileSystem = require('memory-fs');
 const {evalCode} = require('@animeta/web-frontend-server');
@@ -40,6 +41,11 @@ class CompilingAppProvider {
     } catch (e) {
       console.error(e);
     }
+  }
+
+  getAssets() {
+    // assets.json is written by webpack
+    return JSON.parse(fs.readFileSync(__dirname + '/dist/assets.json').toString('utf8'));
   }
 }
 

@@ -15,11 +15,10 @@ import * as ejs from 'ejs';
 const DEBUG = process.env.NODE_ENV !== 'production';
 const MAINTENANCE = process.env.MAINTENANCE;
 
-export function createServer({ config, server = express(), appProvider, getAssets, staticDir }: {
+export function createServer({ config, server = express(), appProvider, staticDir }: {
   config: any;
   server?: express.Express;
   appProvider: AppProvider;
-  getAssets: (url?: string) => any;
   staticDir?: string;
 }) {
   const backend = new Backend(config.backend.v5BaseUrl, config.backend.graphqlUrl);
@@ -163,7 +162,7 @@ export function createServer({ config, server = express(), appProvider, getAsset
       STATIC_URL: config.staticUrl || '/static',
       ASSET_BASE: config.assetBase || '',
       SENTRY_DSN: config.frontendSentryDsn || '',
-      assets: await getAssets(req.originalUrl),
+      assets: await appProvider.getAssets(req.originalUrl),
       title: '',
       meta: {},
       serializeJS,
