@@ -1,4 +1,3 @@
-import fs from 'fs';
 import path from 'path';
 import * as Sentry from '@sentry/serverless';
 import type { Handler } from 'aws-lambda';
@@ -21,13 +20,12 @@ async function initialize() {
     Sentry.AWSLambda.init({ dsn: config.sentryDsnNew });
   }
 
-  const appProvider = new DefaultAppProvider(path.join(process.env.ANIMETA_FRONTEND_DIST_PATH, 'bundle.server.js'));
-  const assets = JSON.parse(fs.readFileSync(path.join(process.env.ANIMETA_FRONTEND_DIST_PATH, 'assets.json'), {encoding: 'utf8'}));
+  const appProvider = new DefaultAppProvider(process.env.ANIMETA_FRONTEND_DIST_PATH);
+  await appProvider.start();
 
   const app = createServer({
     config,
     appProvider,
-    getAssets: () => assets,
     staticDir: path.join(process.env.ANIMETA_FRONTEND_DIST_PATH, 'static'),
   })
   return Sentry.AWSLambda.wrapHandler(serverlessExpress({ app }))

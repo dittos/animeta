@@ -36,6 +36,9 @@
     <meta name="apple-mobile-web-app-capable" content="no">
     <meta name="google-site-verification" content="dhlhxHlQ_wDcoxu7hcyfWoXOyD79pPryal6fVLUxLeg">
 <% assetEntries.forEach(entry => { %>
+    <% if (assets[entry].html) { %>
+    <%- assets[entry].html %>
+    <% } %>
     <% if (assets[entry].css) { %>
     <link href="<%= ASSET_BASE %><%= assets[entry].css %>" rel="stylesheet">
     <% } %>
@@ -57,9 +60,6 @@
 <div id="app"><%- content %></div>
 <script>window.SENTRY_DSN = '<%= SENTRY_DSN %>'</script>
 <% assetEntries.forEach(entry => { %>
-    <% if (assets[entry].html) { %>
-    <%- assets[entry].html %>
-    <% } %>
     <% if (assets[entry].js) { %>
     <script type="text/javascript" src="<%= ASSET_BASE %><%= assets[entry].js %>"></script>
     <% } %>

@@ -1,3 +1,5 @@
+const path = require('path');
+const { readFileSync } = require('fs');
 const {createServer: createViteServer} = require('vite');
 
 class ViteAppProvider {
@@ -15,10 +17,10 @@ class ViteAppProvider {
   async getAssets(url) {
     return {
       index: {
-        html: await this.vite.transformIndexHtml(url, `<script type="module" src="/js/index.react.ts"></script>`)
+        html: await this.vite.transformIndexHtml(url, readFileSync(path.join(__dirname, 'index.html'), 'utf8'))
       },
       admin: {
-        html: await this.vite.transformIndexHtml(url, `<script type="module" src="/js/admin.react.jsx"></script>`)
+        html: await this.vite.transformIndexHtml(url, readFileSync(path.join(__dirname, 'index-admin.html'), 'utf8'))
       }
     };
   }

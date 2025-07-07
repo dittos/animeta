@@ -11,7 +11,6 @@ appProvider.start().then(() => {
     config: require(process.env.ANIMETA_CONFIG_PATH || './config.json'),
     server,
     appProvider,
-    getAssets: (url) => appProvider.getAssets(url),
     staticDir: path.join(__dirname, 'static'),
   }).listen(3000);
 });

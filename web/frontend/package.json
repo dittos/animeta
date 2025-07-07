@@ -105,6 +105,8 @@
     "build-assets": "webpack --env.prod --progress && cp -r static/* dist/static/",
     "build-assets:analyze": "webpack --env.prod --progress --stats --json > stats.json && webpack-bundle-analyzer stats.json dist/static/build",
     "build-server": "webpack --env.server --env.prod --progress",
+    "build:client": "vite build --outDir dist/static",
+    "build:server": "vite build --outDir dist/server --ssr js/serverEntry.ts",
     "graphql-codegen": "graphql-codegen --watch",
     "test": "vitest"
   }
