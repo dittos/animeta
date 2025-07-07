@@ -1,4 +1,4 @@
-FROM node:16-slim
+FROM node:22-slim
 
 RUN mkdir /app
 WORKDIR /app
@@ -8,5 +8,6 @@ COPY ./frontend/dist /app/frontend/dist
 
 ENV NODE_ENV production
 ENV ANIMETA_FRONTEND_DIST_PATH /app/frontend/dist
+ENV ANIMETA_FRONTEND_APP_PROVIDER vite
 
 CMD ["node", "frontend-server/dist/bundle.js"]

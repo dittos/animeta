@@ -34,7 +34,7 @@ jobs:
     - name: Install Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: 16
+        node-version: 22
 
     - uses: pnpm/action-setup@v2.0.1
       name: Install pnpm
@@ -60,8 +60,8 @@ jobs:
       run: pnpm install --frozen-lockfile
 
     - run: pnpm -C frontend-server run build:bundle
-    - run: pnpm -C frontend run build-assets
-    - run: pnpm -C frontend run build-server
+    - run: pnpm -C frontend run build:client
+    - run: pnpm -C frontend run build:server
 
     - run: docker build -t animeta-frontend -f Dockerfile.prebuilt .
 
