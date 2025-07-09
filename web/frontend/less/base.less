@@ -23,7 +23,7 @@ body, input, textarea, select, optgroup, option, button {
     padding-left: @grid-spacing;
     padding-right: @grid-spacing;
     box-sizing: border-box;
-    width: percentage(@size / @grid-columns);
+    width: percentage((@size / @grid-columns));
 }
 
 .generate-columns(@prefix, @n, @i: 1) when (@i =< @n) {
