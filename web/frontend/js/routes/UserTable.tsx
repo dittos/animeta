@@ -2,7 +2,7 @@ import { RouteComponentProps } from '../routes';
 import React, { useRef } from 'react';
 import * as Layout from '../ui/Layout';
 import * as Grid from '../ui/Grid';
-import Styles from './Table.module.less';
+import Styles from './TablePeriod.module.less';
 import { TableItem } from '../ui/TableItem';
 import { formatPeriod } from '../util';
 import { Link } from 'nuri';

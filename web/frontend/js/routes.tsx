@@ -1,13 +1,14 @@
 import React from 'react';
 import { createApp } from 'nuri';
 import * as NuriApp from 'nuri/app';
-import LoginDialog from './ui/LoginDialog';
 import IndexRoute from './routes/Index';
+import LoginRoute from './routes/Login';
 import SignupRoute from './routes/Signup';
 import PostRoute from './routes/Post';
 import WorkRoute from './routes/Work';
 import WorkEpisodeRoute from './routes/WorkEpisode';
 import TableRoute from './routes/Table';
+import TablePeriodRoute from './routes/TablePeriod';
 import SettingsRoute from './routes/Settings';
 import UserRoute from './routes/User';
 import UserHistoryRoute from './routes/UserHistory';
@@ -18,8 +19,6 @@ import AddRecordRoute from './routes/AddRecord';
 import ManageCategoryRoute from './routes/ManageCategory';
 import ManageRatingRoute from './routes/ManageRating';
 import { Loader } from '../../shared/loader';
-import { GetCurrentTablePeriodDocument } from './__generated__/routes.graphql';
-import { AppLayout } from './layouts/AppLayout';
 
 export type RouteHandler<D> = NuriApp.RouteHandler<D, Loader>;
 export type RouteComponent<D> = NuriApp.RouteComponent<D, Loader>;
@@ -27,27 +26,14 @@ export type RouteComponentProps<D> = NuriApp.RouteComponentProps<D, Loader>;
 
 var app = createApp<Loader>();
 
-app.title = routeTitle => {
-  return routeTitle + (routeTitle ? ' - ' : '') + '애니메타';
-};
-
 app.route('/', IndexRoute);
-app.route('/login/', AppLayout.wrap({
-  component: () => <LoginDialog next="/" />,
-  load: async () => ({}),
-  renderTitle: () => '로그인',
-}));
+app.route('/login/', LoginRoute);
 app.route('/signup/', SignupRoute);
 app.route('/-:id', PostRoute);
 app.route('/works/:title+/ep/:episode/', WorkEpisodeRoute);
 app.route('/works/:title+/', WorkRoute);
-app.route('/table/', {
-  load: async ({ redirect, loader }) => {
-    const result = await loader.graphql(GetCurrentTablePeriodDocument)
-    return redirect(`/table/${result.currentTablePeriod.period}/`)
-  },
-});
-app.route('/table/:period/', TableRoute);
+app.route('/table/', TableRoute);
+app.route('/table/:period/', TablePeriodRoute);
 app.route('/settings/', SettingsRoute);
 app.route('/users/:username/', UserRoute);
 app.route('/users/:username/history/', UserHistoryRoute);

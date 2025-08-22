@@ -1,3 +1,0 @@
-query GetCurrentTablePeriod {
-  currentTablePeriod { period }
-}

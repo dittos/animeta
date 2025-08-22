@@ -1,34 +1,3 @@
-query TableRoute($period: String!, $withRecommendations: Boolean!) {
-  currentUser {
-    databaseId
-  }
-  tablePeriods {
-    period
-    year
-    month
-  }
-  tablePeriod(period: $period) {
-    ...TableRoute_pageTitle
-    isRecommendationEnabled
-    isCurrent
-    items(withRecommendations: $withRecommendations) {
-      ...TableRoute_item
-      ...TableItem_item
-    }
-  }
-}
-
-fragment TableRoute_pageTitle on TablePeriod {
-  period
-  year
-  month
-}
-
-fragment TableRoute_item on TablePeriodItem {
-  work {
-    databaseId
-  }
-  record {
-    databaseId
-  }
+query GetCurrentTablePeriod {
+  currentTablePeriod { period }
 }
