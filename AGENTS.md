@@ -6,7 +6,8 @@ Animeta is a web service for tracking anime viewing records. The repository is a
 
 ## Repository Layout
 
-- `backend-ts/`: NestJS/TypeScript backend API, GraphQL schema and resolvers, TypeORM entities, services, PostgreSQL setup, and backend tests.
+- `backend-ts/`: NestJS/TypeScript backend API, GraphQL schema and resolvers, TypeORM entities, services, PostgreSQL setup, and backend unit tests.
+- `backend-e2e/`: Black-box backend contract/e2e tests that run against an already running backend server.
 - `web/frontend/`: React 17 frontend using Vite, React Router 5, TypeScript/JavaScript, LESS, MUI, React Bootstrap, and GraphQL operations.
 - `web/frontend-server/`: Express/serverless frontend server and SSR-related code.
 - `web/shared/`: Shared web GraphQL/types package.
@@ -32,8 +33,14 @@ Backend:
 
 ```sh
 pnpm -C backend-ts test
-pnpm -C backend-ts test:e2e
 pnpm -C backend-ts build
+```
+
+Backend e2e:
+
+```sh
+pnpm -C backend-ts start:e2e
+ANIMETA_BASE_URL=http://localhost:8082 ANIMETA_TEST_TOKEN=test-token pnpm -C backend-e2e test
 ```
 
 Frontend:
@@ -55,7 +62,7 @@ Tooling:
 pnpm -C tooling build
 ```
 
-End-to-end backend tests use `@databases/pg-test` to launch a Dockerized PostgreSQL instance automatically; Docker must be available locally.
+The backend e2e server uses `@databases/pg-test` to launch a Dockerized PostgreSQL instance automatically; Docker must be available locally.
 
 ## GraphQL And Generated Code
 
@@ -65,6 +72,7 @@ When changing GraphQL schemas or operations, run the relevant code generation co
 
 ```sh
 pnpm -C backend-ts graphql-codegen:watch
+pnpm -C backend-e2e graphql-codegen
 pnpm -C web/frontend graphql-codegen
 ```
 

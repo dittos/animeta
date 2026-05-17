@@ -59,9 +59,6 @@ importers:
       '@google-cloud/storage':
         specifier: ^5.18.2
         version: 5.20.5
-      '@graphql-typed-document-node/core':
-        specifier: ^3.1.1
-        version: 3.2.0(graphql@16.8.1)
       '@immobiliarelabs/fastify-sentry':
         specifier: ^3.1.0
         version: 3.1.0
@@ -134,9 +131,6 @@ importers:
       mercurius:
         specifier: ^9.7.0
         version: 9.8.0(graphql@16.8.1)
-      mercurius-integration-testing:
-        specifier: ^4.0.0
-        version: 4.0.0(fastify@3.29.5)(graphql@16.8.1)(mercurius@9.8.0(graphql@16.8.1))
       oauth:
         specifier: ^0.9.15
         version: 0.9.15
@@ -174,9 +168,6 @@ importers:
       '@graphql-codegen/typescript':
         specifier: ^2.7.1
         version: 2.8.8(graphql@16.8.1)
-      '@graphql-codegen/typescript-operations':
-        specifier: ^2.5.1
-        version: 2.5.13(graphql@16.8.1)
       '@graphql-codegen/typescript-resolvers':
         specifier: ^2.7.1
         version: 2.7.13(graphql@16.8.1)
@@ -186,9 +177,6 @@ importers:
       '@nestjs/schematics':
         specifier: ^8.0.6
         version: 8.0.11(chokidar@3.5.3)(typescript@4.5.5)
-      '@nestjs/testing':
-        specifier: ^8.3.1
-        version: 8.4.7(@nestjs/common@8.4.7(cache-manager@3.6.3)(reflect-metadata@0.1.13)(rxjs@7.8.1))(@nestjs/core@8.4.7)(@nestjs/platform-express@8.4.7)
       '@types/cache-manager':
         specifier: ^3.4.2
         version: 3.4.3
@@ -213,9 +201,6 @@ importers:
       '@types/oauth':
         specifier: ^0.9.1
         version: 0.9.4
-      '@types/supertest':
-        specifier: ^2.0.10
-        version: 2.0.16
       '@types/ws':
         specifier: ^8.2.3
         version: 8.5.9
@@ -246,9 +231,6 @@ importers:
       prettier:
         specifier: ^2.1.2
         version: 2.8.8
-      supertest:
-        specifier: ^6.0.0
-        version: 6.3.3
       ts-jest:
         specifier: ^29.1.1
         version: 29.1.1(@babel/core@7.28.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.28.0))(jest@29.7.0(@types/node@16.18.61)(babel-plugin-macros@3.1.0)(ts-node@9.1.1(typescript@4.5.5)))(typescript@4.5.5)
@@ -1987,19 +1969,6 @@ packages:
     peerDependencies:
       typescript: ^3.4.5 || ^4.3.5
 
-  '@nestjs/testing@8.4.7':
-    resolution: {integrity: sha512-aedpeJFicTBeiTCvJWUG45WMMS53f5eu8t2fXsfjsU1t+WdDJqYcZyrlCzA4dL1B7MfbqaTURdvuVVHTmJO8ag==}
-    peerDependencies:
-      '@nestjs/common': ^8.0.0
-      '@nestjs/core': ^8.0.0
-      '@nestjs/microservices': ^8.0.0
-      '@nestjs/platform-express': ^8.0.0
-    peerDependenciesMeta:
-      '@nestjs/microservices':
-        optional: true
-      '@nestjs/platform-express':
-        optional: true
-
   '@nestjs/typeorm@8.1.4':
     resolution: {integrity: sha512-hKv0Y9PG7YkHQfjsrNqM1s/VajlT7Mla8gaoblmuLzgMKsOQFsZXSHlXNxXZ8CA4aCPeDUiXtvqc4zocadGiIQ==}
     peerDependencies:
@@ -2541,9 +2510,6 @@ packages:
   '@types/cookie@0.6.0':
     resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
 
-  '@types/cookiejar@2.1.4':
-    resolution: {integrity: sha512-b698BLJ6kPVd6uhHsY7wlebZdrWPXYied883PDSzpJZYOP97EOn/oGdLCH3jJf157srkFReIZY5v0H1s8Dozrg==}
-
   '@types/cross-spawn@6.0.5':
     resolution: {integrity: sha512-wsIMP68FvGXk+RaWhraz6Xp4v7sl4qwzHAmtPaJEN2NRTXXI9LtFawUpeTsBNL/pd6QoLStdytCaAyiK7AEd/Q==}
 
@@ -2708,12 +2674,6 @@ packages:
 
   '@types/statuses@2.0.6':
     resolution: {integrity: sha512-xMAgYwceFhRA2zY+XbEA7mxYbA093wdiW8Vu6gZPGWy9cmOyU9XesH1tNcEWsKFd5Vzrqx5T3D38PWx1FIIXkA==}
-
-  '@types/superagent@4.1.22':
-    resolution: {integrity: sha512-GMaOrnnUsjChvH8zlzdDPARRXky8bU3E8xsU/fOclgqsINekbwDu1+wzJzJaGzZP91SGpOutf5Te5pm5M/qCWg==}
-
-  '@types/supertest@2.0.16':
-    resolution: {integrity: sha512-6c2ogktZ06tr2ENoZivgm7YnprnhYE4ZoXGMY+oA7IuAf17M8FWvujXZGmxLv8y0PTyts4x5A+erSwVUFA8XSg==}
 
   '@types/tough-cookie@4.0.5':
     resolution: {integrity: sha512-/Ad8+nIOV7Rl++6f1BdKxFSMgmoqEoYbHRpPcx3JEfv8VRsQe9Z4mCXeJBzxs7mbHY/XOZZuXlRNfhpVPbs6ZA==}
@@ -3529,9 +3489,6 @@ packages:
   commondir@1.0.1:
     resolution: {integrity: sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==}
 
-  component-emitter@1.3.1:
-    resolution: {integrity: sha512-T0+barUSQRTUQASh8bx02dl+DhF54GtIDY13Y3m9oWTklKbb3Wv974meRpeZ3lp1JpLVECWWNHC4vaG2XHXouQ==}
-
   compressible@2.0.18:
     resolution: {integrity: sha512-AF3r7P5dWxL8MxyITRMlORQNaOA2IkAFaTr4k7BUumjPtRpGDTZpl0Pb1XCO6JeDCBdp126Cgs9sMxqSjgYyRg==}
     engines: {node: '>= 0.6'}
@@ -3603,9 +3560,6 @@ packages:
   cookie@0.7.2:
     resolution: {integrity: sha512-yki5XnKuf750l50uGTllt6kKILY4nQ1eNIQatoXEByZ5dWgnKqbnqmTrBE5B4N7lrMJKQ2ytWMiTO2o0v6Ew/w==}
     engines: {node: '>= 0.6'}
-
-  cookiejar@2.1.4:
-    resolution: {integrity: sha512-LDx6oHrK+PhzLKJU9j5S7/Y3jM/mUHvD/DeI1WQmJn652iPC5Y4TBzC9l+5OMOXlyTTA+SmVUPm0HQUwpD5Jqw==}
 
   copy-anything@2.0.6:
     resolution: {integrity: sha512-1j20GZTsvKNkc4BY3NpMOM8tt///wY3FpIzozTOFO2ffuZcV61nojHXVKIy3WM+7ADCy5FVhdZYHYDdgTU0yJw==}
@@ -3843,9 +3797,6 @@ packages:
   detect-port@1.5.1:
     resolution: {integrity: sha512-aBzdj76lueB6uUst5iAs7+0H/oOjqI5D16XUWxlWMIMROhcM0rfsNVk93zTngq1dDNpoXRr++Sus7ETAExppAQ==}
     hasBin: true
-
-  dezalgo@1.0.4:
-    resolution: {integrity: sha512-rXSP0bf+5n0Qonsb+SVVfNfIsimO4HEtmnIpPHY8Q1UCzKlQrDMfdobr8nJOOsRgWCyMRqeSBQzmWUMq7zvVig==}
 
   diff-sequences@29.6.3:
     resolution: {integrity: sha512-EjePK1srD3P08o2j4f0ExnylqRs5B9tJjcp9t1krH2qRi8CCdsYfwe9JgSLurFBWwq4uOlipzfk5fHNvwFKr8Q==}
@@ -4337,10 +4288,6 @@ packages:
     resolution: {integrity: sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==}
     engines: {node: '>= 6'}
 
-  formidable@2.1.2:
-    resolution: {integrity: sha512-CM3GuJ57US06mlpQ47YcunuUZ9jpm8Vx+P2CGt2j7HpgkKZO/DJYQ0Bobim8G6PFQmK5lOqOOdUXboU+h73A4g==}
-    deprecated: 'ACTION REQUIRED: SWITCH TO v3 - v1 and v2 are VULNERABLE! v1 is DEPRECATED FOR OVER 2 YEARS! Use formidable@latest or try formidable-mini for fresh projects'
-
   forwarded@0.2.0:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
     engines: {node: '>= 0.6'}
@@ -4570,10 +4517,6 @@ packages:
 
   headers-polyfill@4.0.3:
     resolution: {integrity: sha512-IScLbePpkvO846sIwOtOTDjutRMWdXdJmXdMvk6gCBHxFO8d+QKOQedyZSxFTTFYRSmlgSTDtXqqq4pcenBXLQ==}
-
-  hexoid@1.0.0:
-    resolution: {integrity: sha512-QFLV0taWQOZtvIRIAdBChesmogZrtuXvVWsFHZTk2SU+anspqZ2vMnoLg7IE1+Uk16N19APic1BuF8bC8c2m5g==}
-    engines: {node: '>=8'}
 
   highlight.js@10.7.3:
     resolution: {integrity: sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==}
@@ -5293,13 +5236,6 @@ packages:
       mercurius: ^8.0.0 || ^7.0.0 || ^6.4.0 || ^9.0.0
       prettier: ^2.5.1
 
-  mercurius-integration-testing@4.0.0:
-    resolution: {integrity: sha512-iYUQZN2K12Rf6Qfk/iMO2YugTEnBmrf9H2aiX21HPpsd9NWNvK3o5jLiWsAp/1+rFIX73tknX+TuRMdO1texyg==}
-    peerDependencies:
-      fastify: ^3.7.0
-      graphql: '*'
-      mercurius: ^9.0.0 || ^8.0.0 || ^7.0.0 || ^6.4.0
-
   mercurius@9.8.0:
     resolution: {integrity: sha512-BNZItAUpEbHrnvMYBXyCzTeftPxubN8iJLr4SFKo0vDMZ0ZQUhPONuF6XAmKr+JcEYXMn3/V2J/FUixqVOnAqw==}
     engines: {node: '>=12.9.0'}
@@ -5348,11 +5284,6 @@ packages:
   mime@1.6.0:
     resolution: {integrity: sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==}
     engines: {node: '>=4'}
-    hasBin: true
-
-  mime@2.6.0:
-    resolution: {integrity: sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg==}
-    engines: {node: '>=4.0.0'}
     hasBin: true
 
   mime@3.0.0:
@@ -6559,16 +6490,6 @@ packages:
 
   stylis@4.2.0:
     resolution: {integrity: sha512-Orov6g6BB1sDfYgzWfTHDOxamtX1bE/zo104Dh9e6fqJ3PooipYyfJ0pUmrZO2wAvO8YbEyeFrkV91XTsGMSrw==}
-
-  superagent@8.1.2:
-    resolution: {integrity: sha512-6WTxW1EB6yCxV5VFOIPQruWGHqc3yI7hEmZK6h+pyk69Lk/Ut7rLUY6W/ONF2MjBuGjvmMiIpsrVJ2vjrHlslA==}
-    engines: {node: '>=6.4.0 <13 || >=14'}
-    deprecated: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net
-
-  supertest@6.3.3:
-    resolution: {integrity: sha512-EMCG6G8gDu5qEqRQ3JjjPs6+FYT1a7Hv5ApHvtSghmOFJYtsU5S+pSb6Y2EUeCEY3CmEL3mmQ8YWlPOzQomabA==}
-    engines: {node: '>=6.4.0'}
-    deprecated: Please upgrade to supertest v7.1.3+, see release notes at https://github.com/forwardemail/supertest/releases/tag/v7.1.3 - maintenance is supported by Forward Email @ https://forwardemail.net
 
   supports-color@5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}
@@ -9768,14 +9689,6 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@nestjs/testing@8.4.7(@nestjs/common@8.4.7(cache-manager@3.6.3)(reflect-metadata@0.1.13)(rxjs@7.8.1))(@nestjs/core@8.4.7)(@nestjs/platform-express@8.4.7)':
-    dependencies:
-      '@nestjs/common': 8.4.7(cache-manager@3.6.3)(reflect-metadata@0.1.13)(rxjs@7.8.1)
-      '@nestjs/core': 8.4.7(@nestjs/common@8.4.7(cache-manager@3.6.3)(reflect-metadata@0.1.13)(rxjs@7.8.1))(@nestjs/platform-express@8.4.7)(reflect-metadata@0.1.13)(rxjs@7.8.1)
-      tslib: 2.4.0
-    optionalDependencies:
-      '@nestjs/platform-express': 8.4.7(@nestjs/common@8.4.7(cache-manager@3.6.3)(reflect-metadata@0.1.13)(rxjs@7.8.1))(@nestjs/core@8.4.7)
-
   '@nestjs/typeorm@8.1.4(@nestjs/common@8.4.7(cache-manager@3.6.3)(reflect-metadata@0.1.13)(rxjs@7.8.1))(@nestjs/core@8.4.7)(reflect-metadata@0.1.13)(rxjs@7.8.1)(typeorm@0.2.45(pg@8.11.3))':
     dependencies:
       '@nestjs/common': 8.4.7(cache-manager@3.6.3)(reflect-metadata@0.1.13)(rxjs@7.8.1)
@@ -10420,8 +10333,6 @@ snapshots:
 
   '@types/cookie@0.6.0': {}
 
-  '@types/cookiejar@2.1.4': {}
-
   '@types/cross-spawn@6.0.5':
     dependencies:
       '@types/node': 16.18.61
@@ -10600,15 +10511,6 @@ snapshots:
   '@types/stack-utils@2.0.3': {}
 
   '@types/statuses@2.0.6': {}
-
-  '@types/superagent@4.1.22':
-    dependencies:
-      '@types/cookiejar': 2.1.4
-      '@types/node': 16.18.61
-
-  '@types/supertest@2.0.16':
-    dependencies:
-      '@types/superagent': 4.1.22
 
   '@types/tough-cookie@4.0.5': {}
 
@@ -11668,8 +11570,6 @@ snapshots:
 
   commondir@1.0.1: {}
 
-  component-emitter@1.3.1: {}
-
   compressible@2.0.18:
     dependencies:
       mime-db: 1.52.0
@@ -11732,8 +11632,6 @@ snapshots:
   cookie@0.5.0: {}
 
   cookie@0.7.2: {}
-
-  cookiejar@2.1.4: {}
 
   copy-anything@2.0.6:
     dependencies:
@@ -12017,11 +11915,6 @@ snapshots:
       debug: 4.4.1
     transitivePeerDependencies:
       - supports-color
-
-  dezalgo@1.0.4:
-    dependencies:
-      asap: 2.0.6
-      wrappy: 1.0.2
 
   diff-sequences@29.6.3: {}
 
@@ -12654,13 +12547,6 @@ snapshots:
       combined-stream: 1.0.8
       mime-types: 2.1.35
 
-  formidable@2.1.2:
-    dependencies:
-      dezalgo: 1.0.4
-      hexoid: 1.0.0
-      once: 1.4.0
-      qs: 6.11.2
-
   forwarded@0.2.0: {}
 
   fraction.js@4.3.7: {}
@@ -12961,8 +12847,6 @@ snapshots:
   headers-polyfill@3.0.7: {}
 
   headers-polyfill@4.0.3: {}
-
-  hexoid@1.0.0: {}
 
   highlight.js@10.7.3: {}
 
@@ -13990,18 +13874,6 @@ snapshots:
       - encoding
       - supports-color
 
-  mercurius-integration-testing@4.0.0(fastify@3.29.5)(graphql@16.8.1)(mercurius@9.8.0(graphql@16.8.1)):
-    dependencies:
-      '@graphql-typed-document-node/core': 3.2.0(graphql@16.8.1)
-      cookie: 0.4.2
-      fastify: 3.29.5
-      graphql: 16.8.1
-      mercurius: 9.8.0(graphql@16.8.1)
-      ws: 8.14.2
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
   mercurius@9.8.0(graphql@16.8.1):
     dependencies:
       '@fastify/error': 3.4.1
@@ -14059,8 +13931,6 @@ snapshots:
       mime-db: 1.52.0
 
   mime@1.6.0: {}
-
-  mime@2.6.0: {}
 
   mime@3.0.0: {}
 
@@ -15356,28 +15226,6 @@ snapshots:
   stubs@3.0.0: {}
 
   stylis@4.2.0: {}
-
-  superagent@8.1.2:
-    dependencies:
-      component-emitter: 1.3.1
-      cookiejar: 2.1.4
-      debug: 4.3.4
-      fast-safe-stringify: 2.1.1
-      form-data: 4.0.0
-      formidable: 2.1.2
-      methods: 1.1.2
-      mime: 2.6.0
-      qs: 6.11.2
-      semver: 7.5.4
-    transitivePeerDependencies:
-      - supports-color
-
-  supertest@6.3.3:
-    dependencies:
-      methods: 1.1.2
-      superagent: 8.1.2
-    transitivePeerDependencies:
-      - supports-color
 
   supports-color@5.5.0:
     dependencies:

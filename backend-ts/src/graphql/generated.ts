@@ -230,21 +230,26 @@ export type Mutation = {
   __typename?: 'Mutation';
   _empty?: Maybe<Scalars['Boolean']>;
   createCategory: CreateCategoryResult;
+  createPost: CreatePostResult;
   createRecord: CreateRecordResult;
   deleteCategory: DeleteCategoryResult;
   deletePost: DeletePostResult;
-  createPost: CreatePostResult;
   deleteRecord: DeleteRecordResult;
   renameCategory: RenameCategoryResult;
   updateCategoryOrder: UpdateCategoryOrderResult;
-  updateRecordTitle: UpdateRecordTitleResult;
-  updateRecordRating: UpdateRecordRatingResult;
   updateRecordCategoryId: UpdateRecordCategoryIdResult;
+  updateRecordRating: UpdateRecordRatingResult;
+  updateRecordTitle: UpdateRecordTitleResult;
 };
 
 
 export type MutationcreateCategoryArgs = {
   input: CreateCategoryInput;
+};
+
+
+export type MutationcreatePostArgs = {
+  input: CreatePostInput;
 };
 
 
@@ -263,11 +268,6 @@ export type MutationdeletePostArgs = {
 };
 
 
-export type MutationcreatePostArgs = {
-  input: CreatePostInput;
-};
-
-
 export type MutationdeleteRecordArgs = {
   input: DeleteRecordInput;
 };
@@ -283,8 +283,8 @@ export type MutationupdateCategoryOrderArgs = {
 };
 
 
-export type MutationupdateRecordTitleArgs = {
-  input: UpdateRecordTitleInput;
+export type MutationupdateRecordCategoryIdArgs = {
+  input: UpdateRecordCategoryIdInput;
 };
 
 
@@ -293,8 +293,8 @@ export type MutationupdateRecordRatingArgs = {
 };
 
 
-export type MutationupdateRecordCategoryIdArgs = {
-  input: UpdateRecordCategoryIdInput;
+export type MutationupdateRecordTitleArgs = {
+  input: UpdateRecordTitleInput;
 };
 
 export type CreateCategoryInput = {
@@ -304,6 +304,21 @@ export type CreateCategoryInput = {
 export type CreateCategoryResult = {
   __typename?: 'CreateCategoryResult';
   category: Category;
+};
+
+export type CreatePostInput = {
+  recordId: Scalars['ID'];
+  status: Scalars['String'];
+  statusType: StatusType;
+  comment: Scalars['String'];
+  containsSpoiler?: InputMaybe<Scalars['Boolean']>;
+  publishTwitter?: InputMaybe<Scalars['Boolean']>;
+  rating?: InputMaybe<Scalars['Float']>;
+};
+
+export type CreatePostResult = {
+  __typename?: 'CreatePostResult';
+  post: Post;
 };
 
 export type CreateRecordInput = {
@@ -342,21 +357,6 @@ export type DeletePostResult = {
   record?: Maybe<Record>;
 };
 
-export type CreatePostInput = {
-  recordId: Scalars['ID'];
-  status: Scalars['String'];
-  statusType: StatusType;
-  comment: Scalars['String'];
-  containsSpoiler?: InputMaybe<Scalars['Boolean']>;
-  publishTwitter?: InputMaybe<Scalars['Boolean']>;
-  rating?: InputMaybe<Scalars['Float']>;
-};
-
-export type CreatePostResult = {
-  __typename?: 'CreatePostResult';
-  post: Post;
-};
-
 export type DeleteRecordInput = {
   recordId: Scalars['ID'];
 };
@@ -386,13 +386,13 @@ export type UpdateCategoryOrderResult = {
   categories: Array<Category>;
 };
 
-export type UpdateRecordTitleInput = {
+export type UpdateRecordCategoryIdInput = {
   recordId: Scalars['ID'];
-  title: Scalars['String'];
+  categoryId?: InputMaybe<Scalars['ID']>;
 };
 
-export type UpdateRecordTitleResult = {
-  __typename?: 'UpdateRecordTitleResult';
+export type UpdateRecordCategoryIdResult = {
+  __typename?: 'UpdateRecordCategoryIdResult';
   record: Record;
 };
 
@@ -403,6 +403,16 @@ export type UpdateRecordRatingInput = {
 
 export type UpdateRecordRatingResult = {
   __typename?: 'UpdateRecordRatingResult';
+  record: Record;
+};
+
+export type UpdateRecordTitleInput = {
+  recordId: Scalars['ID'];
+  title: Scalars['String'];
+};
+
+export type UpdateRecordTitleResult = {
+  __typename?: 'UpdateRecordTitleResult';
   record: Record;
 };
 
@@ -584,16 +594,6 @@ export type WorksChartItem = {
   sign?: Maybe<Scalars['Int']>;
 };
 
-export type UpdateRecordCategoryIdInput = {
-  recordId: Scalars['ID'];
-  categoryId?: InputMaybe<Scalars['ID']>;
-};
-
-export type UpdateRecordCategoryIdResult = {
-  __typename?: 'UpdateRecordCategoryIdResult';
-  record: Record;
-};
-
 
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -683,24 +683,26 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   CreateCategoryInput: CreateCategoryInput;
   CreateCategoryResult: ResolverTypeWrapper<Omit<CreateCategoryResult, 'category'> & { category: ResolversTypes['Category'] }>;
+  CreatePostInput: CreatePostInput;
+  CreatePostResult: ResolverTypeWrapper<Omit<CreatePostResult, 'post'> & { post: ResolversTypes['Post'] }>;
   CreateRecordInput: CreateRecordInput;
   CreateRecordResult: ResolverTypeWrapper<Omit<CreateRecordResult, 'record' | 'post'> & { record: ResolversTypes['Record'], post?: Maybe<ResolversTypes['Post']> }>;
   DeleteCategoryInput: DeleteCategoryInput;
   DeleteCategoryResult: ResolverTypeWrapper<Omit<DeleteCategoryResult, 'user'> & { user?: Maybe<ResolversTypes['User']> }>;
   DeletePostInput: DeletePostInput;
   DeletePostResult: ResolverTypeWrapper<Omit<DeletePostResult, 'record'> & { record?: Maybe<ResolversTypes['Record']> }>;
-  CreatePostInput: CreatePostInput;
-  CreatePostResult: ResolverTypeWrapper<Omit<CreatePostResult, 'post'> & { post: ResolversTypes['Post'] }>;
   DeleteRecordInput: DeleteRecordInput;
   DeleteRecordResult: ResolverTypeWrapper<Omit<DeleteRecordResult, 'user'> & { user?: Maybe<ResolversTypes['User']> }>;
   RenameCategoryInput: RenameCategoryInput;
   RenameCategoryResult: ResolverTypeWrapper<Omit<RenameCategoryResult, 'category'> & { category: ResolversTypes['Category'] }>;
   UpdateCategoryOrderInput: UpdateCategoryOrderInput;
   UpdateCategoryOrderResult: ResolverTypeWrapper<Omit<UpdateCategoryOrderResult, 'categories'> & { categories: Array<ResolversTypes['Category']> }>;
-  UpdateRecordTitleInput: UpdateRecordTitleInput;
-  UpdateRecordTitleResult: ResolverTypeWrapper<Omit<UpdateRecordTitleResult, 'record'> & { record: ResolversTypes['Record'] }>;
+  UpdateRecordCategoryIdInput: UpdateRecordCategoryIdInput;
+  UpdateRecordCategoryIdResult: ResolverTypeWrapper<Omit<UpdateRecordCategoryIdResult, 'record'> & { record: ResolversTypes['Record'] }>;
   UpdateRecordRatingInput: UpdateRecordRatingInput;
   UpdateRecordRatingResult: ResolverTypeWrapper<Omit<UpdateRecordRatingResult, 'record'> & { record: ResolversTypes['Record'] }>;
+  UpdateRecordTitleInput: UpdateRecordTitleInput;
+  UpdateRecordTitleResult: ResolverTypeWrapper<Omit<UpdateRecordTitleResult, 'record'> & { record: ResolversTypes['Record'] }>;
   Query: ResolverTypeWrapper<{}>;
   CuratedList: ResolverTypeWrapper<CuratedListMetadataModel>;
   CuratedListWorkConnection: ResolverTypeWrapper<Omit<CuratedListWorkConnection, 'edges'> & { edges?: Maybe<Array<Maybe<ResolversTypes['CuratedListWorkEdge']>>> }>;
@@ -716,8 +718,6 @@ export type ResolversTypes = {
   CreditType: CreditType;
   TablePeriodNotice: ResolverTypeWrapper<TablePeriodNotice>;
   WorksChartItem: ResolverTypeWrapper<Omit<WorksChartItem, 'work'> & { work: ResolversTypes['Work'] }>;
-  UpdateRecordCategoryIdInput: UpdateRecordCategoryIdInput;
-  UpdateRecordCategoryIdResult: ResolverTypeWrapper<Omit<UpdateRecordCategoryIdResult, 'record'> & { record: ResolversTypes['Record'] }>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -745,24 +745,26 @@ export type ResolversParentTypes = {
   Mutation: {};
   CreateCategoryInput: CreateCategoryInput;
   CreateCategoryResult: Omit<CreateCategoryResult, 'category'> & { category: ResolversParentTypes['Category'] };
+  CreatePostInput: CreatePostInput;
+  CreatePostResult: Omit<CreatePostResult, 'post'> & { post: ResolversParentTypes['Post'] };
   CreateRecordInput: CreateRecordInput;
   CreateRecordResult: Omit<CreateRecordResult, 'record' | 'post'> & { record: ResolversParentTypes['Record'], post?: Maybe<ResolversParentTypes['Post']> };
   DeleteCategoryInput: DeleteCategoryInput;
   DeleteCategoryResult: Omit<DeleteCategoryResult, 'user'> & { user?: Maybe<ResolversParentTypes['User']> };
   DeletePostInput: DeletePostInput;
   DeletePostResult: Omit<DeletePostResult, 'record'> & { record?: Maybe<ResolversParentTypes['Record']> };
-  CreatePostInput: CreatePostInput;
-  CreatePostResult: Omit<CreatePostResult, 'post'> & { post: ResolversParentTypes['Post'] };
   DeleteRecordInput: DeleteRecordInput;
   DeleteRecordResult: Omit<DeleteRecordResult, 'user'> & { user?: Maybe<ResolversParentTypes['User']> };
   RenameCategoryInput: RenameCategoryInput;
   RenameCategoryResult: Omit<RenameCategoryResult, 'category'> & { category: ResolversParentTypes['Category'] };
   UpdateCategoryOrderInput: UpdateCategoryOrderInput;
   UpdateCategoryOrderResult: Omit<UpdateCategoryOrderResult, 'categories'> & { categories: Array<ResolversParentTypes['Category']> };
-  UpdateRecordTitleInput: UpdateRecordTitleInput;
-  UpdateRecordTitleResult: Omit<UpdateRecordTitleResult, 'record'> & { record: ResolversParentTypes['Record'] };
+  UpdateRecordCategoryIdInput: UpdateRecordCategoryIdInput;
+  UpdateRecordCategoryIdResult: Omit<UpdateRecordCategoryIdResult, 'record'> & { record: ResolversParentTypes['Record'] };
   UpdateRecordRatingInput: UpdateRecordRatingInput;
   UpdateRecordRatingResult: Omit<UpdateRecordRatingResult, 'record'> & { record: ResolversParentTypes['Record'] };
+  UpdateRecordTitleInput: UpdateRecordTitleInput;
+  UpdateRecordTitleResult: Omit<UpdateRecordTitleResult, 'record'> & { record: ResolversParentTypes['Record'] };
   Query: {};
   CuratedList: CuratedListMetadataModel;
   CuratedListWorkConnection: Omit<CuratedListWorkConnection, 'edges'> & { edges?: Maybe<Array<Maybe<ResolversParentTypes['CuratedListWorkEdge']>>> };
@@ -777,8 +779,6 @@ export type ResolversParentTypes = {
   WorkCredit: WorkCreditModel;
   TablePeriodNotice: TablePeriodNotice;
   WorksChartItem: Omit<WorksChartItem, 'work'> & { work: ResolversParentTypes['Work'] };
-  UpdateRecordCategoryIdInput: UpdateRecordCategoryIdInput;
-  UpdateRecordCategoryIdResult: Omit<UpdateRecordCategoryIdResult, 'record'> & { record: ResolversParentTypes['Record'] };
 };
 
 export type CategoryResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
@@ -923,20 +923,25 @@ export type NodeResolvers<ContextType = MercuriusContext, ParentType extends Res
 export type MutationResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   _empty?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   createCategory?: Resolver<ResolversTypes['CreateCategoryResult'], ParentType, ContextType, RequireFields<MutationcreateCategoryArgs, 'input'>>;
+  createPost?: Resolver<ResolversTypes['CreatePostResult'], ParentType, ContextType, RequireFields<MutationcreatePostArgs, 'input'>>;
   createRecord?: Resolver<ResolversTypes['CreateRecordResult'], ParentType, ContextType, RequireFields<MutationcreateRecordArgs, 'input'>>;
   deleteCategory?: Resolver<ResolversTypes['DeleteCategoryResult'], ParentType, ContextType, RequireFields<MutationdeleteCategoryArgs, 'input'>>;
   deletePost?: Resolver<ResolversTypes['DeletePostResult'], ParentType, ContextType, RequireFields<MutationdeletePostArgs, 'input'>>;
-  createPost?: Resolver<ResolversTypes['CreatePostResult'], ParentType, ContextType, RequireFields<MutationcreatePostArgs, 'input'>>;
   deleteRecord?: Resolver<ResolversTypes['DeleteRecordResult'], ParentType, ContextType, RequireFields<MutationdeleteRecordArgs, 'input'>>;
   renameCategory?: Resolver<ResolversTypes['RenameCategoryResult'], ParentType, ContextType, RequireFields<MutationrenameCategoryArgs, 'input'>>;
   updateCategoryOrder?: Resolver<ResolversTypes['UpdateCategoryOrderResult'], ParentType, ContextType, RequireFields<MutationupdateCategoryOrderArgs, 'input'>>;
-  updateRecordTitle?: Resolver<ResolversTypes['UpdateRecordTitleResult'], ParentType, ContextType, RequireFields<MutationupdateRecordTitleArgs, 'input'>>;
-  updateRecordRating?: Resolver<ResolversTypes['UpdateRecordRatingResult'], ParentType, ContextType, RequireFields<MutationupdateRecordRatingArgs, 'input'>>;
   updateRecordCategoryId?: Resolver<ResolversTypes['UpdateRecordCategoryIdResult'], ParentType, ContextType, RequireFields<MutationupdateRecordCategoryIdArgs, 'input'>>;
+  updateRecordRating?: Resolver<ResolversTypes['UpdateRecordRatingResult'], ParentType, ContextType, RequireFields<MutationupdateRecordRatingArgs, 'input'>>;
+  updateRecordTitle?: Resolver<ResolversTypes['UpdateRecordTitleResult'], ParentType, ContextType, RequireFields<MutationupdateRecordTitleArgs, 'input'>>;
 };
 
 export type CreateCategoryResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['CreateCategoryResult'] = ResolversParentTypes['CreateCategoryResult']> = {
   category?: Resolver<ResolversTypes['Category'], ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CreatePostResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['CreatePostResult'] = ResolversParentTypes['CreatePostResult']> = {
+  post?: Resolver<ResolversTypes['Post'], ParentType, ContextType>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -958,11 +963,6 @@ export type DeletePostResultResolvers<ContextType = MercuriusContext, ParentType
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type CreatePostResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['CreatePostResult'] = ResolversParentTypes['CreatePostResult']> = {
-  post?: Resolver<ResolversTypes['Post'], ParentType, ContextType>;
-  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type DeleteRecordResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['DeleteRecordResult'] = ResolversParentTypes['DeleteRecordResult']> = {
   deleted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
@@ -979,12 +979,17 @@ export type UpdateCategoryOrderResultResolvers<ContextType = MercuriusContext, P
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UpdateRecordTitleResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['UpdateRecordTitleResult'] = ResolversParentTypes['UpdateRecordTitleResult']> = {
+export type UpdateRecordCategoryIdResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['UpdateRecordCategoryIdResult'] = ResolversParentTypes['UpdateRecordCategoryIdResult']> = {
   record?: Resolver<ResolversTypes['Record'], ParentType, ContextType>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type UpdateRecordRatingResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['UpdateRecordRatingResult'] = ResolversParentTypes['UpdateRecordRatingResult']> = {
+  record?: Resolver<ResolversTypes['Record'], ParentType, ContextType>;
+  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UpdateRecordTitleResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['UpdateRecordTitleResult'] = ResolversParentTypes['UpdateRecordTitleResult']> = {
   record?: Resolver<ResolversTypes['Record'], ParentType, ContextType>;
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1096,11 +1101,6 @@ export type WorksChartItemResolvers<ContextType = MercuriusContext, ParentType e
   isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UpdateRecordCategoryIdResultResolvers<ContextType = MercuriusContext, ParentType extends ResolversParentTypes['UpdateRecordCategoryIdResult'] = ResolversParentTypes['UpdateRecordCategoryIdResult']> = {
-  record?: Resolver<ResolversTypes['Record'], ParentType, ContextType>;
-  isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type Resolvers<ContextType = MercuriusContext> = {
   Category?: CategoryResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
@@ -1119,15 +1119,16 @@ export type Resolvers<ContextType = MercuriusContext> = {
   Node?: NodeResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   CreateCategoryResult?: CreateCategoryResultResolvers<ContextType>;
+  CreatePostResult?: CreatePostResultResolvers<ContextType>;
   CreateRecordResult?: CreateRecordResultResolvers<ContextType>;
   DeleteCategoryResult?: DeleteCategoryResultResolvers<ContextType>;
   DeletePostResult?: DeletePostResultResolvers<ContextType>;
-  CreatePostResult?: CreatePostResultResolvers<ContextType>;
   DeleteRecordResult?: DeleteRecordResultResolvers<ContextType>;
   RenameCategoryResult?: RenameCategoryResultResolvers<ContextType>;
   UpdateCategoryOrderResult?: UpdateCategoryOrderResultResolvers<ContextType>;
-  UpdateRecordTitleResult?: UpdateRecordTitleResultResolvers<ContextType>;
+  UpdateRecordCategoryIdResult?: UpdateRecordCategoryIdResultResolvers<ContextType>;
   UpdateRecordRatingResult?: UpdateRecordRatingResultResolvers<ContextType>;
+  UpdateRecordTitleResult?: UpdateRecordTitleResultResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   CuratedList?: CuratedListResolvers<ContextType>;
   CuratedListWorkConnection?: CuratedListWorkConnectionResolvers<ContextType>;
@@ -1142,6 +1143,5 @@ export type Resolvers<ContextType = MercuriusContext> = {
   WorkCredit?: WorkCreditResolvers<ContextType>;
   TablePeriodNotice?: TablePeriodNoticeResolvers<ContextType>;
   WorksChartItem?: WorksChartItemResolvers<ContextType>;
-  UpdateRecordCategoryIdResult?: UpdateRecordCategoryIdResultResolvers<ContextType>;
 };
 

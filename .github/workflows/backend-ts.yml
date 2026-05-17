@@ -5,11 +5,12 @@ on:
     branches: [ '*' ]
     paths:
       - 'backend-ts/**'
+      - 'backend-e2e/**'
       - 'tooling/**'
       - 'Dockerfile.backend-ts.prebuilt'
       - '.github/workflows/backend-ts.yml'
   pull_request:
-    paths: ['backend-ts/**', 'tooling/**']
+    paths: ['backend-ts/**', 'backend-e2e/**', 'tooling/**']
 
 env:
   # change this to test deploy from other branch
@@ -66,7 +67,19 @@ jobs:
       run: pnpm -C backend-ts run test
 
     - name: Run functional tests
-      run: pnpm -C backend-ts run test:e2e
+      run: |
+        pnpm -C backend-ts start:e2e > /tmp/backend-e2e-server.log 2>&1 &
+        server_pid=$!
+        cleanup() {
+          kill "$server_pid" 2>/dev/null || true
+          wait "$server_pid" 2>/dev/null || true
+        }
+        trap cleanup EXIT
+
+        if ! ANIMETA_BASE_URL=http://localhost:8082 ANIMETA_TEST_TOKEN=test-token pnpm -C backend-e2e test; then
+          cat /tmp/backend-e2e-server.log
+          exit 1
+        fi
 
     # Deploy
     - name: Set up Docker Buildx

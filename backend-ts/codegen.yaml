@@ -1,16 +1,7 @@
 schema: ./schema/**/*.graphql
-documents:
-  - ./test/fragments.graphql
 config:
   sort: false
 generates:
-  ./test/fragments.generated.ts:
-    config:
-      avoidOptionals: true
-    plugins:
-      - typescript
-      - typescript-operations
-      - typed-document-node
   ./src/graphql/generated.ts:
     plugins:
       - typescript

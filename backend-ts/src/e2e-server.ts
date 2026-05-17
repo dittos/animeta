@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 import getTestDatabase from '@databases/pg-test';
 import { Connection, createConnection } from 'typeorm';
 
-dotenv.config({ path: 'test/.env.test' });
+dotenv.config({ path: '.env.e2e' });
 
 process.env.ANIMETA_ENABLE_TEST_API = process.env.ANIMETA_ENABLE_TEST_API ?? 'true';
 process.env.ANIMETA_TEST_TOKEN = process.env.ANIMETA_TEST_TOKEN ?? 'test-token';
