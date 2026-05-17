@@ -16,7 +16,7 @@ Animeta is a web service for tracking anime viewing records. The repository is a
 
 ## Package Manager
 
-Use pnpm 7.x only. Install dependencies from the repository root:
+Use pnpm 11.x only. Install dependencies from the repository root:
 
 ```sh
 pnpm install
@@ -55,7 +55,7 @@ Tooling:
 pnpm -C tooling build
 ```
 
-End-to-end backend tests require local database and environment configuration to be ready.
+End-to-end backend tests use `@databases/pg-test` to launch a Dockerized PostgreSQL instance automatically; Docker must be available locally.
 
 ## GraphQL And Generated Code
 

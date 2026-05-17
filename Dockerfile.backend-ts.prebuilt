@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		jpegoptim \
 	&& rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g pnpm@^7
+RUN corepack enable && corepack prepare pnpm@11.1.2 --activate
 
 WORKDIR /app/backend-ts
 

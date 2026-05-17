@@ -4,3 +4,16 @@ packages:
   - web/shared
   - web/frontend
   - web/frontend-server
+
+allowBuilds:
+  '@fortawesome/fontawesome-common-types': true
+  '@fortawesome/fontawesome-svg-core': true
+  '@fortawesome/free-solid-svg-icons': true
+  '@nestjs/core': true
+  core-js: true
+  ejs: true
+  esbuild: true
+  msw: true
+
+patchedDependencies:
+  mercurius-codegen@3.3.1: patches/mercurius-codegen@3.3.1.patch

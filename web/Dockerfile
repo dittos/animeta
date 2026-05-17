@@ -1,6 +1,6 @@
-FROM node:16 AS builder
+FROM node:22 AS builder
 
-RUN curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
+RUN corepack enable && corepack prepare pnpm@11.1.2 --activate
 
 RUN mkdir /app
 WORKDIR /app
@@ -19,7 +19,7 @@ RUN pnpm -C frontend run build-assets
 RUN pnpm -C frontend run build-server
 
 
-FROM node:16-slim
+FROM node:22-slim
 
 RUN mkdir /app
 WORKDIR /app

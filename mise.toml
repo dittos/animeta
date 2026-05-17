@@ -1,0 +1,4 @@
+[tools]
+node = "22"
+"pipx:honcho" = "latest"
+pnpm = "11.1.2"
