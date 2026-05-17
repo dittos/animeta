@@ -4,10 +4,26 @@ documents:
 config:
   sort: false
 generates:
-  ./test/fragments.generated.ts:
+  ./test/schema.generated.ts:
     config:
       avoidOptionals: true
+      scalars:
+        GraphQLTimestamp: string
     plugins:
       - typescript
-      - typescript-operations
+  ./test/operations.generated.ts:
+    config:
+      avoidOptionals: true
+      preResolveTypes: false
+      scalars:
+        GraphQLTimestamp: string
+      enumValues:
+        CreditType: ./schema.generated#CreditType
+        DatePrecision: ./schema.generated#DatePrecision
+        RecordOrder: ./schema.generated#RecordOrder
+        SourceType: ./schema.generated#SourceType
+        StatusType: ./schema.generated#StatusType
+    plugins:
+      - typescript-operations:
+          enumSuffix: true
       - typed-document-node

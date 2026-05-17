@@ -40,7 +40,7 @@ test('get', async () => {
   })
   expect(data.user.id).toBe(user.id.toString())
   expect(data.user.name).toBe(user.username)
-  expect(new Date(data.user.joinedAt)).toEqual(new Date(user.date_joined))
+  expect(new Date(data.user.joinedAt!)).toEqual(new Date(user.date_joined))
   expect(data.user.recordCount).toBe(1)
   expect(data.user.postCount).toBe(1)
 })

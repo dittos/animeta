@@ -46,7 +46,7 @@ test('get schedule with date only', async () => {
     }
   })
   expect(data.work.id).toBe(work.id.toString())
-  expect(new Date(data.work.metadata!.schedules![0].date)).toEqual(new Date('2023-01-10T00:00:00+09:00'))
+  expect(new Date(data.work.metadata!.schedules![0].date!)).toEqual(new Date('2023-01-10T00:00:00+09:00'))
 })
 
 test('get schedule with date+time', async () => {
@@ -73,5 +73,5 @@ test('get schedule with date+time', async () => {
     }
   })
   expect(data.work.id).toBe(work.id.toString())
-  expect(new Date(data.work.metadata!.schedules![0].date)).toEqual(new Date('2023-01-10T01:00:00+09:00'))
+  expect(new Date(data.work.metadata!.schedules![0].date!)).toEqual(new Date('2023-01-10T01:00:00+09:00'))
 })

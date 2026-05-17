@@ -10,6 +10,9 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "paths": {
+      "@graphql-tools/apollo-engine-loader": ["src/types/graphql-tools-apollo-engine-loader"]
+    },
     "incremental": true,
     "strict": true,
     "skipLibCheck": false
