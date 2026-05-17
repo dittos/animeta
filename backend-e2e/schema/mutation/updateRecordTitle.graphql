@@ -1,0 +1,12 @@
+extend type Mutation {
+  updateRecordTitle(input: UpdateRecordTitleInput!): UpdateRecordTitleResult!
+}
+
+input UpdateRecordTitleInput {
+  recordId: ID!
+  title: String!
+}
+
+type UpdateRecordTitleResult {
+  record: Record!
+}

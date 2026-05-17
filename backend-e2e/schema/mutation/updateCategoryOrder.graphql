@@ -1,0 +1,11 @@
+extend type Mutation {
+  updateCategoryOrder(input: UpdateCategoryOrderInput!): UpdateCategoryOrderResult!
+}
+
+input UpdateCategoryOrderInput {
+  categoryIds: [ID!]!
+}
+
+type UpdateCategoryOrderResult {
+  categories: [Category!]!
+}

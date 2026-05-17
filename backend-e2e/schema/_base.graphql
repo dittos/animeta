@@ -1,0 +1,12 @@
+scalar GraphQLTimestamp
+
+interface Node {
+  id: ID!
+}
+
+enum StatusType {
+  FINISHED,
+  WATCHING,
+  SUSPENDED,
+  INTERESTED,
+}

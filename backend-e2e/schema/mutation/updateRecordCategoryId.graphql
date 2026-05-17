@@ -1,0 +1,12 @@
+extend type Mutation {
+  updateRecordCategoryId(input: UpdateRecordCategoryIdInput!): UpdateRecordCategoryIdResult!
+}
+
+input UpdateRecordCategoryIdInput {
+  recordId: ID!
+  categoryId: ID # unset if null
+}
+
+type UpdateRecordCategoryIdResult {
+  record: Record!
+}

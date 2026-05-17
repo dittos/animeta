@@ -1,0 +1,12 @@
+extend type Mutation {
+  renameCategory(input: RenameCategoryInput!): RenameCategoryResult!
+}
+
+input RenameCategoryInput {
+  categoryId: ID!
+  name: String!
+}
+
+type RenameCategoryResult {
+  category: Category!
+}

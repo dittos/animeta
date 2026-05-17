@@ -1,6 +1,7 @@
 packages:
   - tooling
   - backend-ts
+  - backend-e2e
   - web/shared
   - web/frontend
   - web/frontend-server

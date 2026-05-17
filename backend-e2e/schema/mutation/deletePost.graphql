@@ -1,0 +1,12 @@
+extend type Mutation {
+  deletePost(input: DeletePostInput!): DeletePostResult!
+}
+
+input DeletePostInput {
+  postId: ID!
+}
+
+type DeletePostResult {
+  deleted: Boolean!
+  record: Record
+}

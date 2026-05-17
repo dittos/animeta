@@ -8,6 +8,7 @@ import { getCurrentUser } from './auth'
 import { glob } from 'glob'
 import { GraphQLID } from './resolvers/scalars/id'
 import { ValidationError } from './services/exceptions'
+import { registerTestApi } from './test-api'
 
 // TODO: dotenv
 
@@ -129,5 +130,9 @@ function registerEndpoints(parent: FastifyInstance, endpointsDir: string, prefix
 
 server.addSchema(JSON.parse(fs.readFileSync(path.resolve(__dirname, './gen/schemas/common.json'), {encoding: 'utf8'})))
 registerEndpoints(server, path.join(__dirname, 'endpoints'), '/api')
+
+if (process.env.ANIMETA_ENABLE_TEST_API === 'true') {
+  registerTestApi(server)
+}
 
 server.get('/health', async (_req, reply) => reply.send('pong'))

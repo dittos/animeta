@@ -1,0 +1,19 @@
+extend type Query {
+  curatedLists: [CuratedList!]!
+  curatedList(id: ID!): CuratedList
+}
+
+type CuratedList {
+  id: ID!
+  name: String
+  works: CuratedListWorkConnection
+}
+
+type CuratedListWorkConnection {
+  edges: [CuratedListWorkEdge]
+  totalCount: Int
+}
+
+type CuratedListWorkEdge {
+  node: Work
+}

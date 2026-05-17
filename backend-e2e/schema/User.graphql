@@ -1,0 +1,46 @@
+type User implements Node {
+  id: ID!
+  databaseId: String!
+  name: String
+  joinedAt: GraphQLTimestamp
+  isTwitterConnected: Boolean
+  isCurrentUser: Boolean!
+  categories: [Category!]!
+  recordCount: Int
+  postCount: Int
+  posts(beforeId: ID, count: Int): PostConnection!
+  records(
+    statusType: StatusType,
+    categoryId: ID,
+    orderBy: RecordOrder,
+    first: Int,
+  ): RecordConnection!
+  recordFilters(
+    statusType: StatusType,
+    categoryId: ID,
+  ): RecordFilters!
+}
+
+enum RecordOrder {
+  DATE
+  TITLE
+  RATING
+}
+
+type RecordFilters {
+  totalCount: Int!
+  filteredCount: Int!
+
+  statusType: RecordFilter!
+  categoryId: RecordFilter!
+}
+
+type RecordFilter {
+  allCount: Int!
+  items: [RecordFilterItem!]!
+}
+
+type RecordFilterItem {
+  key: String!
+  count: Int!
+}

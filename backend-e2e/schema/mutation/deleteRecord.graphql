@@ -1,0 +1,12 @@
+extend type Mutation {
+  deleteRecord(input: DeleteRecordInput!): DeleteRecordResult!
+}
+
+input DeleteRecordInput {
+  recordId: ID!
+}
+
+type DeleteRecordResult {
+  deleted: Boolean!
+  user: User
+}

@@ -1,0 +1,66 @@
+fragment WorkDTO on Work {
+  id: databaseId
+  title
+  imageUrl
+  recordCount
+  record {
+    id: databaseId
+  }
+  metadata {
+    periods
+    studioNames
+    source
+    websiteUrl
+    namuwikiUrl
+    annUrl
+    durationMinutes
+    schedules {
+      country
+      date
+      datePrecision
+      broadcasts
+    }
+  }
+}
+
+fragment UserDTO on User {
+  id: databaseId
+  name
+  joinedAt
+}
+
+fragment PostDTO on Post {
+  id: databaseId
+  record { id: databaseId }
+  statusType
+  status
+  comment
+  containsSpoiler
+  user { ...UserDTO }
+  updatedAt
+  rating
+}
+
+fragment EpisodeDTO on Episode {
+  number
+  postCount
+  userCount
+  suspendedUserCount
+}
+
+fragment RecordDTO on Record {
+  id: databaseId
+  title
+  statusType
+  status
+  user { id: databaseId }
+  work { id: databaseId }
+  category { id: databaseId }
+  rating
+  updatedAt
+}
+
+fragment CategoryDTO on Category {
+  id: databaseId
+  name
+}

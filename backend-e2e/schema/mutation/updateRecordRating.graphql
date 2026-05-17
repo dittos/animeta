@@ -1,0 +1,12 @@
+extend type Mutation {
+  updateRecordRating(input: UpdateRecordRatingInput!): UpdateRecordRatingResult!
+}
+
+input UpdateRecordRatingInput {
+  recordId: ID!
+  rating: Float # unset if null
+}
+
+type UpdateRecordRatingResult {
+  record: Record!
+}
