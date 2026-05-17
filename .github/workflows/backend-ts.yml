@@ -68,7 +68,7 @@ jobs:
 
     - name: Run functional tests
       run: |
-        pnpm -C backend-ts start:e2e > /tmp/backend-e2e-server.log 2>&1 &
+        pnpm -C backend-ts start:e2e:built > /tmp/backend-e2e-server.log 2>&1 &
         server_pid=$!
         cleanup() {
           kill "$server_pid" 2>/dev/null || true

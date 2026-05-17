@@ -4,9 +4,10 @@ export default async function setup() {
   if (!process.env.ANIMETA_TEST_TOKEN) throw new Error('ANIMETA_TEST_TOKEN is not set');
 
   const healthUrl = `${baseUrl.replace(/\/$/, '')}/health`;
+  const timeoutMs = Number(process.env.ANIMETA_E2E_HEALTH_TIMEOUT_MS ?? 60000);
   const startedAt = Date.now();
   let lastError: unknown;
-  while (Date.now() - startedAt < 10000) {
+  while (Date.now() - startedAt < timeoutMs) {
     try {
       const response = await fetch(healthUrl);
       if (response.ok) return;
@@ -16,5 +17,5 @@ export default async function setup() {
     }
     await new Promise(resolve => setTimeout(resolve, 250));
   }
-  throw lastError;
+  throw lastError ?? new Error(`timed out waiting for ${healthUrl}`);
 }
