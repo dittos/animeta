@@ -59,7 +59,8 @@ export class Period {
 }
 
 export const Periods = {
-  current: new Period(2026, 2),
+  // TODO: sync with impl code
+  current: new Period(2026, 3),
 };
 
 export function recordNodeId(databaseId: string | number): string {
