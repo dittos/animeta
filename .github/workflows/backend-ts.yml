@@ -100,20 +100,20 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-    - uses: azure/setup-kubectl@v3
-      if: github.event_name == 'push' && github.ref == env.DEPLOY_REF
-    - name: Set up kubeconfig
-      if: github.event_name == 'push' && github.ref == env.DEPLOY_REF
-      env:
-        KUBECONFIG_DATA_BASE64: ${{ secrets.KUBECONFIG_DATA_BASE64 }}
-      run: |
-        mkdir ~/.kube
-        echo $KUBECONFIG_DATA_BASE64 | base64 -d > ~/.kube/config
-    - name: Run migration
-      if: github.event_name == 'push' && github.ref == env.DEPLOY_REF
-      run: npx zx@7 bin/migrate-remote.mjs
     - name: Rollout
       if: github.event_name == 'push' && github.ref == env.DEPLOY_REF
+      env:
+        DEPLOY_SSH_TARGET: ${{ secrets.DEPLOY_SSH_TARGET }}
+        DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
       run: |
-        kubectl rollout restart deployment/animeta-backend-ts
-        kubectl rollout status deployment/animeta-backend-ts
+        mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
+
+        echo "$DEPLOY_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $DEPLOY_SSH_TARGET 'bash -s' << 'EOF'
+          set -e
+          cd ~/k8s/compose
+          ./upgrade.py animeta-backend
+        EOF
