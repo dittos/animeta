@@ -60,7 +60,7 @@ export class Period {
 
 export const Periods = {
   // TODO: sync with impl code
-  current: new Period(2026, 3),
+  current: new Period(2026, 4),
 };
 
 export function recordNodeId(databaseId: string | number): string {
