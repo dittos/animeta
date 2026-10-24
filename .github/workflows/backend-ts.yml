@@ -11,6 +11,7 @@ on:
       - '.github/workflows/backend-ts.yml'
   pull_request:
     paths: ['backend-ts/**', 'backend-e2e/**', 'tooling/**']
+  workflow_dispatch:
 
 env:
   # change this to test deploy from other branch

@@ -9,6 +9,7 @@ on:
       - '.github/workflows/web.yml'
   pull_request:
     paths: ['web/**']
+  workflow_dispatch:
 
 jobs:
   build:
